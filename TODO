@@ -1,0 +1,12 @@
+Easy:
+Get the database setup (create a backend) + get user authentication working (google, facebook, normal signin) (easy)
+Get email/password authentication working
+Follow the law in accordance to the cookie guidelines
+Store user data like their median daily tries, some other information about them
+Get the user sharing functioning/working
+
+Hard:
+Have a better way of explaining the game (video explanation/text explanation w example)
+Get different difficulties working (Easy -> can see word definitions maybe???, Med (2-3 jumps), Hard (4-5 jumps))
+Get solution working as well (with point addition) -> video explanation (generated w LLM or smth like that)
+Make a flashcard list as well as try to make it so that you can see the definitions of words (for non natives and younger audiences)
