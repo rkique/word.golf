@@ -39,7 +39,7 @@ function showScreen(){
 //if first session_done, then freeze screen, otherwise, show screen
 function tallyScreen(prompts, i, jumpsA){
     total = jumpsA.reduce((a, b) => a + b, 0)
-    renderInformation(`you finished today's prompts in ${total} jumps! <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-text="I finished today's prompts in ${total} jumps (${jumpsA[0]}/${jumpsA[1]}/${jumpsA[2]}/${jumpsA[3]}/${jumpsA[4]})" data-url="word.golf" data-show-count="false">Tweet<a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>`)
+    renderInformation(`you finished today's prompts in ${total} jumps! <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-text="I finished today's prompts in ${total} jumps (${jumpsA[0]}/${jumpsA[1]}/${jumpsA[2]}/${jumpsA[3]}/${jumpsA[4]})" data-url="word.golf" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>`)
     localStorage.setItem("lastComplete", new Date())
     localStorage.setItem('total', JSON.stringify(jumpsA))
     renderPrompts(prompts,i, jumpsA, false)

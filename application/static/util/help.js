@@ -21,11 +21,11 @@ function openHelp() {
     <h1>How to play</h1>
     <div class='help-text'>
     <p> Get to a target word by clicking on semantic neighbors. </p>
-    <p class='--grayed-out'> cement ⟶ lumber ⟶ forests ⟶ woodlands </p>
+    <p class='grayed-out'> cement ⟶ lumber ⟶ forests ⟶ woodlands </p>
     <p>As you get closer, the words will get more similar. </p>
-    <p class='--grayed-out'> alphabet ⟶ rhyme ⟶ lyrical ⟶ duet ⟶ drummer ⟶ performer ⟶ newcomer ⟶ sophomore </p>
+    <p class='grayed-out'> alphabet ⟶ rhyme ⟶ lyrical ⟶ duet ⟶ drummer ⟶ performer ⟶ newcomer ⟶ sophomore </p>
     <p>Each target can be reached in two jumps!  </p>
-    <p class='--grayed-out'> fountain ⟶ piers ⟶ coastline </p>
+    <p class='grayed-out'> fountain ⟶ piers ⟶ coastline </p>
     </div>
     <button onclick='closeHelp()' class='switch switch--outlined'> play </button>
     `;

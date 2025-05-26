@@ -50,7 +50,12 @@ html {
 .help-text p{
     margin: 1em;
 }
-.--grayed-out {
+.help-text-grayed {
+    font-weight: 300;
+    color: var(--border-color);
+}
+
+.grayed-out {
     color: var(--grayed-out-color)
 }
 .--small {
@@ -60,6 +65,21 @@ html {
 span, p{ 
     font-size: 1.5em;
  }
+
+.help-button {
+    margin-top: 8vh;
+    outline: 1px solid var(--border-color);
+    background-color: transparent;
+    font-size: 2.3em;
+ }
+
+#image-chain, #image-chain-2 {
+display: flex;
+justify-content: center;
+gap: 16px;         
+flex-wrap: wrap;  
+margin: 16px 0;
+}
 
 button {
     outline: 1px solid var(--border-color);

@@ -86,6 +86,30 @@
         document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
     }
 
+    function addImages(welcomeMessage){
+        const imageContainer = welcomeMessage.querySelector("#image-chain");
+        const imageNames = ['cement', 'lumber', 'forest', 'woodlands'];
+        //const imageContainer = document.getElementById('image-chain');
+        imageNames.forEach(name => {
+            const img = document.createElement('img');
+            img.src = `static/images/${name}.png`;  
+            img.alt = name;
+            img.style.margin = '8px auto';
+            img.style.maxWidth = '15vw'; 
+            imageContainer.appendChild(img);});
+        const imageNames2 = ['fountain', 'pier', 'coastline']
+        const imageContainer2 = welcomeMessage.querySelector("#image-chain-2");
+        imageNames2.forEach(name => {
+            const img = document.createElement('img');
+            img.src = `static/images/${name}.png`;  
+            img.alt = name;
+            img.style.margin = '8px auto';
+            img.style.maxWidth = '15vw'; 
+            imageContainer2.appendChild(img);
+        })
+
+    }
+
     
     function handleUserVisit() {
         const MS_DAY = 86400000; 
@@ -110,8 +134,22 @@
         
         if (!lastVisitDate || lastVisitDate !== currentDateStr) {
             if (!lastVisitDate) {
-                welcomeMessage.innerHTML = 'Welcome! It\'s your first visit.';
+                welcomeMessage.style.width = '90vw'; 
+                welcomeMessage.style.height = '50vh';  
+                welcomeMessage.innerHTML = 
+                `<p>Welcome! It\'s your first visit.</p>
+                <div class='help-text'>
+                <p> Get to a target word by clicking on similar meanings. </p>
+                <p class='help-text-grayed'> cement ⟶ lumber ⟶ forests ⟶ woodlands </p>
+                <div id="image-chain"></div>
+                <p>Each game can be completed in two jumps!  </p>
+                <p class='help-text-grayed'> fountain ⟶ pier ⟶ coastline </p>
+                <div id="image-chain-2"></div>
+                </div>
+                <button onclick='closeHelp()' class='help-text-grayed help-button'> play! </button>`
+                addImages(welcomeMessage)
                 streakCount = 1; 
+
             } else {
                 streakCount += 1;  
                 welcomeMessage.innerHTML = `Welcome back! (Streak: ${streakCount})`;
@@ -152,6 +190,6 @@
 
 <footer class="ma0 mid-gray fixed absolute right-1 bottom-0">
     <!--<img class="voyager" src="../static/images/voyager.png">-->
-    <p class="db tc ma1 footer --small"> © the new expeditionary society
-    </p>
+    <!-- <p class="db tc ma1 footer --small"> © the new expeditionary society
+    </p> -->
   </footer>
