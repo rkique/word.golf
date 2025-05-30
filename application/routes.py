@@ -1,8 +1,7 @@
 from flask import current_app as app
 from flask import render_template, request, session, make_response
-from .util import get_curve, PROMPTS
+from .utils import get_curve, PROMPTS
 import json
-import random
 import datetime
 
 
@@ -20,7 +19,7 @@ def jump(start):
     return json.dumps(_data)
 
 def elapsed(d):
-    previous_date = datetime.datetime.strptime("09-10-2022", '%m-%d-%Y')
+    previous_date = datetime.datetime.strptime("05-10-2025", '%m-%d-%Y')
     today = d
     return (today - previous_date).days
 
