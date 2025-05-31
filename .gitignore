@@ -4,3 +4,5 @@ env
 process/freq_gbooks/1mil_gbooks.txt
 process/sbert/embed_ner_web_trf.csv
 process/sbert/embed_all-MiniLM-L6-v2.csv
+test_env
+devenv
