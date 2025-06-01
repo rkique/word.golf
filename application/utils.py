@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import random 
+import ast
 
 def txt_to_set(path):
     txt_file = open(path, 'r', encoding="utf-8")
@@ -57,7 +58,7 @@ def get_prompts(l):
 
 print("Loading vectors...")
 WV = pd.read_csv("application/data/precalculated/embed_all-MiniLM-L6-v2.csv")
-WV['vector'] = WV['vector'].apply(lambda x: np.fromstring(x[1:-1], sep=' '))
+WV['vector'] = WV['vector'].apply(lambda x: np.array(ast.literal_eval(x)))
 WORD_SET = set(WV['word'].values)
 PRECOMPUTED = txt_to_dict("application/data/precalculated/top_100_all-MiniLM-L6-v2.csv")
 PROMPTS = get_prompts(txt_to_list("application/data/precalculated/neighbors.txt"))
