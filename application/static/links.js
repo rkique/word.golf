@@ -53,7 +53,8 @@ function saySessionEnded(){
         tallyScreen(resp.prompts, resp.i, resp.jumpsA)
     }
     else {
-    renderInformation("go from " + resp.prompt)
+    let prompts = resp.prompt.split(',');
+    renderInformation("go from " + prompts.join(' to '));
     renderPrompts(resp.prompts,resp.i, resp.jumpsA)
     renderLinks(resp.prompt, resp.results)
     activateLinks()

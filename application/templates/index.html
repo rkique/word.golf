@@ -26,11 +26,14 @@
 <script>
     const MS_DAY = 86400000
     data = JSON.parse('{{data|tojson|safe}}');
-    let prompt = data['prompt']
+    let prompt = data['prompt'].toString()
+    // console.log("Prompt type " + typeof(prompt.toString()))
     let i = data['i']
     let prompts = data['prompts']
     let results = data['results']
-    renderInformation("go from " + prompt)
+    start_target = prompt.split(",");
+    console.log("Start target: " + start_target[0])
+    renderInformation("go from " + start_target[0] + " to " + start_target[1])
     renderPrompts(prompts,i)
     renderLinks(prompt, results)
     activateLinks()
@@ -39,8 +42,10 @@
     }
 </script>
 
-<footer class="ma0 mid-gray fixed absolute right-1 bottom-0">
-    <!--<img class="voyager" src="../static/images/voyager.png">-->
+<!-- <footer class="ma0 mid-gray fixed absolute right-1 bottom-0"></footer>
+ <img class="voyager" src="../static/images/voyager.png">
+</footer> -->
+<!-- <footer class="ma0 mid-gray fixed absolute right-1 bottom-0">
     <p class="db tc ma1 footer --small"> © the new expeditionary society
     </p>
-  </footer>
+  </footer> -->

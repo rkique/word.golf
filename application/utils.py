@@ -3,6 +3,8 @@ import numpy as np
 import random 
 import ast
 
+random.seed(42)
+
 def txt_to_set(path):
     txt_file = open(path, 'r', encoding="utf-8")
     txt = txt_file.readlines()
@@ -31,6 +33,7 @@ def vector_for_word(word: str, df = pd.DataFrame) -> np.array:
     else:
         return None
 
+
 def cosine_similarity(vec1 : np.array, vec2 : np.array) -> float:
     """
     Calculate the cosine similarity between two vectors.
@@ -56,13 +59,6 @@ def get_prompts(l):
     p = [w.split(',') for w in l]
     return p
 
-print("Loading vectors...")
-WV = pd.read_csv("application/data/precalculated/embed_all-MiniLM-L6-v2.csv")
-WV['vector'] = WV['vector'].apply(lambda x: np.array(ast.literal_eval(x)))
-WORD_SET = set(WV['word'].values)
-PRECOMPUTED = txt_to_dict("application/data/precalculated/top_100_all-MiniLM-L6-v2.csv")
-PROMPTS = get_prompts(txt_to_list("application/data/precalculated/neighbors.txt"))
-
 
 def backoff_selection(results: list[str], target: str, exp=2, num=27):
     '''
@@ -72,9 +68,11 @@ def backoff_selection(results: list[str], target: str, exp=2, num=27):
     n = len(results)
     indices = []
     seen = set()
+    #If target among 100, append immediately.
     if target in results:
-        indices.append(results.index(target))
-        n -= 1
+        target_idx = results.index(target)
+        seen.add(target_idx)
+        indices.append(target_idx)
 
     for x in range(num * 2):
         i = int((x / (num * 2 - 1)) ** exp * (n - 1))
@@ -85,11 +83,11 @@ def backoff_selection(results: list[str], target: str, exp=2, num=27):
             break
     
     selected = [results[i] for i in indices]
-    print(f'{len(selected)=}')
     return selected
 
 
-def get_curve(word : str, target: str) -> list[str]:
+
+def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : pd.DataFrame) -> list[str]:
     '''
     Given a word and target, 
     Returns neighbors of the word which are biased towards the target.

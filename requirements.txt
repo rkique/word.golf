@@ -13,5 +13,5 @@ scipy==1.10.1
 six==1.17.0
 smart-open==6.1.0
 tzdata==2025.2
-waitress==2.1.2
+waitress>=3.0.1
 Werkzeug==2.2.2
