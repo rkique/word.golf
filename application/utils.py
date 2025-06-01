@@ -55,6 +55,7 @@ def get_prompts(l):
     p = [w.split(',') for w in l]
     return p
 
+print("Loading vectors...")
 WV = pd.read_csv("application/data/precalculated/embed_all-MiniLM-L6-v2.csv")
 WV['vector'] = WV['vector'].apply(lambda x: np.fromstring(x[1:-1], sep=' '))
 WORD_SET = set(WV['word'].values)

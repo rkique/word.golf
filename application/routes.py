@@ -24,6 +24,9 @@ def elapsed(d):
     return (today - previous_date).days
 
 def shift_to(i):
+    '''
+    In this implementation, i is initial date which is used to update the prompt. 
+    '''
     elapsed_time = elapsed(datetime.datetime.today())
     prompt = PROMPTS[i+PCOUNT*elapsed_time]
     results = get_curve(prompt[0], prompt[1])
@@ -35,7 +38,6 @@ def shift_to(i):
         'prompts': PROMPTS[PCOUNT*elapsed_time:PCOUNT*elapsed_time+PCOUNT],
         'results':results})
 
-#there isn't a jumpsA at this point...
 def save_activity():
     _data = json.loads(session.get('data'))
     session.get('jumpsA').append(_data['jumps'])
