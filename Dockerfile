@@ -12,8 +12,6 @@ RUN git lfs install && \
 
 WORKDIR /golf-app
 
-# Set the working directory in the container
-COPY requirements.txt .
 RUN pip install -r requirements.txt --default-timeout=100
 
 CMD ["python", "./app.py"]
