@@ -1,7 +1,7 @@
 ARG GITHUB_TOKEN
 # Set base image (host OS) 
 FROM python:3.9
-EXPOSE 8080/tcp
+EXPOSE 5000/tcp
 
 # Set the working directory in the container
 COPY requirements.txt .
