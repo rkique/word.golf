@@ -1,1 +1,0 @@
-{"flask": {"image": ":orca-service.s.127", "ports": {"5000": "HTTP"}}}
