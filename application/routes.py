@@ -8,7 +8,7 @@ import numpy as np
 import ast
 from .utils import get_prompts, txt_to_list, txt_to_dict
 
-PROMPTS = get_prompts(txt_to_list("application/data/precalculated/neighbors.txt"))
+PROMPTS = get_prompts(txt_to_list("application/data/neighbors.txt"))
 
 PCOUNT = 5
 
@@ -21,9 +21,9 @@ def load_data():
     global WV, PRECOMPUTED
     if WV is None:
         print("Loading data...")
-        WV = pd.read_csv("application/data/precalculated/embed_all-MiniLM-L6-v2.csv")
+        WV = pd.read_csv("application/data/embed_w2v.csv")
         WV['vector'] = WV['vector'].apply(lambda x: np.array(ast.literal_eval(x)))
-        PRECOMPUTED = txt_to_dict("application/data/precalculated/top_100_all-MiniLM-L6-v2.csv")
+        PRECOMPUTED = txt_to_dict("application/data/top_100_w2v.csv")
 
 def jump(start):
     _data = json.loads(session.get('data'))

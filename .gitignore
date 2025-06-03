@@ -5,9 +5,16 @@ application/__pycache__
 process/freq_gbooks/1mil_gbooks.txt
 process/sbert/embed_ner_web_trf.csv
 process/sbert/embed_all-MiniLM-L6-v2.csv
+process/test_sbert/embed_all-MiniLM-L6-v2.csv
+process/test_sbert/embed_all-mpnet-base-v2.csv
+process/test_sbert/top_100_all-MiniLM-L6-v2.csv
+process/test_sbert/top_100_all-mpnet-base-v2.csv
+
+process/w2v/*
 
 #Ignore environment files
 env
 test_env
 devenv
 duenv
+*.csv
