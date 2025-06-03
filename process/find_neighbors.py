@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import random
 import ast
+from utils import NounFilter
 
 def get_prompts(l):
     p = [w.split(',') for w in l]
@@ -28,12 +29,12 @@ MIN_FREQ = 16000
 
 #Consider k lowest similarity neighbors
 print("Loading word vectors")
-WV = pd.read_csv("sbert/embed_all-MiniLM-L6-v2.csv")
+WV = pd.read_csv("w2v/embed_w2v.csv")
 WV['vector'] = WV['vector'].apply(lambda x: np.array(ast.literal_eval(x)))
 VOCAB = set(WV['word'].values)
 print("Loading precomputed neighbors")
-PRECOMPUTED = txt_to_dict("sbert/neighbors_top100_ner_web_trf.txt")
-print("Loading prompts")
+PRECOMPUTED = txt_to_dict("w2v/top_100_w2v.csv")
+print("Loading popular vocab")
 POPULAR_VOCAB = txt_to_set("freq_gbooks/popular_vocab.txt")
 print("Loading frequencies")
 freqs = pd.read_csv("freq_gbooks/en_gbooks_500k_freqs.csv")
@@ -74,7 +75,12 @@ def handle_missing_neighbors(start):
     print(f"No valid 2nd neighbors found for {start}")
     return None
 
-def find_far_2nd_neighbor(start, WV, PRECOMPUTED, similarity, candidate_ct=8):
+def find_far_2nd_neighbor(start, 
+                        WV, 
+                        PRECOMPUTED, 
+                        similarity,
+                        noun_filter,
+                        candidate_ct=8):
     """
     Find a second neighbor of a word that is not in the first neighbors.
     """
@@ -82,26 +88,27 @@ def find_far_2nd_neighbor(start, WV, PRECOMPUTED, similarity, candidate_ct=8):
         print(f"{start} not in PRECOMPUTED neighbors.")
     
     first_neighbors = PRECOMPUTED[start]
-    candidates = set()
-
-    for neighbor in first_neighbors:
-        for n2 in PRECOMPUTED.get(neighbor, []):
-            if n2 != start and n2 not in first_neighbors:
-                candidates.add(n2)
-    candidates = [w for w in candidates if w in VOCAB]
-    candidates = [w for w in candidates if w in POPULAR_VOCAB]
-    if not candidates: handle_missing_neighbors(start)
-
-    candidates.sort(key=lambda w: similarity(w, start, WV))
+    candidates = {
+        n2 for neighbor in first_neighbors
+        for n2 in PRECOMPUTED.get(neighbor, [])
+        if n2 != start and n2 not in first_neighbors
+    }
+    candidates = [
+        w for w in noun_filter.filter(candidates)
+        if w in VOCAB and w in POPULAR_VOCAB
+    ]
+    if not candidates:
+        handle_missing_neighbors(start)
     #we can grab a list of neighbors which are common with low freq.
     candidates = [w for w in candidates if get_freq(w, freqs_indexed) > MIN_FREQ]
+    candidates.sort(key=lambda w: similarity(w, start, WV))
     candidates = candidates[0:candidate_ct]
     if not candidates: handle_missing_neighbors(start)
     random.shuffle(candidates)
     target = candidates[0]
     print(f'{start},{target},{similarity(target, start, WV)}')
     #write to file
-    with open(f"2nd_neighbors_freq_biased_{MIN_FREQ}.txt", "a") as f:
+    with open(f"w2v_2nd_neighbors_freq_biased_{MIN_FREQ}.txt", "a") as f:
         f.write(f"{start},{target},{similarity(target, start, WV)}\n")
 
 import math
@@ -190,14 +197,12 @@ if __name__ == "__main__":
     # save_biased_vocab(pd.read_csv("freq_gbooks/en_gbooks_500k_freqs.csv"))
 
     print(get_freq("apple", freqs_indexed))
-    # print(get_freq("serendipity", freqs))
-    # print(get_freq("pier", freqs))
-    # print(get_freq("piers", freqs))
-
+    noun_filter = NounFilter(min_length=5, max_length=12)
     start_words = list(PRECOMPUTED.keys())
     start_words = [w for w in start_words if get_freq(w, freqs_indexed) > MIN_FREQ]
+    start_words = noun_filter.filter(start_words)
     random.shuffle(start_words)
     #write (start, target, similarity) to file
     for start_word in start_words:
-        find_far_2nd_neighbor(start_word, WV, PRECOMPUTED, similarity)
+        find_far_2nd_neighbor(start_word, WV, PRECOMPUTED, similarity, noun_filter)
     
