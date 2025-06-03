@@ -46,15 +46,14 @@ function tallyScreen(prompts, i, jumpsA){
     freezeScreen()
 }
 
-/*this part is very important*/
+//checks if session has ended.
 function saySessionEnded(){
     resp = sendAndReceiveXML(`end=true`)
     if(resp.hasOwnProperty('session_done')){
         tallyScreen(resp.prompts, resp.i, resp.jumpsA)
     }
     else {
-    let prompts = resp.prompt.split(',');
-    renderInformation("go from " + prompts.join(' to '));
+    renderInformation("go from " + resp.prompt.join(' to '));
     renderPrompts(resp.prompts,resp.i, resp.jumpsA)
     renderLinks(resp.prompt, resp.results)
     activateLinks()

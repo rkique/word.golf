@@ -1,8 +1,13 @@
 __pycache__
 application/__pycache__
-env
+
+#Ignore process files
 process/freq_gbooks/1mil_gbooks.txt
 process/sbert/embed_ner_web_trf.csv
 process/sbert/embed_all-MiniLM-L6-v2.csv
+
+#Ignore environment files
+env
 test_env
 devenv
+duenv
