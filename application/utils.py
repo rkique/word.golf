@@ -33,26 +33,15 @@ def vector_for_word(word: str, df = pd.DataFrame) -> np.array:
         return None
 
 
-def cosine_similarity(vec1 : np.array, vec2 : np.array) -> float:
-    """
-    Calculate the cosine similarity between two vectors.
-    """
-    dot_product = np.dot(vec1, vec2)
-    norm_a = np.linalg.norm(vec1)
-    norm_b = np.linalg.norm(vec2)
-    if norm_a == 0 or norm_b == 0:
-        return 0.0 
-    return dot_product / (norm_a * norm_b)
-
-def similarity(word1 : str, word2 : str, df: pd.DataFrame) -> float:
+def similarity(word1 : str, word2 : str, wv: dict) -> float:
     """
     Calculate the cosine similarity between two words based on their vectors.
     """
-    vec1 = vector_for_word(word1, df)
-    vec2 = vector_for_word(word2, df)
+    vec1 = wv[word1]
+    vec2 = wv[word2]
     if vec1 is None or vec2 is None:
         return 0.0
-    return cosine_similarity(vec1, vec2)
+    return np.dot(vec1, vec2)
 
 def get_prompts(l):
     p = [w.split(',') for w in l]
@@ -88,7 +77,7 @@ def backoff_selection(results: list[str], target: str, exp=2, num=20):
 
 
 
-def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : pd.DataFrame) -> list[str]:
+def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict) -> list[str]:
     '''
     Given a word and target, 
     Returns neighbors of the word which are biased towards the target.

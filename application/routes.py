@@ -23,6 +23,7 @@ def load_data():
         print("Loading data...")
         WV = pd.read_csv("application/data/embed_w2v.csv")
         WV['vector'] = WV['vector'].apply(lambda x: np.array(ast.literal_eval(x)))
+        WV = dict(zip(WV['word'], WV['vector']))
         PRECOMPUTED = txt_to_dict("application/data/top_100_w2v.csv")
 
 def jump(start):
