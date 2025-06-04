@@ -1,3 +1,5 @@
+// To quickly access the final screen, enter maintainLinks('', true)
+
 /* makes and renders links */
 
 function makeLink(prompt,word) {
@@ -21,10 +23,10 @@ function makeStartLink(prompt, word){
 }
 
 
-function maintainLinks(prompt){    
-    if(sessionEnded(prompt)){
+function maintainLinks(prompt, debug_session_done=false){    
+    if(sessionEnded(prompt) || debug_session_done){
     disableLinks()
-    saySessionEnded()
+    saySessionEnded(debug_session_done)
 }}
 
 function freezeScreen(){
@@ -36,25 +38,25 @@ function showScreen(){
     document.body.innerHTML = localStorage.getItem('screen')
 }
 
-//if first session_done, then freeze screen, otherwise, show screen
+
 function tallyScreen(prompts, i, jumpsA){
-    total = jumpsA.reduce((a, b) => a + b, 0)
-    renderInformation(`you finished today's prompts in ${total} jumps! <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-text="I finished today's prompts in ${total} jumps (${jumpsA[0]}/${jumpsA[1]}/${jumpsA[2]}/${jumpsA[3]}/${jumpsA[4]})" data-url="word.golf" data-show-count="false">Tweet<a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>`)
-    localStorage.setItem("lastComplete", new Date())
-    localStorage.setItem('total', JSON.stringify(jumpsA))
+    renderFinish(jumpsA)
+    // total = jumpsA.reduce((a, b) => a + b, 0)
+    // localStorage.setItem("lastComplete", new Date())
+    // localStorage.setItem('total', JSON.stringify(jumpsA))
     renderPrompts(prompts,i, jumpsA, false)
     freezeScreen()
 }
 
 //checks if session has ended.
-function saySessionEnded(){
+function saySessionEnded(debug_session_done){
     resp = sendAndReceiveXML(`end=true`)
-    if(resp.hasOwnProperty('session_done')){
+    if(resp.hasOwnProperty('session_done') || debug_session_done){
+        console.log('Session ended!')
         tallyScreen(resp.prompts, resp.i, resp.jumpsA)
     }
     else {
-    renderInformation("go from " + resp.prompt.join(' to '));
-    renderPrompts(resp.prompts,resp.i, resp.jumpsA)
+    renderToFrom(resp.prompt);
     renderLinks(resp.prompt, resp.results)
     activateLinks()
     }
@@ -63,8 +65,14 @@ function saySessionEnded(){
 function renderLinks(prompt, results){
     let wordspace = document.getElementById("wordspace")
     clearChildren(wordspace)
-    wordspace.append(makeStartLink(prompt, results.shift()))
-    results.forEach(result => wordspace.append(makeLink(prompt,result)))
+    let middleIndex = Math.floor(results.length / 2)
+    results.forEach((result, idx) => {
+        if (idx === middleIndex) {
+            wordspace.append(makeStartLink(prompt, result))
+        } else {
+            wordspace.append(makeLink(prompt, result))
+        }
+    })
     maintainLinks(prompt)
 }
 
@@ -83,7 +91,9 @@ function activateLinks(){
 }
 
 function postWord(word) {
+    console.log('postWord called with word:', word)
     resp = sendAndReceiveXML("word=" + word)
     renderLinks(resp.prompt, resp.results)
+    renderPrompts(resp.prompts,resp.i, resp.jumpsA, resp.jumps)
     activateLinks()
     }

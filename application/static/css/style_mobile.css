@@ -1,19 +1,25 @@
 @media only screen and (max-width: 992px) {
-    html{}
     #wordspace {
         width: 100vw;
-        display: grid; 
-        grid-template-columns: 24% 24% 24% 24%;
+        /* display: grid; 
         justify-items: center;
-        justify-content: end;
+        justify-content: end; */
     }
     #prompts {width: 100vw; padding: 10% 2em;}
     #prompts p {
-        margin: 0 0;
         font-size: 3em;
+        padding: 0 1em;
+        margin-top: -1em;
     }
     #global {display: flex; flex-wrap: wrap;}
-    #wordspace span {font-size: 2.2em !important;}
+    #wordspace button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    }
+    #wordspace span {
+        font-size: 2.2em !important;
+    }
     #wordspace button {width: 25vw !important;}
     span, p{ font-size: 3em; }
 }

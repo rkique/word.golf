@@ -13,5 +13,6 @@ function clearChildren(element){
 
 function sessionEnded(prompt){
     ws_texts = ws_to_text()
-    return ws_texts[0] == prompt[1]
+    // console.log(`ws_texts: ${ws_texts}, prompt: ${prompt}`)
+    return ws_texts[10] == prompt[1]
 }
