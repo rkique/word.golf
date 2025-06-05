@@ -24,7 +24,7 @@ PRECOMPUTED = None
 
 def load_data():
     global WV, PRECOMPUTED
-    if WV is not None and PRECOMPUTED is not None:
+    if WV is not None:
         return 
     if WV is None:
         print("Loading data...")
@@ -34,6 +34,7 @@ def load_data():
         PRECOMPUTED = txt_to_dict("application/data/top_100_w2v.csv")
 
 def jump(start):
+    load_data()
     _data = json.loads(session.get('data'))
     target = _data['prompt'][1]
     results = get_curve(start, target, PRECOMPUTED, WV)

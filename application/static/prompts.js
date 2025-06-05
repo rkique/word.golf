@@ -37,6 +37,6 @@ function renderPrompts(promptTexts, i, jumpsA, current_jumps){
             todo = promptTexts.slice(i + 1)
         }
         prompts.append(makePromptTag(current, current_jumps))
-        todo.map(promptText => prompts.append(makePromptTag(promptText)))
+        // todo.map(promptText => prompts.append(makePromptTag(promptText)))
     }
 }
