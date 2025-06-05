@@ -45,6 +45,19 @@ function tallyScreen(prompts, i, jumpsA){
     // localStorage.setItem("lastComplete", new Date())
     // localStorage.setItem('total', JSON.stringify(jumpsA))
     renderPrompts(prompts,i, jumpsA, false)
+    // 
+    window.addEventListener('DOMContentLoaded', () => {
+        fetch("https://word-golf-backend.onrender.com", {
+            method: "GET",
+            credentials: "include"
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message);
+            
+        });
+    });
+
     freezeScreen()
 }
 

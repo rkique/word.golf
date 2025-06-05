@@ -7,7 +7,6 @@ import uuid
 import os
 from datetime import datetime, timedelta
 
-
 load_dotenv()
 
 app = Flask(__name__)
@@ -26,19 +25,16 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
-
 class User(db.Model):
     id = db.Column(db.String(36), primary_key=True)
     streak = db.Column(db.Integer, default=0)
     date_created = db.Column(db.Date, default=datetime.utcnow)
     last_date_accessed = db.Column(db.Date, default=datetime.utcnow)
 
-
 @app.before_request
 def create_tables():
     # db.drop_all()
     db.create_all()
-
 
 @app.route("/", methods=["GET"])
 def index():
@@ -57,12 +53,12 @@ def index():
             
             user.streak += 1
         else:
-            
+
             user.streak = 1
 
         user.last_date_accessed = today
         db.session.commit()
-        msg = f"Welcome back! Streak = {user.streak} days"
+        msg = f"Welcome back! Streak = {user.streak} days and first_day = {user.date_created} and yesterday = {user.last_date_accessed}"
     else:
         
         new_id = str(uuid.uuid4())
