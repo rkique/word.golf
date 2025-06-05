@@ -8,7 +8,12 @@ import numpy as np
 import ast
 from .utils import get_prompts, txt_to_list, txt_to_dict
 
-PROMPTS = get_prompts(txt_to_list("application/data/neighbors.txt"))
+#Update this to break the neighbors.txt file into 'start,target' and 'neighbor'.
+#then, pass 'start,target' pairs as before, but also include neighbor in get_curve
+
+#prompts is a list of [[start, target], neighbor]
+prompt_neighbor_dict = get_prompts(txt_to_list("application/data/neighbors.txt"))
+PROMPTS = list(prompt_neighbor_dict.keys())
 
 PCOUNT = 5
 
@@ -43,7 +48,8 @@ def elapsed(d):
 def shift_to(i):
     elapsed_time = elapsed(datetime.datetime.today())
     prompt = PROMPTS[i+PCOUNT*elapsed_time]
-    results = get_curve(prompt[0], prompt[1], PRECOMPUTED, WV)
+    neighbor = prompt_neighbor_dict.get(prompt, None)
+    results = get_curve(prompt[0], prompt[1], PRECOMPUTED, WV, neighbor=neighbor)
     return json.dumps({
         'jumpsA': session.get('jumpsA'),
         'jumps': 0,
