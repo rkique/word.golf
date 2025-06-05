@@ -33,6 +33,19 @@
 <script src="static/prompts.js"></script>
 
 <script>
+
+    window.addEventListener('DOMContentLoaded', () => {
+        fetch("http://localhost:7000/", {
+            method: "GET",
+            credentials: "include"
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message);
+            
+        });
+    });
+
     const MS_DAY = 86400000
     data = JSON.parse('{{data|tojson|safe}}');
     let prompt = data['prompt'].toString()
