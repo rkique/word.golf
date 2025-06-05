@@ -25,5 +25,6 @@ function renderFinish(jumpsA, streak){
     gameOverModalEl.style.display = 'flex';
     gameOverText = document.getElementById('gameOverText')
     total = jumpsA.reduce((a, b) => a + b, 0)
-    gameOverText.innerHTML = `You completed today's word.golf in ${total} jumps. Streak: ${streak} days.`
+    gameOverText.innerHTML = `You completed today's word.golf in ${total} jumps.`
+    // `. Streak: ${streak} days.`
 }

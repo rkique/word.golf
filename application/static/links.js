@@ -43,7 +43,7 @@ function tallyScreen(prompts, i, jumpsA){
     streak = 1
     renderFinish(jumpsA, streak)
     // total = jumpsA.reduce((a, b) => a + b, 0)
-    // localStorage.setItem("lastComplete", new Date())
+    localStorage.setItem("lastComplete", new Date())
     // localStorage.setItem('total', JSON.stringify(jumpsA))
     renderPrompts(prompts,i, jumpsA, false)
     // 
