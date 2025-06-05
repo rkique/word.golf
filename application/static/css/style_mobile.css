@@ -5,11 +5,26 @@
         justify-items: center;
         justify-content: end; */
     }
+    #settings { 
+        padding: 0 1em;
+        margin: 0 0;
+    }
     #prompts {width: 100vw; padding: 10% 2em;}
     #prompts p {
         font-size: 3em;
         padding: 0 1em;
         margin-top: -1em;
+    }
+    .switch, .game-icon {
+        padding: 0.5em 0em;
+        align-items: top;
+        justify-content: center;
+    }
+    .switch {
+            font-size: 5em
+    }
+    .game-icon {
+        width: 6em;
     }
     #global {display: flex; flex-wrap: wrap;}
     #wordspace button {

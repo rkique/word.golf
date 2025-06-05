@@ -1,7 +1,8 @@
+//promptText is an array [start, target]
 function makePromptTag(promptText, jumps=null) {
     let p = document.createElement("p");
     p.className = "prompt"
-    p.innerText = promptText
+    p.innerText = promptText.join(', ');
     if (jumps !== null) {
         let span = document.createElement("span");
         span.className = "prompt-jumps";

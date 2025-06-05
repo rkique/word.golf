@@ -32,6 +32,18 @@ def vector_for_word(word: str, df = pd.DataFrame) -> np.array:
     else:
         return None
 
+def partition(words):
+    assert len(words) == 21
+    words_sorted = sorted(words, key=len, reverse=True)
+    subsets = [[] for _ in range(0,7)]
+    lengths = [0] * 7
+    for word in words_sorted:
+        candidates = [(i, l) for i, l in enumerate(lengths) if len(subsets[i]) < 3]
+        min_idx = min(candidates, key=lambda x: x[1])[0]
+        subsets[min_idx].append(word)
+        lengths[min_idx] += len(word)
+    return subsets
+
 
 def similarity(word1 : str, word2 : str, wv: dict) -> float:
     """
@@ -91,4 +103,15 @@ def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict) -> list[str
     random.seed(len(word))
     random.shuffle(results__biased)
     results__biased.insert(10,word)
-    return results__biased
+    subsets = partition(results__biased)
+    for i, subset in enumerate(subsets):
+        if word in subset:
+            word_subset = subset
+            word_index = i
+            break
+    subsets.pop(word_index)
+    others = [w for w in subset if w != word]
+    word_subset = [others[0], word, others[1]]
+    subsets.insert(3, word_subset)
+    results = [item for sublist in subsets for item in sublist]
+    return results
