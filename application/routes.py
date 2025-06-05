@@ -24,6 +24,8 @@ PRECOMPUTED = None
 
 def load_data():
     global WV, PRECOMPUTED
+    if WV is not None and PRECOMPUTED is not None:
+        return 
     if WV is None:
         print("Loading data...")
         WV = pd.read_csv("application/data/embed_w2v.csv")
@@ -46,6 +48,7 @@ def elapsed(d):
     return (today - previous_date).days
 
 def shift_to(i):
+    load_data()
     elapsed_time = elapsed(datetime.datetime.today())
     prompt = PROMPTS[i+PCOUNT*elapsed_time]
     neighbor = prompt_neighbor_dict.get(prompt, None)
