@@ -5,7 +5,6 @@ import json
 import random
 import datetime
 
-
 PCOUNT = 5
 
 #session['data'] will be the SSoT
