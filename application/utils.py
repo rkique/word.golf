@@ -68,7 +68,6 @@ def backoff_selection(results: list[str], target: str, exp=2, num=20):
     n = len(results)
     indices = []
     seen = set()
-    print(results[0:5])
     #If target among 100, append immediately.
     if target in results:
         print(f"Target {target} found in results.")
