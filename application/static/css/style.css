@@ -15,7 +15,13 @@ html {
 .switch--outlined {
     font-size: 2em;
     padding: 2em 2em;
-    outline: 1px solid var(--grayed-out-color);
+    
+}
+
+.switch--invert {
+    color: var(--background-color);
+    background-color: var(--text-color);
+    outline: 1px solid var(--background-color);
 }
 
 .switch, .game-icon {
