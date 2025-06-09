@@ -1,11 +1,11 @@
-function makePromptTag(word, jumps) {
+function makePromptTag(start_target, jumps) {
     let div = document.createElement("div");
     div.className = "prompt";
 
     let pWord = document.createElement("p");
     pWord.className = "prompt-word";
     pWord.style.display = "inline-block";
-    pWord.innerText = word;
+    pWord.innerText = start_target[0] + ", " + start_target[1];
     div.appendChild(pWord);
 
     let pJumps = document.createElement("p");
@@ -20,8 +20,8 @@ function makePromptTag(word, jumps) {
     return div;
 }
 
-function makeDonePromptTag(promptText, jumps) {
-    let pTag = makePromptTag(promptText,jumps)
+function makeDonePromptTag(start_target, jumps) {
+    let pTag = makePromptTag(start_target,jumps)
     pTag.className = "prompt prompt--done"
     return pTag
 }

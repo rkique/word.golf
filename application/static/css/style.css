@@ -60,20 +60,28 @@ html {
 }
 
 .help_container {
-    width: 45em;
+    background-color: var(--background-color);
     display: flex;
     flex-wrap: nowrap;
-    padding: 2em 2em;
+    padding: 1em 2em;
     flex-direction: column;
     align-items: center;
+    z-index: 2;
 }
 
-.help-text {
-    margin-top: 2em;
+.help button {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-size: 1.5em;
+    padding: 0.5em 2em;
+    border: none;
+    border-radius: 1.5em;
+    cursor: pointer;
+    transition: background 0.2s;
+    outline: 1px solid var(--border-color);
+    margin-top: 1.5em;
 }
-.help-text p{
-    margin: 1em;
-}
+
 .--grayed-out {
     color: var(--grayed-out-color)
 }
@@ -234,6 +242,7 @@ button:not(.greyed-out):hover {
     min-height: 5em;
     font-size: 1.3em;
     position: relative;
+    z-index: -1;
 }
 
 .prompt-box .prompt {
@@ -246,8 +255,9 @@ button:not(.greyed-out):hover {
 }
 
 .prompt-box .prompt :first-child {
-    flex: 1;
-    text-align: center;
+    position: absolute;
+    left: 2vw;
+    text-align: left;
 }
 
 .prompt-box .prompt :nth-child(2) {
@@ -307,9 +317,9 @@ button:not(.greyed-out):hover {
 }
 
 #gameOverModal button {
-    background-color: rgba(0,0,0,0.7);
+    background-color: var(--background-color);
+    font-size: 1.5em;
     color: var(--text-color);
-    font-size: 1.1em;
     padding: 0.5em 2em;
     border: none;
     border-radius: 1.5em;
