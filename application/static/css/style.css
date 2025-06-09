@@ -13,7 +13,6 @@ html {
 }
 
 .switch--outlined {
-    margin-top: 1.5em;
     font-size: 2em;
     padding: 2em 2em;
     outline: 1px solid var(--grayed-out-color);
@@ -44,6 +43,28 @@ html {
   }
 
 
+.help_container h1 {
+    text-align: center;
+    font-size: 2.1em;
+    margin-top: 0.5em;
+    margin-bottom: 0.8em;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+}
+
+.help-text .--grayed-out {
+    font-size: 1.6em;
+}
+.help-text p {
+    text-align: left;
+    font-size: 1.3em;
+    margin: 1em 0.5em;
+}
+
+.help li {
+    margin-bottom: 0.5em;
+}
+
 .help {
     background-color: var(--background-color);
     position: absolute; 
@@ -63,23 +84,24 @@ html {
     background-color: var(--background-color);
     display: flex;
     flex-wrap: nowrap;
-    padding: 1em 2em;
+    padding: 1em 1em;
     flex-direction: column;
     align-items: center;
+    justify-content: space-around;
     z-index: 2;
 }
 
 .help button {
     background-color: var(--background-color);
     color: var(--text-color);
-    font-size: 1.5em;
+    font-size: 1.3em;
     padding: 0.5em 2em;
+    margin: 2em;
     border: none;
     border-radius: 1.5em;
     cursor: pointer;
     transition: background 0.2s;
     outline: 1px solid var(--border-color);
-    margin-top: 1.5em;
 }
 
 .--grayed-out {
@@ -275,9 +297,6 @@ button:not(.greyed-out):hover {
  /**Game Over Modal*/
 /*****************/
 
-#gameOverModal p, h1, h2, h3, h4, h5 {
-        font-weight: 300;
-}
 
 #gameOverModal h1 {
     font-size: 2em;

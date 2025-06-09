@@ -74,10 +74,14 @@
     }
     #wordspace button {width: 25vw !important;}
     span, p{ font-size: 3em; }
-    
+
     /* ************ */
     /* Help screen */
     /* *********** */
+    .help {
+        width: 90vw;
+        height: 80vh;
+    }
     .help_container {
         background-color: var(--background-color);
         display: flex;
@@ -86,6 +90,12 @@
         flex-direction: column;
         align-items: center;
         z-index: 2;
+    }
+    .help_container h1 {
+        font-size: 4.2em;
+    }
+    .help-text .--grayed-out {
+        font-size: 2.5em;
     }
 
     .help button {
