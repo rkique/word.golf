@@ -12,7 +12,12 @@ function makeLink(prompt,word) {
     if (word.length < 8){span.style.fontSize = "3.75em"}*/
     link.appendChild(span)
     link.className = "link"
-    if(prompt[1] == word){link.className = "link link--target rainbow_text_animated"}
+    if(prompt[1] == word) 
+        {
+            link.className = "link link--target rainbow_text_animated"
+            // console.log("I GOT TO THE TARGET WORD FINALLY");
+            // so this is where makeLink is called 
+        }
     return link
 }
 
@@ -110,4 +115,4 @@ function postWord(word) {
     renderLinks(resp.prompt, resp.results)
     renderPrompts(resp.prompts,resp.i, resp.jumpsA, resp.jumps)
     activateLinks()
-    }
+}

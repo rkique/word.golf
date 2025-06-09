@@ -12,7 +12,7 @@ PROMPTS = get_prompts(txt_to_list("application/data/neighbors.txt"))
 
 PCOUNT = 5
 
-#session['data'] will be the SSoT
+# session['data'] will be the SSoT
 
 WV = None
 PRECOMPUTED = None
@@ -44,6 +44,7 @@ def shift_to(i):
     elapsed_time = elapsed(datetime.datetime.today())
     prompt = PROMPTS[i+PCOUNT*elapsed_time]
     results = get_curve(prompt[0], prompt[1], PRECOMPUTED, WV)
+    
     return json.dumps({
         'jumpsA': session.get('jumpsA'),
         'jumps': 0,
@@ -64,11 +65,74 @@ def index():
     #Load data only once
     load_data()
     assert WV is not None, "Word vectors not loaded"
+    # session['i'] = 1
+    # session['jumpsA'] = [0]
     session['i'] = 0
     session['jumpsA'] = []
     session['data'] = shift_to(session['i'])
     
     return render_template('index.html', data=json.loads(session.get('data')))
+
+
+# @app.route('/editsesh', methods=['POST']) 
+# def sesh_edit(): 
+#     try: 
+#         if request.form['edit'] is not None: 
+#             save_activity() 
+#             print("I am editing this value")
+#             session['jumpsA'] = request.form["jumpsA"] 
+            
+#             session['data']['jumps'] = request.form["jumps"] 
+#             print("here is new session")
+#     except: 
+#         pass 
+#     return make_response(session.get('data')) 
+
+@app.route('/editsesh', methods=['POST']) 
+def sesh_edit(): 
+    try: 
+        if request.form.get('edit') is not None: 
+            save_activity() 
+            
+
+            data = json.loads(session.get('data'))
+            
+            
+            jumpsA_str = request.form.get("jumpsA", "[]")
+            
+            try:
+                session['jumpsA'] = json.loads(jumpsA_str)
+                data['jumpsA'] = json.loads(jumpsA_str)
+            except json.JSONDecodeError:
+                session['jumpsA'] = []
+                data['jumpsA'] = []
+
+            jumpsA_result = request.form.get("result", "[]")
+            try:
+                data['results'] = json.loads(jumpsA_result)
+            except json.JSONDecodeError:
+                data['results'] = []
+
+            jumps_str = request.form.get("jumps", "0")
+            
+            # print(session['data']['jumps'])
+            try:
+                data['jumps'] = int(jumps_str)
+            except ValueError:
+                data['jumps'] = 0
+            
+            
+
+            
+            session['data'] = json.dumps(data)
+
+            
+    except Exception as e: 
+        print("Error in /editsesh:", e)
+        
+    
+    return make_response(session.get('data', {}))
+
 
 @app.route('/', methods=['POST'])
 def index_post():
