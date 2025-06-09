@@ -145,13 +145,13 @@ button:not(.greyed-out):hover {
     color: var(--grayed-out-color);
 }
 
-.prompt-jumps{
+.prompt-num-large{
     font-size: 1.6em;
 }
 
 #global {
     display: flex;
-    justify-content:space-around;
+    justify-content:flex-end;
 }
 
 #settings {
@@ -219,12 +219,48 @@ button:not(.greyed-out):hover {
 
 #prompts {
     padding: 2em 2em;
-    width: 25vw;
+    width: 30vw;
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    justify-content: space-between;
+    height: 85vh;
 }
 
+.prompt-box {
+    outline: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 5em;
+    font-size: 1.3em;
+    position: relative;
+}
+
+.prompt-box .prompt {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    position: relative;
+}
+
+.prompt-box .prompt :first-child {
+    flex: 1;
+    text-align: center;
+}
+
+.prompt-box .prompt :nth-child(2) {
+    position: absolute;
+    right: 2vw;
+    text-align: right;
+}
+
+#prompts p {
+    padding: 0 0;
+    margin-block-start: 0;
+    margin-block-end: 0;
+}
   /*******************/
  /**Game Over Modal*/
 /*****************/
@@ -361,3 +397,21 @@ button:not(.greyed-out):hover {
     animation-duration: 1s;
     background-size: 800% 100%;
   }
+
+
+/* Scale animation for jumps */
+@keyframes scaleUp {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.4);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.animate-scale {
+    animation: scaleUp 300ms ease;
+}
