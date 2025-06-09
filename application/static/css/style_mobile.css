@@ -1,7 +1,10 @@
 @media only screen and (max-width: 992px) {
+    body {
+        overflow-y: hidden;
+    }
     #wordspace {
         width: 100vw;
-        height: 65vh;
+        height: 55vh;
         /* display: grid; 
         justify-items: center;
         justify-content: end; */
@@ -10,12 +13,45 @@
         padding: 0 1em;
         margin: 0 0;
     }
-    #prompts {width: 100vw; padding: 10% 2em;}
-    #prompts p {
-        font-size: 3em;
-        padding: 0 1em;
-        margin-top: -1em;
+    
+    #prompts {
+        width: 100vw; 
+        padding: 3vh 2em;
+        min-height: 20vh;
+        max-height: 40vh;
+        justify-content: flex-start;
+        padding: 2em 2em;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        height: 85vh;
     }
+    .prompt p:nth-child(1) {
+        margin-left: auto;
+        text-align: right;
+    }
+
+    #prompts p {
+        font-size: 2.2em;
+    }
+    .prompt-box {
+        outline: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 4vh;
+        font-size: 1vh;
+    }
+
+    .prompt-box {
+        outline: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 4vh;
+        font-size: 1vh;
+    }
+
     .switch, .game-icon {
         padding: 0.5em 0em;
         align-items: top;
@@ -38,4 +74,35 @@
     }
     #wordspace button {width: 25vw !important;}
     span, p{ font-size: 3em; }
+    
+    /* ************ */
+    /* Help screen */
+    /* *********** */
+    .help_container {
+        background-color: var(--background-color);
+        display: flex;
+        flex-wrap: nowrap;
+        padding: 1em 2em;
+        flex-direction: column;
+        align-items: center;
+        z-index: 2;
+    }
+
+    .help button {
+        background-color: var(--background-color);
+        color: var(--text-color);
+        font-size: 2.5em;
+        padding: 0.5em 2em;
+        border: none;
+        border-radius: 1.5em;
+        cursor: pointer;
+        transition: background 0.2s;
+        outline: 1px solid var(--border-color);
+        margin-top: 1.5em;
+    }
+
+    .help-text p{
+        font-size: 2.5em;
+        margin: 1em 0em;
+    }
 }

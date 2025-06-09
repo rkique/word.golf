@@ -8,7 +8,12 @@ import numpy as np
 import ast
 from .utils import get_prompts, txt_to_list, txt_to_dict
 
-PROMPTS = get_prompts(txt_to_list("application/data/neighbors.txt"))
+#Update this to break the neighbors.txt file into 'start,target' and 'neighbor'.
+#then, pass 'start,target' pairs as before, but also include neighbor in get_curve
+
+#prompts is a list of [[start, target], neighbor]
+prompt_neighbor_dict = get_prompts(txt_to_list("application/data/neighbors.txt"))
+PROMPTS = list(prompt_neighbor_dict.keys())
 
 PCOUNT = 5
 
@@ -19,6 +24,8 @@ PRECOMPUTED = None
 
 def load_data():
     global WV, PRECOMPUTED
+    if WV is not None:
+        return 
     if WV is None:
         print("Loading data...")
         WV = pd.read_csv("application/data/embed_w2v.csv")
@@ -27,6 +34,7 @@ def load_data():
         PRECOMPUTED = txt_to_dict("application/data/top_100_w2v.csv")
 
 def jump(start):
+    load_data()
     _data = json.loads(session.get('data'))
     target = _data['prompt'][1]
     results = get_curve(start, target, PRECOMPUTED, WV)
@@ -41,6 +49,7 @@ def elapsed(d):
     return (today - previous_date).days
 
 def shift_to(i):
+    load_data()
     elapsed_time = elapsed(datetime.datetime.today())
     prompt = PROMPTS[i+PCOUNT*elapsed_time]
     results = get_curve(prompt[0], prompt[1], PRECOMPUTED, WV)

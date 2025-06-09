@@ -14,8 +14,8 @@ function makePromptTag(promptText, jumps=null) {
     return p
 }
 
-function makeDonePromptTag(promptText, jumps) {
-    let pTag = makePromptTag(promptText,jumps)
+function makeDonePromptTag(start_target, jumps) {
+    let pTag = makePromptTag(start_target,jumps)
     pTag.className = "prompt prompt--done"
     //console.log("FINISHED A CURRENT PROMPT")
     return pTag

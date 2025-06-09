@@ -55,12 +55,13 @@ def similarity(word1 : str, word2 : str, wv: dict) -> float:
         return 0.0
     return np.dot(vec1, vec2)
 
+#accepts a list of strings of the form, 'start,neighbor,target'
 def get_prompts(l):
-    p = [w.split(',') for w in l]
+    p = {tuple([start, target]): neighbor for start, neighbor, target in (w.split(',') for w in l)}
     return p
 
 
-def backoff_selection(results: list[str], target: str, exp=2, num=20):
+def backoff_selection(results: list[str], target: str, exp=2, num=20, neighbor=None) -> list[str]:
     '''
     Given an array of text in results,
     Selects a subarray of a specified number, with an exponential backoff.
@@ -68,6 +69,13 @@ def backoff_selection(results: list[str], target: str, exp=2, num=20):
     n = len(results)
     indices = []
     seen = set()
+    if neighbor is not None:
+        # print(f'neighbor: {neighbor}, target:{target}, results: {results}')
+        print(f'neighbor {neighbor}')
+        assert neighbor in results, "Neighbor must be in results"
+        neighbor_idx = results.index(neighbor)
+        seen.add(neighbor_idx)
+        indices.append(neighbor_idx)
     #If target among 100, append immediately.
     if target in results:
         print(f"Target {target} found in results.")
@@ -88,17 +96,18 @@ def backoff_selection(results: list[str], target: str, exp=2, num=20):
 
 
 
-def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict) -> list[str]:
+def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict, neighbor=None) -> list[str]:
     '''
     Given a word and target, 
     Returns neighbors of the word which are biased towards the target.
     '''
+
     results = PRECOMPUTED[word]
     def similarity_to_target(x): 
         return similarity(x, target, WV)
     results.sort(key=similarity_to_target, reverse=True)
     #exponential backoff from 0 to 100
-    results__biased = backoff_selection(results, target)
+    results__biased = backoff_selection(results, target, neighbor=neighbor)
     random.seed(len(word))
     random.shuffle(results__biased)
     results__biased.insert(10,word)
