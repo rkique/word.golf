@@ -34,17 +34,17 @@
 
 <script>
 
-    window.addEventListener('DOMContentLoaded', () => {
-        fetch("https://word-golf-backend.onrender.com", {
-            method: "GET",
-            credentials: "include"
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data.message);
+    // window.addEventListener('DOMContentLoaded', () => {
+    //     fetch("https://word-golf-backend.onrender.com", {
+    //         method: "GET",
+    //         credentials: "include"
+    //     })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         console.log(data.message);
             
-        });
-    });
+    //     });
+    // });
 
     // Make the 
 
@@ -67,7 +67,6 @@
         data = sendAndReceiveXML(message, 1);
         
     }
-    
     
     // const donePrompts = promptsContainer.querySelectorAll('.prompt.prompt--done');
 
@@ -96,7 +95,6 @@
     _ = callEditSesh(jumps_array, jumps, res_array)
     // let jumps_array = stored ? JSON.parse(stored) : [];
     
-    
     // data['i'] = 1
     // data['jumpsA'] = [0]
     // data['jumps'] = -2
@@ -111,7 +109,6 @@
     // console.log("here is the start target");
     // console.log(data['prompts'][i]);
     
-    
     renderToFrom(data['prompt'])
     renderPrompts(prompts,i, jumps_array, jumps)
     renderLinks(prompt, results)
@@ -123,12 +120,9 @@
     if (promptsContainer) {
         const donePrompts = promptsContainer.querySelectorAll('p.prompt.prompt--done');
 
-        
-
         donePrompts.forEach((p, i) => {
             if (i < jumps_array.length) {
                 const jumps = jumps_array[i];
-
                 
                 let span = p.querySelector('.prompt-jumps');
 
@@ -142,7 +136,6 @@
                     span.innerText = " " + jumps;
                     p.appendChild(span);
                 }
-
                 
                 const newClass = `prompt-jumps-${jumps}`;
                 p.classList.forEach(cls => {
