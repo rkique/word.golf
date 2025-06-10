@@ -42,7 +42,7 @@ function renderFinish(jumpsA, streak) {
 
     let jumps = parseInt(localStorage.getItem('jumps')) || 0;
 
-    const currentDate = new Date().toISOString();
+    const currentDate = localStorage.getItem('current_date');
 
     const storedDate = localStorage.getItem('lastComplete');
 
@@ -83,7 +83,7 @@ function renderFinish(jumpsA, streak) {
     } else {
         console.log('No stored date found.');
     }
-    
+
     // check if yesterday was the correct day 
 
     let str = parseInt(localStorage.getItem('streak')) || 1;
