@@ -8,7 +8,3 @@ if (date === null || date !== data['date']) {
     localStorage.setItem('results', '');
     localStorage.setItem('jumps', 0);
 }
-
-if(data['date'] == localStorage.getItem('lastComplete')) {
-    showScreen()
-}

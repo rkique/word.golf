@@ -35,6 +35,10 @@
 <script>data = JSON.parse('{{data|tojson|safe}}');</script>
 <script src="static/is_game_complete.js"> </script>
 <script>
+    if(data['date'] == localStorage.getItem('lastComplete')) {
+    showScreen()   
+    }
+    else {
 // window.addEventListener('DOMContentLoaded', () => {
     //     fetch("https://word-golf-backend.onrender.com", {
     //         method: "GET",
@@ -82,7 +86,7 @@
     activateLinks()
 
     localStorage.setItem('current_date', data['date']);
-
+    }
     
 
 </script>
