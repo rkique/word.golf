@@ -28,7 +28,8 @@ function makeStartLink(prompt, word){
 }
 
 
-function maintainLinks(prompt, debug_session_done=false){    
+function maintainLinks(prompt, debug_session_done=false){   
+
     if(sessionEnded(prompt) || debug_session_done){
     disableLinks()
     saySessionEnded(debug_session_done)
@@ -40,15 +41,16 @@ function freezeScreen(){
 }
 
 function showScreen(){
+    alert("show screen")
     document.body.innerHTML = localStorage.getItem('screen')
 }
 
 
 function tallyScreen(prompts, i, jumpsA){
     streak = 1
-    renderFinish(jumpsA, streak)
+    renderFinish(jumpsA, streak)    
     // total = jumpsA.reduce((a, b) => a + b, 0)
-    localStorage.setItem("lastComplete", new Date())
+    localStorage.setItem("lastComplete", data["date"])
     // localStorage.setItem('total', JSON.stringify(jumpsA))
     renderPrompts(prompts,i, jumpsA, false)
     // 
@@ -69,9 +71,9 @@ function tallyScreen(prompts, i, jumpsA){
 
 //checks if session has ended.
 function saySessionEnded(debug_session_done){
+    // alert("checking if session has ended")
     resp = sendAndReceiveXML(`end=true`)
     if(resp.hasOwnProperty('session_done') || debug_session_done){
-        console.log('Session ended!')
         tallyScreen(resp.prompts, resp.i, resp.jumpsA)
     }
     else {

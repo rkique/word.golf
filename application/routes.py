@@ -191,7 +191,6 @@ def sesh_edit():
 @app.route('/', methods=['POST'])
 def index_post():
     try:
-        print("GININGEINRIGNGINRGINRINGNIRNIGIN")
         if request.form['end'] is not None:
             save_activity()
             session['i'] = session['i']+1
