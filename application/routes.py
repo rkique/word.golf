@@ -128,10 +128,8 @@ def sesh_edit():
     try: 
         if request.form.get('edit') is not None: 
             save_activity() 
-            
 
             data = json.loads(session.get('data'))
-            
             
             jumpsA_str = request.form.get("jumpsA", "[]")
             
@@ -155,6 +153,24 @@ def sesh_edit():
                 data['jumps'] = int(jumps_str)
             except ValueError:
                 data['jumps'] = 0
+
+            # here is the session
+            i = request.form.get("i", "0")
+            try:
+                data['i'] = int(i)
+                session['i'] = data['i']
+            except ValueError:
+                data['i'] = 0
+                session['i'] = 0
+
+            start_target = request.form.get("prompt", "")
+            print("Start target:", start_target)
+            if start_target:
+                try:
+                    start_target = json.loads(start_target)
+                    data['prompt'] = start_target
+                except ValueError:
+                    data['prompt'] = ["", ""]
             
             session['data'] = json.dumps(data)
 
@@ -162,6 +178,7 @@ def sesh_edit():
     except Exception as e: 
         print("Error in /editsesh:", e)
         
+    print("Session after edit:", session)
     return make_response(session.get('data', {}))
 
 

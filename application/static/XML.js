@@ -2,14 +2,14 @@ let previous_response_text = []
 
 
 // Check if this is correct or not 
-function callEditSesh(jumpsAValue, jumpsValue, result_value) {
+function callEditSesh(jumpsAValue, jumpsValue, result_value, i, prompt_text) {
     let xhttp = new XMLHttpRequest();
     xhttp.open("POST", "/editsesh", false); 
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
     
 
-    let message = `edit=true&jumpsA=${encodeURIComponent(JSON.stringify(jumpsAValue))}&jumps=${encodeURIComponent(jumpsValue)}&result=${encodeURIComponent(JSON.stringify(result_value))}`;
+    let message = `edit=true&jumpsA=${encodeURIComponent(JSON.stringify(jumpsAValue))}&jumps=${encodeURIComponent(jumpsValue)}&result=${encodeURIComponent(JSON.stringify(result_value))}&i=${encodeURIComponent(i)}&prompt=${encodeURIComponent(JSON.stringify(prompt_text))}`;
 
     
     xhttp.send(message);

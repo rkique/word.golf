@@ -34,8 +34,7 @@
 
 <script src="static/is_game_complete.js"> </script>
 <script>
-
-    // window.addEventListener('DOMContentLoaded', () => {
+// window.addEventListener('DOMContentLoaded', () => {
     //     fetch("https://word-golf-backend.onrender.com", {
     //         method: "GET",
     //         credentials: "include"
@@ -43,103 +42,45 @@
     //     .then(response => response.json())
     //     .then(data => {
     //         console.log(data.message);
-            
+
     //     });
     // });
 
-    // Make the 
 
-    // Make sure to get this here -> I store the date in local storage and then store the jumps and jumpsA and use
-    // those as the ground truth values. If the date changes, reset local storage and if you finish, don't do anything
+    // this is the value from local storage which is the i value (states which prompt I am currently on)
+    let i = parseInt(localStorage.getItem('current_prompt')) || 0;
+
+    // this is a function that accesses local storage and then converts the value to a list.
+    function string_to_list(list) {
+        return list ? list.split(',').map(item => item.trim()) : [];
+    }
+
+    // We're loading local storage values if they exist (they wouldn't on first load).
+
+    let local_jumpsA = string_to_list(localStorage.getItem('jumpsA') || null)
+    let local_results = string_to_list(localStorage.getItem('results') || null)
+    let jumps = parseInt(localStorage.getItem('jumps')) || 0;
     
-    let prompt_count = parseInt(localStorage.getItem('current_prompt')) || 0;
     data = JSON.parse('{{data|tojson|safe}}');
     let prompt = data['prompt'].toString()
-    //i is the index of the current prompt
-    // i == 2, jumpsA is the array of the previous number of jumps 
 
-    for (let i = 0; i < prompt_count; i++) {
-        message = "end=true";
-        data = sendAndReceiveXML(message, 1);
-    }
-    
-    // const donePrompts = promptsContainer.querySelectorAll('.prompt.prompt--done');
-
-    let stored = localStorage.getItem('jumpsA') || null;
-    let jumps_array;
-    
-    if (stored) {
-        jumps_array = stored
-        ? stored.split(',').map(s => s.trim()) 
-        : [];
-    } else {
-        jumps_array = []
-    }
-
-    let curr_word_result = localStorage.getItem('results') || null;
-    let res_array;
-    
-    if (curr_word_result) {
-        res_array = curr_word_result
-        ? curr_word_result.split(',').map(s => s.trim()) 
-        : [];
-    } else {
-        res_array = []
-    }
-    let jumps = parseInt(localStorage.getItem('jumps')) || 0;
-    _ = callEditSesh(jumps_array, jumps, res_array)
-    // let jumps_array = stored ? JSON.parse(stored) : [];
-    
-    // data['i'] = 1
-    // data['jumpsA'] = [0]
-    // data['jumps'] = -2
-    let i = data['i']
-    // let i = 1
-    // console.log(i)
     let prompts = data['prompts']
-    let results = data['results']
-    
-    // start_target = prompt.split(",");
     start_target = data['prompts'][i];
-    // console.log("here is the start target");
-    // console.log(data['prompts'][i]);
+
+    console.log("start_target", start_target);
+    console.log(i);
+    // send to backend to edit the variables updated from local storage 
+    _ = callEditSesh(local_jumpsA, jumps, local_results, i, start_target);
+
+    // let board_state;
+    let board_state = local_results.length ? local_results : data["results"];
     
-    renderToFrom(data['prompt'])
-    renderPrompts(prompts,i, jumps_array, jumps)
-    renderLinks(prompt, results)
+    
+    renderToFrom(start_target)
+    renderPrompts(prompts, i, local_jumpsA, jumps)
+    renderLinks(start_target, board_state)
     activateLinks()
 
-    // const promptsContainer = document.getElementById('prompts');
-    // if (promptsContainer) {
-    //     const donePrompts = promptsContainer.querySelectorAll('p.prompt.prompt--done');
-
-    //     donePrompts.forEach((p, i) => {
-    //         if (i < jumps_array.length) {
-    //             const jumps = jumps_array[i];
-                
-    //             let span = p.querySelector('.prompt-jumps');
-
-    //             if (span) {
-                    
-    //                 span.innerText = " " + jumps;
-    //             } else {
-                    
-    //                 span = document.createElement("span");
-    //                 span.className = "prompt-jumps";
-    //                 span.innerText = " " + jumps;
-    //                 p.appendChild(span);
-    //             }
-                
-    //             const newClass = `prompt-jumps-${jumps}`;
-    //             p.classList.forEach(cls => {
-    //                 if (cls.startsWith('prompt-jumps-')) {
-    //                     p.classList.remove(cls);
-    //                 }
-    //             });
-    //             p.classList.add(newClass);
-    //         }
-    //     });
-    // }
 </script>
 
 <!-- <footer class="ma0 mid-gray fixed absolute right-1 bottom-0"></footer>
