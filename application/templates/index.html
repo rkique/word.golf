@@ -43,13 +43,53 @@
         .then(data => {
             console.log(data.message);
             
-        });
-    });
+    //     });
+    // });
 
+    // Make sure to get this here -> I store the date in local storage and then store the jumps and jumpsA and use those as the ground truth values. If the date changes, reset local storage and if you finish, don't do anything.
+
+    let prompt_count = parseInt(localStorage.getItem('current_prompt')) || 0;
     const MS_DAY = 86400000
     data = JSON.parse('{{data|tojson|safe}}');
     let prompt = data['prompt'].toString()
     //i is the index of the current prompt
+    // i == 2, jumpsA is the array of the previous number of jumps 
+
+    // for (let i = 0; i < prompt_count; i++) {
+    //     message = "end=true";
+    //     data = sendAndReceiveXML(message, 1);
+    // }
+    
+    // const donePrompts = promptsContainer.querySelectorAll('.prompt.prompt--done');
+
+    let stored = localStorage.getItem('jumpsA') || null;
+    let jumps_array;
+    
+    if (stored) {
+        jumps_array = stored
+        ? stored.split(',').map(s => s.trim()) 
+        : [];
+    } else {
+        jumps_array = []
+    }
+
+    let curr_word_result = localStorage.getItem('results') || null;
+    let res_array;
+    
+    if (curr_word_result) {
+        res_array = curr_word_result
+        ? curr_word_result.split(',').map(s => s.trim()) 
+        : [];
+    } else {
+        res_array = []
+    }
+    let jumps = parseInt(localStorage.getItem('jumps')) || 0;
+    _ = callEditSesh(jumps_array, jumps, res_array)
+    // let jumps_array = stored ? JSON.parse(stored) : [];
+    
+    // data['i'] = 1
+    // data['jumpsA'] = [0]
+    // data['jumps'] = -2
     let i = data['i']
     let prompts = data['prompts']
     let results = data['results']

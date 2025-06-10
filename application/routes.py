@@ -74,10 +74,12 @@ def index():
     #Load data only once
     load_data()
     assert WV is not None, "Word vectors not loaded"
+    print('resetting session')
     session['i'] = 0
     session['jumpsA'] = []
     session['data'] = shift_to(session['i'])
-    
+    print("session data", session.get('data'))
+    #session data is not updating.
     return render_template('index.html', data=json.loads(session.get('data')))
 
 @app.route('/', methods=['POST'])

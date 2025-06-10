@@ -10,7 +10,6 @@ function clearChildren(element){
     }
 }
 
-
 function sessionEnded(prompt){
     ws_texts = ws_to_text()
     // console.log(`ws_texts: ${ws_texts}, prompt: ${prompt}`)
