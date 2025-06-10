@@ -32,6 +32,7 @@
 <script src="static/information.js"></script>
 <script src="static/prompts.js"></script>
 
+<script src="static/is_game_complete.js"> </script>
 <script>
 
     // window.addEventListener('DOMContentLoaded', () => {
@@ -50,13 +51,8 @@
 
     // Make sure to get this here -> I store the date in local storage and then store the jumps and jumpsA and use
     // those as the ground truth values. If the date changes, reset local storage and if you finish, don't do anything
-
     
     let prompt_count = parseInt(localStorage.getItem('current_prompt')) || 0;
-
-
-
-    const MS_DAY = 86400000
     data = JSON.parse('{{data|tojson|safe}}');
     let prompt = data['prompt'].toString()
     //i is the index of the current prompt
@@ -65,7 +61,6 @@
     for (let i = 0; i < prompt_count; i++) {
         message = "end=true";
         data = sendAndReceiveXML(message, 1);
-        
     }
     
     // const donePrompts = promptsContainer.querySelectorAll('.prompt.prompt--done');
@@ -113,40 +108,38 @@
     renderPrompts(prompts,i, jumps_array, jumps)
     renderLinks(prompt, results)
     activateLinks()
-    if(Math.round(Date.parse(new Date()) / MS_DAY) == Math.round(Date.parse(localStorage.getItem("lastComplete")) / MS_DAY)){
-        showScreen()
-    }
-    const promptsContainer = document.getElementById('prompts');
-    if (promptsContainer) {
-        const donePrompts = promptsContainer.querySelectorAll('p.prompt.prompt--done');
 
-        donePrompts.forEach((p, i) => {
-            if (i < jumps_array.length) {
-                const jumps = jumps_array[i];
-                
-                let span = p.querySelector('.prompt-jumps');
+    // const promptsContainer = document.getElementById('prompts');
+    // if (promptsContainer) {
+    //     const donePrompts = promptsContainer.querySelectorAll('p.prompt.prompt--done');
 
-                if (span) {
-                    
-                    span.innerText = " " + jumps;
-                } else {
-                    
-                    span = document.createElement("span");
-                    span.className = "prompt-jumps";
-                    span.innerText = " " + jumps;
-                    p.appendChild(span);
-                }
+    //     donePrompts.forEach((p, i) => {
+    //         if (i < jumps_array.length) {
+    //             const jumps = jumps_array[i];
                 
-                const newClass = `prompt-jumps-${jumps}`;
-                p.classList.forEach(cls => {
-                    if (cls.startsWith('prompt-jumps-')) {
-                        p.classList.remove(cls);
-                    }
-                });
-                p.classList.add(newClass);
-            }
-        });
-    }
+    //             let span = p.querySelector('.prompt-jumps');
+
+    //             if (span) {
+                    
+    //                 span.innerText = " " + jumps;
+    //             } else {
+                    
+    //                 span = document.createElement("span");
+    //                 span.className = "prompt-jumps";
+    //                 span.innerText = " " + jumps;
+    //                 p.appendChild(span);
+    //             }
+                
+    //             const newClass = `prompt-jumps-${jumps}`;
+    //             p.classList.forEach(cls => {
+    //                 if (cls.startsWith('prompt-jumps-')) {
+    //                     p.classList.remove(cls);
+    //                 }
+    //             });
+    //             p.classList.add(newClass);
+    //         }
+    //     });
+    // }
 </script>
 
 <!-- <footer class="ma0 mid-gray fixed absolute right-1 bottom-0"></footer>

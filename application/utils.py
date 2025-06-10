@@ -71,14 +71,14 @@ def backoff_selection(results: list[str], target: str, exp=2, num=20, neighbor=N
     seen = set()
     if neighbor is not None:
         # print(f'neighbor: {neighbor}, target:{target}, results: {results}')
-        print(f'neighbor {neighbor}')
+        print(f'[Neighbor] {neighbor}')
         assert neighbor in results, "Neighbor must be in results"
         neighbor_idx = results.index(neighbor)
         seen.add(neighbor_idx)
         indices.append(neighbor_idx)
     #If target among 100, append immediately.
     if target in results:
-        print(f"Target {target} found in results.")
+        print(f"[Target] {target}")
         target_idx = results.index(target)
         seen.add(target_idx)
         indices.append(target_idx)

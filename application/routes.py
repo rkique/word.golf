@@ -11,9 +11,9 @@ from .utils import get_prompts, txt_to_list, txt_to_dict
 #Update this to break the neighbors.txt file into 'start,target' and 'neighbor'.
 #then, pass 'start,target' pairs as before, but also include neighbor in get_curve
 
-#prompts is a list of [[start, target], neighbor]
 prompt_neighbor_dict = get_prompts(txt_to_list("application/data/neighbors.txt"))
 PROMPTS = list(prompt_neighbor_dict.keys())
+NEIGHBORS = list(prompt_neighbor_dict.values())
 
 PCOUNT = 5
 
@@ -26,15 +26,38 @@ def load_data():
     global WV, PRECOMPUTED
     if WV is not None:
         return 
-    if WV is None:
-        print("Loading data...")
-        WV = pd.read_csv("application/data/embed_w2v.csv")
-        WV['vector'] = WV['vector'].apply(lambda x: np.array(ast.literal_eval(x)))
-        WV = dict(zip(WV['word'], WV['vector']))
-        PRECOMPUTED = txt_to_dict("application/data/top_100_w2v.csv")
+    print("Loading data...")
+    WV = pd.read_csv("application/data/embed_w2v.csv")
+    WV['vector'] = WV['vector'].apply(lambda x: np.array(ast.literal_eval(x)))
+    WV = dict(zip(WV['word'], WV['vector']))
+    PRECOMPUTED = txt_to_dict("application/data/top_100_w2v.csv")
 
-def jump(start):
-    load_data()
+prompts_today = None
+neighbors_today = None
+
+def elapsed_days(date : datetime.datetime) -> int:
+    start_date = datetime.datetime.strptime("05-31-2025", '%m-%d-%Y')
+    today = date
+    return (today - start_date).days
+
+def get_prompts_for_date(date : datetime.datetime) -> list:
+    '''
+    Returns a list of ([start,target],neighbor) for the given date.
+    '''
+    elapsed = elapsed_days(date)
+    prompt_range = range(elapsed * PCOUNT, (elapsed + 1) * PCOUNT)
+    print(f"Loading prompts: {prompt_range}")
+    return [PROMPTS[i] for i in prompt_range], [NEIGHBORS[i] for i in prompt_range]
+
+def load_time():
+    global prompts_today, neighbors_today
+    today = datetime.datetime.today()
+    prompts_today, neighbors_today = get_prompts_for_date(today)
+
+def jump(start : str) -> str:
+    '''
+    Jump to a new word and return the updated session data as stringified JSON.
+    '''
     _data = json.loads(session.get('data'))
     target = _data['prompt'][1]
     results = get_curve(start, target, PRECOMPUTED, WV)
@@ -43,45 +66,48 @@ def jump(start):
     session['data'] = json.dumps(_data)
     return json.dumps(_data)
 
-def elapsed(d):
-    previous_date = datetime.datetime.strptime("05-31-2025", '%m-%d-%Y')
-    today = d
-    return (today - previous_date).days
 
 def shift_to(i):
-    load_data()
-    elapsed_time = elapsed(datetime.datetime.today())
-    prompt = PROMPTS[i+PCOUNT*elapsed_time]
-    results = get_curve(prompt[0], prompt[1], PRECOMPUTED, WV)
-    
+    '''
+    Shifts the session data to the i-th prompt and returns the updated session data.
+    If i is out of range, results is set to None.
+    '''
+    try:
+        prompt = prompts_today[i]
+        neighbor = neighbors_today[i]
+        results = get_curve(prompt[0], prompt[1], PRECOMPUTED, WV, neighbor=neighbor)
+
+    except IndexError:
+        prompt,neighbor,results = None, None, None
+
     return json.dumps({
         'jumpsA': session.get('jumpsA'),
         'jumps': 0,
         'i': i,
         'prompt': prompt,
-        'prompts': PROMPTS[PCOUNT*elapsed_time:PCOUNT*elapsed_time+PCOUNT],
-        'results':results})
+        'prompts': prompts_today,
+        'results': results})
 
 def save_activity():
+    '''
+    Saves a completed activity to the session.
+    '''
     _data = json.loads(session.get('data'))
     session.get('jumpsA').append(_data['jumps'])
     _data['jumpsA'] = session['jumpsA']
     session['data'] = json.dumps(_data)
     return json.dumps(_data)
 
+#Load both data and time once at the starting screen.
 @app.route('/')
 def index():
-    #Load data only once
     load_data()
-    assert WV is not None, "Word vectors not loaded"
-    # session['i'] = 1
-    # session['jumpsA'] = [0]
+    load_time()
     session['i'] = 0
     session['jumpsA'] = []
+    assert WV is not None, "Word vectors not loaded"
     session['data'] = shift_to(session['i'])
-    
     return render_template('index.html', data=json.loads(session.get('data')))
-
 
 # @app.route('/editsesh', methods=['POST']) 
 # def sesh_edit(): 
@@ -130,16 +156,12 @@ def sesh_edit():
             except ValueError:
                 data['jumps'] = 0
             
-            
-
-            
             session['data'] = json.dumps(data)
 
             
     except Exception as e: 
         print("Error in /editsesh:", e)
         
-    
     return make_response(session.get('data', {}))
 
 
