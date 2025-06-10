@@ -32,7 +32,7 @@ function renderFinish(jumpsA, streak) {
 
     if (stored) {
         jumps_array = stored
-            ? stored.split(',').map(s => parseInt(s.trim(), 10))  // Convert to integers
+            ? stored.split(',').map(s => parseInt(s.trim(), 10)) 
             : [];
     } else {
         jumps_array = [];
@@ -44,7 +44,7 @@ function renderFinish(jumpsA, streak) {
 
     const currentDate = new Date().toISOString();
 
-    const storedDate = localStorage.getItem('storedDate');
+    const storedDate = localStorage.getItem('current_date');
 
     let reset = true;
 
@@ -83,8 +83,6 @@ function renderFinish(jumpsA, streak) {
     } else {
         console.log('No stored date found.');
     }
-
-    localStorage.setItem('storedDate', currentDate);
 
     // check if yesterday was the correct day 
 
