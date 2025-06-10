@@ -29,6 +29,7 @@ function freezeScreen(){
 
 function showScreen(){
     document.body.innerHTML = localStorage.getItem('screen')
+    console.log("Screen restored from localStorage")
 }
 
 //activates links on the page

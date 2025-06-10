@@ -14,86 +14,37 @@ function makePromptInfo(start_target) {
  * @returns {void}
  */
 function renderToFrom(start_target){
+    console.log("renderToFrom called with start_target:");
     let information = /** @type {HTMLElement} */ (document.getElementById("information"));
+    console.log("here is the information");
+    console.log(information);
     clearChildren(information);
+    console.log("here is the start_target");
+    console.log(start_target);
     let promptInfoEl = makePromptInfo(start_target);
+    console.log("here is the promptInfoEl");
+    console.log(promptInfoEl);
     information.append(promptInfoEl);
 }
 
-function renderFinish(jumpsA, streak) {
-    gameOverModalEl = document.getElementById('gameOverModal')
+function renderFinish(jumpsA) {
+    const gameOverModalEl = document.getElementById('gameOverModal');
+    const gameOverText = document.getElementById('gameOverText');
     gameOverModalEl.style.display = 'flex';
-    gameOverText = document.getElementById('gameOverText')
-    // total = jumpsA.reduce((a, b) => a + b, 0)
-    // get the 
-    let stored = localStorage.getItem('jumpsA') || null;
-    let jumps_array;
-    console.log(stored);
 
-    if (stored) {
-        jumps_array = stored
-            ? stored.split(',').map(s => parseInt(s.trim(), 10)) 
-            : [];
-    } else {
-        jumps_array = [];
-    }
+    const totalJumps = jumpsA.reduce((sum, jumps) => sum + jumps, 0);
 
-    let sum = jumps_array.reduce((acc, curr) => acc + (isNaN(curr) ? 0 : curr), 0);
+    const currentDate = new Date(localStorage.getItem('current_date'));
+    const lastCompleteDate = new Date(localStorage.getItem('lastComplete'));
+    const diffInDays = Math.floor((currentDate - lastCompleteDate) / (1000 * 60 * 60 * 24)) || Infinity;
 
-    let jumps = parseInt(localStorage.getItem('jumps')) || 0;
+    const isSameDay = diffInDays === 0;
+    const shouldResetStreak = diffInDays >= 2;
 
-    const currentDate = localStorage.getItem('current_date');
-    const storedDate = localStorage.getItem('lastComplete');
+    const currentStreak = parseInt(localStorage.getItem('streak')) || 1;
+    const newStreak = isSameDay ? currentStreak : shouldResetStreak ? 1 : currentStreak + 1;
 
-    let reset = true;
+    localStorage.setItem('streak', newStreak);
 
-    let same_day = false;
-
-    if (storedDate) {
-
-        const storedTime = new Date(storedDate).getTime();
-        const currentTime = new Date(currentDate).getTime();
-
-        console.log("here is stored date");
-        console.log(storedDate);
-        console.log("here is current date");
-        console.log(currentDate)
-        console.log("here is stored time")
-        console.log(storedTime)
-        console.log("here is current time")
-        console.log(currentTime)
-
-        const diffInMs = currentTime - storedTime;
-
-        const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-
-        if (diffInDays < 0 || diffInDays >= 2) {
-            reset = true;
-        } else {
-            reset = false;
-        }
-
-        if (diffInDays == 0) {
-            same_day = true;
-        }
-
-        console.log(`Difference in days: ${diffInDays}`);
-    } else {
-        console.log('No stored date found.');
-    }
-
-    // check if yesterday was the correct day 
-
-    let str = parseInt(localStorage.getItem('streak')) || 1;
-
-    if (!same_day) {
-        if (!reset) {
-            localStorage.setItem('streak', str + 1);
-        } else {
-            localStorage.setItem('streak', 1);
-        }
-    }
-
-    let new_str = parseInt(localStorage.getItem('streak')) || 1;
-    gameOverText.innerHTML = `You completed today's word.golf in ${sum + jumps} jumps. Streak: ${new_str} days.`
+    gameOverText.innerHTML = `You completed today's word.golf in ${totalJumps} jumps. Streak: ${newStreak} days.`;
 }

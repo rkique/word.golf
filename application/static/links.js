@@ -35,8 +35,7 @@ function maintainLinks(prompt, debug_session_done=false){
 
 
 function tallyScreen(prompts, i, jumpsA){
-    streak = 1
-    renderFinish(jumpsA, streak)    
+    renderFinish(jumpsA)    
     // total = jumpsA.reduce((a, b) => a + b, 0)
     localStorage.setItem("lastComplete", data["date"])
     // localStorage.setItem('total', JSON.stringify(jumpsA))

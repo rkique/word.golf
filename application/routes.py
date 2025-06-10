@@ -138,8 +138,8 @@ def sesh_edit():
             jumpsA_str = request.form.get("jumpsA", "[]")
             
             try:
-                session['jumpsA'] = json.loads(jumpsA_str)
-                data['jumpsA'] = json.loads(jumpsA_str)
+                session['jumpsA'] = [int(x) for x in json.loads(jumpsA_str)]
+                data['jumpsA'] = [int(x) for x in json.loads(jumpsA_str)]
             except json.JSONDecodeError:
                 session['jumpsA'] = []
                 data['jumpsA'] = []
