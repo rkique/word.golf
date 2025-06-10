@@ -1,6 +1,5 @@
 let previous_response_text = []
 
-
 // Check if this is correct or not 
 function callEditSesh(jumpsAValue, jumpsValue, result_value, i, prompt_text) {
     let xhttp = new XMLHttpRequest();

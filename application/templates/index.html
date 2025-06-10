@@ -32,6 +32,7 @@
 <script src="static/information.js"></script>
 <script src="static/prompts.js"></script>
 
+<script>data = JSON.parse('{{data|tojson|safe}}');</script>
 <script src="static/is_game_complete.js"> </script>
 <script>
 // window.addEventListener('DOMContentLoaded', () => {
@@ -46,7 +47,8 @@
     //     });
     // });
 
-
+    // check local storage 
+    
     // this is the value from local storage which is the i value (states which prompt I am currently on)
     let i = parseInt(localStorage.getItem('current_prompt')) || 0;
 
@@ -61,7 +63,7 @@
     let local_results = string_to_list(localStorage.getItem('results') || null)
     let jumps = parseInt(localStorage.getItem('jumps')) || 0;
     
-    data = JSON.parse('{{data|tojson|safe}}');
+    
     let prompt = data['prompt'].toString()
 
     let prompts = data['prompts']
@@ -80,6 +82,10 @@
     renderPrompts(prompts, i, local_jumpsA, jumps)
     renderLinks(start_target, board_state)
     activateLinks()
+
+    // local storage set date
+    localStorage.setItem('current_date', data['date']);
+
 
 </script>
 

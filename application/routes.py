@@ -34,9 +34,10 @@ def load_data():
 
 prompts_today = None
 neighbors_today = None
+today = None
 
 def elapsed_days(date : datetime.datetime) -> int:
-    start_date = datetime.datetime.strptime("05-31-2025", '%m-%d-%Y')
+    start_date = datetime.datetime.strptime("05-30-2025", '%m-%d-%Y')
     today = date
     return (today - start_date).days
 
@@ -50,7 +51,7 @@ def get_prompts_for_date(date : datetime.datetime) -> list:
     return [PROMPTS[i] for i in prompt_range], [NEIGHBORS[i] for i in prompt_range]
 
 def load_time():
-    global prompts_today, neighbors_today
+    global prompts_today, neighbors_today, today
     today = datetime.datetime.today()
     prompts_today, neighbors_today = get_prompts_for_date(today)
 
@@ -84,6 +85,7 @@ def shift_to(i):
         'jumpsA': session.get('jumpsA'),
         'jumps': 0,
         'i': i,
+        'date': today.strftime('%Y-%m-%d'),
         'prompt': prompt,
         'prompts': prompts_today,
         'results': results})
@@ -107,6 +109,7 @@ def index():
     session['jumpsA'] = []
     assert WV is not None, "Word vectors not loaded"
     session['data'] = shift_to(session['i'])
+    # session['data']
     return render_template('index.html', data=json.loads(session.get('data')))
 
 # @app.route('/editsesh', methods=['POST']) 
@@ -174,9 +177,12 @@ def sesh_edit():
             
             session['data'] = json.dumps(data)
 
+
+
             
     except Exception as e: 
         print("Error in /editsesh:", e)
+
         
     print("Session after edit:", session)
     return make_response(session.get('data', {}))
@@ -185,6 +191,7 @@ def sesh_edit():
 @app.route('/', methods=['POST'])
 def index_post():
     try:
+        print("GININGEINRIGNGINRGINRINGNIRNIGIN")
         if request.form['end'] is not None:
             save_activity()
             session['i'] = session['i']+1
