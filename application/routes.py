@@ -113,21 +113,7 @@ def index():
     # session['data']
     return render_template('index.html', data=json.loads(session.get('data')))
 
-# @app.route('/editsesh', methods=['POST']) 
-# def sesh_edit(): 
-#     try: 
-#         if request.form['edit'] is not None: 
-#             save_activity() 
-#             print("I am editing this value")
-#             session['jumpsA'] = request.form["jumpsA"] 
-            
-#             session['data']['jumps'] = request.form["jumps"] 
-#             print("here is new session")
-#     except: 
-#         pass 
-#     return make_response(session.get('data')) 
-
-@app.route('/editsesh', methods=['POST']) 
+@app.route('/editsession', methods=['POST']) 
 def sesh_edit(): 
     try: 
         if request.form.get('edit') is not None: 
@@ -183,7 +169,6 @@ def sesh_edit():
             
     except Exception as e: 
         print("Error in /editsesh:", e)
-
         
     print("Session after edit:", session)
     return make_response(session.get('data', {}))

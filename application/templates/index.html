@@ -70,7 +70,7 @@
     start_target = data['prompts'][i];
 
     // Backend: edit variables updated from local storage.
-    _ = callEditSesh(local_jumpsA, jumps, local_results, i, start_target);
+    _ = editSession(local_jumpsA, jumps, local_results, i, start_target);
 
     // use local results if they exist, else use backend
     let results = local_results.length ? local_results : data["results"];
