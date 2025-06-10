@@ -43,7 +43,6 @@ function renderFinish(jumpsA, streak) {
     let jumps = parseInt(localStorage.getItem('jumps')) || 0;
 
     const currentDate = localStorage.getItem('current_date');
-
     const storedDate = localStorage.getItem('lastComplete');
 
     let reset = true;
@@ -53,7 +52,6 @@ function renderFinish(jumpsA, streak) {
     if (storedDate) {
 
         const storedTime = new Date(storedDate).getTime();
-
         const currentTime = new Date(currentDate).getTime();
 
         console.log("here is stored date");
@@ -97,6 +95,5 @@ function renderFinish(jumpsA, streak) {
     }
 
     let new_str = parseInt(localStorage.getItem('streak')) || 1;
-
     gameOverText.innerHTML = `You completed today's word.golf in ${sum + jumps} jumps. Streak: ${new_str} days.`
 }

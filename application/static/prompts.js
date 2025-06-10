@@ -8,8 +8,6 @@ function makePromptTag(promptText, jumps=null) {
         span.className = "prompt-jumps";
         span.innerText = " " + jumps;
         p.appendChild(span);
-    } else {
-        // console.log("JUMPS IS NULL -> new???")
     }
     return p
 }
@@ -39,7 +37,6 @@ function makePromptTag(start_target, jumps) {
 function makeDonePromptTag(start_target, jumps) {
     let pTag = makePromptTag(start_target,jumps)
     pTag.className = "prompt prompt--done"
-    // console.log("FINISHED A CURRENT PROMPT")
     return pTag
 }
 

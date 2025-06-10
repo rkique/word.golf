@@ -47,8 +47,6 @@
     //     });
     // });
 
-    // check local storage 
-    
     // this is the value from local storage which is the i value (states which prompt I am currently on)
     let i = parseInt(localStorage.getItem('current_prompt')) || 0;
 
@@ -63,29 +61,26 @@
     let local_results = string_to_list(localStorage.getItem('results') || null)
     let jumps = parseInt(localStorage.getItem('jumps')) || 0;
     
-    
     let prompt = data['prompt'].toString()
-
     let prompts = data['prompts']
     start_target = data['prompts'][i];
 
-    console.log("start_target", start_target);
-    console.log(i);
-    // send to backend to edit the variables updated from local storage 
+    // Backend: edit variables updated from local storage.
     _ = callEditSesh(local_jumpsA, jumps, local_results, i, start_target);
 
-    // let board_state;
-    let board_state = local_results.length ? local_results : data["results"];
+    // use local results if they exist, else use backend
+    let results = local_results.length ? local_results : data["results"];
     
-    
-    renderToFrom(start_target)
+    if (i == 5) { //indicating complete game.
+        renderToFrom(data['prompts'][4])
+    } else {
+        renderToFrom(start_target)
+    }
     renderPrompts(prompts, i, local_jumpsA, jumps)
-    renderLinks(start_target, board_state)
+    renderLinks(start_target, results)
     activateLinks()
 
-    // local storage set date
     localStorage.setItem('current_date', data['date']);
-
 
 </script>
 

@@ -8,14 +8,12 @@ import numpy as np
 import ast
 from .utils import get_prompts, txt_to_list, txt_to_dict
 
-#Update this to break the neighbors.txt file into 'start,target' and 'neighbor'.
-#then, pass 'start,target' pairs as before, but also include neighbor in get_curve
-
 prompt_neighbor_dict = get_prompts(txt_to_list("application/data/neighbors.txt"))
 PROMPTS = list(prompt_neighbor_dict.keys())
 NEIGHBORS = list(prompt_neighbor_dict.values())
 
 PCOUNT = 5
+DAYS = 0
 
 # session['data'] will be the SSoT
 
@@ -36,6 +34,9 @@ prompts_today = None
 neighbors_today = None
 today = None
 
+def add_days(days: int) -> datetime.timedelta:
+    return datetime.timedelta(days=days)
+
 def elapsed_days(date : datetime.datetime) -> int:
     start_date = datetime.datetime.strptime("05-30-2025", '%m-%d-%Y')
     today = date
@@ -52,7 +53,7 @@ def get_prompts_for_date(date : datetime.datetime) -> list:
 
 def load_time():
     global prompts_today, neighbors_today, today
-    today = datetime.datetime.today()
+    today = datetime.datetime.today() + add_days(DAYS)
     prompts_today, neighbors_today = get_prompts_for_date(today)
 
 def jump(start : str) -> str:

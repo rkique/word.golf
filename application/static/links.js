@@ -27,23 +27,11 @@ function makeStartLink(prompt, word){
     return startLink
 }
 
-
 function maintainLinks(prompt, debug_session_done=false){   
-
     if(sessionEnded(prompt) || debug_session_done){
     disableLinks()
     saySessionEnded(debug_session_done)
 }}
-
-function freezeScreen(){
-    screen = new XMLSerializer().serializeToString(document)
-    localStorage.setItem('screen', screen)
-}
-
-function showScreen(){
-    alert("show screen")
-    document.body.innerHTML = localStorage.getItem('screen')
-}
 
 
 function tallyScreen(prompts, i, jumpsA){
@@ -65,7 +53,6 @@ function tallyScreen(prompts, i, jumpsA){
             
         });
     });
-
     freezeScreen()
 }
 
@@ -95,20 +82,6 @@ function renderLinks(prompt, results){
         }
     })
     maintainLinks(prompt)
-}
-
-function ws_to_text(){
-    let wordspace = document.getElementById("wordspace")
-    ws_array = Array.from(wordspace.children)
-    return ws_array.map(el => el.firstChild.innerText)
-}
-
-//activates links on the page
-function activateLinks(){
-    ws_texts = ws_to_text()
-    ws_array.map(function(el, i){el.onclick = function() {
-        postWord(ws_texts[i])
-    }})
 }
 
 function postWord(word) {

@@ -9,6 +9,6 @@ if (date === null || date !== data['date']) {
     localStorage.setItem('jumps', 0);
 }
 
-if(Math.round(Date.parse(new Date()) / MS_DAY) == Math.round(Date.parse(localStorage.getItem("lastComplete")) / MS_DAY)){
+if(data['date'] == date){
     showScreen()
 }
