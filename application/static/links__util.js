@@ -31,11 +31,3 @@ function showScreen(){
     document.body.innerHTML = localStorage.getItem('screen')
     console.log("Screen restored from localStorage")
 }
-
-//activates links on the page
-function activateLinks(){
-    ws_texts = ws_to_text()
-    ws_array.map(function(el, i){el.onclick = function() {
-        postWord(ws_texts[i])
-    }})
-}

@@ -170,7 +170,7 @@ def sesh_edit():
     except Exception as e: 
         print("Error in /editsesh:", e)
         
-    print("Session after edit:", session)
+    # print("Session after edit:", session)
     return make_response(session.get('data', {}))
 
 
@@ -178,6 +178,7 @@ def sesh_edit():
 def index_post():
     try:
         if request.form['end'] is not None:
+            print(f"shifting to prompt {session['i']+1}")
             save_activity()
             session['i'] = session['i']+1
             session['data'] = shift_to(session['i'])
@@ -186,4 +187,5 @@ def index_post():
                 + session.get('data'))
     except:
         session['data'] = jump(request.form['word'])
+    # print("Session data:", session.get('data'))
     return make_response(session.get('data'))
