@@ -28,11 +28,13 @@
 <script src="static/gtag.js"></script>
 <script src="static/XML.js"></script>
 <script src="static/links__util.js"></script>
+<script src="static/animation.js"></script>
 <script src="static/links.js"></script>
 <script src="static/information.js"></script>
 <script src="static/prompts.js"></script>
 
-<script>data = JSON.parse('{{data|tojson|safe}}');</script>
+<script>data = JSON.parse('{{data|tojson|safe}}');
+</script>
 <script src="static/is_game_complete.js"> </script>
 <script>
     if(data['date'] == localStorage.getItem('lastComplete')) {
@@ -52,7 +54,7 @@
     // });
 
     // this is the value from local storage which is the i value (states which prompt I am currently on)
-    let i = parseInt(localStorage.getItem('current_prompt')) || 0;
+    let prompt_idx = parseInt(localStorage.getItem('current_prompt')) || 0;
 
     // this is a function that accesses local storage and then converts the value to a list.
     function string_to_list(list) {
@@ -67,21 +69,22 @@
     
     let prompt = data['prompt'].toString()
     let prompts = data['prompts']
-    start_target = data['prompts'][i];
+    start_target = data['prompts'][prompt_idx];
 
     // Backend: edit variables updated from local storage.
-    _ = editSession(local_jumpsA, jumps, local_results, i, start_target);
+    _ = editSession(local_jumpsA, jumps, local_results, prompt_idx, start_target);
 
     // use local results if they exist, else use backend
     let results = local_results.length ? local_results : data["results"];
     
-    if (i == 5) { //indicating complete game.
+    if (prompt_idx == 5) { //indicating complete game.
         renderToFrom(data['prompts'][4])
     } else {
         renderToFrom(start_target)
     }
+    console.log(`[From index] prompts: ${prompts}, i: ${prompt_idx}, local_jumpsA: ${local_jumpsA}, jumps: ${jumps}`);
     
-    renderPrompts(prompts, i, local_jumpsA, jumps)
+    renderPrompts(prompts, prompt_idx, local_jumpsA, jumps)
     renderLinks(start_target, results)
     activateLinks()
 
