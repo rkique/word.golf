@@ -85,6 +85,11 @@ function renderLinks(prompt, results){
 
 function postWord(word) {
     console.log('postWord called with word:', word)
+    let words = string_to_list(localStorage.getItem('previous_words') || null);
+    words.push(word);
+    localStorage.setItem('previous_words', words);
+    // here is where I want to check if I am logged in and if I am not, do nothing 
+    // but if I am logged in, then send the word to the server and do the rest after 
     resp = sendAndReceiveXML("word=" + word)
     renderLinks(resp.prompt, resp.results)
     renderPrompts(resp.prompts,resp.i, resp.jumpsA, resp.jumps)

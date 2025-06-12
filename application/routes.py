@@ -8,6 +8,7 @@ import numpy as np
 import ast
 from .utils import get_prompts, txt_to_list, txt_to_dict
 
+
 prompt_neighbor_dict = get_prompts(txt_to_list("application/data/neighbors.txt"))
 PROMPTS = list(prompt_neighbor_dict.keys())
 NEIGHBORS = list(prompt_neighbor_dict.values())
@@ -60,6 +61,8 @@ def jump(start : str) -> str:
     '''
     Jump to a new word and return the updated session data as stringified JSON.
     '''
+    print(f"Jumping to {start}")
+    print("Current session data:", session.get('data'))
     _data = json.loads(session.get('data'))
     target = _data['prompt'][1]
     results = get_curve(start, target, PRECOMPUTED, WV)
@@ -173,6 +176,15 @@ def sesh_edit():
     print("Session after edit:", session)
     return make_response(session.get('data', {}))
 
+@app.route('/login', methods=['GET'])
+def login():
+    # this returns the login page stored at /templates/login.html
+    return render_template('login.html')
+
+@app.route('/resetpassword', methods=['GET'])
+def resetpassword():
+    # this returns the password reset page stored at /templates/resetpassword.html
+    return render_template('resetpassword.html')
 
 @app.route('/', methods=['POST'])
 def index_post():

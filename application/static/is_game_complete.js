@@ -7,4 +7,5 @@ if (date === null || date !== data['date']) {
     localStorage.setItem('jumpsA', '');
     localStorage.setItem('results', '');
     localStorage.setItem('jumps', 0);
+    localStorage.setItem('previous_words', '');
 }
