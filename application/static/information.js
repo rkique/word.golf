@@ -14,16 +14,9 @@ function makePromptInfo(start_target) {
  * @returns {void}
  */
 function renderToFrom(start_target){
-    console.log("renderToFrom called with start_target:");
     let information = /** @type {HTMLElement} */ (document.getElementById("information"));
-    console.log("here is the information");
-    console.log(information);
     clearChildren(information);
-    console.log("here is the start_target");
-    console.log(start_target);
     let promptInfoEl = makePromptInfo(start_target);
-    console.log("here is the promptInfoEl");
-    console.log(promptInfoEl);
     information.append(promptInfoEl);
 }
 

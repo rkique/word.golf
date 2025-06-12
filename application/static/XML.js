@@ -34,6 +34,7 @@ function sendAndReceiveXML(message) {
     {
         j = JSON.parse(xhttp.responseText.substring(12));
         j['session_done'] = 1
+        console.log("[session_done] Session is done, returning jumps and results")
         return j
     }
     else {
@@ -41,14 +42,17 @@ function sendAndReceiveXML(message) {
             response_text = JSON.parse(xhttp.responseText);
             // console.log("here is the flag")
             // console.log(flag)
-            localStorage.setItem('jumps', JSON.parse(xhttp.responseText)["jumps"]);
-            localStorage.setItem('jumpsA', JSON.parse(xhttp.responseText)["jumpsA"]);
-            localStorage.setItem('results', JSON.parse(xhttp.responseText)["results"]);
-
+            jumps = JSON.parse(xhttp.responseText)["jumps"];
+            jumpsA = JSON.parse(xhttp.responseText)["jumpsA"];
+            results = JSON.parse(xhttp.responseText)["results"];
+            localStorage.setItem('jumps', jumps)
+            localStorage.setItem('jumpsA', jumpsA)
+            localStorage.setItem('results', results)
+            console.log(`[session not done] returning jumps ${jumps} jumpsA ${jumpsA} results ${results}`);
             return JSON.parse(xhttp.responseText);
         } catch (e) {
             
-            alert(xhttp.responseText)
+            alert(e)
         }
     }
     xhttp.onreadystatechange = function () {

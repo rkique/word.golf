@@ -1,4 +1,4 @@
-// To quickly access the final screen, enter maintainLinks('', true)
+USE_ANIMATIONS = false
 
 /* makes and renders links */
 
@@ -27,13 +27,6 @@ function makeStartLink(prompt, word){
     return startLink
 }
 
-function maintainLinks(prompt, debug_session_done=false){   
-    if(sessionEnded(prompt) || debug_session_done){
-    disableLinks()
-    saySessionEnded(debug_session_done)
-}}
-
-
 function tallyScreen(prompts, i, jumpsA){
     renderFinish(jumpsA)    
     // total = jumpsA.reduce((a, b) => a + b, 0)
@@ -55,21 +48,8 @@ function tallyScreen(prompts, i, jumpsA){
     freezeScreen()
 }
 
-//checks if session has ended.
-function saySessionEnded(debug_session_done){
-    // alert("checking if session has ended")
-    resp = sendAndReceiveXML(`end=true`)
-    if(resp.hasOwnProperty('session_done') || debug_session_done){
-        tallyScreen(resp.prompts, resp.i, resp.jumpsA)
-    }
-    else {
-    renderToFrom(resp.prompt);
-    renderLinks(resp.prompt, resp.results)
-    activateLinks()
-    }
-}
-
-function renderLinks(prompt, results){
+//@Parent: postWord
+function renderLinks(prompt, results, debug_session_done = false) {
     let wordspace = document.getElementById("wordspace")
     clearChildren(wordspace)
     let middleIndex = Math.floor(results.length / 2)
@@ -80,18 +60,70 @@ function renderLinks(prompt, results){
             wordspace.append(makeLink(prompt, result))
         }
     })
-    maintainLinks(prompt)
+    if(sessionEnded(prompt) || debug_session_done){
+    disableLinks()
+    checkSessionEnded(debug_session_done)
+    }
 }
 
-function postWord(word) {
-    console.log('postWord called with word:', word)
-    let words = string_to_list(localStorage.getItem('previous_words') || null);
-    words.push(word);
-    localStorage.setItem('previous_words', words);
-    // here is where I want to check if I am logged in and if I am not, do nothing 
-    // but if I am logged in, then send the word to the server and do the rest after 
-    resp = sendAndReceiveXML("word=" + word)
+//@Parent: maintainLinks
+function checkSessionEnded(debug_session_done){
+    resp = sendAndReceiveXML(`end=true`)
+    renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
+    //If user has completed all prompts
+    if(resp.hasOwnProperty('session_done') || debug_session_done){
+        tallyScreen(resp.prompts, resp.i, resp.jumpsA)
+    }
+    else {
+    renderToFrom(resp.prompt);
     renderLinks(resp.prompt, resp.results)
-    renderPrompts(resp.prompts,resp.i, resp.jumpsA, resp.jumps)
+    console.log('[checkSessionEnded] Rendering prompts..')
+    renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
     activateLinks()
+    }
+}
+
+// function postWord(word) {
+//     console.log('postWord called with word:', word)
+//     resp = sendAndReceiveXML("word=" + word)
+//     renderLinks(resp.prompt, resp.results)
+//     renderPrompts(resp.prompts,resp.i, resp.jumpsA, resp.jumps)
+//     activateLinks()
+// }
+
+//activates links on the page
+function activateLinks(){
+    ws_texts = ws_to_text()
+    ws_array.map(function(el, i){el.onclick = function() {
+        postWord(ws_texts[i], el);
+    }})
+}
+
+function postWord(word, clickedElem, use_animations=USE_ANIMATIONS) {
+    const resp = sendAndReceiveXML("word=" + word);
+    if (!use_animations) {
+        renderLinks(resp.prompt, resp.results)
+        if (word !== resp.prompt[1]) {
+        renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
+        }
+        activateLinks()
+    } else {
+        const wordspace = document.getElementById("wordspace");
+        function sendXMLAfterAnimation(word, resp) {
+            console.log('resp')
+            console.log(resp);
+            prompts = resp.prompts;
+            prompt_idx = resp.i;
+            jumpsA = resp.jumpsA;
+            jumps = resp.jumps;
+            console.log(`[postWord] prompts: ${prompts}, prompt_idx: ${prompt_idx}, jumpsA: ${jumpsA}, jumps: ${jumps}`);
+            renderLinks(resp.prompt, resp.results);
+            console.log('[postWord] Rendering prompts..')
+            if (word !== resp.prompt[1]) {
+                renderPrompts(prompts, prompt_idx, jumpsA, jumps);
+            }
+            activateLinks();
+        }
+        animateToCenter(clickedElem, wordspace, sendXMLAfterAnimation, word, resp);
+    }
 }
