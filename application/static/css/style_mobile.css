@@ -2,10 +2,13 @@
     body {
         overflow-y: hidden;
     }
+    #global{
+    }
     #wordspace {
         width: 100vw;
-        height: 55vh;
-        padding: 3em 5em;
+        height: 60vh;
+        /*       top  left   bottom    right */
+        padding: 2.4rem 0.5rem 2.1rem 1.8rem;
         /* display: grid; 
         justify-items: center;
         justify-content: end; */
@@ -14,22 +17,24 @@
         padding: 0 1em;
         margin: 0 0;
     }
+    #settings p {
+        font-size: 1.1rem;
+    }
+    #settings span{ font-size: 1.4rem; }
     
     #prompts {
         width: 100vw; 
-        padding: 3vh 2em;
-        min-height: 20vh;
+        min-height: 30vh;
         max-height: 40vh;
         justify-content: flex-start;
-        padding: 2em 2em;
+        padding: 1rem;
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        height: 85vh;
     }
 
     #prompts p {
-        font-size: 2.2em;
+        font-size: 1.3rem;
     }
 
     .prompt-box {
@@ -37,29 +42,18 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        min-height: 4vh;
-        font-size: 1vh;
+        min-height: 4.5vh;
     }
-
-    .prompt-box {
-        outline: 1px solid var(--border-color);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 4vh;
-        font-size: 1vh;
-    }
-
     .switch, .game-icon {
         padding: 0.5em 0em;
         align-items: top;
         justify-content: center;
     }
     .switch {
-            font-size: 5em
+            font-size: 2rem;
     }
     .game-icon {
-        width: 6em;
+        width: 2rem;
     }
     #global {display: flex; flex-wrap: wrap;}
     #wordspace button {
@@ -68,10 +62,10 @@
     justify-content: center;
     }
     #wordspace span {
-        font-size: 1.5em !important;
+        font-size: 1.35rem !important;
     }
     #wordspace button {width: 25vw !important;}
-    span, p{ font-size: 3em; }
+
 
     /* ************ */
     /* Help screen */
@@ -80,7 +74,8 @@
         width: 90vw;
         height: 80vh;
     }
-    .help_container {
+    .help-container {
+        max-width: 100%;
         background-color: var(--background-color);
         display: flex;
         flex-wrap: nowrap;
@@ -88,6 +83,9 @@
         flex-direction: column;
         align-items: center;
         z-index: 2;
+    }
+    .switchContainer {
+        min-width: 0em;
     }
     #modal h1 {
         font-size: 5rem;
@@ -103,24 +101,26 @@
         text-align: center;
     }
     .help-text .--grayed-out {
-        font-size: 2.5em;
+        font-size: 1rem;
+    }
+    .help-buttons {
+        flex-wrap: wrap;
     }
 
     .help button {
         background-color: var(--background-color);
         color: var(--text-color);
-        font-size: 2.5em;
-        padding: 0.5em 2em;
+        font-size: 1rem;
+        padding: 0.5rem 2rem;
         border: none;
-        border-radius: 1.5em;
+        border-radius: 1.5rem;
         cursor: pointer;
         transition: background 0.2s;
         outline: 1px solid var(--border-color);
-        margin-top: 1.5em;
     }
 
     .help-text p{
-        font-size: 2.5em;
+        font-size: 1rem;
         margin: 1em 0em;
     }
 }

@@ -61,6 +61,18 @@ html {
     z-index: 2;
 }
 
+#help-close {
+   position: absolute; 
+   top: 1rem; 
+   right: 3rem;
+   font-size: 4em;
+   background: transparent;
+   color: var(--text-color);
+   border: none;
+   outline: none;
+   cursor: pointer;
+}
+
 .help-container {
     background-color: var(--background-color);
     justify-content: space-around;
@@ -237,11 +249,11 @@ button span {
     font-size: 1.3em;
 }
 
-
+    /*       top  left   bottom    right */
 #wordspace {
     width: 77vw;
     height: 85vh;
-    padding: 9vh 9vh 8vh 20vh;
+    padding: 9vh 12vh 8vh 23vh;
     display: grid;
     grid-template-columns: 1fr 1.5fr 1fr;
     grid-template-rows: 1fr 1fr 1fr 1.3fr 1fr 1fr 1fr;
@@ -344,11 +356,6 @@ button span {
         max-height: 70vh;
         margin: 0 auto;
 }
-#modalText {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
 
 #modal div {
         background: var(--background-color);
@@ -429,6 +436,14 @@ button span {
 .rainbow_text_animated:hover {
 overflow: hidden;
 opacity: 1;
+}
+
+
+
+#modalText {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .rainbow_text_animated {

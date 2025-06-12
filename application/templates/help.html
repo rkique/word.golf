@@ -1,9 +1,11 @@
 <script>
     function beginTutorial() {
         localStorage.setItem('is_help', 'true');
+        
         toggleElement('help');
-        resp = sendAndReceiveXML(`help=true`);
+        resp = sendAndReceiveXML(`help=true`)
         renderToFrom(resp.prompt);
+        document.querySelector('.prompt-box').style.border = '1px solid var(--border-color)';
         renderLinks(resp.prompt, resp.results)
         console.log('[reportSessionEnded] Rendering prompts..')
         renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
