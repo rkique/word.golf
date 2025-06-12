@@ -20,15 +20,23 @@ function editSession(jumpsAValue, jumpsValue, result_value, i, prompt_text) {
 }
 
 function sendAndReceiveXML(message) {
+    // alert(`[sendAndReceiveXML] Sending message: ${message}`);
     let xhttp = new XMLHttpRequest();
     xhttp.open("POST", '/', false);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    
     xhttp.send(message);
     resp = {}
-    if (message.startsWith('end')) {
+    console.log(`[sendAndReceiveXML] Response from ${message}: `, xhttp.responseText);
+    if (message.startsWith('end')) 
+        {
         let prompt_count = parseInt(localStorage.getItem('current_prompt')) || 0;
         localStorage.setItem('current_prompt', prompt_count + 1);
+        }
+    if (xhttp.responseText.startsWith("help_session_done")) {
+        j = JSON.parse(xhttp.responseText.substring(17));
+        j['help_session_done'] = 1
+        console.log("[help_session_done] Session is done, returning jumps and results")
+        return j
     }
     if (xhttp.responseText.startsWith("session_done"))
     {
@@ -42,17 +50,21 @@ function sendAndReceiveXML(message) {
             response_text = JSON.parse(xhttp.responseText);
             // console.log("here is the flag")
             // console.log(flag)
-            jumps = JSON.parse(xhttp.responseText)["jumps"];
-            jumpsA = JSON.parse(xhttp.responseText)["jumpsA"];
-            results = JSON.parse(xhttp.responseText)["results"];
+            jumps = response_text["jumps"];
+            jumpsA = response_text["jumpsA"];
+            results = response_text["results"];
+            prompts = response_text["prompts"];
+            current_prompt = response_text["i"];
             localStorage.setItem('jumps', jumps)
             localStorage.setItem('jumpsA', jumpsA)
             localStorage.setItem('results', results)
-            console.log(`[session not done] returning jumps ${jumps} jumpsA ${jumpsA} results ${results}`);
-            return JSON.parse(xhttp.responseText);
+            localStorage.setItem('prompts', prompts)
+            localStorage.setItem('current_prompt', current_prompt)
+            console.log(response_text)
+            return response_text;
         } catch (e) {
-            
-            alert(e)
+            alert('Error in backend. Please check logs.')
+            console.log(e)
         }
     }
     xhttp.onreadystatechange = function () {

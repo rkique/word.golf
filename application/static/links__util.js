@@ -19,7 +19,13 @@ function ws_to_text(){
 //Checks if the middle element is the target.
 function sessionEnded(prompt){
     ws_texts = ws_to_text()
-    return ws_texts[10] == prompt[1]
+    if (ws_texts.length < 21) {
+        return false
+    }
+    middle_idx = Math.floor(ws_texts.length / 2)
+    let isSessionOver = ws_texts[middle_idx] == prompt[1]
+    return isSessionOver
+
 }
 
 function freezeScreen(){
@@ -29,5 +35,5 @@ function freezeScreen(){
 
 function showScreen(){
     document.body.innerHTML = localStorage.getItem('screen')
-    console.log("Screen restored from localStorage")
+    console.log("[showScreen] Screen restored from localStorage")
 }

@@ -5,6 +5,7 @@
     #wordspace {
         width: 100vw;
         height: 55vh;
+        padding: 3em 5em;
         /* display: grid; 
         justify-items: center;
         justify-content: end; */
@@ -26,14 +27,11 @@
         justify-content: flex-start;
         height: 85vh;
     }
-    .prompt p:nth-child(1) {
-        margin-left: auto;
-        text-align: right;
-    }
 
     #prompts p {
         font-size: 2.2em;
     }
+
     .prompt-box {
         outline: 1px solid var(--border-color);
         display: flex;
@@ -91,8 +89,18 @@
         align-items: center;
         z-index: 2;
     }
-    .help_container h1 {
-        font-size: 4.2em;
+    #modal h1 {
+        font-size: 5rem;
+    }
+    #modal p {
+        font-size: 3rem;
+        margin: 0 0;
+    }
+    #modal button {
+        font-size: 3rem;
+    }
+    #modal p {
+        text-align: center;
     }
     .help-text .--grayed-out {
         font-size: 2.5em;

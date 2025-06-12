@@ -1,27 +1,32 @@
 <!DOCTYPE html>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css" />
 <link rel="stylesheet" href="static/css/style_animated.css">
 <link rel="stylesheet" href="static/css/style.css">
 <link rel="stylesheet" href="static/css/style_mobile.css">
-<script src="static/util/dark_mode.js"></script>
+<script src="static/util/colors.js"></script>
 <script src="static/util/help.js"></script>
 
-
+{% include 'modal.html' %}
 {% include 'settings.html' %}
 
-
 <div id="global">
-{% include 'help.html' %}
-{% include 'game_over_modal.html' %}
+    {% include 'help.html' %}
 
-<div id="wordspace-container"><div id="wordspace"></div></div>
-<div id="prompts-container"> <div id="prompts">
-    <div class="prompt-box"> Prompt1 </div>
-    <div class="prompt-box"> Prompt2 </div>
-    <div class="prompt-box"> Prompt3  </div>
-    <div class="prompt-box"> Prompt4 </div>
-    <div class="prompt-box"> Prompt5</div>
-</div></div>
+    <div id="wordspace-container">
+        <div id="wordspace"></div>
+    </div>
+    <div id="prompts-container">
+        <div id="prompts">
+            <div class="prompt-box"> Prompt1 </div>
+            <div class="prompt-box"> Prompt2 </div>
+            <div class="prompt-box"> Prompt3 </div>
+            <div class="prompt-box"> Prompt4 </div>
+            <div class="prompt-box"> Prompt5</div>
+        </div>
+    </div>
 
 </div>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z90RQN4KLB"></script>
@@ -37,60 +42,79 @@
 </script>
 <script src="static/is_game_complete.js"> </script>
 <script>
-    if(data['date'] == localStorage.getItem('lastComplete')) {
-    showScreen()   
+    function loadLocalStorage() {
+        let prompt_idx = parseInt(localStorage.getItem('current_prompt')) || 0;
+        let jumpsA = string_to_list(localStorage.getItem('jumpsA') || null);
+        let jumps = parseInt(localStorage.getItem('jumps')) || 0;
+        let results = string_to_list(localStorage.getItem('results') || null);
+        let prompts = localStorage.getItem('prompts');
+        let start_target = prompts.split(',').slice(prompt_idx, prompt_idx + 2);
+        console.log(`Loading from local storage: prompt_idx: ${prompt_idx}, jumpsA: ${jumpsA}, jumps: ${jumps}, results: ${results}, start_target: ${start_target}, prompts: ${prompts}`);
+        return { jumpsA, jumps, results, prompt_idx, start_target, prompts };
+    }
+
+    //if the user has never completed the help sequence before, 
+    //use a help_session.
+    if (!localStorage.getItem('current_date') || localStorage.getItem('is_help') == 'true') {
+        localStorage.setItem('is_help', 'true');
+        data = sendAndReceiveXML(`help=true`);
+    }
+
+
+    if (localStorage.getItem('lastComplete') && data['date'] == localStorage.getItem('lastComplete')) {
+        showScreen();
     }
     else {
-// window.addEventListener('DOMContentLoaded', () => {
-    //     fetch("https://word-golf-backend.onrender.com", {
-    //         method: "GET",
-    //         credentials: "include"
-    //     })
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         console.log(data.message);
+        function string_to_list(list) {
+            return list ? list.split(',').map(item => item.trim()) : [];
+        }
 
-    //     });
-    // });
+        function string_to_prompt_list(str) {
+            if (!str) return [];
+            const arr = str.split(',').map(s => s.trim());
+            let result = [];
+            for (let i = 0; i < arr.length; i += 2) {
+                result.push(arr.slice(i, i + 2));
+            }
+            return result;
+        }
+        let jumpsA = [], jumps = 0, results = [], prompt_idx = 0, start_target = [], prompts = [];
 
-    // this is the value from local storage which is the i value (states which prompt I am currently on)
-    let prompt_idx = parseInt(localStorage.getItem('current_prompt')) || 0;
+        if (localStorage.getItem('results')) {
+            console.log('Loading from local storage');
+            let loaded = loadLocalStorage();
+            jumpsA = loaded.jumpsA;
+            jumps = loaded.jumps;
+            results = loaded.results;
+            prompt_idx = loaded.prompt_idx;
+            prompts = string_to_prompt_list(loaded.prompts);
+            start_target = prompts[prompt_idx]
+        } else {
+            console.log('Loading from data');
+            jumpsA = data['jumpsA'] || [];
+            jumps = data['jumps'] || 0;
+            results = data['results'] || [];
+            prompt_idx = data['prompt_idx'] || 0;
+            prompts = data['prompts'] || '';
+            start_target = prompts[prompt_idx];
+        }
 
-    // this is a function that accesses local storage and then converts the value to a list.
-    function string_to_list(list) {
-        return list ? list.split(',').map(item => item.trim()) : [];
+
+        console.log(`[final] jumpsA: ${jumpsA}, jumps: ${jumps}, results: ${results}, prompt_idx: ${prompt_idx}, start_target: ${start_target}, prompts: ${prompts}`);
+        _ = editSession(jumpsA, jumps, results, prompt_idx, start_target);
+
+        if (prompt_idx == 5) {
+            renderToFrom(prompts[4])
+        } else {
+            renderToFrom(start_target)
+        }
+        console.log(`[From index] prompts: ${prompts}, i: ${prompt_idx}, local_jumpsA: ${jumpsA}, jumps: ${jumps}`);
+        renderPrompts(prompts, prompt_idx, jumpsA, jumps)
+        renderLinks(start_target, results)
+        activateLinks()
+        localStorage.setItem('current_date', data['date']);
     }
 
-    // We're loading local storage values if they exist (they wouldn't on first load).
-
-    let local_jumpsA = string_to_list(localStorage.getItem('jumpsA') || null)
-    let local_results = string_to_list(localStorage.getItem('results') || null)
-    let jumps = parseInt(localStorage.getItem('jumps')) || 0;
-    
-    let prompt = data['prompt'].toString()
-    let prompts = data['prompts']
-    start_target = data['prompts'][prompt_idx];
-
-    // Backend: edit variables updated from local storage.
-    _ = editSession(local_jumpsA, jumps, local_results, prompt_idx, start_target);
-
-    // use local results if they exist, else use backend
-    let results = local_results.length ? local_results : data["results"];
-    
-    if (prompt_idx == 5) { //indicating complete game.
-        renderToFrom(data['prompts'][4])
-    } else {
-        renderToFrom(start_target)
-    }
-    console.log(`[From index] prompts: ${prompts}, i: ${prompt_idx}, local_jumpsA: ${local_jumpsA}, jumps: ${jumps}`);
-    
-    renderPrompts(prompts, prompt_idx, local_jumpsA, jumps)
-    renderLinks(start_target, results)
-    activateLinks()
-
-    localStorage.setItem('current_date', data['date']);
-    }
-    
 
 </script>
 

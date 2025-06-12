@@ -49,8 +49,8 @@ function makeDonePromptTag(start_target, jumps) {
 //     done.map((promptText, i) => prompts.append(makeDonePromptTag(promptText, jumpsA[i])))
 
 function renderPrompts(promptTexts, i, jumpsA, current_jumps) {
-    console.log(`renderPrompts: ${promptTexts}, i: ${i}, jumpsA: ${jumpsA}`);
 
+    console.log(`renderPrompts: ${promptTexts}, i: ${i}, jumpsA: ${jumpsA}`);
     // get all prompt-box elements
     const promptBoxes = document.querySelectorAll('#prompts .prompt-box');
 
@@ -68,6 +68,7 @@ function renderPrompts(promptTexts, i, jumpsA, current_jumps) {
     // update current prompt
     if (i < promptTexts.length && promptBoxes[i]) {
         const current = promptTexts[i];
+        console.log(`Current promptText: ${current}, jumps: ${current_jumps}`);
         current_jumps = current_jumps || 0;
         promptBoxes[i].style.border = '2px solid var(--text-color)';
         const currentTag = makePromptTag(current, current_jumps);

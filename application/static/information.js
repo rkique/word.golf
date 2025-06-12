@@ -1,3 +1,6 @@
+
+HELP_FINISH_DELAY_MS = 1000
+
 /**
  * Creates a prompt header e.g. go from "vigor" to "workout"
  * @param {string} prompt
@@ -14,6 +17,7 @@ function makePromptInfo(start_target) {
  * @returns {void}
  */
 function renderToFrom(start_target){
+    // console.log("renderToFrom called with start_target:");
     let information = /** @type {HTMLElement} */ (document.getElementById("information"));
     clearChildren(information);
     let promptInfoEl = makePromptInfo(start_target);
@@ -59,11 +63,17 @@ function update_database_with_finish(totalJumps, last_complete) {
     });
 }
 
-function renderFinish(jumpsA) {
-    const gameOverModalEl = document.getElementById('gameOverModal');
-    const gameOverText = document.getElementById('gameOverText');
-    gameOverModalEl.style.display = 'flex';
+function displayModalText(innerHTML){
+    const modalEl = document.getElementById('modal');
+    clearChildren(modalEl);
+    const modalText = document.createElement('p');
+    modalText.id = 'modalText';
+    modalEl.appendChild(modalText);
+    modalText.innerHTML = innerHTML
+    modalEl.style.display = 'flex';
+}
 
+function renderFinish(jumpsA) {
     const totalJumps = jumpsA.reduce((sum, jumps) => sum + jumps, 0);
 
     const currentDate = new Date(localStorage.getItem('current_date'));
@@ -75,11 +85,36 @@ function renderFinish(jumpsA) {
 
     const currentStreak = parseInt(localStorage.getItem('streak')) || 1;
     const newStreak = isSameDay ? currentStreak : shouldResetStreak ? 1 : currentStreak + 1;
-
     localStorage.setItem('streak', newStreak);
-
-    // update the database with the new streak as well as last_complete date
     update_database_with_finish(totalJumps, currentDate);
+    finish_text = `<h1>Summary</h1><p>Jumps: ${totalJumps}</p> <p>Streak: ${newStreak} days.</p> <button onclick="document.getElementById('modal').style.display='none'">Close</button>`;
+    displayModalText(finish_text);
+}
 
-    gameOverText.innerHTML = `You completed today's word.golf in ${totalJumps} jumps. Streak: ${newStreak} days.`;
+function startGame() {
+    document.getElementById('modal').style.display = 'none';
+    resp = sendAndReceiveXML('redirect=true');
+    renderToFrom(resp.prompt);
+    renderLinks(resp.prompt, resp.results)
+    console.log('[reportSessionEnded] Rendering prompts..')
+    renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
+    activateLinks()
+}
+
+function renderHelpFinish(){
+    const modalEl = document.getElementById('modal');
+    help_finish_text = `<p>Good luck!</p><br><button id="startGameBtn" onclick="startGame()">Start Game</button>`;
+
+    localStorage.setItem('is_help', 'false');
+    localStorage.removeItem('jumps');
+    localStorage.removeItem('jumpsA');
+    localStorage.removeItem('prompt');
+    localStorage.removeItem('prompts');
+    localStorage.removeItem('results');
+
+    setTimeout(() => {
+        displayModalText(help_finish_text)
+    }, HELP_FINISH_DELAY_MS);
+
+    //now we need to set the button to load the prompts.
 }

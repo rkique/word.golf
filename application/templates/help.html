@@ -1,16 +1,30 @@
+<script>
+    function beginTutorial() {
+        localStorage.setItem('is_help', 'true');
+        toggleElement('help');
+        resp = sendAndReceiveXML(`help=true`);
+        renderToFrom(resp.prompt);
+        renderLinks(resp.prompt, resp.results)
+        console.log('[reportSessionEnded] Rendering prompts..')
+        renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
+        activateLinks()
+    }
+    toggleElement('help')
+</script>
 <div id="help" class="help" style="display: none;">
-    <div class="help_container">
+    <div class="help-container">
             <h1>How to play</h1>
         <div class='help-text'>
-            <p>Link a start word to a target word.</p>
+            <p>Link a start word to a target word by clicking on neighbors.</p>
             <p class='--grayed-out'>cement ⟶ lumber ⟶ forests ⟶ woodlands</p>
             <p>Choose carefully! Each target can be reached in two jumps.</p>
             <p class='--grayed-out'>fountain ⟶ piers ⟶ coastline</p>
             <p>Five prompts are released each day.</p>
         </div>
-        <div class="flex">
+        <div class="help-buttons">
         <button onclick="toggleElement('help')" class="switch switch--outlined">play</button>
         <button onclick="window.location.href='/login'" class="switch switch--outlined">login</button>
+        <button onclick="beginTutorial()" class=" switch switch--outlined ">tutorial</button>
         </div>
     </div>
 </div>

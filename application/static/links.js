@@ -1,22 +1,71 @@
-USE_ANIMATIONS = false
+const USE_ANIMATIONS = false
+const HELP_STEPS = [
+            {
+                prompt: ['outside', 'layer'],
+                result: 'outside',
+                message: "(1/5) Jump to a target word by clicking neighbors.",
+                focus: 'beneath'
+            },
+            {
+                prompt: ['outside', 'layer'],
+                result: 'beneath',
+                message: "(2/5) Choose words as close as possible to the target.",
+                focus: 'surface'
+            },
+            {
+                prompt: ['outside', 'layer'],
+                result: 'surface',
+                message: "(3/5) Complete your first connection!",
+                focus: 'layer'
+            },
+            {
+                prompt: ['mercury', 'razor'],
+                result: 'mercury',
+                message: "(4/5) Each prompt can be completed in two jumps.",
+                focus: 'toothpaste'
+            },
+            {
+                prompt: ['mercury', 'razor'],
+                result: 'toothpaste',
+                message: "(5/5) Five new prompts each day!",
+                focus: 'razor'
+            }
+        ];
+
+function focusLink(targetText) {
+    const links = Array.from(document.getElementsByClassName("link"));
+    let middleWords = [...new Set(HELP_STEPS.map(step => step.result))];
+    console.log(middleWords)
+    links.forEach(link => {
+        const text = link.innerText.trim();
+        if (text === targetText) {
+            // link.style.outline = "2px solid rgb(0, 217, 43)";
+            link.style.outlineOffset = "2px";
+            // link.style.transition = "none";
+            // link.style.transform = "none";
+            link.classList.remove("link--disabled-2");
+        } else if (links.indexOf(link) !== 10) {
+            link.style.outline = "";
+            link.style.outlineOffset = "";
+            link.classList.add("link--disabled-2");
+        }
+    });
+}
+function showHelpPopup(message) {
+    document.getElementById("information").innerHTML = 
+    `<p>${message}</p>`
+}
 
 /* makes and renders links */
-
 function makeLink(prompt,word) {
     let link = document.createElement("button");
     let span = document.createElement("span")
     span.innerText = word;
-    /*if (word.length < 20){span.style.fontSize = "1.5em"}
-    if (word.length < 12){span.style.fontSize = "2.5em"}
-    if (word.length < 10){span.style.fontSize = "3em"}
-    if (word.length < 8){span.style.fontSize = "3.75em"}*/
     link.appendChild(span)
     link.className = "link"
     if(prompt[1] == word) 
         {
             link.className = "link link--target rainbow_text_animated"
-            // console.log("I GOT TO THE TARGET WORD FINALLY");
-            // so this is where makeLink is called 
         }
     return link
 }
@@ -26,6 +75,7 @@ function makeStartLink(prompt, word){
     startLink.className = "link link--disabled link--starting"
     return startLink
 }
+
 
 function tallyScreen(prompts, i, jumpsA){
     renderFinish(jumpsA)    
@@ -47,6 +97,21 @@ function tallyScreen(prompts, i, jumpsA){
     });
     freezeScreen()
 }
+function arrayEqual(a, b) {
+    return Array.isArray(a) && Array.isArray(b) &&
+           a.length === b.length &&
+           a.every((val, index) => val === b[index]);
+}
+function addHelpFocuses(prompt, results){
+    middleIdx = Math.floor(results.length / 2)
+        for (const step of HELP_STEPS) {
+            if (arrayEqual(prompt, step.prompt) && results[middleIdx] === step.result) {
+                showHelpPopup(step.message);
+                focusLink(step.focus);
+                break;
+            }
+        }
+}
 
 //@Parent: postWord
 function renderLinks(prompt, results, debug_session_done = false) {
@@ -60,24 +125,32 @@ function renderLinks(prompt, results, debug_session_done = false) {
             wordspace.append(makeLink(prompt, result))
         }
     })
+    addHelpFocuses(prompt, results)
     if(sessionEnded(prompt) || debug_session_done){
     disableLinks()
-    checkSessionEnded(debug_session_done)
+    reportSessionEnded(debug_session_done)
     }
 }
 
 //@Parent: maintainLinks
-function checkSessionEnded(debug_session_done){
-    resp = sendAndReceiveXML(`end=true`)
+function reportSessionEnded(debug_session_done) {
+    if (localStorage.getItem('is_help') == "true") {
+        resp = sendAndReceiveXML(`help_end=true`)
+    } else {
+        resp = sendAndReceiveXML(`end=true`)
+    }
     renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
     //If user has completed all prompts
-    if(resp.hasOwnProperty('session_done') || debug_session_done){
+    if (resp.hasOwnProperty('help_session_done')){
+        renderHelpFinish()
+    }
+    else if (resp.hasOwnProperty('session_done') || debug_session_done){
         tallyScreen(resp.prompts, resp.i, resp.jumpsA)
     }
     else {
     renderToFrom(resp.prompt);
     renderLinks(resp.prompt, resp.results)
-    console.log('[checkSessionEnded] Rendering prompts..')
+    console.log('[reportSessionEnded] Rendering prompts..')
     renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
     activateLinks()
     }
@@ -100,7 +173,9 @@ function activateLinks(){
 }
 
 function postWord(word, clickedElem, use_animations=USE_ANIMATIONS) {
+
     const resp = sendAndReceiveXML("word=" + word);
+
     if (!use_animations) {
         renderLinks(resp.prompt, resp.results)
         if (word !== resp.prompt[1]) {
@@ -109,8 +184,8 @@ function postWord(word, clickedElem, use_animations=USE_ANIMATIONS) {
         activateLinks()
     } else {
         const wordspace = document.getElementById("wordspace");
-        function sendXMLAfterAnimation(word, resp) {
-            console.log('resp')
+        function renderXMLAfterAnimation(word, resp) {
+            console.log('[postWord] resp')
             console.log(resp);
             prompts = resp.prompts;
             prompt_idx = resp.i;
@@ -124,6 +199,6 @@ function postWord(word, clickedElem, use_animations=USE_ANIMATIONS) {
             }
             activateLinks();
         }
-        animateToCenter(clickedElem, wordspace, sendXMLAfterAnimation, word, resp);
+        animateToCenter(clickedElem, wordspace, renderXMLAfterAnimation, word, resp);
     }
 }

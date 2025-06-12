@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 import ast
 from .utils import get_prompts, txt_to_list, txt_to_dict
+from flask import redirect
 
 
 prompt_neighbor_dict = get_prompts(txt_to_list("application/data/neighbors.txt"))
@@ -14,7 +15,10 @@ PROMPTS = list(prompt_neighbor_dict.keys())
 NEIGHBORS = list(prompt_neighbor_dict.values())
 
 PCOUNT = 5
-DAYS = 0
+DAYS = 12
+
+HELP_PROMPTS = [["outside", "layer"],["mercury", "razor"]]
+HELP_NEIGHBORS = ["underneath", "toothpaste"]
 
 # session['data'] will be the SSoT
 
@@ -71,6 +75,28 @@ def jump(start : str) -> str:
     session['data'] = json.dumps(_data)
     return json.dumps(_data)
 
+def make_help_session():
+    """
+    Creates a custom session data object with two (prompt, neighbor) tuples:
+    ([outside, layer], (underneath)) and ([mercury, razor], toothpaste).
+    Uses get_curve to compute results for the first prompt.
+    """
+    prompt1 = HELP_PROMPTS[0]
+    neighbor1 = HELP_NEIGHBORS[0]
+    # Compute results for the first prompt
+    results = get_curve(prompt1[0], prompt1[1], PRECOMPUTED, WV, neighbor=neighbor1)
+
+    data = {
+        'jumpsA': [],
+        'jumps': 0,
+        'i': 0,
+        'date': today.strftime('%Y-%m-%d') if today else datetime.datetime.today().strftime('%Y-%m-%d'),
+        'prompt': prompt1,
+        'prompts': HELP_PROMPTS,
+        'results': results,
+        'is_help': True
+    }
+    return json.dumps(data)
 
 def shift_to(i):
     '''
@@ -83,6 +109,7 @@ def shift_to(i):
         results = get_curve(prompt[0], prompt[1], PRECOMPUTED, WV, neighbor=neighbor)
 
     except IndexError:
+        print(f"Index {i} out of range for prompts_today or neighbors_today.")
         prompt,neighbor,results = None, None, None
 
     return json.dumps({
@@ -93,6 +120,23 @@ def shift_to(i):
         'prompt': prompt,
         'prompts': prompts_today,
         'results': results})
+
+def help_shift(data):
+    data['jumpsA'].append(data['jumps'])
+    data['jumps'] = 0
+    i = data['i'] + 1
+    data['i'] = i
+    #(in case there was a reload)
+    data['prompts'] = HELP_PROMPTS
+    data['neighbors'] = HELP_NEIGHBORS
+
+    neighbor = data['neighbors'][i]
+    prompt = data['prompts'][i]
+    data['prompt'] = prompt
+    results = get_curve(prompt[0], prompt[1], 
+    PRECOMPUTED, WV, neighbor=neighbor)
+    data['results'] = results
+    return data
 
 def save_activity():
     '''
@@ -107,14 +151,15 @@ def save_activity():
 #Load both data and time once at the starting screen.
 @app.route('/')
 def index():
+    print('/ Starting Fresh..')
     load_data()
     load_time()
     session['i'] = 0
     session['jumpsA'] = []
     assert WV is not None, "Word vectors not loaded"
     session['data'] = shift_to(session['i'])
-    # session['data']
     return render_template('index.html', data=json.loads(session.get('data')))
+
 
 @app.route('/editsession', methods=['POST']) 
 def sesh_edit(): 
@@ -167,11 +212,8 @@ def sesh_edit():
             
             session['data'] = json.dumps(data)
 
-
-
-            
     except Exception as e: 
-        print("Error in /editsesh:", e)
+        print("Error in /editsession:", e)
         
     # print("Session after edit:", session)
     return make_response(session.get('data', {}))
@@ -188,16 +230,42 @@ def resetpassword():
 
 @app.route('/', methods=['POST'])
 def index_post():
-    try:
-        if request.form['end'] is not None:
-            print(f"shifting to prompt {session['i']+1}")
-            save_activity()
-            session['i'] = session['i']+1
-            session['data'] = shift_to(session['i'])
-            if (session['i'] == PCOUNT):
-                return make_response("session_done" 
-                + session.get('data'))
-    except:
-        session['data'] = jump(request.form['word'])
-    # print("Session data:", session.get('data'))
+    if request.form.get('help') is not None:
+        session['data'] = make_help_session()
+        print('[/] Help Session')
+    
+    elif request.form.get('help_end') is not None:
+        data = json.loads(session.get('data'))
+        print(f"[/] Next Help Prompt ({data['i']+1}/{len(data['prompts'])})")
+        if data['i'] == len(data['prompts']) - 1:
+            print('[/] Finished Help')
+            data['is_help'] = False
+            data['i'] += 1
+            data['jumpsA'].append(data['jumps'])
+            data['jumps'] = 0
+            session['data'] = json.dumps(data)
+            return make_response("help_session_done" + session.get('data'))
+        else:
+            data = help_shift(data)
+            session['data'] = json.dumps(data)
+
+    elif request.form.get('end') is not None:
+        print(f"[/] Shifting to Prompt {session['i']+1}")
+        save_activity()
+        session['i'] = session['i']+1
+        session['data'] = shift_to(session['i'])
+        if (session['i'] == PCOUNT):
+            return make_response("session_done" + session.get('data'))
+        
+    elif request.form.get('word') is not None:
+        print(f"[/] Jumping: {request.form.get('word')}")
+        session['data'] = jump(request.form.get('word'))
+
+    elif request.form.get('redirect') is not None:
+        print('[/] Redirecting to start...')
+        session['data'] = shift_to(0)
+        return make_response(json.loads(session['data']))
+    else:
+        print("[/] ERROR (None of the Above...) ", request.form)
+
     return make_response(session.get('data'))

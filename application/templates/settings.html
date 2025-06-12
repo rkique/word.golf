@@ -1,4 +1,5 @@
 <script>
+    //NB: flex is assumed to be default display mode
     function toggleElement(id) {
         const el = document.getElementById(id); 
         el.style.display = (el.style.display === 'flex') ? 'none' : 'flex';
@@ -6,6 +7,7 @@
 </script>
 <div id="settings">
     <div id="information">
+    <p>(1/5) Jump to a target word by clicking neighbors.</p>
     </div>
     <div class="switchContainer">
     <button onclick='changeColorMode()' class="switch">◐</button>
