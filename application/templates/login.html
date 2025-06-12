@@ -1,52 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
+
+<style>
+  #loginForm, #createUserForm {
+    font-size: 2.2rem;
+    min-width: 35vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  h1, h2{
+    font-size: 2.2rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+    margin-bottom: 0.8rem;
+    line-height: 1.2;
+
+  }
+  .form-row{
+    margin: 0.5rem;
+    font-size: 1.45rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  /* need to override tachyons default */
+  .form-row, button {
+    margin: 0.5rem !important; 
+  }
+
+  .form-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+  }
+
+  /* need to override tachyons default */
+  input {
+    font-size: 2.2rem !important;
+    width: 20rem;
+    color: var(--text-color);
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 0.6rem;
+  }
+  #login-global{
+    justify-content: center;
+    gap: 5vw;
+    min-height: 100vh;
+    align-items: center;
+  }
+
+  .loginContainer, .createUserContainer {
+    padding: 2rem;
+    border-radius: 1.2rem;
+    border: 1px solid var(--border-color);
+    min-width: 40vw;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #login-global > * > *{
+    /* border: 1px solid var(--border-color); */
+  }
+  button {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-size: 0.8rem !important;
+    padding: 1em 3em !important;
+    border: none;
+    border-radius: 1.2rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    outline: 1px solid var(--border-color);
+    margin-top: 1.5em;
+}
+
+</style>
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+{% include 'head.html' %}
 <title>Login / Create User</title>
 </head>
-<body>
+<div id="login-global" class="flex">
+  <body>
+    <div class="loginContainer">
+      <h2>Login</h2>
+      <form id="loginForm">
+        <div class="form-rows">
+          <div class="form-row">
+            <label> Email</label>
+            <input type="text" id="loginEmail" required />
+          </div>
+          <div class="form-row">
+            <label>Password </label>
+             <input type="password" id="loginPassword" required />
+          </div>
+          <div>
+            <button type="submit" class="switch switch--outlined">Continue</button>
+            <!-- <button class="switch switch--outlined" id="logoutBtn">Logout</button> -->
+              <script src="https://accounts.google.com/gsi/client" async></script>
+              <div id="g_id_onload"
+                  data-client_id="YOUR_GOOGLE_CLIENT_ID"
+                  data-login_uri="https://your.domain/your_login_endpoint"
+                  data-auto_prompt="false">
+              </div>
+              <div class="g_id_signin"
+                  data-type="standard"
+                  data-size="large"
+                  data-theme="outline"
+                  data-text="sign_in_with"
+                  data-shape="rectangular"
+                  data-logo_alignment="left">
+              </div>
+            <!-- <button onclick="window.location.href='/resetpassword'" class="switch switch--outlined">Reset Password</button> -->
+          </div>
+        </div>
+    </div>
 
-<h2>Login</h2>
-<form id="loginForm">
-  <label>
-    Email:
-    <input type="text" id="loginEmail" required />
-  </label><br/>
-  <label>
-    Password:
-    <input type="password" id="loginPassword" required />
-  </label><br/>
-  <button type="submit">Login</button>
-</form>
+    </form>
+    <!-- <div class="createUserContainer">
+      <h2>Create User</h2>
+      <form id="createUserForm">
+        <div class="form-rows">
+          <div class="form-row">
+            <label>Email </label>
+            <input type="text" id="createEmail" required />
+          </div>
+          <div class="form-row">
+            <label>Password</label>
+            <input type="password" id="createPassword" required />
+          </div>
+          <div>
+            <button type="submit" class="switch switch--outlined">Create User</button>
+          </div>
+        </div>
+      </form>
+    </div> -->
 
-<hr/>
+    <!-- <button id="getDataBtn" class="switch switch--outlined">Get User Data</button>
+    <pre id="userDataOutput"></pre>
+    <div id="responseMessage" style="color: red; margin-top: 20px;"></div>
+    <button id="getUserHistoryBtn" class="switch switch--outlined">Get User History</button>
+    <pre id="userHistoryOutput"></pre>
+    <pre id="LogoutOutput"></pre>
+     -->
 
-<h2>Create User</h2>
-<form id="createUserForm">
-  <label>
-    Email:
-    <input type="text" id="createEmail" required />
-  </label><br/>
-  <label>
-    Password:
-    <input type="password" id="createPassword" required />
-  </label><br/>
-  <button type="submit">Create User</button>
-</form>
-
-<div id="responseMessage" style="color: red; margin-top: 20px;"></div>
-
-<button id="getDataBtn">Get User Data</button>
-<pre id="userDataOutput"></pre>
-<button id="getUserHistoryBtn">Get User History</button>
-<pre id="userHistoryOutput"></pre>
-<button id="googleLoginBtn">Login with Google</button>
-<button onclick="window.location.href='/'" class="switch switch--outlined">Back to Game</button>
-<button onclick="window.location.href='/resetpassword'" class="switch switch--outlined">Reset Password</button>
-<button id="logoutBtn">Logout</button>
-<pre id="LogoutOutput"></pre>
-
+</div>
 
 <script>
 const backendURL = "http://localhost:7000" // testing 

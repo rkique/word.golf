@@ -344,6 +344,11 @@ button span {
         max-height: 70vh;
         margin: 0 auto;
 }
+#modalText {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
 #modal div {
         background: var(--background-color);
