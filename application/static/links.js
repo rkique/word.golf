@@ -173,6 +173,14 @@ function postWord(word, clickedElem, use_animations=USE_ANIMATIONS) {
 
     const resp = sendAndReceiveXML("word=" + word);
 
+    let still_in_help = localStorage.getItem('is_help') === 'true';
+    if (!still_in_help) {
+        let prev_words = string_to_list(localStorage.getItem('previous_words') || null);
+        prev_words.push(word);
+        // update the previous words in localStorage
+        localStorage.setItem('previous_words', prev_words);
+    }
+
     if (!use_animations) {
         renderLinks(resp.prompt, resp.results)
         if (word !== resp.prompt[1]) {

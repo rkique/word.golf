@@ -77,7 +77,7 @@
     align-items: center;
   }
 
-  input[type="text"]#loginEmail,
+  input[type="email"]#loginEmail,
   input[type="password"]#loginPassword,
   input[type="text"]#loginPassword {
     font-size: 1.1rem !important;  
@@ -213,7 +213,7 @@
         <div class="form-rows">
           <div class="form-row">
             <label> Email</label>
-            <input type="text" id="loginEmail" required />
+            <input type="email" id="loginEmail" required />
           </div>
             <div class="form-row" id="passwordRow" style="display: none;">
               <label>Password </label>
@@ -296,73 +296,83 @@ const backendURL = "http://localhost:7000" // testing
 document.getElementById('togglePassword').addEventListener('click', () => {
   let passwordInput = document.getElementById('loginPassword');
   if (passwordInput.type === 'password') {
-      passwordInput.type = 'text';
-      
-      document.getElementById('togglePassword').src = '../static/images/pass_close_eye.png'; // Change to closed eye icon
+    passwordInput.type = 'text';
+    document.getElementById('togglePassword').src = '../static/images/pass_close_eye.png'; // Change to closed eye icon
   } else {
-      passwordInput.type = 'password';
-      document.getElementById('togglePassword').src = '../static/images/pass_open_eye.png'; // Change to open eye icon
+    passwordInput.type = 'password';
+    document.getElementById('togglePassword').src = '../static/images/pass_open_eye.png'; // Change to open eye icon
   }
 });
 
 document.getElementById("SubmitBtn").addEventListener("click", async (e) => {
   e.preventDefault();
-  const email = document.getElementById("loginEmail").value;
   // I am just mocking this for now, but I will add a password later.
-  document.getElementById("passwordRow").style.display = "flex";
-  const separator = document.querySelector(".separator");
-  if (separator) separator.style.display = "none";
-  const googleSignin = document.querySelector(".g_id_signin");
-  if (googleSignin) googleSignin.style.display = "none";
-  const googleOnload = document.getElementById("g_id_onload");
-  if (googleOnload) googleOnload.style.display = "none";
-  const submitBtn = document.getElementById("SubmitBtn");
-  if (submitBtn) submitBtn.style.display = "none";
+  const email_val = document.getElementById("loginEmail");
+  
+  if (email_val.checkValidity()) {
 
-  // in a real application, make the POST request to the backend to check if the user exists
-  // try {
-  //   const res = await fetch(backendURL + "/user_exist", {
-  //       method: "POST",
-  //       credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
-  //       headers: {
-  //           "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ email }),
-  //   });
-  //   const data = await res.json();
-  //   if (res.ok) {
-  //     if (data.exists) {
-  //       // person exists, show password input and login button
-  //       document.getElementById("responseMessage").style.display = "none";
-  //       document.getElementById("loginPassword").style.display = "block";
-  //       document.getElementById("LoginBtn").style.display = "block";
-  //       document.getElementById("ForgotPasswordBtn").style.display = "block";
-  //       document.getElementById("CreateAccountBtn").style.display = "none";
-  //       document.querySelector("h2").textContent = "Login";
-  //     } else {
-  //       // person does not exist, show create account button
-  //       document.getElementById("responseMessage").style.display = "none";
-  //       document.getElementById("loginPassword").style.display = "block";
-  //       document.getElementById("LoginBtn").style.display = "none";
-  //       document.getElementById("ForgotPasswordBtn").style.display = "none";
-  //       document.getElementById("CreateAccountBtn").style.display = "block";
-  //       document.querySelector("h2").textContent = "Create Account";
-  //     }
-  //   } else {
-  //     document.getElementById("responseMessage").style.display = "block";
-  //     document.getElementById("responseMessage").style.color = "red";
-  //     document.getElementById("responseMessage").textContent = data.error || "Check failed please use another email";
-  //   }
-  // } catch (err) {
-  //   document.getElementById("responseMessage").style.display = "block";
-  //   document.getElementById("responseMessage").style.color = "red";
-  //   document.getElementById("responseMessage").textContent = "Network error";
-  // }
+    let email = email_val.value;
 
-  const loginBtn = document.getElementById("LoginBtn");
-  if (loginBtn) loginBtn.style.display = "block";
-  const forgotPasswordBtn = document.getElementById("ForgotPasswordBtn");
-  if (forgotPasswordBtn) forgotPasswordBtn.style.display = "block";
+    document.getElementById("passwordRow").style.display = "flex";
+    const separator = document.querySelector(".separator");
+    if (separator) separator.style.display = "none";
+    const googleSignin = document.querySelector(".g_id_signin");
+    if (googleSignin) googleSignin.style.display = "none";
+    const googleOnload = document.getElementById("g_id_onload");
+    if (googleOnload) googleOnload.style.display = "none";
+    const submitBtn = document.getElementById("SubmitBtn");
+    if (submitBtn) submitBtn.style.display = "none";
+    // in a real application, make the POST request to the backend to check if the user exists
+    try {
+      const res = await fetch(backendURL + "/user_exist", {
+          method: "POST",
+          credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        if (data.exists) {
+          // person exists, show password input and login button
+          document.getElementById("responseMessage").style.display = "none";
+          document.getElementById("loginPassword").style.display = "block";
+          document.getElementById("LoginBtn").style.display = "block";
+          document.getElementById("ForgotPasswordBtn").style.display = "block";
+          document.getElementById("CreateAccountBtn").style.display = "none";
+          document.querySelector("h2").textContent = "Login";
+        } else {
+          // person does not exist, show create account button
+          document.getElementById("responseMessage").style.display = "none";
+          document.getElementById("loginPassword").style.display = "block";
+          document.getElementById("LoginBtn").style.display = "none";
+          document.getElementById("ForgotPasswordBtn").style.display = "none";
+          document.getElementById("CreateAccountBtn").style.display = "block";
+          document.querySelector("h2").textContent = "Create Account";
+        }
+      } else {
+        document.getElementById("responseMessage").style.display = "block";
+        document.getElementById("responseMessage").style.color = "red";
+        document.getElementById("responseMessage").textContent = data.error || "Check failed please use another email";
+      }
+    } catch (err) {
+      document.getElementById("responseMessage").style.display = "block";
+      document.getElementById("responseMessage").style.color = "red";
+      document.getElementById("responseMessage").textContent = "Network error";
+    }
+  } 
+  else {
+    console.log("invalid email");
+    document.getElementById("responseMessage").style.display = "block";
+    document.getElementById("responseMessage").style.color = "red";
+    document.getElementById("responseMessage").textContent = "Please enter a valid email address";
+  }
+
+  // const loginBtn = document.getElementById("LoginBtn");
+  // if (loginBtn) loginBtn.style.display = "block";
+  // const forgotPasswordBtn = document.getElementById("ForgotPasswordBtn");
+  // if (forgotPasswordBtn) forgotPasswordBtn.style.display = "block";
 
 });
 
@@ -372,69 +382,93 @@ document.getElementById("LoginBtn").addEventListener("click", async (e) => {
   const email = document.getElementById("loginEmail").value;
   const password = document.getElementById("loginPassword").value;
 
-  // Uncomment during production, this is just for testing purposes
-  // try {
-  //   const res = await fetch(backendURL + "/login", {
-  //       method: "POST",
-  //       credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
-  //       headers: {
-  //           "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ email, password }),
-  //   });
-  //   const data = await res.json();
-  //   if (res.ok) {
-  //     document.getElementById("responseMessage").style.color = "green";
-  //     document.getElementById("responseMessage").textContent = data.message || "Login successful!";
-  //     document.getElementById("responseMessage").style.display = "block";
-  //     window.location.href = '/'; // Redirect to the main page after successful login
-  //     // TODO: Redirect or do something on successful login
-  //     // do a redirection to the normal word golf page -> show success message
-  //   } else {
-  //     document.getElementById("responseMessage").style.display = "block";
-  //     document.getElementById("responseMessage").style.color = "red";
-  //     document.getElementById("responseMessage").textContent = data.error || "Login failed";
-  //   }
-  // } catch (err) {
-  //   document.getElementById("responseMessage").style.display = "block";
-  //   document.getElementById("responseMessage").style.color = "red";
-  //   document.getElementById("responseMessage").textContent = "Network error";
-  // }
+  const email_val = document.getElementById("loginEmail");
+  
+  if (email_val.checkValidity()) {
+
+    let email = email_val.value;
+
+    // Uncomment during production, this is just for testing purposes
+    try {
+      const res = await fetch(backendURL + "/login", {
+          method: "POST",
+          credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        document.getElementById("responseMessage").style.color = "green";
+        document.getElementById("responseMessage").textContent = data.message || "Login successful!";
+        document.getElementById("responseMessage").style.display = "block";
+        window.location.href = '/'; // Redirect to the main page after successful login
+        // TODO: Redirect or do something on successful login
+        // do a redirection to the normal word golf page -> show success message
+      } else {
+        document.getElementById("responseMessage").style.display = "block";
+        document.getElementById("responseMessage").style.color = "red";
+        document.getElementById("responseMessage").textContent = data.error || "Login failed";
+      }
+    } catch (err) {
+      document.getElementById("responseMessage").style.display = "block";
+      document.getElementById("responseMessage").style.color = "red";
+      document.getElementById("responseMessage").textContent = "Network error";
+    }
+  }
+  else {
+    console.log("invalid email");
+    document.getElementById("responseMessage").style.display = "block";
+    document.getElementById("responseMessage").style.color = "red";
+    document.getElementById("responseMessage").textContent = "Please enter a valid email address";
+  }
 });
 
 document.getElementById("CreateAccountBtn").addEventListener("click", async (e) => {
   e.preventDefault();
   const email = document.getElementById("loginEmail").value;
   const password = document.getElementById("loginPassword").value;
+  const email_val = document.getElementById("loginEmail");
   
-  // Uncomment during production, this is just for testing purposes
-  // try {
-  //   const res = await fetch(backendURL + "/create_user", {
-  //     method: "POST",
-  //     credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({ email, password }),
-  //   });
-  //   const data = await res.json();
-  //   if (res.ok) {
-  //     document.getElementById("responseMessage").style.color = "green";
-  //     document.getElementById("responseMessage").textContent = data.message || "User created successfully!";
-  //     document.getElementById("responseMessage").style.display = "block";
-  //     window.location.href = '/'; // Redirect to the main page after successful login
-  //     // do something here 
-  //     // do a redirection to the normal word golf page -> show success message
-  //   } else {
-  //     document.getElementById("responseMessage").style.display = "block";
-  //     document.getElementById("responseMessage").style.color = "red";
-  //     document.getElementById("responseMessage").textContent = data.error || "User creation failed";
-  //   }
-  // } catch (err) {
-  //   document.getElementById("responseMessage").style.display = "block";
-  //   document.getElementById("responseMessage").style.color = "red";
-  //   document.getElementById("responseMessage").textContent = "Network error";
-  // }
+  if (email_val.checkValidity()) {
+
+    let email = email_val.value;
+
+    // Uncomment during production, this is just for testing purposes
+    try {
+      const res = await fetch(backendURL + "/create_user", {
+        method: "POST",
+        credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        document.getElementById("responseMessage").style.color = "green";
+        document.getElementById("responseMessage").textContent = data.message || "User created successfully!";
+        document.getElementById("responseMessage").style.display = "block";
+        window.location.href = '/'; // Redirect to the main page after successful login
+        // do something here 
+        // do a redirection to the normal word golf page -> show success message
+      } else {
+        document.getElementById("responseMessage").style.display = "block";
+        document.getElementById("responseMessage").style.color = "red";
+        document.getElementById("responseMessage").textContent = data.error || "User creation failed";
+      }
+    } catch (err) {
+      document.getElementById("responseMessage").style.display = "block";
+      document.getElementById("responseMessage").style.color = "red";
+      document.getElementById("responseMessage").textContent = "Network error";
+    }
+  } else {
+    console.log("invalid email");
+    document.getElementById("responseMessage").style.display = "block";
+    document.getElementById("responseMessage").style.color = "red";
+    document.getElementById("responseMessage").textContent = "Please enter a valid email address";
+  }
 });
 
 // document.getElementById("getDataBtn").addEventListener("click", async () => {

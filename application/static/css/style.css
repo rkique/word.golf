@@ -557,3 +557,36 @@ animation-duration: 1s;
 background-size: 800% 100%;
 }
 
+#login-welcome {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  z-index: 1;
+  font-size: 1.1rem;
+  text-align: left;
+  background: transparent;
+  color: var(--text-color);
+  padding-left: 1.2rem;
+  opacity: 0.85;
+  pointer-events: none; /* allows clicks through */
+  align-items: center;   /* Center children horizontally */
+  width: max-content;    /* Only as wide as content */
+}
+
+.welcome-title,
+.welcome-email {
+  text-align: center;    /* Center text inside each line */
+  width: 100%;
+  color: var(--text-color);
+}
+
+.welcome-title {
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.welcome-email {
+  font-size: 0.98em;
+  color: var(--text-color);
+  word-break: break-all;
+}

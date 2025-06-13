@@ -55,6 +55,25 @@
         data = sendAndReceiveXML(`help=true`);
     }
 
+    // Make a post request to the server to see if the user is logged in and if they are change the login div on the frontend
+    const backendURL = "http://localhost:7000" // testing 
+    // const backendURL = "https://word-golf-backend.onrender.com"; // production 
+    fetch(`${backendURL}/is_logged_in`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.logged_in) {
+            const loginWelcome = document.getElementById('login-welcome');
+            loginWelcome.style.display = 'block';
+            loginWelcome.querySelector('.welcome-email').textContent = data.email;
+        }
+    })
+
 
     if (localStorage.getItem('lastComplete') && data['date'] == localStorage.getItem('lastComplete')) {
         showScreen();
