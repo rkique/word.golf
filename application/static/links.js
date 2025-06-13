@@ -39,10 +39,7 @@ function focusLink(targetText) {
     links.forEach(link => {
         const text = link.innerText.trim();
         if (text === targetText) {
-            // link.style.outline = "2px solid rgb(0, 217, 43)";
             link.style.outlineOffset = "2px";
-            // link.style.transition = "none";
-            // link.style.transform = "none";
             link.classList.remove("link--disabled-2");
         } else if (links.indexOf(link) !== 10) {
             link.style.outline = "";
@@ -53,7 +50,7 @@ function focusLink(targetText) {
 }
 function showHelpPopup(message) {
     document.getElementById("information").innerHTML = 
-    `<p>${message}</p>`
+    `<p class='info-box'>${message}</p>`
 }
 
 /* makes and renders links */

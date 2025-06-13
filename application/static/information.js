@@ -1,5 +1,5 @@
-
-HELP_FINISH_DELAY_MS = 1000
+HELP_FINISH_DELAY_MS = 500
+START_GAME_DELAY_MS = 2000
 
 /**
  * Creates a prompt header e.g. go from "vigor" to "workout"
@@ -66,10 +66,7 @@ function update_database_with_finish(totalJumps, last_complete) {
 function displayModalText(innerHTML){
     const modalEl = document.getElementById('modal');
     clearChildren(modalEl);
-    const modalText = document.createElement('p');
-    modalText.id = 'modalText';
-    modalEl.appendChild(modalText);
-    modalText.innerHTML = innerHTML
+    modalEl.innerHTML = innerHTML
     modalEl.style.display = 'flex';
 }
 
@@ -87,7 +84,18 @@ function renderFinish(jumpsA) {
     const newStreak = isSameDay ? currentStreak : shouldResetStreak ? 1 : currentStreak + 1;
     localStorage.setItem('streak', newStreak);
     update_database_with_finish(totalJumps, currentDate);
-    finish_text = `<h1>Summary</h1><p>Jumps: ${totalJumps}</p> <p>Streak: ${newStreak} days.</p> <button onclick="document.getElementById('modal').style.display='none'">Close</button>`;
+    finish_text = `
+    <div id='finish-container' class='finish-container'> 
+
+    <h1>Summary</h1>
+    <div class="stat-row">
+    <div><p class="stat">${totalJumps}</p> <p> jumps</p></div>
+    <div><p class="stat">${newStreak}</p> <p>streak</p></div>
+    </div>
+    <button onclick="document.getElementById('modal').style.display='none'">Close</button> 
+
+    </div>
+    `;
     displayModalText(finish_text);
 }
 
@@ -102,8 +110,7 @@ function startGame() {
 }
 
 function renderHelpFinish(){
-    const modalEl = document.getElementById('modal');
-    help_finish_text = `<p>Good luck!</p><br><button id="startGameBtn" onclick="startGame()">Start Game</button>`;
+    help_finish_text = `<p>Good luck!</p><div id="dots-container" class="dots-container"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>`;
 
     localStorage.setItem('is_help', 'false');
     localStorage.removeItem('jumps');
@@ -113,8 +120,7 @@ function renderHelpFinish(){
     localStorage.removeItem('results');
 
     setTimeout(() => {
-        displayModalText(help_finish_text)
+        displayModalText(help_finish_text);
+        setTimeout(startGame, START_GAME_DELAY_MS);
     }, HELP_FINISH_DELAY_MS);
-
-    //now we need to set the button to load the prompts.
 }

@@ -58,7 +58,7 @@ function renderPrompts(promptTexts, i, jumpsA, current_jumps) {
     const done = promptTexts.slice(0, i);
     done.forEach((promptText, idx) => {
         if (promptBoxes[idx]) {
-            promptBoxes[idx].style.border = '1px solid var(--greyed-out-color)';
+            promptBoxes[idx].style.border = '1px solid var(--grayed-out-color)';
             const doneTag = makeDonePromptTag(promptText, jumpsA[idx]);
             promptBoxes[idx].innerHTML = '';
             promptBoxes[idx].appendChild(doneTag);
@@ -90,6 +90,7 @@ function renderPrompts(promptTexts, i, jumpsA, current_jumps) {
     // clear remaining boxes
     for (let j = i + 1; j < promptBoxes.length; j++) {
         promptBoxes[j].className = 'prompt-box';
+        promptBoxes[j].style.border = '1px solid var(--grayed-out-color)';
         promptBoxes[j].innerHTML = '';
     }
 }

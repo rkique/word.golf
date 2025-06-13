@@ -50,14 +50,67 @@ html {
     position: absolute; 
     left: 0; 
     right: 0; 
+    padding: 2rem;
     top: 10vh;
     margin-left: auto; 
     margin-right: auto; 
-    width: 80vw;
-    height: 80vh;
+    min-width: 60vw;
+    max-width: 70vw;
+    max-height: 80vh;
     outline: 1px solid var(--grayed-out-color);
-    display: flex;
+    display: none;
     justify-content: center;
+    z-index: 2;
+}
+
+#finish-container h1 {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.finish-container {
+    display: flex;
+    flex-direction: column;
+    font-size: 1em;
+    align-items: center;
+    justify-content: space-around;
+    gap: 2em;
+    color: var(--text-color);
+    padding: 1em 1em;
+    border-radius: 16px;
+    text-align: center;
+    margin: 0 auto;
+    z-index: 2;
+}
+
+.finish-container .stat-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.5em 1em;
+    gap: 4rem;
+}
+
+.finish-container .stat {
+    font-size: 3.2em;
+    margin-bottom: 0.25em;
+    color: var(--hover-color);
+}
+
+
+#finish-container button {
+    margin: 0.5rem;
+}
+
+
+.help-container {
+    background-color: var(--background-color);
+    justify-content: space-around;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    align-items: center;
     z-index: 2;
 }
 
@@ -73,22 +126,20 @@ html {
    cursor: pointer;
 }
 
-.help-container {
-    background-color: var(--background-color);
-    justify-content: space-around;
-    display: flex;
-    flex-wrap: nowrap;
-    padding: 1em 2em;
-    flex-direction: column;
-    align-items: center;
-    z-index: 2;
+
+.nsm7Bb-HzV7m-LgbsSe {
+    background-color: transparent !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-color) !important;
+    height: 3.5rem !important;
 }
 
 .help-buttons {
     display: flex;
     flex-direction: row;
+    padding: 0em 0em 2em 0em;
     justify-content: space-around;
-    align-items: center;
+    align-items: baseline;
     gap: 1em;
 }
 
@@ -111,9 +162,12 @@ html {
 .--small {
     font-size: 1.2em;
 }
-
-p{ 
+p {
     font-size: 1.5em;
+}
+
+.help p{ 
+    font-size: 1.8em;
 }
 
 #information span{
@@ -128,7 +182,7 @@ button {
     transition: transform 600ms ease, color 600ms ease ;
 }
 
-button:not(.greyed-out):hover {
+button:not(.grayed-out):hover {
     transform: scale(1.05);
     /* box-shadow: 0 4px 16px rgba(0,0,0,0.15); */
 }
@@ -275,7 +329,10 @@ button span {
     box-sizing: border-box;
 }
 
-
+.info-box {
+    padding: 0.8rem;
+    border: 2px solid var(--text-color);
+}
 
 #prompts {
     padding: 2em 2em;
@@ -303,7 +360,7 @@ button span {
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    padding: 0 2vw;
+    padding: 0 1.2vw;
 }
 
 .prompt-box .prompt :first-child {
@@ -315,6 +372,7 @@ button span {
 }
 
 #prompts p {
+    font-size: 1.4em;
     padding: 0 0;
     margin-block-start: 0;
     margin-block-end: 0;
@@ -323,7 +381,7 @@ button span {
  /**Game Over Modal*/
 /*****************/
 
-#modal h1 {
+.modal h1 {
         font-size: 2.1em;
         margin-top: 0.5em;
         margin-bottom: 0.8em;
@@ -333,47 +391,47 @@ button span {
 }
 
 #modal {
-        display: none;
-        position: absolute;
-        top: 10vh;
-        left: 0;
-        right: 0;
-        margin-left: auto;
-        margin-right: auto;
-        width: 80vw;
-        height: 80vh;
-        background-color: var(--background-color);
-        outline: 1px solid var(--grayed-out-color);
-        z-index: 1000;
-        justify-content: center;
-        align-items: center;
+    font-size: 1.2rem;
+    flex-direction: column;
+    display: none;
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    min-width: 40vw;
+    max-width: 60vw;
+    max-height: 60vh;
+    background-color: var(--background-color);
+    outline: 1px solid var(--grayed-out-color);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    min-height: 40vh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
-#modal > * {
-        word-break: break-word;
-        overflow-wrap: break-word;
-        max-width: 90vw;
-        max-height: 70vh;
-        margin: 0 auto;
+.modal p {
+    margin: 0 0;
 }
 
-#modal div {
-        background: var(--background-color);
-        color: var(--text-color);
-        padding: 1em 1em;
-        border-radius: 16px;
-        text-align: center;
-        max-height: 50vh;
-        margin: 0 auto;
-        font-size: 1em;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: space-around;
-        z-index: 2;
-}
 
-#modal button {
+/* #modal > div {
+color: var(--text-color);
+    padding: 1em 1em;
+    border-radius: 16px;
+    text-align: center;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 2;
+    flex-wrap: nowrap;
+    gap: 2em;
+} */
+
+.modal button {
         background-color: var(--background-color);
         color: var(--text-color);
         font-size: 1.3em;
@@ -407,6 +465,34 @@ button span {
   /*******************/
  /*** ANIMATIONS ***/
 /*****************/
+
+/* Pulsing dots animation: used in tutorial screen. */
+
+
+  #dots-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      font-size: 4rem;
+      margin-top: 20px;
+  }
+
+  .dot {
+      animation: blink 1s infinite;
+      animation-delay: calc(var(--i) * 0.2s);
+      margin: 0 8px;
+  }
+
+  .dot:nth-child(1) { --i: 0; }
+  .dot:nth-child(2) { --i: 1; }
+  .dot:nth-child(3) { --i: 2; }
+
+  @keyframes blink {
+      0% { opacity: 0.2; }
+      50% { opacity: 1; }
+      100% { opacity: 0.2; }
+  }
 
 @keyframes gradient {
     0% {

@@ -34,11 +34,11 @@
     }
 
     #prompts p {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
     }
 
     .prompt-box {
-        outline: 1px solid var(--border-color);
+        /* outline: 1px solid var(--border-color); */
         display: flex;
         align-items: center;
         justify-content: center;
@@ -62,10 +62,14 @@
     justify-content: center;
     }
     #wordspace span {
-        font-size: 1.35rem !important;
+        font-size: 1.15rem !important;
     }
     #wordspace button {width: 25vw !important;}
 
+
+    #modal {
+        max-width: 90vw;
+    }
 
     /* ************ */
     /* Help screen */
@@ -73,6 +77,11 @@
     .help {
         width: 90vw;
         height: 80vh;
+        max-width: 90vw;
+        padding: 0 0;
+    }
+    .info-box {
+        border: none;
     }
     .help-container {
         max-width: 100%;
@@ -87,24 +96,48 @@
     .switchContainer {
         min-width: 0em;
     }
-    #modal h1 {
+
+    #finish-container {
+        padding: 3rem 3rem;
+        font-size: 1.2rem;
+    }
+
+    .finish-container .stat {
+        font-size: 1.8rem;
+    }
+    #finish-container h1,  #finish-container button{
+        font-size: 1rem;
+    }
+    #finish-container h1{
+        font-size: 1.8rem;
+        font-weight: 300;
+    }
+
+    .modal h1 {
         font-size: 5rem;
     }
-    #modal p {
-        font-size: 3rem;
+    .modal p {
+        font-size: 1rem;
         margin: 0 0;
-    }
-    #modal button {
-        font-size: 3rem;
-    }
-    #modal p {
         text-align: center;
     }
+    .modal button {
+        font-size: 3rem;
+    }
+
     .help-text .--grayed-out {
         font-size: 1rem;
     }
     .help-buttons {
         flex-wrap: wrap;
+    }
+
+    .prompts > div {
+    border-top: 1px solid;
+    }
+
+    .prompts > div:first-child {
+    border-top: none;
     }
 
     .help button {

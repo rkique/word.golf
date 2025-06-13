@@ -3,6 +3,7 @@ import numpy as np
 import random 
 import ast
 
+LAZY_EXCLUDE = ["fuckable", "shitshow", "jegging", "daddy", "brat"]
 
 def txt_to_set(path):
     txt_file = open(path, 'r', encoding="utf-8")
@@ -32,6 +33,7 @@ def vector_for_word(word: str, df = pd.DataFrame) -> np.array:
     else:
         return None
 
+#finds subset of min length and appends min word to subset.
 def partition(words):
     assert len(words) == 21
     words_sorted = sorted(words, key=len, reverse=True)
@@ -94,15 +96,14 @@ def backoff_selection(results: list[str], target: str, exp=2, num=20, neighbor=N
     selected = [results[i] for i in indices]
     return selected
 
-
-
 def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict, neighbor=None) -> list[str]:
     '''
     Given a word and target, 
     Returns neighbors of the word which are biased towards the target.
-    '''
+    ''' 
 
     results = PRECOMPUTED[word]
+    results = [result for result in results if result not in LAZY_EXCLUDE]
     def similarity_to_target(x): 
         return similarity(x, target, WV)
     results.sort(key=similarity_to_target, reverse=True)

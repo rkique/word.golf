@@ -18,8 +18,8 @@ function syncColorMode() {
     document.documentElement.style.setProperty('--text-color', '#4e4e4e');
     document.documentElement.style.setProperty('--background-color', '#fff');
     document.documentElement.style.setProperty('--grayed-out-background', '#f3f3f3');
-    document.documentElement.style.setProperty('--grayed-out-color', '#9a9a9a');
-    document.documentElement.style.setProperty('--grayed-out-color-2', '#c5c5c5');
+    document.documentElement.style.setProperty('--grayed-out-color', '#b4b4b4');
+    document.documentElement.style.setProperty('--grayed-out-color-2', '#888');
 
   }
   else {
