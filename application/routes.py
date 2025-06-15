@@ -15,7 +15,7 @@ PROMPTS = list(prompt_neighbor_dict.keys())
 NEIGHBORS = list(prompt_neighbor_dict.values())
 
 PCOUNT = 5
-DAYS = 12
+DAYS = 1
 
 HELP_PROMPTS = [["outside", "layer"],["mercury", "razor"]]
 HELP_NEIGHBORS = ["underneath", "toothpaste"]
