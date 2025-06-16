@@ -56,9 +56,6 @@ html {
     height: 80vh;
     outline: 1px solid var(--grayed-out-color);
     display: flex;
-<<<<<<< Updated upstream
-    justify-content: center;
-=======
     max-width: 100%;
     flex-direction: column;
     font-size: 1em;
@@ -70,13 +67,9 @@ html {
     border-radius: 16px;
     text-align: center;
     margin: 2em 2em;
->>>>>>> Stashed changes
     z-index: 2;
 }
 
-<<<<<<< Updated upstream
-.help_container {
-=======
 .finish-container .stat-row {
     display: flex;
     flex-direction: row;
@@ -100,7 +93,6 @@ html {
 
 
 .help-container {
->>>>>>> Stashed changes
     background-color: var(--background-color);
     display: flex;
     flex-wrap: nowrap;
@@ -300,12 +292,8 @@ button span {
     align-items: center;
     justify-content: center;
     width: 100%;
-<<<<<<< Updated upstream
-    position: relative;
-=======
     padding: 0 1.2vw;
     gap: 0.5rem;
->>>>>>> Stashed changes
 }
 
 .prompt-box .prompt :first-child {
@@ -338,23 +326,7 @@ button span {
         text-align: center;
 }
 
-<<<<<<< Updated upstream
-#gameOverModal {
-        display: none;
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 10vh;
-        margin-left: auto;
-        margin-right: auto;
-        width: 80vw;
-        height: 80vh;
-        background-color: var(--background-color);
-        outline: 1px solid var(--grayed-out-color);
-        z-index: 1000;
-        justify-content: center;
-        align-items: center;
-=======
+#modal, #modal-finish-guest, #modal-finish-user{
 #modal, #modal-finish-guest, #modal-finish-user{
     font-size: 1.2rem;
     flex-direction: column;
@@ -374,7 +346,6 @@ button span {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
->>>>>>> Stashed changes
 }
 
 #gameOverModal > * {

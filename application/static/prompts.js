@@ -27,11 +27,6 @@ function makeDonePromptTag(start_target, jumps) {
 }
 
 function renderPrompts(promptTexts, i, jumpsA, current_jumps) {
-<<<<<<< Updated upstream:application/static/prompts.js
-    console.log(`renderPrompts: ${promptTexts}, i: ${i}, jumpsA: ${jumpsA}`);
-
-=======
->>>>>>> Stashed changes:application/static/js/prompts.js
     // get all prompt-box elements
     const promptBoxes = document.querySelectorAll('#prompts .prompt-box');
     // update "done" prompts
@@ -72,6 +67,22 @@ function renderPrompts(promptTexts, i, jumpsA, current_jumps) {
     }
 }
 
+
+//     if (i < 5){
+//         if (i == 0) {
+//             current_jumps = current_jumps || 0
+//             current = promptTexts[0]
+//             todo = promptTexts.slice(1)
+//         }
+//         else {
+//             current = promptTexts[i]
+//             todo = promptTexts.slice(i + 1)
+//         }
+//         prompts.append(makePromptTag(current, current_jumps))
+        
+//         todo.map(promptText => prompts.append(makePromptTag(promptText)))
+//     }
+// }
 //     if (i < 5){
 //         if (i == 0) {
 //             current_jumps = current_jumps || 0
