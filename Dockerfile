@@ -1,8 +1,8 @@
 FROM python:3.9
-EXPOSE 5000
+EXPOSE 5050
 
-ARG GITHUB_TOKEN
-RUN test -n "$GITHUB_TOKEN" || (echo "GITHUB_TOKEN not set!" && exit 1)
+# ARG GITHUB_TOKEN
+# RUN test -n "$GITHUB_TOKEN" || (echo "GITHUB_TOKEN not set!" && exit 1)
 
 RUN apt-get update && apt-get install -y git git-lfs curl
 
