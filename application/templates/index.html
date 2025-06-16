@@ -3,39 +3,40 @@
 {% include 'head.html' %}
 <title>word.golf</title>
 </head>
-{% include 'modal.html' %}
+
 {% include 'settings.html' %}
+{% include 'modal-help.html' %}
+{% include 'modal.html' %}
+{% include 'modal-finish.html' %}
 
 <div id="global">
-    {% include 'help.html' %}
-
     <div id="wordspace-container">
         <div id="wordspace"></div>
     </div>
     <div id="prompts-container">
         <div id="prompts">
-            <div class="prompt-box"> Prompt1 </div>
-            <div class="prompt-box"> Prompt2 </div>
-            <div class="prompt-box"> Prompt3 </div>
-            <div class="prompt-box"> Prompt4 </div>
-            <div class="prompt-box"> Prompt5</div>
+            <div class="prompt-box"> </div>
+            <div class="prompt-box"> </div>
+            <div class="prompt-box"> </div>
+            <div class="prompt-box"> </div>
+            <div class="prompt-box"> </div>
         </div>
     </div>
 
 </div>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z90RQN4KLB"></script>
-<script src="static/gtag.js"></script>
-<script src="static/XML.js"></script>
-<script src="static/links__util.js"></script>
-<script src="static/key_commands.js"></script>
-<script src="static/animation.js"></script>
-<script src="static/links.js"></script>
-<script src="static/information.js"></script>
-<script src="static/prompts.js"></script>
+<script src="static/js/gtag.js"></script>
+<script src="static/js/XML.js"></script>
+<script src="static/js/links__util.js"></script>
+<script src="static/js/key_commands.js"></script>
+<script src="static/js/animation.js"></script>
+<script src="static/js/links.js"></script>
+<script src="static/js/information.js"></script>
+<script src="static/js/prompts.js"></script>
 
 <script>data = JSON.parse('{{data|tojson|safe}}');
 </script>
-<script src="static/is_game_complete.js"> </script>
+<script src="static/js/is_game_complete.js"> </script>
 <script>
     function loadLocalStorage() {
         let prompt_idx = parseInt(localStorage.getItem('current_prompt')) || 0;
@@ -127,6 +128,7 @@
         renderLinks(start_target, results)
         activateLinks()
         localStorage.setItem('current_date', data['date']);
+        localStorage.setItem('daily_idx', data['daily_idx']);
     }
 
 

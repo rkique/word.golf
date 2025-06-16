@@ -1,5 +1,29 @@
+@font-face {
+    font-family: "Schibsted Grotesk";
+    src: url("/static/Schibsted_Grotesk/SchibstedGrotesk-VariableFont_wght.ttf") format("truetype");
+    font-weight: 100 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Schibsted Grotesk";
+    src: url("/static/Schibsted_Grotesk/SchibstedGrotesk-VariableFont_wght.ttf") format("truetype");
+    font-weight: 100 900;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "Schibsted Grotesk";
+    src: url("/static/Schibsted_Grotesk/SchibstedGrotesk-VariableFont_wght.ttf") format("truetype");
+    font-weight: 100 900;
+    font-style: bold;
+}
+
+
 html {
-    font-family: "Schibsted Grotesk", sans-serif;
+    font-display: optional;
+    font-family: "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI",
+               Roboto, "Helvetica Neue", Arial, sans-serif;
     font-optical-sizing: auto;
     background-color: var(--background-color);
     color: var(--text-color);
@@ -60,14 +84,61 @@ html {
     outline: 1px solid var(--grayed-out-color);
     display: none;
     justify-content: center;
-    z-index: 2;
+    z-index: 3;
 }
 
-#finish-container h1 {
+#finish-container .inline-title {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2em;
+}
+
+.help-close, .finish-close {
+   position: absolute; 
+   top: 0.5em;
+   right: 0.5em;
+   background: transparent;
+   color: var(--grayed-out-color);
+   border: none;
+   outline: none;
+   cursor: pointer;
+}
+
+.help-close {
+    font-size: 4em;
+}
+
+.finish-close {
+       font-size: 2em;
+}
+
+
+#finish-container .daily-idx-tag{
+    position: absolute;
+    top: 2rem; 
+    left: 1rem;
+    transform: rotate(-15deg);
+    transform-origin: left top;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0em;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--grayed-out-color);
+}
+
+#finish-container .daily-idx {
+    display: inline;
     margin-top: 0;
     margin-bottom: 0;
+    font-size: 2.8rem;
 }
 
+
+#finish-container a {
+    color: var(--text-color);
+    font-weight: 300;
+}
 .finish-container {
     display: flex;
     flex-direction: column;
@@ -76,11 +147,17 @@ html {
     justify-content: space-around;
     gap: 2em;
     color: var(--text-color);
-    padding: 1em 1em;
+    padding: 2em 1em;
     border-radius: 16px;
     text-align: center;
-    margin: 0 auto;
+    margin: 2em 2em;
     z-index: 2;
+}
+/* .finish-container > :first-child {
+    margin-top: 2em;
+} */
+.finish-container > :last-child {
+    margin-bottom: 1em;
 }
 
 .finish-container .stat-row {
@@ -94,6 +171,7 @@ html {
 
 .finish-container .stat {
     font-size: 3.2em;
+    margin-top: 0;
     margin-bottom: 0.25em;
     color: var(--hover-color);
 }
@@ -111,20 +189,9 @@ html {
     flex-wrap: nowrap;
     flex-direction: column;
     align-items: center;
-    z-index: 2;
+    z-index: 11;
 }
 
-#help-close {
-   position: absolute; 
-   top: 1rem; 
-   right: 3rem;
-   font-size: 4em;
-   background: transparent;
-   color: var(--text-color);
-   border: none;
-   outline: none;
-   cursor: pointer;
-}
 
 
 .nsm7Bb-HzV7m-LgbsSe {
@@ -209,6 +276,7 @@ button span {
     outline:none;
     background-color: transparent;
     color: var(--text-color);
+    transition: color 0.2s;
  }
 
 .link--transition--disabled{
@@ -344,7 +412,7 @@ button span {
 }
 
 .prompt-box {
-    outline: 1px solid var(--border-color);
+    /* outline: 1px solid var(--border-color); */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -390,7 +458,7 @@ button span {
         text-align: center;
 }
 
-#modal {
+#modal, #modal-finish {
     font-size: 1.2rem;
     flex-direction: column;
     display: none;
@@ -398,14 +466,14 @@ button span {
     margin-left: auto;
     margin-right: auto;
     min-width: 40vw;
-    max-width: 60vw;
-    max-height: 60vh;
+    min-height: 40vh;
+    max-width: 80vw;
+    max-height: 90vh;
     background-color: var(--background-color);
     outline: 1px solid var(--grayed-out-color);
-    z-index: 1000;
+    z-index: 2;
     justify-content: center;
     align-items: center;
-    min-height: 40vh;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -414,22 +482,6 @@ button span {
 .modal p {
     margin: 0 0;
 }
-
-
-/* #modal > div {
-color: var(--text-color);
-    padding: 1em 1em;
-    border-radius: 16px;
-    text-align: center;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-around;
-    z-index: 2;
-    flex-wrap: nowrap;
-    gap: 2em;
-} */
 
 .modal button {
         background-color: var(--background-color);

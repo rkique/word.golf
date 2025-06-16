@@ -15,7 +15,7 @@ PROMPTS = list(prompt_neighbor_dict.keys())
 NEIGHBORS = list(prompt_neighbor_dict.values())
 
 PCOUNT = 5
-DAYS = 1
+DAYS = 0
 
 HELP_PROMPTS = [["outside", "layer"],["mercury", "razor"]]
 HELP_NEIGHBORS = ["underneath", "toothpaste"]
@@ -35,6 +35,7 @@ def load_data():
     WV = dict(zip(WV['word'], WV['vector']))
     PRECOMPUTED = txt_to_dict("application/data/top_100_w2v.csv")
 
+elpased = None
 prompts_today = None
 neighbors_today = None
 today = None
@@ -54,12 +55,12 @@ def get_prompts_for_date(date : datetime.datetime) -> list:
     elapsed = elapsed_days(date)
     prompt_range = range(elapsed * PCOUNT, (elapsed + 1) * PCOUNT)
     print(f"Loading prompts: {prompt_range}")
-    return [PROMPTS[i] for i in prompt_range], [NEIGHBORS[i] for i in prompt_range]
+    return elapsed, [PROMPTS[i] for i in prompt_range], [NEIGHBORS[i] for i in prompt_range]
 
 def load_time():
-    global prompts_today, neighbors_today, today
+    global elapsed, prompts_today, neighbors_today, today
     today = datetime.datetime.today() + add_days(DAYS)
-    prompts_today, neighbors_today = get_prompts_for_date(today)
+    elapsed, prompts_today, neighbors_today = get_prompts_for_date(today)
 
 def jump(start : str) -> str:
     '''
@@ -111,15 +112,15 @@ def shift_to(i):
     except IndexError:
         print(f"Index {i} out of range for prompts_today or neighbors_today.")
         prompt,neighbor,results = None, None, None
-
-    return json.dumps({
+    data = {
         'jumpsA': session.get('jumpsA'),
         'jumps': 0,
         'i': i,
         'date': today.strftime('%Y-%m-%d'),
         'prompt': prompt,
         'prompts': prompts_today,
-        'results': results})
+        'results': results}
+    return json.dumps(data)
 
 def help_shift(data):
     data['jumpsA'].append(data['jumps'])
@@ -158,6 +159,7 @@ def index():
     session['jumpsA'] = []
     assert WV is not None, "Word vectors not loaded"
     session['data'] = shift_to(session['i'])
+    print('/ data is set to:', session.get('data'))
     return render_template('index.html', data=json.loads(session.get('data')))
 
 

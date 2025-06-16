@@ -3,7 +3,7 @@ const HELP_STEPS = [
             {
                 prompt: ['outside', 'layer'],
                 result: 'outside',
-                message: "(1/5) Jump to a target word by clicking neighbors.",
+                message: "(1/5) Jump from word to word by clicking neighbors.",
                 focus: 'beneath'
             },
             {
@@ -15,19 +15,19 @@ const HELP_STEPS = [
             {
                 prompt: ['outside', 'layer'],
                 result: 'surface',
-                message: "(3/5) Complete your first connection!",
+                message: "(3/5) Clicking the target moves to the next prompt.",
                 focus: 'layer'
             },
             {
                 prompt: ['mercury', 'razor'],
                 result: 'mercury',
-                message: "(4/5) Each prompt can be completed in two jumps.",
+                message: "(4/5) Choose carefully! You only need two jumps.",
                 focus: 'toothpaste'
             },
             {
                 prompt: ['mercury', 'razor'],
                 result: 'toothpaste',
-                message: "(5/5) Five new prompts each day!",
+                message: "(5/5) Five prompts per day, best score is 10.",
                 focus: 'razor'
             }
         ];

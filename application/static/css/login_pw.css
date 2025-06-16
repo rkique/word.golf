@@ -1,0 +1,221 @@
+  a {
+      color: var(--text-color)
+    }
+  .wg-banner {
+      text-align: center;
+      margin: 0 auto;
+      min-width: 320px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .wg-banner-logo {
+      width: 3rem;
+      height: 3rem;
+      transform: translate(1rem, 0);
+      margin: 0.5rem auto;
+      display: inline-block;
+      user-select: none;
+      pointer-events: none;
+    }
+    .wg-banner-title {
+      font-family: 'Schibsted Grotesk', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-align: center;
+      user-select: none;
+      text-decoration: none;
+      color: #b1b1b1 !important;
+      text-decoration: none;
+    }
+
+  #loginForm, #createUserForm {
+    font-size: 2.2rem;
+    min-width: 35vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  h1, h2{
+    font-size: 2.2rem;
+    font-weight: 400;
+    margin-top: 0.5rem;
+    margin-bottom: 0.8rem;
+    line-height: 1.2;
+
+  }
+  .form-row{
+    margin: 0.5rem;
+    font-size: 1.45rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  /* need to override tachyons default */
+  .form-row {
+    margin: 0.3rem !important;
+  }
+
+  .form-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  /* need to override tachyons default */
+  input {
+    font-size: 1.2rem !important;
+    padding: 0.8rem;
+    width: 20rem;
+    color: var(--text-color);
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 0.6rem;
+  }
+  #login-global{
+    justify-content: center;
+    gap: 5vw;
+    min-height: 80vh;
+    align-items: center;
+  }
+
+  #responseMessage {
+    color: var(--text-color);
+    margin-top: 20px;
+    font-size: 1.2rem;
+    display: none;
+  }
+
+  /* input[type="text"]#loginEmail,
+  input[type="password"]#loginPassword,
+  input[type="text"]#loginPassword {
+    font-size: 1.1rem !important;  
+    width: 20rem;                  
+    height: 2.2rem;
+    background: #fff !important;  
+    color: #000;           
+  }  */
+
+  .loginContainer, .createUserContainer {
+    padding: 2rem;
+    border-radius: 0;
+    border: 1px solid var(--border-color);
+    min-width: 40vw;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* #login-global > * > *{
+    border: 1px solid var(--border-color);
+  } */
+
+
+  button {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-size: 0.8rem !important;
+    padding: 1em 3em !important;
+    border: none;
+    border-radius: 1.2rem;
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s, transform 0.2s !important;
+    outline: 1px solid var(--border-color);
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+}
+
+button:hover {
+    color: var(--hover-color) !important;
+    outline: 1px solid var(--text-color) !important;
+    transform: scale(1.02) !important;
+}
+
+  .loginpassword {
+    font-size: 2.2rem;
+    width: 20rem;
+    color: var(--text-color);
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 0.6rem;
+  }
+
+  button.switch.switch--outlined[type="submit"] {
+    width: 20rem;
+    border-radius: 0.6rem;
+    box-sizing: border-box;
+  }
+
+  .g_id_signin {
+    margin-top: 1rem !important; 
+  }
+
+  .separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    margin: 2rem 0 2.5rem 0;
+  }
+
+.input-box {
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+#togglePassword {
+  position: absolute;
+  right: 14px;
+  top: 45%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  object-fit: contain;
+}
+
+  .separator-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border-color, #ccc);
+    border: none;
+  }
+  .separator-text {
+    padding: 0 1rem;
+    color: var(--text-color, #444);
+    font-size: 1.1rem;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0.8;
+  }
+  
+
+  #ForgotPasswordBtn {
+    margin-left: 0;              /* Align to the left edge of the container */
+    margin-right: auto;          /* Pushes the button to the left */
+    display: block;              /* Ensures margin works as expected */
+    border-radius: 0.6rem;
+    box-sizing: border-box;
+    font-size: 0.7rem !important;
+  }
+
+    #SubmitBtn {
+      transition: color 0.2s, background 0.2s, transform 0.2s;
+      position: relative;
+      left: 0.3rem; 
+    }
+    #SubmitBtn:hover {
+      color: var(--hover-color);
+      transform: scale(1.03);
+    }
+

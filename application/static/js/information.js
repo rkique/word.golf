@@ -1,5 +1,5 @@
 HELP_FINISH_DELAY_MS = 500
-START_GAME_DELAY_MS = 2000
+START_GAME_DELAY_MS = 1500
 
 /**
  * Creates a prompt header e.g. go from "vigor" to "workout"
@@ -63,11 +63,22 @@ function update_database_with_finish(totalJumps, last_complete) {
     });
 }
 
-function displayModalText(innerHTML){
+function displayHelpFinish(innerHTML){
     const modalEl = document.getElementById('modal');
-    clearChildren(modalEl);
-    modalEl.innerHTML = innerHTML
+    const modalText =  document.getElementById('modalText');
+    modalText.innerHTML = innerHTML;
     modalEl.style.display = 'flex';
+}
+
+function daysSinceStartDate(startDateStr = '2025-05-31', storageKey = 'current_date') {
+    const currentDateStr = localStorage.getItem(storageKey);
+    if (!currentDateStr) return null;
+
+    const startDate = new Date(startDateStr);
+    const currentDate = new Date(currentDateStr);
+    const diffMs = currentDate - startDate;
+
+    return Math.floor(diffMs / (1000 * 60 * 60 * 24));
 }
 
 function renderFinish(jumpsA) {
@@ -76,7 +87,7 @@ function renderFinish(jumpsA) {
     const currentDate = new Date(localStorage.getItem('current_date'));
     const lastCompleteDate = new Date(localStorage.getItem('lastComplete'));
     const diffInDays = Math.floor((currentDate - lastCompleteDate) / (1000 * 60 * 60 * 24)) || Infinity;
-
+    
     const isSameDay = diffInDays === 0;
     const shouldResetStreak = diffInDays >= 2;
 
@@ -84,23 +95,19 @@ function renderFinish(jumpsA) {
     const newStreak = isSameDay ? currentStreak : shouldResetStreak ? 1 : currentStreak + 1;
     localStorage.setItem('streak', newStreak);
     update_database_with_finish(totalJumps, currentDate);
-    finish_text = `
-    <div id='finish-container' class='finish-container'> 
-
-    <h1>Summary</h1>
-    <div class="stat-row">
-    <div><p class="stat">${totalJumps}</p> <p> jumps</p></div>
-    <div><p class="stat">${newStreak}</p> <p>streak</p></div>
-    </div>
-    <button onclick="document.getElementById('modal').style.display='none'">Close</button> 
-
-    </div>
-    `;
-    displayModalText(finish_text);
+    const daily_idx = daysSinceStartDate();
+    displayFinishModal(daily_idx, totalJumps, newStreak)
 }
 
+/* Clears the modal, localStorage, and renders links*/
 function startGame() {
     document.getElementById('modal').style.display = 'none';
+    localStorage.setItem('is_help', 'false');
+    localStorage.removeItem('jumps');
+    localStorage.removeItem('jumpsA');
+    localStorage.removeItem('prompt');
+    localStorage.removeItem('prompts');
+    localStorage.removeItem('results');
     resp = sendAndReceiveXML('redirect=true');
     renderLinks(resp.prompt, resp.results)
     renderToFrom(resp.prompt);
@@ -109,18 +116,26 @@ function startGame() {
     activateLinks()
 }
 
-function renderHelpFinish(){
-    help_finish_text = `<p>Good luck!</p><div id="dots-container" class="dots-container"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>`;
+function displayFinishModal(daily_idx, totalJumps, currentStreak) {
+    const modalFinish = document.getElementById('modal-finish');
+    if (modalFinish) {
+        const dailyIdxEl = modalFinish.querySelector('.daily-idx');
+        if (dailyIdxEl) dailyIdxEl.innerHTML = daily_idx;
 
-    localStorage.setItem('is_help', 'false');
-    localStorage.removeItem('jumps');
-    localStorage.removeItem('jumpsA');
-    localStorage.removeItem('prompt');
-    localStorage.removeItem('prompts');
-    localStorage.removeItem('results');
+        const totalJumpsEl = modalFinish.querySelector('.totalJumps');
+        if (totalJumpsEl) totalJumpsEl.innerHTML = totalJumps;
+
+        const currentStreakEl = modalFinish.querySelector('.streak');
+        if (currentStreakEl) currentStreakEl.innerHTML = currentStreak;
+    }
+    modalFinish.style.display = "flex";
+}
+
+function renderHelpFinish(){
+    help_finish_text = `Good luck!`;
 
     setTimeout(() => {
-        displayModalText(help_finish_text);
+        displayHelpFinish(help_finish_text);
         setTimeout(startGame, START_GAME_DELAY_MS);
     }, HELP_FINISH_DELAY_MS);
 }
