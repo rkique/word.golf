@@ -32,9 +32,6 @@ function update_database_with_finish(totalJumps, last_complete) {
     let last_jumps = parseInt(localStorage.getItem('jumps') || 0);
     jumpsA.push(last_jumps);
 
-    const backendURL = "http://localhost:7000" // testing 
-    // const backendURL = "https://word-golf-backend.onrender.com"; // production 
-
     // for testing purposes only, delete this line in production
     // last_complete = new Date(last_complete);
     // last_complete.setDate(last_complete.getDate() + 4);
