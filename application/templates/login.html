@@ -124,10 +124,8 @@ document.getElementById("SubmitBtn").addEventListener("click", async (e) => {
     if (googleOnload) googleOnload.style.display = "none";
     const submitBtn = document.getElementById("SubmitBtn");
     if (submitBtn) submitBtn.style.display = "none";
-    alert(window.backendURL)
     // in a real application, make the POST request to the backend to check if the user exists
     try {
-      alert(window.backendURL)
       const res = await fetch(window.backendURL + "/user_exist", {
           method: "POST",
           credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
