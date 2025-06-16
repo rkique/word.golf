@@ -111,6 +111,7 @@ function startGame() {
     console.log('[reportSessionEnded] Rendering prompts..')
     renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
     activateLinks()
+    //stash
 }
 
 function displayFinishModal(daily_idx, totalJumps, currentStreak) {
