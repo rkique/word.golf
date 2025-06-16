@@ -43,7 +43,7 @@ function update_database_with_finish(totalJumps, last_complete) {
         jumpsA: jumpsA,
     };
 
-    fetch(backendURL + '/update_finish', {
+    fetch(window.backendURL + '/update_finish', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

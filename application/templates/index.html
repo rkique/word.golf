@@ -26,7 +26,8 @@
 </div>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z90RQN4KLB"></script>
 <script>
-    const backendURL = "https://word-golf-backend.onrender.com";
+    // window.backendURL = "https://word-golf-backend.onrender.com";
+    window.backendURL = "http://127.0.0.1:7000";
 </script>
 <script src="static/js/gtag.js"></script>
 <script src="static/js/XML.js"></script>
@@ -58,8 +59,8 @@
         localStorage.setItem('is_help', 'true');
         data = sendAndReceiveXML(`help=true`);
     }
-
-    fetch(`${backendURL}/is_logged_in`, {
+    
+    fetch(`${window.backendURL}/is_logged_in`, {
         method: 'POST',
         credentials: 'include',
         headers: {

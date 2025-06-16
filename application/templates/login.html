@@ -2,7 +2,7 @@
 <html lang="en">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/login_pw.css') }}">
-
+<script> window.backendURL = "http://127.0.0.1:7000"; </script>
 <head>
 {% include 'head.html' %}
 <title>Login / Create User</title>
@@ -124,9 +124,11 @@ document.getElementById("SubmitBtn").addEventListener("click", async (e) => {
     if (googleOnload) googleOnload.style.display = "none";
     const submitBtn = document.getElementById("SubmitBtn");
     if (submitBtn) submitBtn.style.display = "none";
+    alert(window.backendURL)
     // in a real application, make the POST request to the backend to check if the user exists
     try {
-      const res = await fetch(backendURL + "/user_exist", {
+      alert(window.backendURL)
+      const res = await fetch(window.backendURL + "/user_exist", {
           method: "POST",
           credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
           headers: {
@@ -189,7 +191,7 @@ document.getElementById("LoginBtn").addEventListener("click", async (e) => {
 
     // Uncomment during production, this is just for testing purposes
     try {
-      const res = await fetch(backendURL + "/login", {
+      const res = await fetch(window.backendURL + "/login", {
           method: "POST",
           credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
           headers: {
@@ -236,7 +238,7 @@ document.getElementById("CreateAccountBtn").addEventListener("click", async (e) 
 
     // Uncomment during production, this is just for testing purposes
     try {
-      const res = await fetch(backendURL + "/create_user", {
+      const res = await fetch(window.backendURL + "/create_user", {
         method: "POST",
         credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
         headers: {
@@ -272,7 +274,7 @@ document.getElementById("CreateAccountBtn").addEventListener("click", async (e) 
 
 // document.getElementById("getDataBtn").addEventListener("click", async () => {
 //   try {
-//     const res = await fetch(backendURL + "/data", {
+//     const res = await fetch(window.backendURL + "/data", {
 //       method: "GET",
 //       credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
 //     });
@@ -296,7 +298,7 @@ document.getElementById("CreateAccountBtn").addEventListener("click", async (e) 
 
 // document.getElementById("getUserHistoryBtn").addEventListener("click", async () => {
 //   try {
-//     const res = await fetch(backendURL + "/game_history", {
+//     const res = await fetch(window.backendURL + "/game_history", {
 //       method: "GET",
 //       credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
 //     });
@@ -323,12 +325,12 @@ document.getElementById("CreateAccountBtn").addEventListener("click", async (e) 
 //   // This is the google login button. When I tested it, I realized that when I logged in with Google, 
 //   // it cleared the session storage in the routes backend (so when printing the value out it is null/empty list), so that is why whenever 
 //   // I log in with Google, I redirect to the home page. 
-//   window.location.href = backendURL + "/login/google";
+//   window.location.href = winodw.backendURL + "/login/google";
 // });
 
 // document.getElementById("logoutBtn").addEventListener("click", async () => {
 //   try {
-//     const res = await fetch(backendURL + "/logout", {
+//     const res = await fetch(window.backendURL + "/logout", {
 //       method: "POST",
 //       credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
 //     });
