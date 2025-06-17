@@ -107,6 +107,7 @@ def shift_to(i):
     try:
         prompt = prompts_today[i]
         neighbor = neighbors_today[i]
+        # print(f"[shift_to] prompt {i}: {prompt} with neighbor {neighbor}")
         results = get_curve(prompt[0], prompt[1], PRECOMPUTED, WV, neighbor=neighbor)
 
     except IndexError:
@@ -159,7 +160,7 @@ def index():
     session['jumpsA'] = []
     assert WV is not None, "Word vectors not loaded"
     session['data'] = shift_to(session['i'])
-    print('/ data is set to:', session.get('data'))
+    # print('/ data is set to:', session.get('data'))
     return render_template('index.html', data=json.loads(session.get('data')))
 
 

@@ -9,16 +9,21 @@ function changeColorMode() {
   else { (localStorage.setItem('darkMode', 'true')) }
   syncColorMode()
 }
+
+function syncGraph(){
+    jumpsArray = JSON.parse(localStorage.getItem('jumpsA') || null);
+    if (jumpsArray !== null) generateLineGraph(jumpsArray);
+}
 function syncColorMode() {
   currentMode = localStorage.getItem('darkMode')
   if (currentMode == 'true') {
     document.documentElement.style.setProperty('--hover-color', 'black');
     document.documentElement.style.setProperty('--border-color', '#a9a9a9');
     document.documentElement.style.setProperty('--logo-color', '#ddd');
-    document.documentElement.style.setProperty('--text-color', '#4e4e4e');
+    document.documentElement.style.setProperty('--text-color', '#333333');
     document.documentElement.style.setProperty('--background-color', '#fff');
     document.documentElement.style.setProperty('--grayed-out-background', '#f3f3f3');
-    document.documentElement.style.setProperty('--grayed-out-color', '#b4b4b4');
+    document.documentElement.style.setProperty('--grayed-out-color', '#a0a0a0');
     document.documentElement.style.setProperty('--grayed-out-color-2', '#888');
 
   }
@@ -32,6 +37,7 @@ function syncColorMode() {
     document.documentElement.style.setProperty('--grayed-out-color', '#595959');
     document.documentElement.style.setProperty('--grayed-out-color-2', '#353535');
   }
+  syncGraph()
   //PlotHistory(sessionHistory)
 }
 syncColorMode()

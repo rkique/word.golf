@@ -26,12 +26,12 @@ function renderToFrom(start_target){
 
 
 function update_database_with_finish(totalJumps, last_complete) {
-    let words_selected = string_to_list(localStorage.getItem('previous_words') || null);
-    let jumpsA = string_to_list(localStorage.getItem('jumpsA') || null);
+    let words_selected = JSON.parse((localStorage.getItem('previous_words') || null))
+    let jumpsA = JSON.parse((localStorage.getItem('jumpsA') || null));
     jumpsA = jumpsA.map(jump => parseInt(jump, 10));
     let last_jumps = parseInt(localStorage.getItem('jumps') || 0);
     jumpsA.push(last_jumps);
-
+    localStorage.setItem('jumpsA', JSON.stringify(jumpsA));
     // for testing purposes only, delete this line in production
     // last_complete = new Date(last_complete);
     // last_complete.setDate(last_complete.getDate() + 4);
@@ -93,7 +93,8 @@ function renderFinish(jumpsA) {
     localStorage.setItem('streak', newStreak);
     update_database_with_finish(totalJumps, currentDate);
     const daily_idx = daysSinceStartDate();
-    displayFinishModal(daily_idx, totalJumps, newStreak)
+    // Display finish modal for user.
+    displayFinishModal(daily_idx, totalJumps, newStreak, false);
 }
 
 /* Clears the modal, localStorage, and renders links*/
@@ -108,25 +109,93 @@ function startGame() {
     resp = sendAndReceiveXML('redirect=true');
     renderLinks(resp.prompt, resp.results)
     renderToFrom(resp.prompt);
-    console.log('[reportSessionEnded] Rendering prompts..')
+    // console.log('[reportSessionEnded] Rendering prompts..')
     renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
     activateLinks()
     //stash
 }
 
-function displayFinishModal(daily_idx, totalJumps, currentStreak) {
-    const modalFinish = document.getElementById('modal-finish');
-    if (modalFinish) {
-        const dailyIdxEl = modalFinish.querySelector('.daily-idx');
-        if (dailyIdxEl) dailyIdxEl.innerHTML = daily_idx;
+function generateLineGraph(scores) {
+    localStorage.setItem('jumpsA', JSON.stringify(scores));
+    const graphContainer = document.getElementById("scoresGraph");
+    if (!graphContainer) return;
+    const rootStyles = getComputedStyle(document.documentElement);
+    const axisLineColor = rootStyles.getPropertyValue('--border-color') || '#cccccc';
 
-        const totalJumpsEl = modalFinish.querySelector('.totalJumps');
-        if (totalJumpsEl) totalJumpsEl.innerHTML = totalJumps;
+    const trace = {
+        x: scores.map((_, i) => i + 1),
+        y: scores,
+        type: 'scatter',
+        mode: 'lines+markers',
+        hoverinfo: 'y',
+        hoverlabel: {
+            bgcolor: rootStyles.getPropertyValue('--background-color'),
+            font: {
+                color: rootStyles.getPropertyValue('--text-color'),
+                size: 14
+            },
+            bordercolor: rootStyles.getPropertyValue('--grayed-out-color')
+        },
+        line: {
+            color: rootStyles.getPropertyValue('--border-color'),
+            width: 3
+        },
+        marker: {
+            color: rootStyles.getPropertyValue('--hover-color'),
+            size: 10,
+            opacity: 0.6
+        }
+    };
 
-        const currentStreakEl = modalFinish.querySelector('.streak');
-        if (currentStreakEl) currentStreakEl.innerHTML = currentStreak;
-    }
+    const layout = {
+        height: window.innerHeight * 0.4,
+        width: window.innerWidth * 0.4,
+        dragmode: false,
+        xaxis: {
+            visible: true,
+            autorange: true,
+            showline: true,
+            linecolor: axisLineColor,
+            linewidth: 1,
+            mirror: true
+        },
+        yaxis: {
+            visible: true,
+            range: [0,6],
+            showline: true,
+            linecolor: axisLineColor,
+            linewidth: 1,
+            mirror: true
+        },
+        plot_bgcolor: rootStyles.getPropertyValue('--background-color') || '#ffffff',
+        paper_bgcolor: rootStyles.getPropertyValue('--background-color') || '#ffffff',
+    };
+
+    const config = {
+        displayModeBar: false,
+        displaylogo: false,
+        responsive: true,
+        scrollZoom: false,
+        doubleClick: false,
+        staticPlot: false
+    };
+
+    Plotly.newPlot(graphContainer, [trace], layout, config);
+}
+
+
+function displayFinishModal(daily_idx, totalJumps, currentStreak, is_user=false) {
+    const modalFinish = document.getElementById(is_user ? 'modal-finish-user' : 'modal-finish-guest');
+
+    modalFinish.querySelector('.daily-idx').innerHTML = daily_idx;
+    modalFinish.querySelector('.daily-idx').innerHTML = daily_idx;
+    modalFinish.querySelector('.totalJumps').innerHTML = totalJumps;
+    modalFinish.querySelector('.streak').innerHTML = currentStreak;
     modalFinish.style.display = "flex";
+    if (is_user){
+        jumpsArray = JSON.parse(localStorage.getItem('jumpsA') || null);
+        generateLineGraph(jumpsArray);
+    }
 }
 
 function renderHelpFinish(){

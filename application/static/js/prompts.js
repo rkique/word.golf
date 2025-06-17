@@ -68,7 +68,6 @@ function renderPrompts(promptTexts, i, jumpsA, current_jumps) {
     // update current prompt
     if (i < promptTexts.length && promptBoxes[i]) {
         const current = promptTexts[i];
-        console.log(`Current promptText: ${current}, jumps: ${current_jumps}`);
         current_jumps = current_jumps || 0;
         promptBoxes[i].style.border = '2px solid var(--text-color)';
         const currentTag = makePromptTag(current, current_jumps);

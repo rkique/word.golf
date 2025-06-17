@@ -55,10 +55,11 @@ function sendAndReceiveXML(message) {
             results = response_text["results"];
             prompts = response_text["prompts"];
             current_prompt = response_text["i"];
+            console.log(`[Send and Receive XML] results: ${results} jumpsA : ${jumpsA} prompts ${prompts}`);
             localStorage.setItem('jumps', jumps)
-            localStorage.setItem('jumpsA', jumpsA)
-            localStorage.setItem('results', results)
-            localStorage.setItem('prompts', prompts)
+            localStorage.setItem('jumpsA', JSON.stringify(jumpsA))
+            localStorage.setItem('results', JSON.stringify(results))
+            localStorage.setItem('prompts', JSON.stringify(prompts))
             localStorage.setItem('current_prompt', current_prompt)
             console.log(response_text)
             return response_text;

@@ -163,10 +163,11 @@ html {
 .finish-container .stat-row {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    width: 100%;
+    justify-content: space-around;
+    max-width: 100%;
     padding: 0.5em 1em;
-    gap: 4rem;
+    gap: 2rem;
+    align-items: flex-end;
 }
 
 .finish-container .stat {
@@ -426,9 +427,10 @@ button span {
     display: flex;
     flex: 1;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     width: 100%;
     padding: 0 1.2vw;
+    gap: 0.5rem;
 }
 
 .prompt-box .prompt :first-child {
@@ -458,7 +460,12 @@ button span {
         text-align: center;
 }
 
-#modal, #modal-finish {
+#modal-finish-user #scoresGraph{
+    max-width: 60vw; 
+    max-height: 40vh;
+}
+
+#modal, #modal-finish-guest, #modal-finish-user{
     font-size: 1.2rem;
     flex-direction: column;
     display: none;
@@ -478,6 +485,7 @@ button span {
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
 
 .modal p {
     margin: 0 0;
