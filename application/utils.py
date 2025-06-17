@@ -3,7 +3,9 @@ import numpy as np
 import random 
 import ast
 
-LAZY_EXCLUDE = ["fuckable", "shitshow", "jegging", "daddy", "brat"]
+LAZY_EXCLUDE = ["fuckable", "shitshow", "jegging", "daddy", "brat",
+                "dominatrix"," hotness"," sexiness"," perky"," kissable"," fatale"," seductive", "aybe"
+                ]
 
 def txt_to_set(path):
     txt_file = open(path, 'r', encoding="utf-8")

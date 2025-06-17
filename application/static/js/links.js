@@ -147,7 +147,7 @@ function reportSessionEnded(debug_session_done) {
     else {
     renderToFrom(resp.prompt);
     renderLinks(resp.prompt, resp.results)
-    console.log('[reportSessionEnded] Rendering prompts..')
+    // console.log('[reportSessionEnded] Rendering prompts..')
     renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
     activateLinks()
     }
@@ -175,10 +175,13 @@ function postWord(word, clickedElem, use_animations=USE_ANIMATIONS) {
 
     let still_in_help = localStorage.getItem('is_help') === 'true';
     if (!still_in_help) {
-        let prev_words = string_to_list(localStorage.getItem('previous_words') || null);
+        let prev_words = [];
+        try {
+            prev_words = JSON.parse(localStorage.getItem('previous_words'));
+        } catch {prev_words = [];}
         prev_words.push(word);
         // update the previous words in localStorage
-        localStorage.setItem('previous_words', prev_words);
+        localStorage.setItem('previous_words', JSON.stringify(prev_words));
     }
 
     if (!use_animations) {

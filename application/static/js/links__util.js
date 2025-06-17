@@ -35,5 +35,15 @@ function freezeScreen(){
 
 function showScreen(){
     document.body.innerHTML = localStorage.getItem('screen')
+    const modal = document.getElementById('modal-finish-user');
+    if (getComputedStyle(modal).display === 'flex') {
+        try {
+            jumpsA = JSON.parse(localStorage.getItem('jumpsA'));
+            generateLineGraph(jumpsA);
+        } catch (e) {
+           console.log(e)
+        }
+    }
+
     console.log("[showScreen] Screen restored from localStorage")
 }

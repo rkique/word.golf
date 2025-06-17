@@ -7,7 +7,8 @@
 {% include 'settings.html' %}
 {% include 'modal-help.html' %}
 {% include 'modal.html' %}
-{% include 'modal-finish.html' %}
+{% include 'modal-finish-user.html' %}
+{% include 'modal-finish-guest.html' %}
 
 <div id="global">
     <div id="wordspace-container">
@@ -40,11 +41,11 @@
 <script>
     function loadLocalStorage() {
         let prompt_idx = parseInt(localStorage.getItem('current_prompt')) || 0;
-        let jumpsA = string_to_list(localStorage.getItem('jumpsA') || null);
+        let jumpsA = localStorage.getItem('jumpsA') !== '' ? JSON.parse(localStorage.getItem('jumpsA')) : [];
         let jumps = parseInt(localStorage.getItem('jumps')) || 0;
-        let results = string_to_list(localStorage.getItem('results') || null);
-        let prompts = localStorage.getItem('prompts');
-        let start_target = prompts.split(',').slice(prompt_idx, prompt_idx + 2);
+        let results = JSON.parse(localStorage.getItem('results')) || [];
+        let prompts = JSON.parse(localStorage.getItem('prompts')) || [];
+        let start_target = prompts.slice(prompt_idx, prompt_idx + 2);
         console.log(`Loading from local storage: prompt_idx: ${prompt_idx}, jumpsA: ${jumpsA}, jumps: ${jumps}, results: ${results}, start_target: ${start_target}, prompts: ${prompts}`);
         return { jumpsA, jumps, results, prompt_idx, start_target, prompts };
     }
@@ -77,19 +78,6 @@
         showScreen();
     }
     else {
-        function string_to_list(list) {
-            return list ? list.split(',').map(item => item.trim()) : [];
-        }
-
-        function string_to_prompt_list(str) {
-            if (!str) return [];
-            const arr = str.split(',').map(s => s.trim());
-            let result = [];
-            for (let i = 0; i < arr.length; i += 2) {
-                result.push(arr.slice(i, i + 2));
-            }
-            return result;
-        }
         let jumpsA = [], jumps = 0, results = [], prompt_idx = 0, start_target = [], prompts = [];
 
         if (localStorage.getItem('results')) {
@@ -99,7 +87,7 @@
             jumps = loaded.jumps;
             results = loaded.results;
             prompt_idx = loaded.prompt_idx;
-            prompts = string_to_prompt_list(loaded.prompts);
+            prompts = loaded.prompts;
             start_target = prompts[prompt_idx]
         } else {
             console.log('Loading from data');
