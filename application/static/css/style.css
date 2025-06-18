@@ -344,6 +344,7 @@ button span {
     justify-content:flex-end;
 }
 
+
 #settings {
     padding: 0 2em;
     display: flex;
@@ -351,6 +352,7 @@ button span {
     align-items: center;
     justify-content: space-between;
     gap: 1em;
+    max-height: 8vh;
 }
 
 
@@ -631,7 +633,8 @@ background-size: 800% 100%;
 }
 
 #login-welcome {
-  position: absolute;
+  display: none;
+  max-height: 4vh;
   top: 10px;
   left: 0;
   z-index: 1;
@@ -644,17 +647,18 @@ background-size: 800% 100%;
   pointer-events: none; /* allows clicks through */
   align-items: center;   /* Center children horizontally */
   width: max-content;    /* Only as wide as content */
+  flex-wrap: wrap;
 }
 
 .welcome-title,
 .welcome-email {
-  text-align: center;    /* Center text inside each line */
+  text-align: left;
+  margin-right: 0.2rem;
   width: 100%;
   color: var(--text-color);
 }
 
 .welcome-title {
-  font-weight: bold;
   font-size: 1.1em;
 }
 

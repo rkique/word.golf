@@ -25,6 +25,15 @@ HELP_NEIGHBORS = ["underneath", "toothpaste"]
 WV = None
 PRECOMPUTED = None
 
+#debug.
+@app.after_request
+def add_header(response):
+    if request.path.startswith('/static/'):
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+    return response
+
 @app.route('/solutions')
 def serve_data():
     combined = [[prompt[0], neighbor, prompt[1]] for prompt, neighbor in zip(prompts_today, neighbors_today)]

@@ -79,7 +79,7 @@
             if (text.logged_in) {
                 localStorage.setItem('logged_in', text.email);
                 const loginWelcome = document.getElementById('login-welcome');
-                loginWelcome.style.display = 'block';
+                loginWelcome.style.display = 'flex';
                 loginWelcome.querySelector('.welcome-email').textContent = text.email;
                 document.getElementById('guest-buttons').style.display = 'none';
                 document.getElementById('logged_in-buttons').style.display = 'flex';
