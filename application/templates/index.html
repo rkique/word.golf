@@ -77,9 +77,6 @@
                 loginWelcome.querySelector('.welcome-email').textContent = data.email;
                 document.getElementById('guest-buttons').style.display = 'none';
                 document.getElementById('logged_in-buttons').style.display = 'flex';
-                    if (localStorage.getItem('lastComplete') && data['date'] == localStorage.getItem('lastComplete')) {
-                        showScreen();
-                    }
             }
             if (localStorage.getItem('lastComplete') &&
                 data['date'] == localStorage.getItem('lastComplete')) {
