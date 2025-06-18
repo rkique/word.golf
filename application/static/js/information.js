@@ -207,7 +207,6 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, is_user=false)
                 freezeScreen()
             });
     }
-            `<div><p>${seq.join(' ⟶ ')}</p></div>`
     else {
         freezeScreen()
     }
