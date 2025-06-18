@@ -352,7 +352,7 @@ button span {
     align-items: center;
     justify-content: space-between;
     gap: 1em;
-    max-height: 8vh;
+    /* max-height: 8vh; */
 }
 
 
@@ -384,7 +384,7 @@ button span {
     /*       top  left   bottom    right */
 #wordspace {
     width: 77vw;
-    height: 85vh;
+    height: 81vh;
     padding: 9vh 12vh 8vh 23vh;
     display: grid;
     grid-template-columns: 1fr 1.5fr 1fr;
@@ -418,7 +418,7 @@ button span {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 85vh;
+    height: 81vh;
 }
 
 .prompt-box {
@@ -634,20 +634,10 @@ background-size: 800% 100%;
 
 #login-welcome {
   display: none;
-  max-height: 4vh;
-  top: 10px;
-  left: 0;
-  z-index: 1;
-  font-size: 1.1rem;
-  text-align: left;
-  background: transparent;
+  /* max-height: 4vh; */
   color: var(--text-color);
   padding-left: 1.2rem;
-  opacity: 0.85;
-  pointer-events: none; /* allows clicks through */
-  align-items: center;   /* Center children horizontally */
-  width: max-content;    /* Only as wide as content */
-  flex-wrap: wrap;
+  max-height: 4vh;
 }
 
 .welcome-title,

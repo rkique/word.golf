@@ -13,6 +13,20 @@
         activateLinks()
         console.log("Tutorial started, end of method of begin tutorial response:", resp);
     }
+
+        function renderLogin(text) {
+            localStorage.setItem('logged_in', text.email);
+            const loginWelcome = document.getElementById('login-welcome');
+            loginWelcome.style.display = 'flex';
+            loginWelcome.querySelector('.welcome-email').textContent = text.email;
+            document.getElementById('guest-buttons').style.display = 'none';
+            document.getElementById('logged_in-buttons').style.display = 'flex';
+            if (localStorage.getItem('lastComplete') &&
+                data['date'] == localStorage.getItem('lastComplete')) {
+                showScreen();
+            }
+        }
+
     async function renderLogout(){
         try {
             const res = await fetch(window.backendURL + "/logout", {

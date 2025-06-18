@@ -51,8 +51,6 @@
         return { jumpsA, jumps, results, prompt_idx, start_target, prompts };
     }
 
-    console.log("I AM HERE IN INDEX.HTML");
-
     //if the user has never completed the help sequence before, 
     //use a help_session.
     if (!localStorage.getItem('current_date') || localStorage.getItem('is_help') == 'true') {
@@ -75,18 +73,10 @@
         }
     })
         .then(response => response.json())
-        .then(text => {
-            if (text.logged_in) {
-                localStorage.setItem('logged_in', text.email);
-                const loginWelcome = document.getElementById('login-welcome');
-                loginWelcome.style.display = 'flex';
-                loginWelcome.querySelector('.welcome-email').textContent = text.email;
-                document.getElementById('guest-buttons').style.display = 'none';
-                document.getElementById('logged_in-buttons').style.display = 'flex';
-                if (localStorage.getItem('lastComplete') &&
-                    data['date'] == localStorage.getItem('lastComplete')) {
-                    showScreen();
-                }
+        .then(login_data => {
+            if (login_data.logged_in) {
+                localStorage.setItem('logged_in', login_data.email);
+                renderLogin(login_data)
             }
          })
     //after fetch: we want to check whether the user has completed today and set the screen accordingly.
