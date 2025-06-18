@@ -143,7 +143,6 @@ document.getElementById("SubmitBtn").addEventListener("click", async (e) => {
           document.getElementById("LoginBtn").style.display = "block";
           document.getElementById("ForgotPasswordBtn").style.display = "block";
           document.getElementById("CreateAccountBtn").style.display = "none";
-          document.querySelector("h2").textContent = "Login";
         } else {
           // person does not exist, show create account button
           document.getElementById("responseMessage").style.display = "none";
@@ -151,7 +150,6 @@ document.getElementById("SubmitBtn").addEventListener("click", async (e) => {
           document.getElementById("LoginBtn").style.display = "none";
           document.getElementById("ForgotPasswordBtn").style.display = "none";
           document.getElementById("CreateAccountBtn").style.display = "block";
-          document.querySelector("h2").textContent = "Create Account";
         }
       } else {
         document.getElementById("responseMessage").style.display = "block";
