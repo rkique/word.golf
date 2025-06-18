@@ -63,6 +63,10 @@
         displayModal(start_text)
     }
 
+    console.log("Data received:", data);
+    localStorage.setItem('current_date', data['date']);
+    localStorage.setItem('daily_idx', data['daily_idx']);
+
     fetch(`${window.backendURL}/is_logged_in`, {
         method: 'POST',
         credentials: 'include',
