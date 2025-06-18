@@ -67,9 +67,12 @@
     .then(response => response.json())
     .then(data => {
         if (data.logged_in) {
+            localStorage.setItem('logged_in', data.email);
             const loginWelcome = document.getElementById('login-welcome');
             loginWelcome.style.display = 'block';
             loginWelcome.querySelector('.welcome-email').textContent = data.email;
+            document.getElementById('guest-buttons').style.display = 'none';
+            document.getElementById('logged_in-buttons').style.display = 'flex';
         }
     })
 

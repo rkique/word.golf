@@ -94,7 +94,8 @@ function renderFinish(jumpsA) {
     update_database_with_finish(totalJumps, currentDate);
     const daily_idx = daysSinceStartDate();
     // Display finish modal for user.
-    displayFinishModal(daily_idx, totalJumps, newStreak, false);
+    is_logged_in = Boolean(localStorage.getItem('logged_in'))
+    displayFinishModal(daily_idx, totalJumps, newStreak, is_logged_in);
 }
 
 /* Clears the modal, localStorage, and renders links*/
@@ -192,10 +193,10 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, is_user=false)
     modalFinish.querySelector('.totalJumps').innerHTML = totalJumps;
     modalFinish.querySelector('.streak').innerHTML = currentStreak;
     modalFinish.style.display = "flex";
-    if (is_user){
-        jumpsArray = JSON.parse(localStorage.getItem('jumpsA') || null);
-        generateLineGraph(jumpsArray);
-    }
+    // if (is_user){
+    //     jumpsArray = JSON.parse(localStorage.getItem('jumpsA') || null);
+    //     generateLineGraph(jumpsArray);
+    // }
 }
 
 function renderHelpFinish(){

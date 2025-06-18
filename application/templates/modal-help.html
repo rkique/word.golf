@@ -11,6 +11,15 @@
         renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
         activateLinks()
     }
+    function renderLogout(){
+        localStorage.removeItem('logged_in');
+        const loginWelcome = document.getElementById('login-welcome');
+        const logged_in_buttons = document.getElementById('logged_in-buttons');
+        loginWelcome.style.display = 'none';
+        logged_in_buttons.style.display = 'none';
+        const logoutButton = document.getElementById('guest-buttons');
+        logoutButton.style.display = 'flex';
+    }
 
 </script>
 <div id="help" class="help">
@@ -24,7 +33,10 @@
             <p class='--grayed-out'>mercury ⟶ toothpaste ⟶ razor</p>
             <p>5 prompts daily. The best score is 10.</p>
         </div>
-        <div class="help-buttons">
+        <div class="logged_in-buttons" id="logged_in-buttons">
+            <button onclick="renderLogout()" class="switch switch--outlined">logout</button>
+        </div>
+        <div class="guest-buttons" id="guest-buttons">
         <button onclick="window.location.href='/login'" class="switch switch--outlined">login / signup</button>
         <script src="https://accounts.google.com/gsi/client" async></script>
         <div id="g_id_onload"

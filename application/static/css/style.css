@@ -202,8 +202,15 @@ html {
     height: 3.5rem !important;
 }
 
-.help-buttons {
+.logged_in-buttons {
+    display: none;
+}
+
+.guest-buttons {    
     display: flex;
+}
+
+.guest-buttons, .logged_in-buttons {
     flex-direction: row;
     padding: 0em 0em 2em 0em;
     justify-content: space-around;
