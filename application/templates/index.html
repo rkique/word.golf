@@ -77,48 +77,55 @@
                 loginWelcome.querySelector('.welcome-email').textContent = data.email;
                 document.getElementById('guest-buttons').style.display = 'none';
                 document.getElementById('logged_in-buttons').style.display = 'flex';
-            }
-            if (localStorage.getItem('lastComplete') &&
+                if (localStorage.getItem('lastComplete') &&
                 data['date'] == localStorage.getItem('lastComplete')) {
                 showScreen();
             }
+            }
             else {
-                let jumpsA = [], jumps = 0, results = [], prompt_idx = 0, start_target = [], prompts = [];
-                if (localStorage.getItem('results')) {
-                    console.log('Loading from local storage');
-                    let loaded = loadLocalStorage();
-                    jumpsA = loaded.jumpsA;
-                    jumps = loaded.jumps;
-                    results = loaded.results || data['results'];
-                    prompt_idx = loaded.prompt_idx;
-                    prompts = loaded.prompts;
-                } else {
-                    console.log('Loading from data');
-                    jumpsA = data['jumpsA'] || [];
-                    jumps = data['jumps'] || 0;
-                    results = data['results'] || [];
-                    prompt_idx = data['prompt_idx'] || 0;
-                    prompts = data['prompts'] || '';
-                }
-                console.log(`[final] jumpsA: ${jumpsA}, jumps: ${jumps}, results: ${results}, prompt_idx: ${prompt_idx}, start_target: ${start_target}, prompts: ${prompts}`);
+                if (localStorage.getItem('lastComplete') &&
+        data['date'] == localStorage.getItem('lastComplete')) {
+        showScreen();
+    }
+    else {
+        //user visit for first time.
+        let jumpsA = [], jumps = 0, results = [], prompt_idx = 0, start_target = [], prompts = [];
+        if (localStorage.getItem('results')) {
+            console.log('Loading from local storage');
+            let loaded = loadLocalStorage();
+            jumpsA = loaded.jumpsA;
+            jumps = loaded.jumps;
+            results = loaded.results || data['results'];
+            prompt_idx = loaded.prompt_idx;
+            prompts = loaded.prompts;
+        } else {
+            console.log('Loading from data');
+            jumpsA = data['jumpsA'] || [];
+            jumps = data['jumps'] || 0;
+            results = data['results'] || [];
+            prompt_idx = data['prompt_idx'] || 0;
+            prompts = data['prompts'] || '';
+        }
+        console.log(`[final] jumpsA: ${jumpsA}, jumps: ${jumps}, results: ${results}, prompt_idx: ${prompt_idx}, start_target: ${start_target}, prompts: ${prompts}`);
 
-                start_target = prompts[prompt_idx]
-                _ = editSession(jumpsA, jumps, results, prompt_idx, start_target);
+        start_target = prompts[prompt_idx]
+        _ = editSession(jumpsA, jumps, results, prompt_idx, start_target);
 
-                if (prompt_idx == 5) { prompt_idx = 4 }
-                start_target = prompts[prompt_idx]
-                renderToFrom(start_target)
+        if (prompt_idx == 5) { prompt_idx = 4 }
+        start_target = prompts[prompt_idx]
+        renderToFrom(start_target)
 
-                console.log(`[From index] prompts: ${prompts}, i: ${prompt_idx}, local_jumpsA: ${jumpsA}, jumps: ${jumps}`);
-                renderPrompts(prompts, prompt_idx, jumpsA, jumps)
-                renderLinks(start_target, results)
-                activateLinks()
-                localStorage.setItem('current_date', data['date']);
-                localStorage.setItem('daily_idx', data['daily_idx']);
+        console.log(`[From index] prompts: ${prompts}, i: ${prompt_idx}, local_jumpsA: ${jumpsA}, jumps: ${jumps}`);
+        renderPrompts(prompts, prompt_idx, jumpsA, jumps)
+        renderLinks(start_target, results)
+        activateLinks()
+        localStorage.setItem('current_date', data['date']);
+        localStorage.setItem('daily_idx', data['daily_idx']);
+    }
+
             }
         })
-
-
+    
 
 </script>
 
