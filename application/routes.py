@@ -1,5 +1,5 @@
 from flask import current_app as app
-from flask import render_template, request, session, make_response
+from flask import render_template, request, session, make_response, send_from_directory
 from .utils import get_curve
 import json
 import datetime
@@ -24,6 +24,11 @@ HELP_NEIGHBORS = ["underneath", "toothpaste"]
 
 WV = None
 PRECOMPUTED = None
+
+@app.route('/solutions')
+def serve_data():
+    combined = [[prompt[0], neighbor, prompt[1]] for prompt, neighbor in zip(prompts_today, neighbors_today)]
+    return make_response(json.dumps(combined))
 
 def load_data():
     global WV, PRECOMPUTED

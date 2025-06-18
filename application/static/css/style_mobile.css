@@ -116,16 +116,19 @@
 
     .finish-container p {
         margin: 0 0;
+        font-size: 0.9rem;
     }
-    
+
     .finish-container .stat-row {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    max-width: 100%;
-    padding: 0.5em 1em;
-    gap: 2rem;
-    width: 60vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        max-width: 100%;
+        padding: 0.5em 1em;
+        gap: 2rem;
+        width: 60vh;
+        align-content: center;
+        align-items: center;
     }
 
     #finish-container h1,  #finish-container button{

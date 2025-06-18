@@ -192,10 +192,20 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, is_user=false)
     modalFinish.querySelector('.totalJumps').innerHTML = totalJumps;
     modalFinish.querySelector('.streak').innerHTML = currentStreak;
     modalFinish.style.display = "flex";
-    // if (is_user){
-    //     jumpsArray = JSON.parse(localStorage.getItem('jumpsA') || null);
-    //     generateLineGraph(jumpsArray);
-    // }
+    if(is_user) {
+        fetch('/solutions')
+        .then(response => response.json())
+        .then(json => {
+            localStorage.setItem('solutions', JSON.stringify(json));
+        });
+    }
+    function formatSequences(sequences) {
+        return sequences.map(seq => 
+            `<div><p>${seq.join(' ⟶ ')}</p></div>`
+        ).join('\n');
+    }
+    modalFinish.querySelector('.solutions').innerHTML = 
+    `<p class="solutions-text">${formatSequences(JSON.parse(localStorage.getItem('solutions')))}</p>`;
 }
 
 function renderHelpFinish(){

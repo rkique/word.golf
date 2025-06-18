@@ -40,6 +40,7 @@ function focusLink(targetText) {
         const text = link.innerText.trim();
         if (text === targetText) {
             link.style.outlineOffset = "2px";
+            link.classList.add("link--target")
             link.classList.remove("link--disabled-2");
         } else if (links.indexOf(link) !== 10) {
             link.style.outline = "";

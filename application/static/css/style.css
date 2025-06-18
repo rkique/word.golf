@@ -142,7 +142,7 @@ html {
 .finish-container {
     display: flex;
     flex-direction: column;
-    font-size: 1em;
+    font-size: 1rem;
     align-items: center;
     justify-content: space-around;
     gap: 2em;
@@ -238,7 +238,7 @@ html {
     font-size: 1.2em;
 }
 p {
-    font-size: 1.5em;
+    font-size: 1.5rem;
 }
 
 .help p{ 
@@ -514,7 +514,6 @@ button span {
         transition: background 0.2s;
         outline: 1px solid var(--border-color);
 }
- 
 /* Scale animation for jumps */
 @keyframes scaleUp {
     0% {
@@ -526,6 +525,10 @@ button span {
     100% {
         transform: scale(1);
     }
+}
+
+.animate-scale-infinite {
+    animation: scaleUp 1s infinite;
 }
 
 .animate-scale {
