@@ -79,13 +79,12 @@
     }
     else {
         let jumpsA = [], jumps = 0, results = [], prompt_idx = 0, start_target = [], prompts = [];
-
         if (localStorage.getItem('results')) {
             console.log('Loading from local storage');
             let loaded = loadLocalStorage();
             jumpsA = loaded.jumpsA;
             jumps = loaded.jumps;
-            results = loaded.results;
+            results = loaded.results || data['results'];
             prompt_idx = loaded.prompt_idx;
             prompts = loaded.prompts;
             start_target = prompts[prompt_idx]

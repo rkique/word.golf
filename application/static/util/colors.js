@@ -12,7 +12,7 @@ function changeColorMode() {
 
 function syncGraph(){
     jumpsArray = JSON.parse(localStorage.getItem('jumpsA') || null);
-    if (jumpsArray !== null) generateLineGraph(jumpsArray);
+    // if (jumpsArray !== null) generateLineGraph(jumpsArray);
 }
 function syncColorMode() {
   currentMode = localStorage.getItem('darkMode')
@@ -37,7 +37,7 @@ function syncColorMode() {
     document.documentElement.style.setProperty('--grayed-out-color', '#595959');
     document.documentElement.style.setProperty('--grayed-out-color-2', '#353535');
   }
-  syncGraph()
+  // syncGraph()
   //PlotHistory(sessionHistory)
 }
 syncColorMode()
