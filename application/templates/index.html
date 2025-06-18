@@ -55,6 +55,9 @@
     if (!localStorage.getItem('current_date') || localStorage.getItem('is_help') == 'true') {
         localStorage.setItem('is_help', 'true');
         data = sendAndReceiveXML(`help=true`);
+        start_text = `<p id="modalText"> In word.golf, you move from one word to another by clicking related words.</p>
+        <button class="switch switch--outlined" onclick="toggleElement('modal')"> OK </button>`
+        displayModal(start_text)
     }
     
     fetch(`${window.backendURL}/is_logged_in`, {
@@ -100,8 +103,6 @@
             prompts = data['prompts'] || '';
             start_target = prompts[prompt_idx];
         }
-
-
         console.log(`[final] jumpsA: ${jumpsA}, jumps: ${jumps}, results: ${results}, prompt_idx: ${prompt_idx}, start_target: ${start_target}, prompts: ${prompts}`);
         _ = editSession(jumpsA, jumps, results, prompt_idx, start_target);
 

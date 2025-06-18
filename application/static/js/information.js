@@ -60,10 +60,9 @@ function update_database_with_finish(totalJumps, last_complete) {
     });
 }
 
-function displayHelpFinish(innerHTML){
+function displayModal(innerHTML){
     const modalEl = document.getElementById('modal');
-    const modalText =  document.getElementById('modalText');
-    modalText.innerHTML = innerHTML;
+    modalEl.innerHTML = innerHTML;
     modalEl.style.display = 'flex';
 }
 
@@ -200,10 +199,17 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, is_user=false)
 }
 
 function renderHelpFinish(){
-    help_finish_text = `Good luck!`;
+    help_finish_text = `<div>
+    <p id="modalText">Good luck!</p>
+    <div id="dots-container">
+      <span class="dot">.</span>
+      <span class="dot">.</span>
+      <span class="dot">.</span>
+    </div>
+  </div>`;
 
     setTimeout(() => {
-        displayHelpFinish(help_finish_text);
+        displayModal(help_finish_text);
         setTimeout(startGame, START_GAME_DELAY_MS);
     }, HELP_FINISH_DELAY_MS);
 }

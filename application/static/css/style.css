@@ -472,8 +472,15 @@ button span {
     max-height: 40vh;
 }
 
-#modal, #modal-finish-guest, #modal-finish-user{
+#modal {
+    font-size: 1.8rem;
+}
+
+#modal-finish-guest, #modal-finish-user {
     font-size: 1.2rem;
+}
+
+#modal, #modal-finish-guest, #modal-finish-user{
     flex-direction: column;
     display: none;
     position: absolute;
@@ -494,9 +501,6 @@ button span {
 }
 
 
-.modal p {
-    margin: 0 0;
-}
 
 .modal button {
         background-color: var(--background-color);
@@ -591,13 +595,12 @@ overflow: hidden;
 opacity: 1;
 }
 
-
-
 #modalText {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+    font-size: 1.8rem;
+    color: var(--text-color);
+    text-align: center;
+    padding: 1em;
+    margin: 0 auto;}
 
 .rainbow_text_animated {
 overflow: hidden;
