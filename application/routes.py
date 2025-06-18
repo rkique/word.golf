@@ -25,6 +25,15 @@ HELP_NEIGHBORS = ["underneath", "toothpaste"]
 WV = None
 PRECOMPUTED = None
 
+#Disable caching for static files
+@app.after_request
+def add_header(response):
+    if request.path.startswith('/static/') or request.path.startswith('/templates/'):
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+    return response
+
 def load_data():
     global WV, PRECOMPUTED
     if WV is not None:

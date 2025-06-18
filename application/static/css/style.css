@@ -38,7 +38,6 @@ html {
 }
 
 .switch--outlined {
-    margin-top: 1.5em;
     font-size: 2em;
     padding: 2em 2em;
     outline: 1px solid var(--grayed-out-color);
@@ -61,6 +60,9 @@ html {
       flex: 1;
   }
 
+  .logout {
+    display: none;
+  }
   .switchContainer {
       display: flex;
       align-items: center;
@@ -147,15 +149,17 @@ html {
     justify-content: space-around;
     gap: 2em;
     color: var(--text-color);
-    padding: 2em 1em;
     border-radius: 16px;
     text-align: center;
-    margin: 2em 2em;
     z-index: 2;
 }
 /* .finish-container > :first-child {
     margin-top: 2em;
 } */
+.finish-container h1{
+    font-weight: 300;
+}
+
 .finish-container > :last-child {
     margin-bottom: 1em;
 }
@@ -166,8 +170,7 @@ html {
     justify-content: space-around;
     max-width: 100%;
     padding: 0.5em 1em;
-    gap: 2rem;
-    align-items: flex-end;
+    align-items: center;
 }
 
 .finish-container .stat {
@@ -461,8 +464,6 @@ button span {
 }
 
 #modal-finish-user #scoresGraph{
-    max-width: 60vw; 
-    max-height: 40vh;
 }
 
 #modal, #modal-finish-guest, #modal-finish-user{
@@ -618,34 +619,27 @@ background-size: 800% 100%;
 }
 
 #login-welcome {
-  position: absolute;
-  top: 10px;
+  display: none;
   left: 0;
   z-index: 1;
-  font-size: 1.1rem;
+  font-size: 1.4rem;
   text-align: left;
   background: transparent;
   color: var(--text-color);
-  padding-left: 1.2rem;
-  opacity: 0.85;
-  pointer-events: none; /* allows clicks through */
-  align-items: center;   /* Center children horizontally */
-  width: max-content;    /* Only as wide as content */
 }
 
 .welcome-title,
 .welcome-email {
-  text-align: center;    /* Center text inside each line */
   width: 100%;
   color: var(--text-color);
 }
 
 .welcome-title {
-  font-weight: bold;
-  font-size: 1.1em;
+
 }
 
 .welcome-email {
+  display: inline-block;
   font-size: 0.98em;
   color: var(--text-color);
   word-break: break-all;

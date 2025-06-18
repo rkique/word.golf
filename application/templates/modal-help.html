@@ -11,7 +11,11 @@
         renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
         activateLinks()
     }
-
+    function renderLoginFromHelp(){
+        localStorage.setItem('logged_in', 'true');
+        toggleElement('help');
+        renderLoggedIn('eriq');
+    }
 </script>
 <div id="help" class="help">
     <div class="help-close" onclick="toggleElement('help')">✕</div>
@@ -25,7 +29,8 @@
             <p>5 prompts daily. The best score is 10.</p>
         </div>
         <div class="help-buttons">
-        <button onclick="window.location.href='/login'" class="switch switch--outlined">login / signup</button>
+        <button onclick="renderLoginFromHelp()" class="switch switch--outlined">login / signup</button>
+        <!-- <button onclick="window.location.href='/login'" class="switch switch--outlined">login / signup</button> -->
          <script src="https://accounts.google.com/gsi/client" async></script>
         <div id="g_id_onload"
             data-client_id="YOUR_GOOGLE_CLIENT_ID"
