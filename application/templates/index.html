@@ -63,6 +63,10 @@
         displayModal(start_text)
     }
 
+    console.log("Data received:", data);
+    localStorage.setItem('current_date', data['date']);
+    localStorage.setItem('daily_idx', data['daily_idx']);
+
     fetch(`${window.backendURL}/is_logged_in`, {
         method: 'POST',
         credentials: 'include',
@@ -79,10 +83,10 @@
                 loginWelcome.querySelector('.welcome-email').textContent = text.email;
                 document.getElementById('guest-buttons').style.display = 'none';
                 document.getElementById('logged_in-buttons').style.display = 'flex';
-                if (localStorage.getItem('lastComplete') &&
-                data['date'] == localStorage.getItem('lastComplete')) {
-                    showScreen();
-                }
+                // if (localStorage.getItem('lastComplete') &&
+                // data['date'] == localStorage.getItem('lastComplete')) {
+                //     showScreen();
+                // }
             }
             if (localStorage.getItem('lastComplete') &&
                 data['date'] == localStorage.getItem('lastComplete')) {
@@ -124,8 +128,7 @@
                 console.log("here is the data['date']", data['date'], "type:", typeof data['date']);
                 console.log("here is the data['daily_idx']", data['daily_idx'], "type:", typeof data['daily_idx']);
                 
-                localStorage.setItem('current_date', data['date']);
-                localStorage.setItem('daily_idx', data['daily_idx']);
+                
             }
         })
     
