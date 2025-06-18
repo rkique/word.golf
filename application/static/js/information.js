@@ -109,9 +109,10 @@ function startGame() {
     resp = sendAndReceiveXML('redirect=true');
     renderLinks(resp.prompt, resp.results)
     renderToFrom(resp.prompt);
-    // console.log('[reportSessionEnded] Rendering prompts..')
+    console.log('[reportSessionEnded] Rendering prompts..')
     renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
     activateLinks()
+    // window.location.href = '/';
     //stash
 }
 

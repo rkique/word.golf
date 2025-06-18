@@ -51,6 +51,8 @@
         return { jumpsA, jumps, results, prompt_idx, start_target, prompts };
     }
 
+    console.log("I AM HERE IN INDEX.HTML");
+
     //if the user has never completed the help sequence before, 
     //use a help_session.
     if (!localStorage.getItem('current_date') || localStorage.getItem('is_help') == 'true') {
@@ -69,60 +71,61 @@
         }
     })
         .then(response => response.json())
-        .then(data => {
-            if (data.logged_in) {
-                localStorage.setItem('logged_in', data.email);
+        .then(text => {
+            if (text.logged_in) {
+                localStorage.setItem('logged_in', text.email);
                 const loginWelcome = document.getElementById('login-welcome');
                 loginWelcome.style.display = 'block';
-                loginWelcome.querySelector('.welcome-email').textContent = data.email;
+                loginWelcome.querySelector('.welcome-email').textContent = text.email;
                 document.getElementById('guest-buttons').style.display = 'none';
                 document.getElementById('logged_in-buttons').style.display = 'flex';
                 if (localStorage.getItem('lastComplete') &&
                 data['date'] == localStorage.getItem('lastComplete')) {
+                    showScreen();
+                }
+            }
+            if (localStorage.getItem('lastComplete') &&
+                data['date'] == localStorage.getItem('lastComplete')) {
                 showScreen();
             }
-            }
             else {
-                if (localStorage.getItem('lastComplete') &&
-        data['date'] == localStorage.getItem('lastComplete')) {
-        showScreen();
-    }
-    else {
-        //user visit for first time.
-        let jumpsA = [], jumps = 0, results = [], prompt_idx = 0, start_target = [], prompts = [];
-        if (localStorage.getItem('results')) {
-            console.log('Loading from local storage');
-            let loaded = loadLocalStorage();
-            jumpsA = loaded.jumpsA;
-            jumps = loaded.jumps;
-            results = loaded.results || data['results'];
-            prompt_idx = loaded.prompt_idx;
-            prompts = loaded.prompts;
-        } else {
-            console.log('Loading from data');
-            jumpsA = data['jumpsA'] || [];
-            jumps = data['jumps'] || 0;
-            results = data['results'] || [];
-            prompt_idx = data['prompt_idx'] || 0;
-            prompts = data['prompts'] || '';
-        }
-        console.log(`[final] jumpsA: ${jumpsA}, jumps: ${jumps}, results: ${results}, prompt_idx: ${prompt_idx}, start_target: ${start_target}, prompts: ${prompts}`);
+                //user visit for first time.
+                let jumpsA = [], jumps = 0, results = [], prompt_idx = 0, start_target = [], prompts = [];
+                if (localStorage.getItem('results')) {
+                    console.log('Loading from local storage');
+                    let loaded = loadLocalStorage();
+                    jumpsA = loaded.jumpsA;
+                    jumps = loaded.jumps;
+                    results = loaded.results || data['results'];
+                    prompt_idx = loaded.prompt_idx;
+                    prompts = loaded.prompts;
+                } else {
+                    console.log('Loading from data');
+                    jumpsA = data['jumpsA'] || [];
+                    jumps = data['jumps'] || 0;
+                    results = data['results'] || [];
+                    prompt_idx = data['prompt_idx'] || 0;
+                    prompts = data['prompts'] || '';
+                }
+                console.log(`[final] jumpsA: ${jumpsA}, jumps: ${jumps}, results: ${results}, prompt_idx: ${prompt_idx}, start_target: ${start_target}, prompts: ${prompts}`);
 
-        start_target = prompts[prompt_idx]
-        _ = editSession(jumpsA, jumps, results, prompt_idx, start_target);
+                start_target = prompts[prompt_idx]
+                _ = editSession(jumpsA, jumps, results, prompt_idx, start_target);
 
-        if (prompt_idx == 5) { prompt_idx = 4 }
-        start_target = prompts[prompt_idx]
-        renderToFrom(start_target)
+                if (prompt_idx == 5) { prompt_idx = 4 }
+                start_target = prompts[prompt_idx]
+                renderToFrom(start_target)
 
-        console.log(`[From index] prompts: ${prompts}, i: ${prompt_idx}, local_jumpsA: ${jumpsA}, jumps: ${jumps}`);
-        renderPrompts(prompts, prompt_idx, jumpsA, jumps)
-        renderLinks(start_target, results)
-        activateLinks()
-        localStorage.setItem('current_date', data['date']);
-        localStorage.setItem('daily_idx', data['daily_idx']);
-    }
-
+                console.log(`[From index] prompts: ${prompts}, i: ${prompt_idx}, local_jumpsA: ${jumpsA}, jumps: ${jumps}`);
+                renderPrompts(prompts, prompt_idx, jumpsA, jumps)
+                renderLinks(start_target, results)
+                activateLinks()
+                console.log("here is the data", data);
+                console.log("here is the data['date']", data['date'], "type:", typeof data['date']);
+                console.log("here is the data['daily_idx']", data['daily_idx'], "type:", typeof data['daily_idx']);
+                
+                localStorage.setItem('current_date', data['date']);
+                localStorage.setItem('daily_idx', data['daily_idx']);
             }
         })
     

@@ -1,6 +1,7 @@
 <script>
     function beginTutorial() {
         localStorage.setItem('is_help', 'true');
+        console.log("Beginning tutorial, setting is_help to true in localStorage");
         help = document.getElementById('help');
         help.style.display = 'none'
         resp = sendAndReceiveXML(`help=true`)
@@ -10,6 +11,7 @@
         console.log('[reportSessionEnded] Rendering prompts..')
         renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
         activateLinks()
+        console.log("Tutorial started, end of method of begin tutorial response:", resp);
     }
     async function renderLogout(){
         try {
