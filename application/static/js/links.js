@@ -78,22 +78,8 @@ function makeStartLink(prompt, word){
 function tallyScreen(prompts, i, jumpsA){
     renderFinish(jumpsA)    
     // total = jumpsA.reduce((a, b) => a + b, 0)
-    localStorage.setItem("lastComplete", data["date"])
     // localStorage.setItem('total', JSON.stringify(jumpsA))
     renderPrompts(prompts,i, jumpsA, false)
-    // 
-    window.addEventListener('DOMContentLoaded', () => {
-        fetch("https://word-golf-backend.onrender.com", {
-            method: "GET",
-            credentials: "include"
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data.message);
-            
-        });
-    });
-    freezeScreen()
 }
 function arrayEqual(a, b) {
     return Array.isArray(a) && Array.isArray(b) &&
@@ -113,6 +99,7 @@ function addHelpFocuses(prompt, results){
 
 //@Parent: postWord
 function renderLinks(prompt, results, debug_session_done = false) {
+    console.log('[renderLinks] Rendering links for prompt:', prompt, 'with results:', results);
     let wordspace = document.getElementById("wordspace")
     clearChildren(wordspace)
     let middleIndex = Math.floor(results.length / 2)
@@ -143,6 +130,7 @@ function reportSessionEnded(debug_session_done) {
         renderHelpFinish()
     }
     else if (resp.hasOwnProperty('session_done') || debug_session_done){
+        localStorage.setItem("lastComplete", data["date"])
         tallyScreen(resp.prompts, resp.i, resp.jumpsA)
     }
     else {

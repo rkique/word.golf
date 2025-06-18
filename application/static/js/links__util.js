@@ -35,15 +35,21 @@ function freezeScreen(){
 
 function showScreen(){
     document.body.innerHTML = localStorage.getItem('screen')
-    const modal = document.getElementById('modal-finish-user');
-    if (getComputedStyle(modal).display === 'flex') {
-        try {
-            jumpsA = JSON.parse(localStorage.getItem('jumpsA'));
-            generateLineGraph(jumpsA);
-        } catch (e) {
-           console.log(e)
-        }
+    if (localStorage.getItem('logged_in')) {
+        daily_idx = daysSinceStartDate();
+        totalJumps =  JSON.parse(localStorage.getItem('jumpsA') || '[]').reduce((sum, jumps) => sum + jumps, 0);
+        streak = parseInt(localStorage.getItem('streak')) || 1;
+        document.getElementById('modal-finish-guest').style.display = 'none';
+        displayFinishModal(daily_idx, totalJumps, streak, true)
     }
-
+    // const modal = document.getElementById('modal-finish-user');
+    // if (getComputedStyle(modal).display === 'flex') {
+    //     try {
+    //         jumpsA = JSON.parse(localStorage.getItem('jumpsA'));
+    //         generateLineGraph(jumpsA);
+    //     } catch (e) {
+    //        console.log(e)
+    //     }
+    // }
     console.log("[showScreen] Screen restored from localStorage")
 }

@@ -93,7 +93,6 @@
             results = loaded.results || data['results'];
             prompt_idx = loaded.prompt_idx;
             prompts = loaded.prompts;
-            start_target = prompts[prompt_idx]
         } else {
             console.log('Loading from data');
             jumpsA = data['jumpsA'] || [];
@@ -101,16 +100,16 @@
             results = data['results'] || [];
             prompt_idx = data['prompt_idx'] || 0;
             prompts = data['prompts'] || '';
-            start_target = prompts[prompt_idx];
         }
         console.log(`[final] jumpsA: ${jumpsA}, jumps: ${jumps}, results: ${results}, prompt_idx: ${prompt_idx}, start_target: ${start_target}, prompts: ${prompts}`);
+        
+        start_target = prompts[prompt_idx]
         _ = editSession(jumpsA, jumps, results, prompt_idx, start_target);
 
-        if (prompt_idx == 5) {
-            renderToFrom(prompts[4])
-        } else {
-            renderToFrom(start_target)
-        }
+        if (prompt_idx == 5) { prompt_idx = 4}
+        start_target = prompts[prompt_idx]
+        renderToFrom(start_target)
+        
         console.log(`[From index] prompts: ${prompts}, i: ${prompt_idx}, local_jumpsA: ${jumpsA}, jumps: ${jumps}`);
         renderPrompts(prompts, prompt_idx, jumpsA, jumps)
         renderLinks(start_target, results)

@@ -183,7 +183,6 @@ function generateLineGraph(scores) {
     Plotly.newPlot(graphContainer, [trace], layout, config);
 }
 
-
 function displayFinishModal(daily_idx, totalJumps, currentStreak, is_user=false) {
     const modalFinish = document.getElementById(is_user ? 'modal-finish-user' : 'modal-finish-guest');
 
@@ -192,20 +191,26 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, is_user=false)
     modalFinish.querySelector('.totalJumps').innerHTML = totalJumps;
     modalFinish.querySelector('.streak').innerHTML = currentStreak;
     modalFinish.style.display = "flex";
-    if(is_user) {
+    if (is_user) {
         fetch('/solutions')
-        .then(response => response.json())
-        .then(json => {
-            localStorage.setItem('solutions', JSON.stringify(json));
-        });
+            .then(response => response.json())
+            .then(json => {
+                localStorage.setItem('solutions', JSON.stringify(json));
+                function formatSequences(sequences) {
+                    return sequences.map(seq =>
+                        `<div><p>${seq.join(' ⟶ ')}</p></div>`
+                    ).join('\n');
+                }
+                const modalFinish = document.querySelector('.modal-finish'); // adjust if needed
+                modalFinish.querySelector('.solutions').innerHTML =
+                    `<p class="solutions-text">${formatSequences(json)}</p>`;
+                freezeScreen()
+            });
     }
-    function formatSequences(sequences) {
-        return sequences.map(seq => 
             `<div><p>${seq.join(' ⟶ ')}</p></div>`
-        ).join('\n');
+    else {
+        freezeScreen()
     }
-    modalFinish.querySelector('.solutions').innerHTML = 
-    `<p class="solutions-text">${formatSequences(JSON.parse(localStorage.getItem('solutions')))}</p>`;
 }
 
 function renderHelpFinish(){
