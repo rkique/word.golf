@@ -60,6 +60,7 @@
         displayModal(start_text)
     }
     
+    let called_screen = false;
     fetch(`${window.backendURL}/is_logged_in`, {
         method: 'POST',
         credentials: 'include',
@@ -76,12 +77,20 @@
             loginWelcome.querySelector('.welcome-email').textContent = data.email;
             document.getElementById('guest-buttons').style.display = 'none';
             document.getElementById('logged_in-buttons').style.display = 'flex';
+            if (!called_screen) {
+                if (localStorage.getItem('lastComplete') && data['date'] == localStorage.getItem('lastComplete')) {
+                    showScreen();
+                }
+                called_screen = true;
+            }
         }
     })
 
 
     if (localStorage.getItem('lastComplete') && data['date'] == localStorage.getItem('lastComplete')) {
-        showScreen();
+        if (!called_screen) {
+            showScreen();
+        }
     }
     else {
         let jumpsA = [], jumps = 0, results = [], prompt_idx = 0, start_target = [], prompts = [];
