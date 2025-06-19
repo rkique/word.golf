@@ -53,16 +53,13 @@ function renderPrompts(promptTexts, i, jumpsA, current_jumps) {
     console.log(`renderPrompts: ${promptTexts}, i: ${i}, jumpsA: ${jumpsA}`);
     // get all prompt-box elements
     const promptBoxes = document.querySelectorAll('#prompts .prompt-box');
-
     // update "done" prompts
     const done = promptTexts.slice(0, i);
     done.forEach((promptText, idx) => {
-        if (promptBoxes[idx]) {
             promptBoxes[idx].style.border = '1px solid var(--grayed-out-color)';
             const doneTag = makeDonePromptTag(promptText, jumpsA[idx]);
             promptBoxes[idx].innerHTML = '';
             promptBoxes[idx].appendChild(doneTag);
-        }
     });
 
     // update current prompt
