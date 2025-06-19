@@ -13,13 +13,13 @@ document.addEventListener('keydown', function (event) {
   const isHelp = localStorage.getItem('is_help') === 'true';
   const isHidden = getComputedStyle(helpEl).display === 'none';
 
-  if (event.key === 'Escape') {
+  if (event.key === 'Escape' && (location.hostname === "localhost" || location.hostname.startsWith("127."))) {
     if (!isHidden) {
-      helpOff(); // Close help if it's open
+      helpOff(); 
     } else if (isHelp) {
-      startGame(); // Start game if help is hidden and flag is set
+      startGame(); 
     }
-    else if (location.hostname === "localhost" || location.hostname.startsWith("127.")) {
+    else {
         const gameState = {
         "current_prompt": "5",
         "current_date": "2025-06-19",

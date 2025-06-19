@@ -16,8 +16,13 @@ function makePromptInfo(start_target) {
  * @param {string} prompt
  * @returns {void}
  */
-function renderToFrom(start_target){
-    // console.log("renderToFrom called with start_target:");
+function renderToFrom(start_target, jumps){
+    console.log(`renderToFrom called with start_target ${start_target}, jumps ${jumps}`);
+    if (jumps != 0){
+        let previous_words = JSON.parse(localStorage.getItem('previous_words'))
+        let previous_word = previous_words.length > 0 ? previous_words[previous_words.length - 1] : start_target[0];
+        start_target = [previous_word, start_target[1]];
+    }
     let information = /** @type {HTMLElement} */ (document.getElementById("information"));
     clearChildren(information);
     let promptInfoEl = makePromptInfo(start_target);
@@ -121,7 +126,7 @@ function startGame() {
     localStorage.removeItem('results');
     resp = sendAndReceiveXML('redirect=true');
     renderLinks(resp.prompt, resp.results)
-    renderToFrom(resp.prompt);
+    renderToFrom(resp.prompt, 0);
     console.log('[reportSessionEnded] Rendering prompts..')
     renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
     activateLinks()

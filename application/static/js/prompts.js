@@ -50,7 +50,7 @@ function makeDonePromptTag(start_target, jumps) {
 
 function renderPrompts(promptTexts, i, jumpsA, current_jumps) {
 
-    console.log(`renderPrompts: ${promptTexts}, i: ${i}, jumpsA: ${jumpsA}`);
+    // console.log(`renderPrompts: ${promptTexts}, i: ${i}, jumpsA: ${jumpsA}`);
     // get all prompt-box elements
     const promptBoxes = document.querySelectorAll('#prompts .prompt-box');
     // update "done" prompts

@@ -5,7 +5,7 @@
         help = document.getElementById('help');
         help.style.display = 'none'
         resp = sendAndReceiveXML(`help=true`)
-        renderToFrom(resp.prompt);
+        renderToFrom(resp.prompt, resp.jumps);
         document.querySelector('.prompt-box').style.border = '1px solid var(--border-color)';
         renderLinks(resp.prompt, resp.results)
         console.log('[reportSessionEnded] Rendering prompts..')

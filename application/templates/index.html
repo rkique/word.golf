@@ -108,7 +108,7 @@
                     _ = editSession(jumpsA, jumps, results, prompt_idx, start_target);
                     if (prompt_idx == 5) { prompt_idx = 4 }
                     start_target = prompts[prompt_idx]
-                    renderToFrom(start_target)
+                    renderToFrom(start_target, jumps)
                     console.log(`[From index] prompts: ${prompts}, i: ${prompt_idx}, local_jumpsA: ${jumpsA}, jumps: ${jumps}`);
                     renderPrompts(prompts, prompt_idx, jumpsA, jumps)
                     renderLinks(start_target, results)
