@@ -184,6 +184,7 @@ function reportSessionEnded(debug_session_done) {
     } else {
         resp = sendAndReceiveXML(`end=true`)
     }
+    console.log('[reportSessionEnded] Response:', resp);
     renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
     //If user has completed all prompts
     if (resp.hasOwnProperty('help_session_done')){
