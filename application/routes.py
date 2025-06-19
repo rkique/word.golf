@@ -228,6 +228,7 @@ def sesh_edit():
                     data['prompt'] = ["", ""]
             
             session['data'] = json.dumps(data)
+            print("Session data updated:",data)
 
     except Exception as e: 
         print("Error in /editsession:", e)
@@ -268,8 +269,13 @@ def index_post():
 
     elif request.form.get('end') is not None:
         print(f"[/] Shifting to Prompt {session['i']+1}")
-        save_activity()
+        print("here is session data:", session.get('data'))
+        print("session i:", session['i'])
         session['i'] = session['i']+1
+        if (session['i'] > PCOUNT):
+            return make_response("session_done" + session.get('data'))
+        save_activity()
+        
         session['data'] = shift_to(session['i'])
         if (session['i'] == PCOUNT):
             return make_response("session_done" + session.get('data'))

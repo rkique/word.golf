@@ -56,6 +56,7 @@ function sendAndReceiveXML(message) {
             prompts = response_text["prompts"];
             current_prompt = response_text["i"];
             console.log(`[Send and Receive XML] results: ${results} jumpsA : ${jumpsA} prompts ${prompts}`);
+            // fix this localstorage issue!!!
             localStorage.setItem('jumps', jumps)
             localStorage.setItem('jumpsA', JSON.stringify(jumpsA))
             localStorage.setItem('results', JSON.stringify(results))
