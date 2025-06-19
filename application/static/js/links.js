@@ -34,8 +34,8 @@ const HELP_STEPS = [
 
 function focusLink(targetText) {
     const links = Array.from(document.getElementsByClassName("link"));
-    let middleWords = [...new Set(HELP_STEPS.map(step => step.result))];
-    console.log(middleWords)
+    // let middleWords = [...new Set(HELP_STEPS.map(step => step.result))];
+    // console.log(middleWords)
     links.forEach(link => {
         const text = link.innerText.trim();
         if (text === targetText) {
@@ -99,7 +99,7 @@ function addHelpFocuses(prompt, results){
 
 //@Parent: postWord
 function renderLinks(prompt, results, debug_session_done = false) {
-    console.log('[renderLinks] Rendering links for prompt:', prompt, 'with results:', results);
+    // console.log('[renderLinks] Rendering links for prompt:', prompt, 'with results:', results);
     let wordspace = document.getElementById("wordspace")
     clearChildren(wordspace)
     let middleIndex = Math.floor(results.length / 2)
@@ -135,7 +135,7 @@ function reportSessionEnded(debug_session_done) {
         tallyScreen(resp.prompts, resp.i, resp.jumpsA)
     }
     else {
-    renderToFrom(resp.prompt);
+    renderToFrom(resp.prompt, resp.jumps);
     renderLinks(resp.prompt, resp.results)
     // console.log('[reportSessionEnded] Rendering prompts..')
     renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
@@ -174,7 +174,9 @@ function postWord(word, clickedElem, use_animations=USE_ANIMATIONS) {
     }
 
     if (!use_animations) {
-        renderLinks(resp.prompt, resp.results)
+        renderToFrom(resp.prompt, resp.jumps);
+        renderLinks(resp.prompt, resp.results);
+        //renderPrompts unless finished.
         if (word !== resp.prompt[1]) {
         renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
         }
@@ -182,15 +184,15 @@ function postWord(word, clickedElem, use_animations=USE_ANIMATIONS) {
     } else {
         const wordspace = document.getElementById("wordspace");
         function renderXMLAfterAnimation(word, resp) {
-            console.log('[postWord] resp')
-            console.log(resp);
+            // console.log('[postWord] resp')
+            // console.log(resp);
             prompts = resp.prompts;
             prompt_idx = resp.i;
             jumpsA = resp.jumpsA;
             jumps = resp.jumps;
-            console.log(`[postWord] prompts: ${prompts}, prompt_idx: ${prompt_idx}, jumpsA: ${jumpsA}, jumps: ${jumps}`);
+            // console.log(`[postWord] prompts: ${prompts}, prompt_idx: ${prompt_idx}, jumpsA: ${jumpsA}, jumps: ${jumps}`);
             renderLinks(resp.prompt, resp.results);
-            console.log('[postWord] Rendering prompts..')
+            // console.log('[postWord] Rendering prompts..')
             if (word !== resp.prompt[1]) {
                 renderPrompts(prompts, prompt_idx, jumpsA, jumps);
             }
