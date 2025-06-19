@@ -25,7 +25,6 @@ function syncColorMode() {
     document.documentElement.style.setProperty('--grayed-out-background', '#f3f3f3');
     document.documentElement.style.setProperty('--grayed-out-color', '#a0a0a0');
     document.documentElement.style.setProperty('--grayed-out-color-2', '#888');
-
   }
   else {
     document.documentElement.style.setProperty('--hover-color', 'white');
@@ -35,7 +34,8 @@ function syncColorMode() {
     document.documentElement.style.setProperty('--background-color', '#0d0d0d');
     document.documentElement.style.setProperty('--grayed-out-background', '#030303');
     document.documentElement.style.setProperty('--grayed-out-color', '#595959');
-    document.documentElement.style.setProperty('--grayed-out-color-2', '#353535');
+    document.documentElement.style.setProperty('--grayed-out-color-help-target', '#888');
+    document.documentElement.style.setProperty('--grayed-out-color-unfocused', '#444');
   }
   // syncGraph()
   //PlotHistory(sessionHistory)

@@ -1,57 +1,118 @@
-const USE_ANIMATIONS = false
+const USE_ANIMATIONS = false;
 const HELP_STEPS = [
             {
                 prompt: ['outside', 'layer'],
                 result: 'outside',
-                message: "(1/5) Click a word to jump to it.",
-                focus: 'beneath'
+                message: "Click a word to jump to it.",
+                focus: 'beneath',
+                transform: [20,60],
+                startSocket: 'top',
+                endSocket: 'auto',
             },
             {
                 prompt: ['outside', 'layer'],
                 result: 'beneath',
-                message: "(2/5) We want to get to 'layer', so choose the most similar word.",
-                focus: 'surface'
+                message: "We want to get to 'layer', so choose the most similar word.",
+                focus: 'surface',
+                transform: [30,37],
+                startSocket: 'top',
+                endSocket: 'auto',
             },
             {
                 prompt: ['outside', 'layer'],
                 result: 'surface',
-                message: "(3/5) Good job! Click the goal word to complete the prompt.",
-                focus: 'layer'
+                message: "Good job! Click the goal word to complete the prompt.",
+                focus: 'layer',
+                transform: [20,40],
+                startSocket: 'top',
+                endSocket: 'auto',
             },
             {
                 prompt: ['mercury', 'razor'],
                 result: 'mercury',
-                message: "(4/5) Choose carefully! You only need two jumps.",
-                focus: 'toothpaste'
+                message: "Choose carefully! You only need two jumps.",
+                focus: 'toothpaste',
+                transform: [30,50],
+                startSocket: 'left',
+                endSocket: 'auto',
             },
             {
                 prompt: ['mercury', 'razor'],
                 result: 'toothpaste',
-                message: "(5/5) Five prompts per day, the best score is 10.",
-                focus: 'razor'
+                message: "Five prompts per day, the best score is 10.",
+                focus: 'razor',
+                transform: [10,20],
+                startSocket: 'bottom',
+                endSocket: 'top',
             }
         ];
 
-function focusLink(targetText) {
+function focusLink(startText, targetText) {
     const links = Array.from(document.getElementsByClassName("link"));
     // let middleWords = [...new Set(HELP_STEPS.map(step => step.result))];
     // console.log(middleWords)
     links.forEach(link => {
         const text = link.innerText.trim();
+        if (text == startText){
+            link.classList.add("link--help-target");
+        }
         if (text === targetText) {
-            link.style.outlineOffset = "2px";
+            // link.style.outlineOffset = "2px";
+            link.id = "link--target";
             link.classList.add("link--target")
-            link.classList.remove("link--disabled-2");
+            link.classList.remove("link--unfocused");
         } else if (links.indexOf(link) !== 10) {
             link.style.outline = "";
             link.style.outlineOffset = "";
-            link.classList.add("link--disabled-2");
+            link.classList.add("link--unfocused");
         }
     });
 }
-function showHelpPopup(message) {
-    document.getElementById("information").innerHTML = 
-    `<p class='info-box'>${message}</p>`
+
+let activeLeaderLines = [];
+
+function clearAllLeaderLines() {
+    activeLeaderLines.forEach(line => line.remove());
+    activeLeaderLines = [];
+}
+
+function showHelpPopup(message, transform, startSocket, endSocket) {
+    if (window.matchMedia && window.matchMedia("(max-width: 992px)").matches) {
+        let info = document.getElementById("info-box");
+        info.style.display = "flex";
+        info.innerHTML = `${message}`;
+        const x = window.innerWidth * (transform[0] / 100);
+        const y = window.innerHeight * (transform[1] / 100);
+        info.style.left = `${x}px`;
+        info.style.top = `${y}px`;
+        const waitForElements = () => {
+            info = document.getElementById('info-box');
+            const target = document.getElementById('link--target');
+            if (info && target) {
+                const line = new LeaderLine(info, target, {
+                    startSocket: startSocket,
+                    endSocket: endSocket,
+                    // startSocketGravity: [-192, -172],
+                    // endSocketGravity: [192, 172], 
+                    color: getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim(),
+                    path: 'arc',
+                    startPlug: 'behind',
+                    endPlug: 'arrow3',
+                    endPlugSize: 2.1,
+                    size: 2.1,
+                    dash: false,
+                    outline: false
+                });
+                activeLeaderLines.push(line);
+            } else {
+                requestAnimationFrame(waitForElements);
+            }
+        };
+        waitForElements();
+    } else {
+        document.getElementById("information").innerHTML =
+            `<p class='info-box'>${message}</p>`;
+    }
 }
 
 /* makes and renders links */
@@ -74,11 +135,8 @@ function makeStartLink(prompt, word){
     return startLink
 }
 
-
 function tallyScreen(prompts, i, jumpsA){
     renderFinish(jumpsA)    
-    // total = jumpsA.reduce((a, b) => a + b, 0)
-    // localStorage.setItem('total', JSON.stringify(jumpsA))
     renderPrompts(prompts,i, jumpsA, false)
 }
 function arrayEqual(a, b) {
@@ -87,11 +145,13 @@ function arrayEqual(a, b) {
            a.every((val, index) => val === b[index]);
 }
 function addHelpFocuses(prompt, results){
+    clearAllLeaderLines()
     middleIdx = Math.floor(results.length / 2)
         for (const step of HELP_STEPS) {
+            //[Check] if prompt is equal to the help prompt.
             if (arrayEqual(prompt, step.prompt) && results[middleIdx] === step.result) {
-                showHelpPopup(step.message);
-                focusLink(step.focus);
+                showHelpPopup(step.message, step.transform, step.startSocket, step.endSocket);
+                focusLink(step.result, step.focus);
                 break;
             }
         }
@@ -141,14 +201,6 @@ function reportSessionEnded(debug_session_done) {
     activateLinks()
     }
 }
-
-// function postWord(word) {
-//     console.log('postWord called with word:', word)
-//     resp = sendAndReceiveXML("word=" + word)
-//     renderLinks(resp.prompt, resp.results)
-//     renderPrompts(resp.prompts,resp.i, resp.jumpsA, resp.jumps)
-//     activateLinks()
-// }
 
 //activates links on the page
 function activateLinks(){

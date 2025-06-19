@@ -249,7 +249,13 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, jumpsGridMessa
     }
 }
 
+function clearInfoBox() {
+    document.getElementById("info-box").innerHTML = '';
+    info.style.display = "none";
+}
+
 function renderHelpFinish(){
+    clearInfoBox()
     help_finish_text = `<div>
     <p id="modalText">Good luck!</p>
     <div id="dots-container">

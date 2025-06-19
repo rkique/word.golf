@@ -296,7 +296,6 @@ button span {
   color: var(--grayed-out-color);
 }
 
-
 .link--starting{
     color: var(--grayed-out-color);
 }
@@ -306,10 +305,14 @@ button span {
     color: var(--grayed-out-color);
 }
 
-.link--disabled-2{
+.link--unfocused{
     pointer-events: none;
-    color: var(--grayed-out-color-2);
+    color: var(--grayed-out-color-unfocused);
     transition: transform 0ms ease-out, color 0ms ease-out;
+}
+
+.link--help-target {
+    color: var(--grayed-out-color-help-target);
 }
 
 .link--target {
@@ -346,7 +349,7 @@ button span {
 
 #global {
     display: flex;
-    justify-content:flex-end;
+    justify-content: center;
 }
 
 
@@ -388,7 +391,7 @@ button span {
 
     /*       top  left   bottom    right */
 #wordspace {
-    width: 77vw;
+    width: 72vw;
     height: 81vh;
     padding: 9vh 12vh 8vh 23vh;
     display: grid;
@@ -412,13 +415,15 @@ button span {
     box-sizing: border-box;
 }
 
-.info-box {
+#info-box {
+    display: none;
     padding: 0.8rem;
     border: 2px solid var(--text-color);
 }
 
 #prompts {
-    padding: 2em 2em;
+    padding: 1em 0.5em;
+    gap: 0.5rem;
     width: 27vw;
     display: flex;
     flex-direction: column;

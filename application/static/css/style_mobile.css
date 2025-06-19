@@ -1,7 +1,4 @@
 @media only screen and (max-width: 992px) {
-    body {
-        overflow-y: hidden;
-    }
     #global{
     }
     #wordspace {
@@ -27,11 +24,11 @@
     } */
 
     #prompts {
-        width: 100vw; 
+        padding: 0 0;
+        width: 95vw; 
         min-height: 30vh;
         max-height: 40vh;
         justify-content: flex-start;
-        padding: 1rem;
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
@@ -92,11 +89,17 @@
         -webkit-tap-highlight-color: transparent; /* Removes iOS tap highlight color */
     }
 
+    #modal #modalText {
+        font-size: 1.4rem;
+    }
 
     #modal {
         max-width: 90vw;
+        min-height: 50vh;
     }
-
+    #modal button {
+        font-size: 1.4rem;
+    }
     /* ************ */
     /* Help screen */
     /* *********** */
@@ -106,8 +109,12 @@
         max-width: 90vw;
         padding: 0 0;
     }
-    .info-box {
+    #info-box {
+        background-color: var(--background-color);
+        padding: 0.4rem;
         border: none;
+        position: absolute;
+        min-width: 60vw;
     }
     .help-container {
         max-width: 100%;
@@ -152,7 +159,7 @@
     .finish-container .solutions{
         margin-top: 1rem;
     }
-    
+
     .finish-container .stat-row {
         display: flex;
         flex-direction: column;
@@ -171,6 +178,10 @@
     #finish-container h1{
         font-size: 1.8rem;
         font-weight: 300;
+    }
+    .modal button {
+        font-size: 1.7rem;
+        padding: 1rem 7rem;
     }
 
     .modal h1 {
