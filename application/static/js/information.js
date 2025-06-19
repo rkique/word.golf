@@ -32,9 +32,6 @@ function update_database_with_finish(totalJumps, last_complete) {
     let last_jumps = parseInt(localStorage.getItem('jumps') || 0);
     jumpsA.push(last_jumps);
     localStorage.setItem('jumpsA', JSON.stringify(jumpsA));
-    // for testing purposes only, delete this line in production
-    // last_complete = new Date(last_complete);
-    // last_complete.setDate(last_complete.getDate() + 4);
 
     const data = {
         total_jumps: totalJumps,
@@ -84,7 +81,7 @@ function renderGrid(counts) {
     const numCols = 6;
     let gridMessage = ''
     for (let row = 0; row < numRows; row++) {
-        let count = counts[row];
+        let count = Math.ceil(counts[row] / 2)
         let line = full.repeat(count) + empty.repeat(numCols - count);
         gridMessage += line + '\n';
     }
@@ -113,7 +110,7 @@ function renderFinish(jumpsA) {
     displayFinishModal(daily_idx, totalJumps, newStreak, jumpsGridMessage, is_logged_in);
 }
 
-/* Clears the modal, localStorage, and renders links*/
+/* Clears the modal, localStorage, and renders links with XML redirect=true*/
 function startGame() {
     document.getElementById('modal').style.display = 'none';
     localStorage.setItem('is_help', 'false');
@@ -128,8 +125,6 @@ function startGame() {
     console.log('[reportSessionEnded] Rendering prompts..')
     renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
     activateLinks()
-    // window.location.href = '/';
-    //stash
 }
 
 function generateLineGraph(scores) {
