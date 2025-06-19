@@ -96,6 +96,9 @@
             }
             let start_target = prompts[prompt_idx]
             console.log(`[final] jumpsA: ${jumpsA}, jumps: ${jumps}, results: ${results}, prompt_idx: ${prompt_idx}, start_target: ${start_target}, prompts: ${prompts}`);
+            if (jumpsA.length > 5) {
+                jumpsA = jumpsA.slice(0, 5);
+            }
             _ = editSession(jumpsA, jumps, results, prompt_idx, start_target);
             // we know we are at the end here 
             if (prompt_idx > 4) { 
