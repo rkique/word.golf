@@ -70,6 +70,28 @@
     }
     #wordspace button {width: 25vw !important;}
 
+    /* These are to disable the focus and hover effects on buttons and spans */
+    #wordspace button:focus, 
+    #wordspace span:focus {
+        outline: none;      
+        transform: none;    
+        background-color: inherit; 
+        box-shadow: none;  
+    }
+
+    
+    #wordspace button:hover, 
+    #wordspace span:hover {
+        transform: none;    
+        background-color: inherit; 
+        color: inherit;      
+    }
+
+    /* Prevent tap highlight on iOS */
+    * {
+        -webkit-tap-highlight-color: transparent; /* Removes iOS tap highlight color */
+    }
+
 
     #modal {
         max-width: 90vw;
