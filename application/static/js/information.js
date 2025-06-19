@@ -77,6 +77,21 @@ function daysSinceStartDate(startDateStr = '2025-05-31', storageKey = 'current_d
     return Math.floor(diffMs / (1000 * 60 * 60 * 24));
 }
 
+function renderGrid(counts) {
+    const full = '■';
+    const empty = '□';
+    const numRows = 5;
+    const numCols = 6;
+    let gridMessage = ''
+    for (let row = 0; row < numRows; row++) {
+        let count = counts[row];
+        let line = full.repeat(count) + empty.repeat(numCols - count);
+        gridMessage += line + '\n';
+    }
+    return gridMessage;
+}
+
+
 function renderFinish(jumpsA) {
     const totalJumps = jumpsA.reduce((sum, jumps) => sum + jumps, 0);
 
@@ -94,7 +109,8 @@ function renderFinish(jumpsA) {
     const daily_idx = daysSinceStartDate();
     // Display finish modal for user.
     is_logged_in = Boolean(localStorage.getItem('logged_in'))
-    displayFinishModal(daily_idx, totalJumps, newStreak, is_logged_in);
+    jumpsGridMessage = renderGrid(jumpsA);
+    displayFinishModal(daily_idx, totalJumps, newStreak, jumpsGridMessage, is_logged_in);
 }
 
 /* Clears the modal, localStorage, and renders links*/
@@ -184,7 +200,7 @@ function generateLineGraph(scores) {
     Plotly.newPlot(graphContainer, [trace], layout, config);
 }
 
-function displayFinishModal(daily_idx, totalJumps, currentStreak, is_user=false) {
+function displayFinishModal(daily_idx, totalJumps, currentStreak, jumpsGridMessage, is_user=false) {
     const modalFinish = document.getElementById(is_user ? 'modal-finish-user' : 'modal-finish-guest');
 
     modalFinish.querySelector('.daily-idx').innerHTML = daily_idx;
@@ -192,6 +208,26 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, is_user=false)
     modalFinish.querySelector('.totalJumps').innerHTML = totalJumps;
     modalFinish.querySelector('.streak').innerHTML = currentStreak;
     modalFinish.style.display = "flex";
+
+    const tweetMessage = `word.golf #${daily_idx} ${totalJumps} \n${jumpsGridMessage}`;
+    const shareLink = modalFinish.querySelector('#shareLink');
+    shareLink.addEventListener('click', () => {
+        navigator.clipboard.writeText(tweetMessage)
+            .then(() => {
+                shareLink.textContent = 'Copied to clipboard!';
+                setTimeout(() => shareLink.innerHTML = 
+                `
+                Share <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-copy">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> 
+                `, 2000);
+            })
+            .catch(err => {
+                shareLink.textContent = 'Failed to copy';
+                console.error('Clipboard write failed:', err);
+            });
+    });
+
     if (is_user) {
         fetch('/solutions')
             .then(response => response.json())

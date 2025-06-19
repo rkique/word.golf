@@ -21,7 +21,11 @@
         font-size: 1.1rem;
     }
     #settings span{ font-size: 1.4rem; }
-    
+/* 
+    .finish-container .stat p {
+    font-size: 1.5rem;
+    } */
+
     #prompts {
         width: 100vw; 
         min-height: 30vh;
@@ -96,7 +100,12 @@
     .switchContainer {
         min-width: 0em;
     }
-
+    #modal-finish-guest, #modal-finish-user {
+        width: 92vw;
+        max-width: 92vw;
+        height: 80vh;
+        padding: 0 0;
+    }
     #finish-container {
         padding: 2rem 2rem;
         font-size: 1.2rem;
@@ -118,7 +127,10 @@
         margin: 0 0;
         font-size: 0.9rem;
     }
-
+    .finish-container .solutions{
+        margin-top: 1rem;
+    }
+    
     .finish-container .stat-row {
         display: flex;
         flex-direction: column;
