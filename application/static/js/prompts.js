@@ -19,7 +19,7 @@ function makePromptTag(start_target, jumps) {
     let pWord = document.createElement("p");
     pWord.className = "prompt-word";
     pWord.style.display = "inline-block";
-    pWord.innerText = start_target[0] + ", " + start_target[1];
+    pWord.innerText = start_target[1];
     div.appendChild(pWord);
 
     let pJumps = document.createElement("p");
