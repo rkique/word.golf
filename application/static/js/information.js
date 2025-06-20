@@ -102,7 +102,7 @@ function renderFinish(jumpsA) {
 
     const currentDate = new Date(localStorage.getItem('current_date'));
     const lastCompleteDate = new Date(localStorage.getItem('lastComplete'));
-    const diffInDays = Math.floor((currentDate - lastCompleteDate) / (1000 * 60 * 60 * 24)) || Infinity;
+    const diffInDays = Math.floor((currentDate - lastCompleteDate) / (1000 * 60 * 60 * 24))
     
     const isSameDay = diffInDays === 0;
     const shouldResetStreak = diffInDays >= 2;
@@ -246,11 +246,7 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, jumpsGridMessa
                 const modalFinish = document.querySelector('.modal-finish'); // adjust if needed
                 modalFinish.querySelector('.solutions').innerHTML =
                     `<p class="solutions-text">${formatSequences(json)}</p>`;
-                freezeScreen()
             });
-    }
-    else {
-        freezeScreen()
     }
 }
 

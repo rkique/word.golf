@@ -191,8 +191,8 @@ function reportSessionEnded(debug_session_done) {
         renderHelpFinish()
     }
     else if (resp.hasOwnProperty('session_done') || debug_session_done){
-        localStorage.setItem("lastComplete", data["date"])
         tallyScreen(resp.prompts, resp.i, resp.jumpsA)
+        localStorage.setItem("lastComplete", data["date"])
     }
     else {
     renderToFrom(resp.prompt, resp.jumps);

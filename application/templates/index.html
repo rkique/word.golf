@@ -55,7 +55,8 @@
 
     //if the user has never completed the help sequence before, 
     //use a help_session.
-    if (!localStorage.getItem('current_date') || localStorage.getItem('is_help') == 'true') {
+    is_help = localStorage.getItem('is_help');
+    if (is_help !== 'false') {
         localStorage.setItem('is_help', 'true');
         data = sendAndReceiveXML(`help=true`);
         start_text = `<p id="modalText"> In word.golf, you move from one word to another by clicking related words.</p>
@@ -79,17 +80,20 @@
                 localStorage.setItem('logged_in', login_data.email);
                 renderLogin(login_data)
             }
+            let loaded;
+            let prompt_idx;
             if (localStorage.getItem('results')) {
                 console.log('Loading from local storage');
-                let loaded = loadLocalStorage();
+                loaded = loadLocalStorage();
+                prompt_idx = loaded.prompt_idx;
             } else {
                 console.log('Loading from data');
-                let loaded = data;
+                loaded = data;
+                prompt_idx = data['i'];
             }
             let jumpsA = loaded.jumpsA;
             let jumps = loaded.jumps;
             let results = loaded.results || data['results'];
-            let prompt_idx = loaded.prompt_idx;
             let prompts = loaded.prompts;
             let start_target = prompts[prompt_idx]
             console.log(`[final] jumpsA: ${jumpsA}, jumps: ${jumps}, results: ${results}, prompt_idx: ${prompt_idx}, start_target: ${start_target}, prompts: ${prompts}`);
@@ -115,16 +119,5 @@
                 activateLinks()
             }
          })
-                //after fetch: we want to check whether the user has completed today and set the screen accordingly.
-                //user has completed today.
-                // if (localStorage.getItem('lastComplete') &&
-                //     data['date'] == localStorage.getItem('lastComplete')) {
-                //     showScreen();
-                // }
-                // else {
-                    //user visit after complete.
-                    
-                    // localStorage.setItem('current_date', data['date']);
-                    // localStorage.setItem('daily_idx', data['daily_idx']);
-                // }
+
 </script>
