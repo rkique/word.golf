@@ -63,7 +63,6 @@
         displayModal(start_text)
     }
 
-    console.log("Data received:", data);
     localStorage.setItem('current_date', data['date']);
     localStorage.setItem('daily_idx', data['daily_idx']);
 
@@ -83,19 +82,15 @@
             if (localStorage.getItem('results')) {
                 console.log('Loading from local storage');
                 let loaded = loadLocalStorage();
-                jumpsA = loaded.jumpsA;
-                jumps = loaded.jumps;
-                results = loaded.results || data['results'];
-                prompt_idx = loaded.prompt_idx;
-                prompts = loaded.prompts;
             } else {
                 console.log('Loading from data');
-                jumpsA = data['jumpsA'] || [];
-                jumps = data['jumps'] || 0;
-                results = data['results'] || [];
-                prompt_idx = data['prompt_idx'] || 0;
-                prompts = data['prompts'] || '';
+                let loaded = data;
             }
+            let jumpsA = loaded.jumpsA;
+            let jumps = loaded.jumps;
+            let results = loaded.results || data['results'];
+            let prompt_idx = loaded.prompt_idx;
+            let prompts = loaded.prompts;
             let start_target = prompts[prompt_idx]
             console.log(`[final] jumpsA: ${jumpsA}, jumps: ${jumps}, results: ${results}, prompt_idx: ${prompt_idx}, start_target: ${start_target}, prompts: ${prompts}`);
             if (jumpsA.length > 5) {

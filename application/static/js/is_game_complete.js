@@ -6,7 +6,7 @@ if (date === null || date !== data['date']) {
     // if the date is not set or does not match today, reset the game
     // console.log("")
     // Clear all localStorage except for 'streak', 'lastComplete', 'currentDate', and 'is_help'
-    const keepKeys = ['streak', 'lastComplete', 'currentDate', 'is_help'];
+    const keepKeys = ['streak', 'lastComplete', 'is_help'];
     Object.keys(localStorage).forEach(key => {
         if (!keepKeys.includes(key)) {
             localStorage.removeItem(key);
