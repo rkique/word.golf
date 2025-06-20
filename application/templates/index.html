@@ -41,8 +41,9 @@
 </script>
 <script src="static/js/is_game_complete.js"> </script>
 <script>
+
     function loadLocalStorage() {
-        let prompt_idx = parseInt(localStorage.getItem('current_prompt')) || 0;
+        let prompt_idx = parseInt(localStorage.getItem('prompt_idx')) || 0;
         let jumpsA = localStorage.getItem('jumpsA') !== '' ? JSON.parse(localStorage.getItem('jumpsA')) : [];
         let jumps = parseInt(localStorage.getItem('jumps')) || 0;
         let results = JSON.parse(localStorage.getItem('results')) || [];
@@ -106,13 +107,13 @@
                 console.log("finished game, setting prompt_idx to 4");
                 prompt_idx = 4 
                 start_target = prompts[prompt_idx]
-                renderToFrom(start_target)
+                renderToFrom(start_target, jumps)
                 // console.log("here is the start_target", start_target);
                 renderPrompts(prompts, prompt_idx, jumpsA, jumps)
                 renderLinks(start_target, results, true)
             } else {
                 start_target = prompts[prompt_idx]
-                renderToFrom(start_target)
+                renderToFrom(start_target, jumps)
                 console.log(`[From index] prompts: ${prompts}, i: ${prompt_idx}, local_jumpsA: ${jumpsA}, jumps: ${jumps}`);
                 renderPrompts(prompts, prompt_idx, jumpsA, jumps)
                 renderLinks(start_target, results)

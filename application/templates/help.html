@@ -1,0 +1,45 @@
+<script>
+    function beginTutorial() {
+        localStorage.setItem('is_help', 'true');
+        help = document.getElementById('help');
+        help.style.display = 'none'
+        resp = sendAndReceiveXML(`help=true`)
+        renderToFrom(resp.prompt, resp.jumps);
+        document.querySelector('.prompt-box').style.border = '1px solid var(--border-color)';
+        renderLinks(resp.prompt, resp.results)
+        console.log('[reportSessionEnded] Rendering prompts..')
+        renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
+        activateLinks()
+    }
+
+</script>
+<div id="help" class="help">
+    <div class="help-container">
+            <h1>How to play</h1>
+        <div class='help-text'>
+            <p>Link two words by clicking their neighbors.</p>
+            <p class='--grayed-out'>outside ⟶ beneath ⟶ surface ⟶ layer</p>
+            <p>Choose carefully! You only need two jumps.</p>
+            <p class='--grayed-out'>mercury ⟶ toothpaste ⟶ razor</p>
+            <p>5 prompts daily. The best score is 10.</p>
+        </div>
+        <div class="help-buttons">
+        <button onclick="window.location.href='/login'" class="switch switch--outlined">login</button>
+         <script src="https://accounts.google.com/gsi/client" async></script>
+        <div id="g_id_onload"
+            data-client_id="YOUR_GOOGLE_CLIENT_ID"
+            data-login_uri="https://your.domain/your_login_endpoint"
+            data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin"
+            data-type="standard"
+            data-size="large"
+            data-theme="outline"
+            data-text="sign_in_with"
+            data-shape="rectangular"
+            data-logo_alignment="left">
+        </div>
+        <!-- <button onclick="beginTutorial()" class=" switch switch--outlined ">tutorial</button> -->
+        </div>
+    </div>
+</div>

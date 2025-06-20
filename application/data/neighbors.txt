@@ -47,7 +47,6 @@ projectile,torpedo,salvage
 willpower,loyalty,brand
 shrug,cuff,halter
 studio,disc,blade
-outside,underneath,layer
 reptile,orchid,lilac
 rookie,debut,release
 guillotine,pin,pinpoint
@@ -117,7 +116,6 @@ ribcage,knuckle,grind
 closeness,interaction,interface
 blockade,seize,sniff
 mystery,detective,medic
-mercury,toothpaste,razor
 flannel,cardboard,garbage
 curvy,waistline,stomach
 bookcase,walnut,strawberry

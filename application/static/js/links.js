@@ -215,15 +215,15 @@ function postWord(word, clickedElem, use_animations=USE_ANIMATIONS) {
 
     const resp = sendAndReceiveXML("word=" + word);
 
-    let still_in_help = localStorage.getItem('is_help') === 'true';
-    if (!still_in_help) {
-        let prev_words = [];
-        prev_words = JSON.parse(localStorage.getItem('previous_words'));
-        if (!prev_words) prev_words = [];
-        prev_words.push(word);
-        // update the previous words in localStorage
-        localStorage.setItem('previous_words', JSON.stringify(prev_words));
-    }
+    // let still_in_help = localStorage.getItem('is_help') === 'true';
+    // if (!still_in_help) {
+    let prev_words = [];
+    prev_words = JSON.parse(localStorage.getItem('previous_words'));
+    if (!prev_words) prev_words = [];
+    prev_words.push(word);
+    // update the previous words in localStorage
+    localStorage.setItem('previous_words', JSON.stringify(prev_words));
+    // }
 
     if (!use_animations) {
         renderToFrom(resp.prompt, resp.jumps);

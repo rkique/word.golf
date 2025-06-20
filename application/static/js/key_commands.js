@@ -21,7 +21,7 @@ document.addEventListener('keydown', function (event) {
     }
     else {
         const gameState = {
-        "current_prompt": "5",
+        "prompt_idx": "5",
         "current_date": "2025-06-19",
         "jumps": "2",
         "daily_idx": "19",

@@ -19,9 +19,12 @@ function makePromptInfo(start_target) {
 function renderToFrom(start_target, jumps){
     console.log(`renderToFrom called with start_target ${start_target}, jumps ${jumps}`);
     if (jumps != 0){
+        
         let previous_words = JSON.parse(localStorage.getItem('previous_words'))
+       
         let previous_word = previous_words.length > 0 ? previous_words[previous_words.length - 1] : start_target[0];
         start_target = [previous_word, start_target[1]];
+
     }
     let information = /** @type {HTMLElement} */ (document.getElementById("information"));
     clearChildren(information);
@@ -252,8 +255,10 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, jumpsGridMessa
 }
 
 function clearInfoBox() {
-    document.getElementById("info-box").innerHTML = '';
+    let info = document.getElementById("info-box")
+    info.innerHTML = '';
     info.style.display = "none";
+    localStorage.removeItem('previous_words');
 }
 
 function renderHelpFinish(){
