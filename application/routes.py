@@ -80,8 +80,8 @@ def jump(start : str) -> str:
     '''
     Jump to a new word and return the updated session data as stringified JSON.
     '''
-    print(f"Jumping to {start}")
-    print("Current session data:", session.get('data'))
+    # print(f"Jumping to {start}")
+    # print("Current session data:", session.get('data'))
     _data = json.loads(session.get('data'))
     target = _data['prompt'][1]
     results = get_curve(start, target, PRECOMPUTED, WV)
@@ -219,7 +219,7 @@ def sesh_edit():
                 session['i'] = 0
 
             start_target = request.form.get("prompt", "")
-            print("Start target:", start_target)
+            # print("Start target:", start_target)
             if start_target:
                 try:
                     start_target = json.loads(start_target)
@@ -228,7 +228,7 @@ def sesh_edit():
                     data['prompt'] = ["", ""]
             
             session['data'] = json.dumps(data)
-            print("Session data updated:",data)
+            # print("Session data updated:",data)
 
     except Exception as e: 
         print("Error in /editsession:", e)
