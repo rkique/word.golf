@@ -179,7 +179,6 @@ function renderLinks(prompt, results, debug_session_done = false) {
 
 //@Parent: maintainLinks
 function reportSessionEnded(debug_session_done) {
-    //[XML] send either help_end or end
     if (localStorage.getItem('is_help') == "true") {
         resp = sendAndReceiveXML(`help_end=true`)
     } else {
@@ -196,7 +195,7 @@ function reportSessionEnded(debug_session_done) {
         tallyScreen(resp.prompts, resp.i, resp.jumpsA)
     }
     else {
-    if (resp.hasOwnProperty('prompt') && resp.hasOwnProperty('jumps')){renderToFrom(resp.prompt, resp.jumps);}
+    renderToFrom(resp.prompt, resp.jumps);
     renderLinks(resp.prompt, resp.results)
     // console.log('[reportSessionEnded] Rendering prompts..')
     renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
