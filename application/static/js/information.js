@@ -208,7 +208,6 @@ function generateLineGraph(scores) {
 function displayFinishModal(daily_idx, totalJumps, currentStreak, jumpsGridMessage, is_user=false) {
     const modalFinish = document.getElementById(is_user ? 'modal-finish-user' : 'modal-finish-guest');
     console.log('[displayFinishModal] Displaying finish modal:', daily_idx, totalJumps, currentStreak, jumpsGridMessage, is_user);
-    console.log("here is the Model Finish", modalFinish);
 
     modalFinish.querySelector('.daily-idx').innerHTML = daily_idx;
     modalFinish.querySelector('.daily-idx').innerHTML = daily_idx;
@@ -216,7 +215,7 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, jumpsGridMessa
     modalFinish.querySelector('.streak').innerHTML = currentStreak;
     modalFinish.style.display = "flex";
 
-    const tweetMessage = `word.golf #${daily_idx} ${totalJumps} \n${jumpsGridMessage}`;
+    const tweetMessage = `www.word.golf #${daily_idx} ${totalJumps} \n${jumpsGridMessage}`;
     const shareLink = modalFinish.querySelector('#shareLink');
     shareLink.addEventListener('click', () => {
         navigator.clipboard.writeText(tweetMessage)
