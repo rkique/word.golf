@@ -131,7 +131,8 @@ function startGame() {
     renderLinks(resp.prompt, resp.results)
     renderToFrom(resp.prompt, 0);
     console.log('[reportSessionEnded] Rendering prompts..')
-    renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
+    start_target = resp.prompts[resp.i]
+    renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps, start_target=start_target)
     activateLinks()
 }
 

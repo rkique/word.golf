@@ -1,15 +1,30 @@
-// promptText is an array [start, target]
-function makePromptTag(promptText, jumps=null) {
-    let p = document.createElement("p");
-    p.className = "prompt"
-    p.innerText = promptText.join(', ');
-    if (jumps !== null) {
-        let span = document.createElement("span");
-        span.className = "prompt-jumps";
-        span.innerText = " " + jumps;
-        p.appendChild(span);
+//[start, target], jumps, cos
+function makeSpacedPromptTag(start_target, score){
+    let div = document.createElement("div");
+    div.style.display = "flex";
+    div.style.flexDirection = "row";
+    div.style.width = "100%";
+    for (let i = 0; i < 6; i++) {
+        let cell = document.createElement("div");
+        cell.style.flex = "1";
+        cell.style.textAlign = "center";
+        cell.style.display = "flex";
+        cell.style.alignItems = "center";
+        cell.style.justifyContent = "center";
+        cell.style.minHeight = "2em";
+        if (i === 5) {
+            cell.innerText = start_target[1];
+            cell.className = "prompt-word";
+        }
+        div.appendChild(cell);
     }
-    return p
+    let idx = score < 0.2 ? 0 :
+              score < 0.3 ? 1 :
+              score < 0.4 ? 2 :
+              score < 0.5 ? 3 : 4;
+    div.children[idx].innerText = start_target[0];
+    div.children[idx].className = "prompt-word";
+    return div;
 }
 
 function makePromptTag(start_target, jumps) {
@@ -35,20 +50,13 @@ function makePromptTag(start_target, jumps) {
 }
 
 function makeDonePromptTag(start_target, jumps) {
-    let pTag = makePromptTag(start_target,jumps)
-    pTag.className = "prompt prompt--done"
-    return pTag
+    // Use makeSpacedPromptTag with start at idx 0 and finish at idx 5
+    let spacedTag = makeSpacedPromptTag(start_target, 0); // score=0 puts start at idx 0
+    spacedTag.className += " prompt--done";
+    return spacedTag;
 }
 
-// // Current jumps should always have a value, even if it's 0
-// function renderPrompts(promptTexts, i, jumpsA, current_jumps){
-//     let prompts = document.getElementById("prompts")
-//     clearChildren(prompts)
-//     console.log(`renderPrompts: ${promptTexts}, i: ${i}, jumpsA: ${jumpsA}`)
-//     done = promptTexts.slice(0,i)
-//     done.map((promptText, i) => prompts.append(makeDonePromptTag(promptText, jumpsA[i])))
-
-function renderPrompts(promptTexts, i, jumpsA, current_jumps) {
+function renderPrompts(promptTexts, i, jumpsA, current_jumps, start_target=null, score=null) {
 
     // console.log(`renderPrompts: ${promptTexts}, i: ${i}, jumpsA: ${jumpsA}`);
     // get all prompt-box elements
@@ -64,23 +72,18 @@ function renderPrompts(promptTexts, i, jumpsA, current_jumps) {
 
     // update current prompt
     if (i < promptTexts.length && promptBoxes[i]) {
-        const current = promptTexts[i];
-        current_jumps = current_jumps || 0;
-        promptBoxes[i].style.border = '2px solid var(--text-color)';
-        const currentTag = makePromptTag(current, current_jumps);
+        let current = promptTexts[i];
+        let current_score = 0
+        if(start_target && score != 0){
+            current = start_target
+            current_score = score
+        }
+        let currentTag = makeSpacedPromptTag(current, current_score);
+        // current_jumps = current_jumps || 0;
+        // promptBoxes[i].style.border = '2px solid var(--text-color)';
+        // const currentTag = makePromptTag(current, current_jumps);
         promptBoxes[i].innerHTML = '';
         promptBoxes[i].appendChild(currentTag);
-
-        // animate the jumps span
-        const span = currentTag.querySelector('.prompt-jumps');
-        if (span && span.innerText !== '0') {
-            requestAnimationFrame(() => {
-                span.classList.add('animate-scale');
-                span.addEventListener('animationend', () => {
-                    span.classList.remove('animate-scale');
-                }, { once: true });
-            });
-        }
     }
 
     // clear remaining boxes

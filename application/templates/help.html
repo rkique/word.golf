@@ -7,7 +7,8 @@
         renderToFrom(resp.prompt, resp.jumps);
         document.querySelector('.prompt-box').style.border = '1px solid var(--border-color)';
         renderLinks(resp.prompt, resp.results)
-        renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
+        let start_target = resp.prompt
+        renderPrompts(resp.prompts, resp.i, resp.jumpsA, start_target=start_target)
         activateLinks()
         addHelpFocuses(resp.prompt, resp.results)
     }

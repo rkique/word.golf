@@ -142,7 +142,8 @@ function makeStartLink(prompt, word){
 
 function tallyScreen(prompts, i, jumpsA){
     renderFinish(jumpsA)    
-    renderPrompts(prompts,i, jumpsA, false)
+    start_target = prompts[4]
+    renderPrompts(prompts,i, jumpsA, 0, start_target=start_target)
 }
 function arrayEqual(a, b) {
     return Array.isArray(a) && Array.isArray(b) &&
@@ -204,7 +205,8 @@ function reportSessionEnded(debug_session_done) {
     renderToFrom(resp.prompt, resp.jumps);
     renderLinks(resp.prompt, resp.results)
     // console.log('[reportSessionEnded] Rendering prompts..')
-    renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
+    let start_target = resp.prompts[resp.i]
+    renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps, start_target=start_target)
     activateLinks()
     }
 }
@@ -237,9 +239,10 @@ function postWord(word, clickedElem, use_animations=USE_ANIMATIONS) {
     if (!use_animations) {
         renderToFrom(resp.prompt, resp.jumps);
         renderLinks(resp.prompt, resp.results);
-        //renderPrompts unless finished.
+        //This is the source of nearly all renderPrompt calls.
         if (word !== resp.prompt[1]) {
-            renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
+            let start_target = [word, resp.prompt[1]]
+            renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps, start_target=start_target, score=resp.score)
         } 
         // else {
         //     // we are finished now with the prompt
@@ -261,7 +264,8 @@ function postWord(word, clickedElem, use_animations=USE_ANIMATIONS) {
             renderLinks(resp.prompt, resp.results);
             // console.log('[postWord] Rendering prompts..')
             if (word !== resp.prompt[1]) {
-                renderPrompts(prompts, prompt_idx, jumpsA, jumps);
+                let start_target = [word, resp.prompt[1]]
+                renderPrompts(prompts, prompt_idx, jumpsA, jumps, start_target=start_target);
             }
             activateLinks();
         }

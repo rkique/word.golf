@@ -1,6 +1,6 @@
 from flask import current_app as app
 from flask import render_template, request, session, make_response, send_from_directory
-from .utils import get_curve
+from .utils import get_curve, similarity
 import json
 import datetime
 import pandas as pd
@@ -96,6 +96,7 @@ def jump(start : str) -> str:
     results = get_curve(start, target, PRECOMPUTED, WV)
     _data['jumps'] = _data['jumps']+1
     _data['results'] = results
+    _data['score'] =  similarity(start, target, WV)
     session['data'] = json.dumps(_data)
     return json.dumps(_data)
 
@@ -290,8 +291,9 @@ def index_post():
             return make_response("session_done" + session.get('data'))
         
     elif request.form.get('word') is not None:
-        print(f"[/] Jumping: {request.form.get('word')}")
-        session['data'] = jump(request.form.get('word'))
+        current_word = request.form.get('word') 
+        print(f"[/] Jumping: {current_word}")
+        session['data'] = jump(current_word)
 
     elif request.form.get('redirect') is not None:
         print('[/] Redirecting to start...')
