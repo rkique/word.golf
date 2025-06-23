@@ -342,11 +342,6 @@ button span {
     }
 }
 
-
-.prompt {
-    color: var(--text-color);
-}
-
 .prompt--done {
     color: var(--grayed-out-color);
 }
@@ -440,7 +435,7 @@ button span {
 }
 
 .prompt-box {
-    /* outline: 1px solid var(--border-color); */
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -448,25 +443,71 @@ button span {
     font-size: 1.2em;
     position: relative;
     z-index: -1;
+    flex-direction: row;
+    border-left: 1px solid var(--grayed-out-color);
 }
 
 .prompt-box .prompt {
+    position: absolute;
     display: flex;
     flex: 1;
+    z-index: 1;
     align-items: center;
     justify-content: space-between;
     width: 100%;
+    height:100%;
     padding: 0 1.2vw;
     gap: 0.5rem;
+    pointer-events: none;
+    flex-direction: row; /* Added */
 }
 
-.prompt-box .prompt :first-child {
+.prompt-box {
+    z-index: 0; /* was -1; remove this line if unnecessary */
+}
+
+.prompt-box .prompt-word {
+    position: relative; /* necessary for z-index to apply */
+    z-index: 1;
+    transition: z-index 0.2s ease, background 0.2s ease;
+    color: var(--text-color);
+}
+
+.prompt-box .prompt:hover {
+  z-index: 10; /* bring hovered .prompt-word to front within its box */
+}
+
+.prompt-box .prompt-word:hover {
+    z-index: 999;
+    border: 1px solid var(--text-color); /* or whatever visual feedback you want */
+}
+
+.prompt-word {
+    z-index:10;
+    background-color: var(--background-color);
+    min-height: 100%;
+    height:100%;
+    border: 1px solid var(--border-color);
+    padding: 0.7em 1.2em;
+    display: inline-block;
+    pointer-events: auto;
+}
+
+.prompt div {
+    flex: 1;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2em;
+}
+/* .prompt-box .prompt :first-child {
     text-align: left;
 }
 
 .prompt-box .prompt :nth-child(2) {
     text-align: right;
-}
+} */
 
 #prompts p {
     font-size: 1.4em;
@@ -625,7 +666,7 @@ opacity: 1;
     padding: 1em;
     margin: 0 auto;}
 
-.rainbow_text_animated {
+/* .rainbow_text_animated {
 overflow: hidden;
 opacity: 1;
 background: linear-gradient(
@@ -633,10 +674,7 @@ background: linear-gradient(
     #8b0000,
     #b34700,
     #cccc00,
-    #228b22,
-    #00008b,
-    #4b0082,
-    #800080,
+    #b34700,
     #8b0000
 );
 -webkit-text-fill-color: transparent;
@@ -648,6 +686,10 @@ background-size: 500% 100%;
 -webkit-text-fill-color: rgba(200, 200, 200, 0.2);
 animation-duration: 1s;
 background-size: 800% 100%;
+} */
+
+.rainbow_text_animated {
+    color: orange !important;
 }
 
 #login-welcome {

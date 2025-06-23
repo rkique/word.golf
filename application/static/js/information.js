@@ -120,6 +120,7 @@ function renderFinish(jumpsA) {
 
 /* Clears the modal, localStorage, and renders links with XML redirect=true*/
 function startGame() {
+    clearPrompts()
     document.getElementById('modal').style.display = 'none';
     localStorage.setItem('is_help', 'false');
     localStorage.removeItem('jumps');

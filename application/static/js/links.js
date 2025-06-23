@@ -120,6 +120,17 @@ function showHelpPopup(message, transform, startSocket, endSocket) {
     }
 }
 
+function addDoneFocus(prompt, results, i){
+    const targetWord = prompt[1];
+    const idx = results.indexOf(targetWord);
+    if (idx !== -1) {
+        const promptBoxes = document.querySelectorAll('#prompts .prompt-box .prompt');
+        // promptBoxes[i].style.color = "orange";
+        promptBoxes[i].querySelectorAll('.prompt-word').forEach(el => {
+            // el.style.border = "1px solid orange";
+        });
+    }
+}
 /* makes and renders links */
 function makeLink(prompt,word) {
     let link = document.createElement("button");
@@ -130,6 +141,7 @@ function makeLink(prompt,word) {
     if(prompt[1] == word) 
         {
             link.className = "link link--target rainbow_text_animated"
+            
         }
     return link
 }
@@ -165,7 +177,7 @@ function addHelpFocuses(prompt, results){
 }
 
 //@Parent: postWord
-function renderLinks(prompt, results, debug_session_done = false) {
+function renderLinks(prompt, results, i, debug_session_done = false) {
     // console.log('[renderLinks] Rendering links for prompt:', prompt, 'with results:', results);
     let wordspace = document.getElementById("wordspace")
     clearChildren(wordspace)
@@ -177,11 +189,17 @@ function renderLinks(prompt, results, debug_session_done = false) {
             wordspace.append(makeLink(prompt, result))
         }
     })
+    addDoneFocus(prompt, results, i)
     addHelpFocuses(prompt, results)
     if(sessionEnded(prompt) || debug_session_done){
     disableLinks()
     reportSessionEnded(debug_session_done)
     }
+}
+
+function clearPrompts() {
+    const promptWords = document.querySelectorAll('.prompt-box .prompt .prompt-word');
+    promptWords.forEach(el => el.remove());
 }
 
 //@Parent: maintainLinks
@@ -238,7 +256,7 @@ function postWord(word, clickedElem, use_animations=USE_ANIMATIONS) {
 
     if (!use_animations) {
         renderToFrom(resp.prompt, resp.jumps);
-        renderLinks(resp.prompt, resp.results);
+        renderLinks(resp.prompt, resp.results, resp.i);
         //This is the source of nearly all renderPrompt calls.
         if (word !== resp.prompt[1]) {
             let start_target = [word, resp.prompt[1]]
@@ -261,7 +279,7 @@ function postWord(word, clickedElem, use_animations=USE_ANIMATIONS) {
             jumpsA = resp.jumpsA;
             jumps = resp.jumps;
             // console.log(`[postWord] prompts: ${prompts}, prompt_idx: ${prompt_idx}, jumpsA: ${jumpsA}, jumps: ${jumps}`);
-            renderLinks(resp.prompt, resp.results);
+            renderLinks(resp.prompt, resp.results, resp.i);
             // console.log('[postWord] Rendering prompts..')
             if (word !== resp.prompt[1]) {
                 let start_target = [word, resp.prompt[1]]

@@ -1,20 +1,13 @@
 //[start, target], jumps, cos
 function makeSpacedPromptTag(start_target, score){
     let div = document.createElement("div");
-    div.style.display = "flex";
-    div.style.flexDirection = "row";
-    div.style.width = "100%";
+    div.className = "prompt"
     for (let i = 0; i < 6; i++) {
         let cell = document.createElement("div");
-        cell.style.flex = "1";
-        cell.style.textAlign = "center";
-        cell.style.display = "flex";
-        cell.style.alignItems = "center";
-        cell.style.justifyContent = "center";
-        cell.style.minHeight = "2em";
         if (i === 5) {
             cell.innerText = start_target[1];
             cell.className = "prompt-word";
+            cell.style.border = "1px solid var(--text-color)";
         }
         div.appendChild(cell);
     }
@@ -24,6 +17,7 @@ function makeSpacedPromptTag(start_target, score){
               score < 0.5 ? 3 : 4;
     div.children[idx].innerText = start_target[0];
     div.children[idx].className = "prompt-word";
+    div.children[idx].style.border = "1px solid var(--text-color)";
     return div;
 }
 
@@ -64,10 +58,13 @@ function renderPrompts(promptTexts, i, jumpsA, current_jumps, start_target=null,
     // update "done" prompts
     const done = promptTexts.slice(0, i);
     done.forEach((promptText, idx) => {
-            promptBoxes[idx].style.border = '1px solid var(--grayed-out-color)';
-            const doneTag = makeDonePromptTag(promptText, jumpsA[idx]);
-            promptBoxes[idx].innerHTML = '';
-            promptBoxes[idx].appendChild(doneTag);
+            // alert(`updating prompt box ${idx}`)
+            promptBoxes[idx].style.borderLeft = '1px solid var(--grayed-out-color)';
+            promptBoxes[idx].style.background = "none";
+            const promptWords = promptBoxes[idx].querySelectorAll('.prompt-word');
+            promptWords.forEach(word => {
+                word.style.border = '1px solid var(--grayed-out-color)';
+            });
     });
 
     // update current prompt
@@ -78,66 +75,23 @@ function renderPrompts(promptTexts, i, jumpsA, current_jumps, start_target=null,
             current = start_target
             current_score = score
         }
+        // alert(`updating current prompt box ${i} with 2px border`)
         let currentTag = makeSpacedPromptTag(current, current_score);
         // current_jumps = current_jumps || 0;
-        // promptBoxes[i].style.border = '2px solid var(--text-color)';
+        promptBoxes[i].style.borderLeft = '2px solid var(--text-color)';
         // const currentTag = makePromptTag(current, current_jumps);
-        promptBoxes[i].innerHTML = '';
+        // promptBoxes[i].innerHTML = '';
+        // promptBoxes[i].style.background = "var(--grayed-out-color)";
         promptBoxes[i].appendChild(currentTag);
     }
 
     // clear remaining boxes
     for (let j = i + 1; j < promptBoxes.length; j++) {
+        // alert(`clearing prompt box ${j}`)
         promptBoxes[j].className = 'prompt-box';
-        promptBoxes[j].style.border = '1px solid var(--grayed-out-color)';
-        promptBoxes[j].innerHTML = '';
+        promptBoxes[j].style.color = 'var(--grayed-out-color)';
+        // promptBoxes[i].style.borderLeft = '1px solid var(--grayed-out-color)';
+
+        // promptBoxes[j].innerHTML = '';
     }
 }
-
-// //Current jumps should always have a value, even if it's 0
-// function renderPrompts(promptTexts, i, jumpsA, current_jumps){
-//     let prompts = document.getElementById("prompts")
-//     // clearChildren(prompts)
-//     console.log(`renderPrompts: ${promptTexts}, i: ${i}, jumpsA: ${jumpsA}`)
-//     done = promptTexts.slice(0,i)
-//     done.map((promptText, i) => prompts.append(makeDonePromptTag(promptText, jumpsA[i])))
-
-//     if (i < 5){
-//         if (i == 0) {
-//             current_jumps = current_jumps || 0
-//             current = promptTexts[0]
-//             todo = promptTexts.slice(1)
-//         }
-//         else {
-//             current = promptTexts[i]
-//             todo = promptTexts.slice(i + 1)
-//         }
-//         prompts.append(makePromptTag(current, current_jumps))
-        
-//         todo.map(promptText => prompts.append(makePromptTag(promptText)))
-//     }
-// }
-//     if (i < 5){
-//         if (i == 0) {
-//             current_jumps = current_jumps || 0
-//             current = promptTexts[0]
-//             todo = promptTexts.slice(1)
-//         }
-//         else {
-//             current = promptTexts[i]
-//             todo = promptTexts.slice(i + 1)
-//         }
-//         promptTag = makePromptTag(current, current_jumps)
-//         prompts.append(promptTag);
-//         // todo.map(promptText => prompts.append(makePromptTag(promptText)))
-//         let span = promptTag.querySelector(".prompt-jumps");
-//         if (span && span.innerText != '0') {
-//                 requestAnimationFrame(() => {
-//                 span.classList.add("animate-scale");
-//                 span.addEventListener("animationend", () => {
-//                     span.classList.remove("animate-scale");
-//                 });
-//             });
-//         }
-//     }
-// }
