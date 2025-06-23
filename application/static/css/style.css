@@ -7,16 +7,9 @@
 
 @font-face {
     font-family: "Schibsted Grotesk";
-    src: url("/static/Schibsted_Grotesk/SchibstedGrotesk-VariableFont_wght.ttf") format("truetype");
+    src: url("/static/Schibsted_Grotesk/SchibstedGrotesk-Italic-VariableFont_wght.ttf") format("truetype");
     font-weight: 100 900;
     font-style: italic;
-}
-
-@font-face {
-    font-family: "Schibsted Grotesk";
-    src: url("/static/Schibsted_Grotesk/SchibstedGrotesk-VariableFont_wght.ttf") format("truetype");
-    font-weight: 100 900;
-    font-style: bold;
 }
 
 
@@ -385,8 +378,8 @@ button span {
 }
 
 #information span {
-    margin: 0 0.2em;
-    font-size: 1.3em;
+    /* margin: 0 0.2em; */
+    /* font-size: 1.3em; */
 }
 
     /*       top  left   bottom    right */
@@ -517,7 +510,7 @@ button span {
 .modal button {
         background-color: var(--background-color);
         color: var(--text-color);
-        font-size: 1.3em;
+        font-size: 1.1em;
         padding: 0.5em 2em;
         margin: 2em;
         border: none;

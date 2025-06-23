@@ -57,11 +57,7 @@
     //use a help_session.
     is_help = localStorage.getItem('is_help');
     if (is_help !== 'false') {
-        localStorage.setItem('is_help', 'true');
-        data = sendAndReceiveXML(`help=true`);
-        start_text = `<p id="modalText"> In word.golf, you move from one word to another by clicking related words.</p>
-        <button class="switch switch--outlined" onclick="toggleElement('modal')"> OK </button>`
-        displayModal(start_text)
+        startHelpSession()
     }
 
     localStorage.setItem('current_date', data['date']);

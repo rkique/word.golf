@@ -250,6 +250,26 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, jumpsGridMessa
     }
 }
 
+function startHelpSteps(){
+    toggleElement('modal');
+    beginTutorial()
+    // HELP_STEPS.unshift(
+    //     {
+    //         id: 0,
+    //         prompt: ['outside', 'layer'],
+    //         result: 'outside',
+    //         message: `Here are some words like <span class='link--disabled'>outside</span>.`,
+    //         transform: [20,60]
+    //     }
+    // )
+}
+function startHelpSession() {
+        localStorage.setItem('is_help', 'true');
+        start_text = `<p id="modalText"> Welcome to word.golf, a sport played with the meanings of words!</p>
+        <button class="switch switch--outlined" onclick="startHelpSteps()"> OK </button>`
+        displayModal(start_text)
+    }
+
 function clearInfoBox() {
     let info = document.getElementById("info-box")
     info.innerHTML = '';

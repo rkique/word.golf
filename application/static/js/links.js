@@ -1,6 +1,7 @@
 const USE_ANIMATIONS = false;
-const HELP_STEPS = [
+let HELP_STEPS = [
             {
+                id: 1,
                 prompt: ['outside', 'layer'],
                 result: 'outside',
                 message: "Click a word to jump to it.",
@@ -10,24 +11,27 @@ const HELP_STEPS = [
                 endSocket: 'auto',
             },
             {
+                id: 2,
                 prompt: ['outside', 'layer'],
                 result: 'beneath',
-                message: "We want to get to 'layer', so choose the most similar word.",
+                message: "We want to get to <span class='link--help-target'>layer</span>, so choose the most similar word.",
                 focus: 'surface',
                 transform: [30,37],
                 startSocket: 'top',
                 endSocket: 'auto',
             },
             {
+                id: 3,
                 prompt: ['outside', 'layer'],
                 result: 'surface',
-                message: "Good job! Click the goal word to complete the prompt.",
+                message: "Good job! Click <span class='link--help-target'>layer</span> to complete the prompt.",
                 focus: 'layer',
                 transform: [20,40],
                 startSocket: 'top',
                 endSocket: 'auto',
             },
             {
+                id: 4,
                 prompt: ['mercury', 'razor'],
                 result: 'mercury',
                 message: "Choose carefully! You only need two jumps.",
@@ -37,6 +41,7 @@ const HELP_STEPS = [
                 endSocket: 'auto',
             },
             {
+                id: 5,
                 prompt: ['mercury', 'razor'],
                 result: 'toothpaste',
                 message: "Five prompts per day, the best score is 10.",
@@ -85,30 +90,30 @@ function showHelpPopup(message, transform, startSocket, endSocket) {
         const y = window.innerHeight * (transform[1] / 100);
         info.style.left = `${x}px`;
         info.style.top = `${y}px`;
-        const waitForElements = () => {
-            info = document.getElementById('info-box');
-            const target = document.getElementById('link--target');
-            if (info && target) {
-                const line = new LeaderLine(info, target, {
-                    startSocket: startSocket,
-                    endSocket: endSocket,
-                    // startSocketGravity: [-192, -172],
-                    // endSocketGravity: [192, 172], 
-                    color: getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim(),
-                    path: 'arc',
-                    startPlug: 'behind',
-                    endPlug: 'arrow3',
-                    endPlugSize: 2.1,
-                    size: 2.1,
-                    dash: false,
-                    outline: false
-                });
-                activeLeaderLines.push(line);
-            } else {
-                requestAnimationFrame(waitForElements);
-            }
-        };
-        waitForElements();
+        if (startSocket){
+            const waitForElements = () => {
+                info = document.getElementById('info-box');
+                const target = document.getElementById('link--target');
+                if (info && target) {
+                    const line = new LeaderLine(info, target, {
+                        startSocket: startSocket,
+                        endSocket: endSocket,
+                        color: getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim(),
+                        path: 'arc',
+                        startPlug: 'behind',
+                        endPlug: 'arrow3',
+                        endPlugSize: 2.1,
+                        size: 2.1,
+                        dash: false,
+                        outline: false
+                    });
+                    activeLeaderLines.push(line);
+                } else {
+                    requestAnimationFrame(waitForElements);
+                }
+            };
+            waitForElements();
+        }
     } else {
         document.getElementById("information").innerHTML =
             `<p class='info-box'>${message}</p>`;
@@ -149,7 +154,11 @@ function addHelpFocuses(prompt, results){
     middleIdx = Math.floor(results.length / 2)
         for (const step of HELP_STEPS) {
             //[Check] if prompt is equal to the help prompt.
+            console.log(`[addHelpFocuses] Comparing prompt: ${prompt} with step prompt: ${step.prompt}, and result: ${results[middleIdx]} with step result: ${step.result}`);
             if (arrayEqual(prompt, step.prompt) && results[middleIdx] === step.result) {
+                if (!step.display_arrow){
+                    showHelpPopup(step.message, step.transform)
+                }
                 showHelpPopup(step.message, step.transform, step.startSocket, step.endSocket);
                 focusLink(step.result, step.focus);
                 break;
@@ -222,15 +231,11 @@ function postWord(word, clickedElem, use_animations=USE_ANIMATIONS) {
         resp = sendAndReceiveXML("word=" + word);
     }
 
-    // let still_in_help = localStorage.getItem('is_help') === 'true';
-    // if (!still_in_help) {
     let prev_words = [];
     prev_words = JSON.parse(localStorage.getItem('previous_words'));
     if (!prev_words) prev_words = [];
     prev_words.push(word);
-    // update the previous words in localStorage
     localStorage.setItem('previous_words', JSON.stringify(prev_words));
-    // }
 
     if (!use_animations) {
         renderToFrom(resp.prompt, resp.jumps);
@@ -251,8 +256,6 @@ function postWord(word, clickedElem, use_animations=USE_ANIMATIONS) {
     } else {
         const wordspace = document.getElementById("wordspace");
         function renderXMLAfterAnimation(word, resp) {
-            // console.log('[postWord] resp')
-            // console.log(resp);
             prompts = resp.prompts;
             prompt_idx = resp.i;
             jumpsA = resp.jumpsA;
