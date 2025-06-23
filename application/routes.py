@@ -8,7 +8,7 @@ import numpy as np
 import ast
 from .utils import get_prompts, txt_to_list, txt_to_dict
 from flask import redirect
-
+import os
 
 prompt_neighbor_dict = get_prompts(txt_to_list("application/data/neighbors.txt"))
 PROMPTS = list(prompt_neighbor_dict.keys())
@@ -20,18 +20,27 @@ DAYS = 0
 HELP_PROMPTS = [["outside", "layer"],["mercury", "razor"]]
 HELP_NEIGHBORS = ["underneath", "toothpaste"]
 
-# session['data'] will be the SSoT
-
 WV = None
 PRECOMPUTED = None
 
-#debug.
+#DEV: set backend route correctly.
+@app.context_processor
+def inject_backend_url():
+    backend_url = (
+        "http://localhost:7000"
+        if os.getenv("DEV", "false").lower() == "true"
+        else "https://routes.word.golf"
+    )
+    return {"backend_url": backend_url}
+
+#DEV: no caching of static files.
 @app.after_request
 def add_header(response):
-    if request.path.startswith('/static/'):
-        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
-        response.headers['Pragma'] = 'no-cache'
-        response.headers['Expires'] = '0'
+    if os.getenv("DEV", "false").lower() == "true":
+        if request.path.startswith('/static/'):
+            response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+            response.headers['Pragma'] = 'no-cache'
+            response.headers['Expires'] = '0'
     return response
 
 @app.route('/solutions')
