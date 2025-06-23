@@ -204,6 +204,18 @@ html {
     display: none;
 }
 
+#logged_in-buttons p{
+    font-size: 1.4rem;
+}
+
+#logged_in-buttons button{
+    font-size: 1.4rem;
+}
+
+.logged_in-username {
+    display: inline-block;
+}
+
 .guest-buttons {    
     display: flex;
 }
@@ -213,7 +225,7 @@ html {
     padding: 0em 0em 2em 0em;
     justify-content: space-around;
     align-items: baseline;
-    gap: 1em;
+    gap: 2.5rem;
 }
 
 .help button {

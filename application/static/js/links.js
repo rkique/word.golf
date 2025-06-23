@@ -34,7 +34,7 @@ let HELP_STEPS = [
                 id: 4,
                 prompt: ['mercury', 'razor'],
                 result: 'mercury',
-                message: "Choose carefully! You only need two jumps.",
+                message: "Choose carefully - two jumps is all you need.",
                 focus: 'toothpaste',
                 transform: [30,50],
                 startSocket: 'left',

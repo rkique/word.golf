@@ -13,12 +13,12 @@
 
         function renderLogin(text) {
             localStorage.setItem('logged_in', text.email);
-            const loginWelcome = document.getElementById('login-welcome');
-            loginWelcome.style.display = 'flex';
-            loginWelcome.querySelector('.welcome-email').textContent = text.email;
+            document.getElementById('logged_in-username').textContent = text.email;
+            // const loginWelcome = document.getElementById('login-welcome');
+            // loginWelcome.style.display = 'flex';
+            // loginWelcome.querySelector('.welcome-email').textContent = text.email;
             document.getElementById('guest-buttons').style.display = 'none';
             document.getElementById('logged_in-buttons').style.display = 'flex';
-
         }
 
     async function renderLogout(){
@@ -59,7 +59,9 @@
             <p>5 prompts daily. The best score is 10.</p>
         </div>
         <div class="logged_in-buttons" id="logged_in-buttons">
+            <p>Logged in as <span id="logged_in-username"></span></p>
             <button onclick="renderLogout()" class="switch switch--outlined">logout</button>
+
         </div>
         <div class="guest-buttons" id="guest-buttons">
         <button onclick="window.location.href='/login'" class="switch switch--outlined">login / signup</button>
@@ -79,7 +81,7 @@
             data-shape="rectangular"
             data-logo_alignment="left">
         </div>
-        <!-- <button onclick="beginTutorial()" class=" switch switch--outlined ">tutorial</button> -->
+        <button onclick="toggleElement('help'); beginTutorial()" class=" switch switch--outlined ">tutorial</button>
         </div>
     </div>
 </div>
