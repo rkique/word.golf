@@ -213,7 +213,14 @@ function activateLinks(){
 
 function postWord(word, clickedElem, use_animations=USE_ANIMATIONS) {
 
-    const resp = sendAndReceiveXML("word=" + word);
+    // capping the maximum number of jumps 
+    let jmps = parseInt(localStorage.getItem('jumps')) || 0;
+    let resp;
+    if (jmps >= 12) {
+        resp = sendAndReceiveXML(`end=true`);
+    } else {
+        resp = sendAndReceiveXML("word=" + word);
+    }
 
     // let still_in_help = localStorage.getItem('is_help') === 'true';
     // if (!still_in_help) {
@@ -230,8 +237,16 @@ function postWord(word, clickedElem, use_animations=USE_ANIMATIONS) {
         renderLinks(resp.prompt, resp.results);
         //renderPrompts unless finished.
         if (word !== resp.prompt[1]) {
-        renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
-        }
+            renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
+        } 
+        // else {
+        //     // we are finished now with the prompt
+        //     if (jmps <= 2) showBanner("Perfect", "green");
+        //     else if (jmps <= 4) showBanner("Impressive", "blue");
+        //     else if (jmps <= 6) showBanner("Amazing", "purple");
+        //     else if (jmps <= 8) showBanner("Great", "orange");
+        //     else if (jmps <= 12) showBanner("Close call", "red");
+        // }
         activateLinks()
     } else {
         const wordspace = document.getElementById("wordspace");
