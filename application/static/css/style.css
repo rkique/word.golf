@@ -191,7 +191,10 @@ html {
     z-index: 11;
 }
 
-
+#info-box p {
+    font-size: 1.1rem;
+    margin: 0 0;
+}
 
 .nsm7Bb-HzV7m-LgbsSe {
     background-color: transparent !important;

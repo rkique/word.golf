@@ -115,6 +115,8 @@
         border: none;
         position: absolute;
         min-width: 60vw;
+        flex-wrap: wrap;
+        
     }
     .help-container {
         max-width: 100%;

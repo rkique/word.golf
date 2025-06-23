@@ -4,7 +4,7 @@ let HELP_STEPS = [
                 id: 1,
                 prompt: ['outside', 'layer'],
                 result: 'outside',
-                message: "Click a word to jump to it.",
+                message: "<p>Click a word to jump to it.</p>",
                 focus: 'beneath',
                 transform: [20,60],
                 startSocket: 'top',
@@ -14,7 +14,7 @@ let HELP_STEPS = [
                 id: 2,
                 prompt: ['outside', 'layer'],
                 result: 'beneath',
-                message: "We want to get to <span class='link--help-target'>layer</span>, so choose the most similar word.",
+                message: "<p>We want to get to <span class='link--help-target'>layer</span>, so choose the most similar word.</p>",
                 focus: 'surface',
                 transform: [30,37],
                 startSocket: 'top',
@@ -24,7 +24,7 @@ let HELP_STEPS = [
                 id: 3,
                 prompt: ['outside', 'layer'],
                 result: 'surface',
-                message: "Good job! Click <span class='link--help-target'>layer</span> to complete the prompt.",
+                message: "<p>Good job! Click <span class='link--help-target'>layer</span> to complete the prompt.</p>",
                 focus: 'layer',
                 transform: [20,40],
                 startSocket: 'top',
@@ -34,7 +34,7 @@ let HELP_STEPS = [
                 id: 4,
                 prompt: ['mercury', 'razor'],
                 result: 'mercury',
-                message: "Choose carefully - two jumps is all you need.",
+                message: "<p>Choose carefully - two jumps is all you need.</p>",
                 focus: 'toothpaste',
                 transform: [30,50],
                 startSocket: 'left',
@@ -44,7 +44,7 @@ let HELP_STEPS = [
                 id: 5,
                 prompt: ['mercury', 'razor'],
                 result: 'toothpaste',
-                message: "Five prompts per day, the best score is 10.",
+                message: "<p>Five prompts per day, the best score is 10. </p>",
                 focus: 'razor',
                 transform: [10,20],
                 startSocket: 'bottom',
@@ -156,9 +156,6 @@ function addHelpFocuses(prompt, results){
             //[Check] if prompt is equal to the help prompt.
             console.log(`[addHelpFocuses] Comparing prompt: ${prompt} with step prompt: ${step.prompt}, and result: ${results[middleIdx]} with step result: ${step.result}`);
             if (arrayEqual(prompt, step.prompt) && results[middleIdx] === step.result) {
-                if (!step.display_arrow){
-                    showHelpPopup(step.message, step.transform)
-                }
                 showHelpPopup(step.message, step.transform, step.startSocket, step.endSocket);
                 focusLink(step.result, step.focus);
                 break;
