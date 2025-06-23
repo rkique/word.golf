@@ -64,6 +64,7 @@ function renderPrompts(promptTexts, i, jumpsA, current_jumps, start_target=null,
             const promptWords = promptBoxes[idx].querySelectorAll('.prompt-word');
             promptWords.forEach(word => {
                 word.style.border = '1px solid var(--grayed-out-color)';
+                word.style.color = 'var(--grayed-out-color)';
             });
     });
 

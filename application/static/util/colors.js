@@ -33,7 +33,7 @@ function syncColorMode() {
     document.documentElement.style.setProperty('--text-color', '#b1b1b1');
     document.documentElement.style.setProperty('--background-color', '#0d0d0d');
     document.documentElement.style.setProperty('--grayed-out-background', '#030303');
-    document.documentElement.style.setProperty('--grayed-out-color', '#595959');
+    document.documentElement.style.setProperty('--grayed-out-color', '#696969');
     document.documentElement.style.setProperty('--grayed-out-color-help-target', '#888');
     document.documentElement.style.setProperty('--grayed-out-color-unfocused', '#444');
   }

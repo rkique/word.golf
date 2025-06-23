@@ -167,7 +167,7 @@ function addHelpFocuses(prompt, results){
     middleIdx = Math.floor(results.length / 2)
         for (const step of HELP_STEPS) {
             //[Check] if prompt is equal to the help prompt.
-            console.log(`[addHelpFocuses] Comparing prompt: ${prompt} with step prompt: ${step.prompt}, and result: ${results[middleIdx]} with step result: ${step.result}`);
+
             if (arrayEqual(prompt, step.prompt) && results[middleIdx] === step.result) {
                 showHelpPopup(step.message, step.transform, step.startSocket, step.endSocket);
                 focusLink(step.result, step.focus);
