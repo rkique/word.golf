@@ -42,7 +42,7 @@
         /* outline: 1px solid var(--border-color); */
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: space-between;
         min-height: 4.5vh;
     }
     .switch, .game-icon {

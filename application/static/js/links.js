@@ -1,56 +1,56 @@
 const USE_ANIMATIONS = false;
 let HELP_STEPS = [
-            {
-                id: 1,
-                prompt: ['outside', 'layer'],
-                result: 'outside',
-                message: "<p>Click a word to jump to it.</p>",
-                focus: 'beneath',
-                transform: [20,60],
-                startSocket: 'top',
-                endSocket: 'auto',
-            },
-            {
-                id: 2,
-                prompt: ['outside', 'layer'],
-                result: 'beneath',
-                message: "<p>We want to get to <span class='link--help-target'>layer</span>, so choose the most similar word.</p>",
-                focus: 'surface',
-                transform: [30,37],
-                startSocket: 'top',
-                endSocket: 'auto',
-            },
-            {
-                id: 3,
-                prompt: ['outside', 'layer'],
-                result: 'surface',
-                message: "<p>Good job! Click <span class='link--help-target'>layer</span> to complete the prompt.</p>",
-                focus: 'layer',
-                transform: [20,40],
-                startSocket: 'top',
-                endSocket: 'auto',
-            },
-            {
-                id: 4,
-                prompt: ['mercury', 'razor'],
-                result: 'mercury',
-                message: "<p>Choose carefully - two jumps is all you need.</p>",
-                focus: 'toothpaste',
-                transform: [30,50],
-                startSocket: 'left',
-                endSocket: 'auto',
-            },
-            {
-                id: 5,
-                prompt: ['mercury', 'razor'],
-                result: 'toothpaste',
-                message: "<p>Five prompts per day, the best score is 10. </p>",
-                focus: 'razor',
-                transform: [10,20],
-                startSocket: 'bottom',
-                endSocket: 'top',
-            }
-        ];
+    {
+        id: 1,
+        prompt: ['outside', 'layer'],
+        result: 'outside',
+        message: "<p>Click a word to jump to it.</p>",
+        focus: 'beneath',
+        transform: [20, 60],
+        startSocket: 'top',
+        endSocket: 'auto',
+    },
+    {
+        id: 2,
+        prompt: ['outside', 'layer'],
+        result: 'beneath',
+        message: "<p>We want to get to <span class='link--help-target'>layer</span>, so choose the most similar word.</p>",
+        focus: 'surface',
+        transform: [30, 37],
+        startSocket: 'top',
+        endSocket: 'auto',
+    },
+    {
+        id: 3,
+        prompt: ['outside', 'layer'],
+        result: 'surface',
+        message: "<p>Good job! Click <span class='link--help-target'>layer</span> to complete the prompt.</p>",
+        focus: 'layer',
+        transform: [20, 40],
+        startSocket: 'top',
+        endSocket: 'auto',
+    },
+    {
+        id: 4,
+        prompt: ['mercury', 'razor'],
+        result: 'mercury',
+        message: "<p>Choose carefully - two jumps is all you need.</p>",
+        focus: 'toothpaste',
+        transform: [30, 50],
+        startSocket: 'left',
+        endSocket: 'auto',
+    },
+    {
+        id: 5,
+        prompt: ['mercury', 'razor'],
+        result: 'toothpaste',
+        message: "<p>Five prompts per day, the best score is 10. </p>",
+        focus: 'razor',
+        transform: [10, 20],
+        startSocket: 'bottom',
+        endSocket: 'top',
+    }
+];
 
 function focusLink(startText, targetText) {
     const links = Array.from(document.getElementsByClassName("link"));
@@ -58,7 +58,7 @@ function focusLink(startText, targetText) {
     // console.log(middleWords)
     links.forEach(link => {
         const text = link.innerText.trim();
-        if (text == startText){
+        if (text == startText) {
             link.classList.add("link--help-target");
         }
         if (text === targetText) {
@@ -72,6 +72,27 @@ function focusLink(startText, targetText) {
             link.classList.add("link--unfocused");
         }
     });
+}
+
+//@Parent: postWord
+function renderLinks(prompt, results, i, debug_session_done = false) {
+    // console.log('[renderLinks] Rendering links for prompt:', prompt, 'with results:', results);
+    let wordspace = document.getElementById("wordspace")
+    clearChildren(wordspace)
+    let middleIndex = Math.floor(results.length / 2)
+    results.forEach((result, idx) => {
+        if (idx === middleIndex) {
+            wordspace.append(makeStartLink(prompt, result))
+        } else {
+            wordspace.append(makeLink(prompt, result))
+        }
+    })
+    addDoneFocus(prompt, results, i)
+    addHelpFocuses(prompt, results)
+    if (sessionEnded(prompt) || debug_session_done) {
+        disableLinks()
+        reportSessionEnded(debug_session_done)
+    }
 }
 
 let activeLeaderLines = [];
@@ -90,7 +111,7 @@ function showHelpPopup(message, transform, startSocket, endSocket) {
         const y = window.innerHeight * (transform[1] / 100);
         info.style.left = `${x}px`;
         info.style.top = `${y}px`;
-        if (startSocket){
+        if (startSocket) {
             const waitForElements = () => {
                 info = document.getElementById('info-box');
                 const target = document.getElementById('link--target');
@@ -120,80 +141,62 @@ function showHelpPopup(message, transform, startSocket, endSocket) {
     }
 }
 
-function addDoneFocus(prompt, results, i){
+function addDoneFocus(prompt, results, i) {
     const targetWord = prompt[1];
     const idx = results.indexOf(targetWord);
     if (idx !== -1) {
         const promptBoxes = document.querySelectorAll('#prompts .prompt-box .prompt');
         // promptBoxes[i].style.color = "orange";
-        promptBoxes[i].querySelectorAll('.prompt-word').forEach(el => {
-            // el.style.border = "1px solid orange";
-        });
+
+        if (promptBoxes[i]) {
+            promptBoxes[i].querySelectorAll('.prompt-word').forEach(el => {
+                // el.style.border = "1px solid orange";
+            });
+        }
     }
 }
+
 /* makes and renders links */
-function makeLink(prompt,word) {
+function makeLink(prompt, word) {
     let link = document.createElement("button");
     let span = document.createElement("span")
     span.innerText = word;
     link.appendChild(span)
     link.className = "link"
-    if(prompt[1] == word) 
-        {
-            link.className = "link link--target rainbow_text_animated"
-            
-        }
+    if (prompt[1] == word) {
+        link.className = "link link--target rainbow_text_animated"
+
+    }
     return link
 }
 
-function makeStartLink(prompt, word){
+function makeStartLink(prompt, word) {
     startLink = makeLink(prompt, word)
     startLink.className = "link link--disabled link--starting"
     return startLink
 }
 
-function tallyScreen(prompts, i, jumpsA){
-    renderFinish(jumpsA)    
+function tallyScreen(prompts, i, jumpsA) {
+    renderFinish(jumpsA)
     start_target = prompts[4]
-    renderPrompts(prompts,i, jumpsA, 0, start_target=start_target)
+    renderPrompts(prompts, i, jumpsA, 0, start_target = start_target)
 }
 function arrayEqual(a, b) {
     return Array.isArray(a) && Array.isArray(b) &&
-           a.length === b.length &&
-           a.every((val, index) => val === b[index]);
+        a.length === b.length &&
+        a.every((val, index) => val === b[index]);
 }
-function addHelpFocuses(prompt, results){
+function addHelpFocuses(prompt, results) {
     clearAllLeaderLines()
     middleIdx = Math.floor(results.length / 2)
-        for (const step of HELP_STEPS) {
-            //[Check] if prompt is equal to the help prompt.
+    for (const step of HELP_STEPS) {
+        //[Check] if prompt is equal to the help prompt.
 
-            if (arrayEqual(prompt, step.prompt) && results[middleIdx] === step.result) {
-                showHelpPopup(step.message, step.transform, step.startSocket, step.endSocket);
-                focusLink(step.result, step.focus);
-                break;
-            }
+        if (arrayEqual(prompt, step.prompt) && results[middleIdx] === step.result) {
+            showHelpPopup(step.message, step.transform, step.startSocket, step.endSocket);
+            focusLink(step.result, step.focus);
+            break;
         }
-}
-
-//@Parent: postWord
-function renderLinks(prompt, results, i, debug_session_done = false) {
-    // console.log('[renderLinks] Rendering links for prompt:', prompt, 'with results:', results);
-    let wordspace = document.getElementById("wordspace")
-    clearChildren(wordspace)
-    let middleIndex = Math.floor(results.length / 2)
-    results.forEach((result, idx) => {
-        if (idx === middleIndex) {
-            wordspace.append(makeStartLink(prompt, result))
-        } else {
-            wordspace.append(makeLink(prompt, result))
-        }
-    })
-    addDoneFocus(prompt, results, i)
-    addHelpFocuses(prompt, results)
-    if(sessionEnded(prompt) || debug_session_done){
-    disableLinks()
-    reportSessionEnded(debug_session_done)
     }
 }
 
@@ -212,32 +215,34 @@ function reportSessionEnded(debug_session_done) {
     console.log('[reportSessionEnded] Response:', resp);
     renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
     //If user has completed all prompts
-    if (resp.hasOwnProperty('help_session_done')){
+    if (resp.hasOwnProperty('help_session_done')) {
         renderHelpFinish()
     }
-    else if (resp.hasOwnProperty('session_done') || debug_session_done){
+    else if (resp.hasOwnProperty('session_done') || debug_session_done) {
         tallyScreen(resp.prompts, resp.i, resp.jumpsA)
         localStorage.setItem("lastComplete", data["date"])
     }
     else {
-    renderToFrom(resp.prompt, resp.jumps);
-    renderLinks(resp.prompt, resp.results)
-    // console.log('[reportSessionEnded] Rendering prompts..')
-    let start_target = resp.prompts[resp.i]
-    renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps, start_target=start_target)
-    activateLinks()
+        renderToFrom(resp.prompt, resp.jumps);
+        renderLinks(resp.prompt, resp.results)
+        // console.log('[reportSessionEnded] Rendering prompts..')
+        let start_target = resp.prompts[resp.i]
+        renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps, start_target = start_target)
+        activateLinks()
     }
 }
 
 //activates links on the page
-function activateLinks(){
+function activateLinks() {
     ws_texts = ws_to_text()
-    ws_array.map(function(el, i){el.onclick = function() {
-        postWord(ws_texts[i], el);
-    }})
+    ws_array.map(function (el, i) {
+        el.onclick = function () {
+            postWord(ws_texts[i], el);
+        }
+    })
 }
 
-function postWord(word, clickedElem, use_animations=USE_ANIMATIONS) {
+function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
 
     // capping the maximum number of jumps 
     let jmps = parseInt(localStorage.getItem('jumps')) || 0;
@@ -260,8 +265,8 @@ function postWord(word, clickedElem, use_animations=USE_ANIMATIONS) {
         //This is the source of nearly all renderPrompt calls.
         if (word !== resp.prompt[1]) {
             let start_target = [word, resp.prompt[1]]
-            renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps, start_target=start_target, score=resp.score)
-        } 
+            renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps, start_target = start_target, score = resp.score)
+        }
         // else {
         //     // we are finished now with the prompt
         //     if (jmps <= 2) showBanner("Perfect", "green");
@@ -283,7 +288,7 @@ function postWord(word, clickedElem, use_animations=USE_ANIMATIONS) {
             // console.log('[postWord] Rendering prompts..')
             if (word !== resp.prompt[1]) {
                 let start_target = [word, resp.prompt[1]]
-                renderPrompts(prompts, prompt_idx, jumpsA, jumps, start_target=start_target);
+                renderPrompts(prompts, prompt_idx, jumpsA, jumps, start_target = start_target);
             }
             activateLinks();
         }

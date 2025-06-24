@@ -120,7 +120,7 @@ function renderFinish(jumpsA) {
 
 /* Clears the modal, localStorage, and renders links with XML redirect=true*/
 function startGame() {
-    clearPrompts()
+    clearBoxes()
     document.getElementById('modal').style.display = 'none';
     localStorage.setItem('is_help', 'false');
     localStorage.removeItem('jumps');
@@ -249,6 +249,21 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, jumpsGridMessa
                     `<p class="solutions-text">${formatSequences(json)}</p>`;
             });
     }
+}
+
+function beginTutorial() {
+    localStorage.setItem('is_help', 'true');
+    help = document.getElementById('help');
+    help.style.display = 'none'
+    resp = sendAndReceiveXML(`help=true`)
+    renderToFrom(resp.prompt, resp.jumps);
+    document.querySelector('.prompt-box').style.border = '1px solid var(--border-color)';
+    console.log(`renderLinks: ${renderLinks}`)
+    renderLinks(resp.prompt, resp.results, resp.i)
+    let start_target = resp.prompt
+    renderPrompts(resp.prompts, resp.i, resp.jumpsA, start_target=start_target)
+    activateLinks()
+    addHelpFocuses(resp.prompt, resp.results)
 }
 
 function startHelpSteps(){

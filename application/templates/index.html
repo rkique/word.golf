@@ -5,8 +5,18 @@
     <title>word.golf</title>
 </head>
 
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z90RQN4KLB"></script>
+<script src="static/js/gtag.js"></script>
+<script src="static/js/XML.js"></script>
+<script src="static/js/links__util.js"></script>
+<script src="static/js/key_commands.js"></script>
+<script src="static/js/animation.js"></script>
+<script src="static/js/links.js"></script>
+<script src="static/js/information.js"></script>
+<script src="static/js/prompts.js"></script>
+
 {% if backend_url != "https://routes.word.golf" %}
-  <p style="position: absolute; top: 0; left: 0">Dev: {{ backend_url }}</p>
+  <p style="position: absolute; top: 0; left: 0; font-size: 0.6rem;">Dev: {{ backend_url }}</p>
 {% endif %}
 {% include 'settings.html' %}
 {% include 'modal-help.html' %}
@@ -30,15 +40,6 @@
     </div>
 
 </div>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z90RQN4KLB"></script>
-<script src="static/js/gtag.js"></script>
-<script src="static/js/XML.js"></script>
-<script src="static/js/links__util.js"></script>
-<script src="static/js/key_commands.js"></script>
-<script src="static/js/animation.js"></script>
-<script src="static/js/links.js"></script>
-<script src="static/js/information.js"></script>
-<script src="static/js/prompts.js"></script>
 
 <script>data = JSON.parse('{{data|tojson|safe}}');
 </script>

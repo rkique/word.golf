@@ -1,50 +1,106 @@
 //[start, target], jumps, cos
-function makeSpacedPromptTag(promptBox, start, target, score) {
-    console.log(promptBox)
-    let div = document.createElement("div");
-    div.className = "prompt"
-    //here i is used to enumerate div flex
-    for (let i = 0; i < 6; i++) {
-        let cell = document.createElement("div");
-        if (i === 5) {
-            // Find first existing innerText child in promptBox equal to target, delete it and readd it.
-            const existing = Array.from(promptBox.children).find(child => child.innerText === target);
-            if (existing) {
-                alert(`readding target ${target}`)
-                promptBox.removeChild(existing);
-                cell.innerText = target;
-                cell.className = "prompt-word";
-                cell.style.border = "1px solid var(--text-color)";
-            } else {
-                cell.innerText = target;
-                cell.className = "prompt-word";
-                cell.style.border = "1px solid var(--text-color)";
-            }
-        }
-        div.appendChild(cell);
+
+
+function clearBoxes() {
+    // get all prompt-box elements
+    const promptBoxes = document.querySelectorAll('#prompts .prompt-box');
+    for (let box of promptBoxes) {
+        clearChildren(box);
     }
+}
+//with qualification that if finish no.
+function tallyAllPrompts(promptBoxes, targets) {
+    let promptCount = 0;
+    if (promptBoxes.length > 0 && promptBoxes[0]) {
+        const prompts = promptBoxes[0].querySelectorAll('.prompt');
+        promptCount = prompts ? prompts.length : 0;
+    }
+    if (promptCount >= 12){
+        //for each prompt child of promptBox, set the sixth child border to none and clear the innerText
+        for (let box of promptBoxes) {
+            let prompts = box.querySelectorAll('.prompt');
+            prompts.forEach(prompt => {
+            let sixthChild = prompt.children[5];
+            if (sixthChild) {
+                sixthChild.innerText = "";
+                sixthChild.classList.add('no-border')
+            }
+            });
+        }
+    }
+    else {
+    for (let box of promptBoxes) {
+        let promptWords = box.querySelectorAll('.prompt-word');
+        promptWords.forEach(word => {
+            word.innerText = "";
+            word.classList.remove("prompt-word");
+            word.classList.add("tally");
+        });
+    }
+    }
+}
+
+function tallyNonTargetPrompts(promptBoxes, targets) {
+    for (let box of promptBoxes) {
+        let promptWords = box.querySelectorAll('.prompt-word');
+        promptWords.forEach(word => {
+            if (word.innerText !== "" && !targets.includes(word.innerText)) {
+                word.classList.remove("prompt-word");
+                word.classList.add("tally");
+                word.innerText = "";
+            }
+        });
+    }
+}
+
+function updateInnerTextSmooth(elem, newText) {
+    // Force layout measurement before changing text
+  elem.style.maxWidth = (elem.scrollWidth) +  'px';
+  requestAnimationFrame(() => {
+    // Change the text
+    elem.innerText = newText;
+    // Wait for text layout to update
+    requestAnimationFrame(() => {
+      // Animate to new width
+      const newWidth = (elem.scrollWidth)+ 'px';
+      elem.style.maxWidth = newWidth;
+    });
+  });
+}
+
+//todo: we want to edit an existing promptTag.
+function fillPrompt(promptBox, start, target, score) {
+    console.log(`fillPrompt: start=${start}, target=${target}, score=${score}`);
+    if (promptBox.children.length === 0) {
+        for (let i = 0; i < 6; i++) {
+            let div = document.createElement("div");
+            promptBox.appendChild(div);
+        }
+    }
+    console.log(`makeSpacedPromptTag: start=${start}, target=${target}, score=${score}`);
     //here idx is used to set the prompt-word div
     let idx = score < 0.2 ? 0 : score < 0.27 ? 1 :
-            score < 0.35 ? 2 : score < 0.45 ? 3 : 4;
-    const existing = Array.from(promptBox.children).find(child => child.innerText === start);
-    if (existing) {
-        alert(`readding start ${start}`)
-        promptBox.removeChild(existing);
-        cell.innerText = start;
-        cell.className = "prompt-word";
-        cell.style.border = "1px solid var(--text-color)";
-    } else {
-        div.children[idx].innerText = start;
-        div.children[idx].className = "prompt-word";
-        div.children[idx].style.border = "1px solid var(--text-color)";
+            score < 0.35 ? 2 : score < 0.42 ? 3 : 4;
+    children = promptBox.children;
+    let cell = children[idx];
+    updateInnerTextSmooth(cell, start);
+    cell.className = "prompt-word";
+    targetBox = promptBox.children[5];
+    if(targetBox.innerText !== target){
+        updateInnerTextSmooth(targetBox, target)
+        targetBox.className = "prompt-word";
     }
-    return div;
+    for (let i = 0; i < 6; i++) {
+        if (i !== idx){
+        let cell = document.createElement("div");
+        promptBox.children[i] = cell;
+        }
+    }
 }
 
 function makePromptTag(start_target, jumps) {
     let div = document.createElement("div");
     div.className = "prompt";
-
     let pWord = document.createElement("p");
     pWord.className = "prompt-word";
     pWord.style.display = "inline-block";
@@ -70,18 +126,51 @@ function makePromptTag(start_target, jumps) {
 //     return spacedTag;
 // }
 
-function renderPrompts(promptTexts, i, jumpsA, current_jumps, start_target = null, score = null) {
+function serializePrompts(jumpsA) {
+  const promptsEl = document.getElementById('prompts');
+  if (!promptsEl) {
+    console.warn('Element #prompts not found.');
+    return;
+  }
+  const completedCount = jumpsA.length;
+  for (let i = 0; i < completedCount; i++) {
+    const key = `prompt${i + 1}`;
+    const existing = localStorage.getItem(key);
+    // Step 1: Save completed prompt if not already stored
+    const child = promptsEl.children[i];
+    if (child && !existing) {
+      localStorage.setItem(key, child.outerHTML);
+      console.log(`Saved prompt ${i + 1} to localStorage.`);
+    }
+  }
+  // Step 2: Restore any saved prompt HTML if it's missing in DOM
+  for (let i = 0; i < completedCount; i++) {
+    const key = `prompt${i + 1}`;
+    const saved = localStorage.getItem(key);
+    const child = promptsEl.children[i];
+    //replaces promptsEl.child with temp.innerHTML
+    if (saved && child) {
+      const temp = document.createElement('div');
+      temp.innerHTML = saved;
+      promptsEl.replaceChild(temp.firstElementChild, child);
+      console.log(`Restored prompt ${i + 1} from localStorage.`);
+    }
+  }
+}
 
+function renderPrompts(promptTexts, i, jumpsA, current_jumps, start_target = null, score = null) {
+    serializePrompts(jumpsA)
+    if(jumpsA.length >= 5){
+        return;
+    }
     // console.log(`renderPrompts: ${promptTexts}, i: ${i}, jumpsA: ${jumpsA}`);
     // get all prompt-box elements
     const promptBoxes = document.querySelectorAll('#prompts .prompt-box');
-
-    // update "done" prompts
+    targets = promptTexts.map(arr => arr[1]);
+    tallyNonTargetPrompts(promptBoxes, targets);
     const done = promptTexts.slice(0, i);
+    tallyAllPrompts(Array.from(promptBoxes).slice(0, i), targets);
     done.forEach((promptText, idx) => {
-        // alert(`updating prompt box ${idx}`)
-        promptBoxes[idx].style.borderLeft = '1px solid var(--grayed-out-color)';
-        promptBoxes[idx].style.background = "none";
         const promptWords = promptBoxes[idx].querySelectorAll('.prompt-word');
         promptWords.forEach(word => {
             word.style.border = '1px solid var(--grayed-out-color)';
@@ -98,27 +187,19 @@ function renderPrompts(promptTexts, i, jumpsA, current_jumps, start_target = nul
             start = start_target[0]
             target = start_target[1]
             current_score = score
-            currentTag = makeSpacedPromptTag(promptBoxes[i], start, target, current_score);
+            fillPrompt(promptBoxes[i], start, target, current_score);
         }
         else {
-            currentTag = makeSpacedPromptTag(promptBoxes[i],current[0], current[1], current_score)
+            fillPrompt(promptBoxes[i], current[0], current[1], current_score)
         }
-
-        // current_jumps = current_jumps || 0;
-        promptBoxes[i].style.borderLeft = '2px solid var(--text-color)';
-        // const currentTag = makePromptTag(current, current_jumps);
-        // promptBoxes[i].innerHTML = '';
-        // promptBoxes[i].style.background = "var(--grayed-out-color)";
-        promptBoxes[i].appendChild(currentTag);
     }
 
+    console.log(`clearing prompt boxes ${i+1} to ${promptBoxes.length}`)
     // clear remaining boxes
     for (let j = i + 1; j < promptBoxes.length; j++) {
-        // alert(`clearing prompt box ${j}`)
         promptBoxes[j].className = 'prompt-box';
         promptBoxes[j].style.color = 'var(--grayed-out-color)';
         // promptBoxes[i].style.borderLeft = '1px solid var(--grayed-out-color)';
-
-        // promptBoxes[j].innerHTML = '';
+        promptBoxes[j].innerHTML = '';
     }
 }
