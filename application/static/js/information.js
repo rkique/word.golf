@@ -252,6 +252,7 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, jumpsGridMessa
 }
 
 function beginTutorial() {
+    clearBoxes()
     localStorage.setItem('is_help', 'true');
     help = document.getElementById('help');
     help.style.display = 'none'

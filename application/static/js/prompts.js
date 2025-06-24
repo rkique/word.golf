@@ -8,6 +8,7 @@ function clearBoxes() {
         clearChildren(box);
     }
 }
+
 //with qualification that if finish no.
 function tallyAllPrompts(promptBoxes, targets) {
     let promptCount = 0;
