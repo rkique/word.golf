@@ -19,7 +19,6 @@ function editSession(jumpsAValue, jumpsValue, result_value, i, prompt_text) {
     }
 }
 
-
 function send_game_data_to_backend(response_text, message) {
     jumps = response_text["jumps"]; 
     jumpsA = response_text["jumpsA"]; 
