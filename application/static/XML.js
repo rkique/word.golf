@@ -26,7 +26,7 @@ function sendAndReceiveXML(message) {
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.send(message);
     resp = {}
-    console.log(`[sendAndReceiveXML] Response from ${message}: `, xhttp.responseText);
+    // console.log(`[sendAndReceiveXML] Response from ${message}: `, xhttp.responseText);
     // if (message.startsWith('end')) 
     //     {
     //     let prompt_count = parseInt(localStorage.getItem('prompt_idx')) || 0;

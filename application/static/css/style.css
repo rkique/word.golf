@@ -276,11 +276,11 @@ button {
  }
 
 button {
-    transition: transform 600ms ease, color 600ms ease ;
+    transition: background 0.2s, color 0.2s, transform 0.2s
 }
 
 button:not(.grayed-out):hover {
-    transform: scale(1.05);
+    transform: scale(0.97);
     /* box-shadow: 0 4px 16px rgba(0,0,0,0.15); */
 }
 
@@ -369,7 +369,7 @@ button span {
 
 
 #settings {
-    margin-top: 4vh;
+    margin-top: 2vh;
     max-height: 8vh;
     padding: 0 2em;
     display: flex;
@@ -402,13 +402,13 @@ button span {
 }
 
 .prompts-title {
-    font-size: 1.8em;
+    font-size: 1.8rem;
     font-weight: 600;
     margin: 0.5em 0;
     text-align: center;
     width: 100%;
     padding: 0.5rem;
-    border-bottom: 1px solid var(--text-color);
+    border: 1px solid var(--text-color);
 }
 
 #information span {
@@ -416,13 +416,18 @@ button span {
     /* font-size: 1.3em; */
 }
 
-#prompts-container, #wordspace-container {
-  flex-direction: column;
-  display: flex;
-  justify-content: center;    /* horizontal centering */
-  align-items: center;        /* vertical centering */
+#prompts-container {
+    justify-content: flex-start;
+    margin-top: 2rem;
 }
-
+#prompts-container, #wordspace-container {
+    flex-direction: column;
+  display: flex;
+  align-items: center;       
+}
+#wordspace-container {
+  justify-content: center;   
+}
     /*       top  left   bottom    right */
 #wordspace {
     width: 50vw;
@@ -436,6 +441,7 @@ button span {
     margin-right: 0;
     justify-items: center;
     align-items: center;
+    justify-content: center;
 }
 
 
@@ -447,6 +453,8 @@ button span {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
+    transition: transform 50ms ease, color 50ms ease ;
+    /* border: 1px solid var(--border-color); */
 }
 
 #info-box {
@@ -462,7 +470,7 @@ button span {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 81vh;
+    height: 72vh;
 }
 
 .prompt-box {

@@ -9,8 +9,7 @@ function clearBoxes() {
     }
 }
 
-//with qualification that if finish no.
-function tallyAllPrompts(promptBoxes, targets) {
+function tallyAllPrompts(promptBoxes) {
     let promptCount = 0;
     if (promptBoxes.length > 0 && promptBoxes[0]) {
         const prompts = promptBoxes[0].querySelectorAll('.prompt');
@@ -133,7 +132,7 @@ function serializePrompts(jumpsA) {
   }
   const promptsEl = document.getElementById('prompts');
   if (!promptsEl) {
-    console.warn('Element #prompts not found.');
+    alert('Element #prompts not found.');
     return;
   }
   const completedCount = jumpsA.length;
@@ -144,7 +143,7 @@ function serializePrompts(jumpsA) {
     const child = promptsEl.children[i];
     if (child && !existing) {
       localStorage.setItem(key, child.outerHTML);
-      console.log(`Saved prompt ${i + 1} to localStorage.`);
+    //   alert(`Saved prompt ${i + 1} to localStorage.`);
     }
   }
   // Step 2: Restore any saved prompt HTML if it's missing in DOM
@@ -163,8 +162,7 @@ function serializePrompts(jumpsA) {
 }
 
 function renderPrompts(promptTexts, i, jumpsA, current_jumps, start_target = null, score = null) {
-    serializePrompts(jumpsA)
-    if(jumpsA.length >= 5){
+    if(jumpsA.length > 5){
         return;
     }
     // console.log(`renderPrompts: ${promptTexts}, i: ${i}, jumpsA: ${jumpsA}`);
@@ -173,7 +171,7 @@ function renderPrompts(promptTexts, i, jumpsA, current_jumps, start_target = nul
     targets = promptTexts.map(arr => arr[1]);
     tallyNonTargetPrompts(promptBoxes, targets);
     const done = promptTexts.slice(0, i);
-    tallyAllPrompts(Array.from(promptBoxes).slice(0, i), targets);
+    tallyAllPrompts(Array.from(promptBoxes).slice(0, i));
     done.forEach((promptText, idx) => {
         const promptWords = promptBoxes[idx].querySelectorAll('.prompt-word');
         promptWords.forEach(word => {
@@ -206,4 +204,5 @@ function renderPrompts(promptTexts, i, jumpsA, current_jumps, start_target = nul
         // promptBoxes[i].style.borderLeft = '1px solid var(--grayed-out-color)';
         promptBoxes[j].innerHTML = '';
     }
+    serializePrompts(jumpsA)
 }

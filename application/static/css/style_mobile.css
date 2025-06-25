@@ -1,13 +1,16 @@
 @media only screen and (max-width: 992px) {
     #global{
+        gap: 0vw;
     }
     #wordspace {
         width: 100vw;
         height: 58vh;
         /*       top  left   bottom    right */
-        padding: 0rem 0.5rem 2.1rem 1.3rem;        /* display: grid; 
         justify-items: center;
-        justify-content: end; */
+        justify-content: center; 
+        padding: 3rem;
+    }
+    #wordspace-container {
     }
     #settings { 
         margin-top: 0vh;
@@ -47,7 +50,18 @@
         flex-direction: column;
         justify-content: flex-start;
     }
-
+    #prompts-container {
+        margin-top: 0vh;
+    }
+    .prompts-title {
+        border-top: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+        border-right: none;
+        border-left: none;
+        font-size: 1rem;
+        padding: 0.3rem;
+        margin: 0 0;
+    }
     #prompts p {
         font-size: 1.2rem;
     }
@@ -132,6 +146,9 @@
         min-width: 60vw;
         flex-wrap: wrap;
         
+    }
+    .link {
+        min-width: 30vw;
     }
     .help-container {
         max-width: 100%;
