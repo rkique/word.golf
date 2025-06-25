@@ -19,8 +19,7 @@ function editSession(jumpsAValue, jumpsValue, result_value, i, prompt_text) {
     }
 }
 
-
-function send_game_data_to_backend(response_text, message) {
+function updateGameDatabase(response_text, message) {
     jumps = response_text["jumps"]; 
     jumpsA = response_text["jumpsA"]; 
     results = response_text["results"]; 
@@ -104,7 +103,7 @@ function sendAndReceiveXML(message) {
             console.log("about to return from sendandreceivexml")
             if (jumps >= 12 ) { // cap it at 12 current jumps
                 let resp = sendAndReceiveXML(`end=true`);
-                _ = send_game_data_to_backend(resp, `end=true`);
+                _ = updateGameDatabase(resp, `end=true`);
                 return resp;
             } else {
                 return response_text;

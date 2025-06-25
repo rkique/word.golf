@@ -27,7 +27,7 @@ PRECOMPUTED = None
 @app.context_processor
 def inject_backend_url():
     backend_url = (
-        "http://localhost:7000"
+        "http://127.0.0.1:7000"
         if os.getenv("DEV", "false").lower() == "true"
         else "https://routes.word.golf"
     )
