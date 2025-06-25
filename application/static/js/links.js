@@ -77,6 +77,11 @@ function focusLink(startText, targetText) {
 //@Parent: postWord
 function renderLinks(prompt, results, i, debug_session_done = false) {
     // console.log('[renderLinks] Rendering links for prompt:', prompt, 'with results:', results);
+    if (!results) {
+        disableLinks()
+        reportSessionEnded(1)
+        return;
+    }
     let wordspace = document.getElementById("wordspace")
     clearChildren(wordspace)
     let middleIndex = Math.floor(results.length / 2)
@@ -204,26 +209,26 @@ function addHelpFocuses(prompt, results) {
         }
 }
 
-//@Parent: postWord
-function renderLinks(prompt, results, i, debug_session_done = false) {
-    // console.log('[renderLinks] Rendering links for prompt:', prompt, 'with results:', results);
-    let wordspace = document.getElementById("wordspace")
-    clearChildren(wordspace)
-    let middleIndex = Math.floor(results.length / 2)
-    results.forEach((result, idx) => {
-        if (idx === middleIndex) {
-            wordspace.append(makeStartLink(prompt, result))
-        } else {
-            wordspace.append(makeLink(prompt, result))
-        }
-    })
-    addDoneFocus(prompt, results, i)
-    addHelpFocuses(prompt, results)
-    if(sessionEnded(prompt) || debug_session_done){
-    disableLinks()
-    reportSessionEnded(debug_session_done)
-    }
-}
+// //@Parent: postWord
+// function renderLinks(prompt, results, i, debug_session_done = false) {
+//     // console.log('[renderLinks] Rendering links for prompt:', prompt, 'with results:', results);
+//     let wordspace = document.getElementById("wordspace")
+//     clearChildren(wordspace)
+//     let middleIndex = Math.floor(results.length / 2)
+//     results.forEach((result, idx) => {
+//         if (idx === middleIndex) {
+//             wordspace.append(makeStartLink(prompt, result))
+//         } else {
+//             wordspace.append(makeLink(prompt, result))
+//         }
+//     })
+//     addDoneFocus(prompt, results, i)
+//     addHelpFocuses(prompt, results)
+//     if(sessionEnded(prompt) || debug_session_done){
+//     disableLinks()
+//     reportSessionEnded(debug_session_done)
+//     }
+// }
 
 function clearPrompts() {
     const promptWords = document.querySelectorAll('.prompt-box .prompt .prompt-word');
@@ -322,6 +327,10 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
     localStorage.setItem('previous_words', JSON.stringify(prev_words));
 
     if (!use_animations) {
+        // check if we are at the ending page now (for when we have 12 jumps):
+        // if (sum(resp.jumpsA) == 60) {
+        //     renderLinks(resp.prompt, resp.results, resp.prompt_idx, true);
+        // }
         renderToFrom(resp.prompt, resp.jumps);
         renderLinks(resp.prompt, resp.results, resp.i);
         //This is the source of nearly all renderPrompt calls.
