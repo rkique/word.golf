@@ -12,7 +12,13 @@
     font-style: italic;
 }
 
-
+.finish-summary {
+    font-size: 3rem;
+    font-family: "Inter", sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--grayed-out-color-help-target);
+}
 html {
     font-display: optional;
     font-family: "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI",
@@ -89,6 +95,9 @@ html {
     z-index: 3;
 }
 
+#finish-container p {
+    margin: 0.25rem 0;
+}
 #finish-container .inline-title {
   display: inline-flex;
   align-items: baseline;
@@ -116,6 +125,7 @@ html {
 
 
 #finish-container .daily-idx-tag{
+    font-family: "Inter", sans-serif;
     position: absolute;
     top: 2rem; 
     left: 1rem;
@@ -126,10 +136,11 @@ html {
     gap: 0em;
     font-size: 1.8rem;
     font-weight: 800;
-    color: var(--grayed-out-color);
+    color: var(--grayed-out-color-help-target);
 }
 
 #finish-container .daily-idx {
+    font-family: "Inter", sans-serif;
     display: inline;
     margin-top: 0;
     margin-bottom: 0;
@@ -280,7 +291,7 @@ button {
 }
 
 button:not(.grayed-out):hover {
-    transform: scale(0.97);
+    transform: scale(1.06);
     /* box-shadow: 0 4px 16px rgba(0,0,0,0.15); */
 }
 
@@ -361,9 +372,13 @@ button span {
 
 #global {
     display: flex;
-    justify-content: center;
+    flex-wrap: wrap;
     height: 88vh;
-    gap: 8vw;
+    /* gap: 8vw; */
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    gap: 2vw;
 }
 
 
@@ -402,13 +417,16 @@ button span {
 }
 
 .prompts-title {
+    font-family: "Inter";
+    /* text-transform: uppercase; */
     font-size: 1.8rem;
     font-weight: 600;
     margin: 0.5em 0;
     text-align: center;
     width: 100%;
     padding: 0.5rem;
-    border: 1px solid var(--text-color);
+    color: var(--border-color);
+    border: 1px solid var(--border-color);
 }
 
 #information span {
@@ -430,9 +448,9 @@ button span {
 }
     /*       top  left   bottom    right */
 #wordspace {
-    width: 50vw;
-    height: 70vh;
-    /* padding: 13vh 16vh 18vh 16vh; */
+    width: 60vw;
+    height: 80vh;
+    padding: 3rem 6rem 3rem 6rem;
     display: grid;
     grid-template-columns: 1fr 1.5fr 1fr;
     grid-template-rows: 1fr 1fr 1fr 1.3fr 1fr 1fr 1fr;
@@ -453,7 +471,7 @@ button span {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
-    transition: transform 50ms ease, color 50ms ease ;
+    transition: transform 400ms ease, color 400ms ease ;
     /* border: 1px solid var(--border-color); */
 }
 
