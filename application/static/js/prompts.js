@@ -1,5 +1,6 @@
 //[start, target], jumps, cos
 
+SIM_INTERVALS = [0.2,0.27,0.35,0.42]
 
 function clearBoxes() {
     // get all prompt-box elements
@@ -79,8 +80,8 @@ function fillPrompt(promptBox, start, target, score) {
     }
     console.log(`makeSpacedPromptTag: start=${start}, target=${target}, score=${score}`);
     //here idx is used to set the prompt-word div
-    let idx = score < 0.2 ? 0 : score < 0.27 ? 1 :
-            score < 0.35 ? 2 : score < 0.42 ? 3 : 4;
+    let idx = SIM_INTERVALS.findIndex(interval => score < interval);
+    if (idx === -1) idx = SIM_INTERVALS.length;
     children = promptBox.children;
     let cell = children[idx];
     updateInnerTextSmooth(cell, start);

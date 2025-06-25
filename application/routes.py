@@ -10,6 +10,7 @@ from .utils import get_prompts, txt_to_list, txt_to_dict
 from flask import redirect
 import os
 
+SIM_INTERVALS = [0.2,0.27,0.35,0.42]
 prompt_neighbor_dict = get_prompts(txt_to_list("application/data/neighbors.txt"))
 PROMPTS = list(prompt_neighbor_dict.keys())
 NEIGHBORS = list(prompt_neighbor_dict.values())
@@ -85,6 +86,16 @@ def load_time():
     today = datetime.datetime.today() + add_days(DAYS)
     elapsed, prompts_today, neighbors_today = get_prompts_for_date(today)
 
+def sim_idx(start, target):
+    print(f"[sim_idx] {start} and {target}")
+    if start is None or target is None:
+        return 0
+    sim = similarity(start, target, WV)
+    for i, threshold in enumerate(SIM_INTERVALS):
+        if sim < threshold:
+            return i
+    return len(SIM_INTERVALS)
+
 def jump(start : str) -> str:
     '''
     Jump to a new word and return the updated session data as stringified JSON.
@@ -93,7 +104,22 @@ def jump(start : str) -> str:
     # print("Current session data:", session.get('data'))
     _data = json.loads(session.get('data'))
     target = _data['prompt'][1]
-    results = get_curve(start, target, PRECOMPUTED, WV)
+    jumps = _data['jumps']
+
+    #uses session variable.
+    current_sim_idx = sim_idx(start, target)
+    last_sim_idx = session.get('similarity_idx', 0)
+    if current_sim_idx < last_sim_idx:
+        print(f'Sim idx would be lowered from {last_sim_idx} to {current_sim_idx}, returning original data',)
+        return json.dumps(_data)
+    else:
+        print(f'sim idx of {start} {target} is {current_sim_idx}')
+        session['similarity_idx'] = current_sim_idx
+
+    if jumps > 2:
+        results = get_curve(start, target, PRECOMPUTED, WV, linear=True)
+    else:
+        results = get_curve(start, target, PRECOMPUTED, WV)
     _data['jumps'] = _data['jumps']+1
     _data['results'] = results
     _data['score'] =  similarity(start, target, WV)
@@ -278,6 +304,7 @@ def index_post():
             session['data'] = json.dumps(data)
 
     elif request.form.get('end') is not None:
+        session['similarity_idx'] = 0
         print(f"[/] Shifting to Prompt {session['i']+1}")
         print("here is session data:", session.get('data'))
         print("session i:", session['i'])
