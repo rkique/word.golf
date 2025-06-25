@@ -295,6 +295,11 @@ button:not(.grayed-out):hover {
     /* box-shadow: 0 4px 16px rgba(0,0,0,0.15); */
 }
 
+svg:hover {
+    transform: scale(1.06);
+    /* box-shadow: 0 4px 16px rgba(0,0,0,0.15); */
+}
+
 button span {
     display: inline-block;
 }
@@ -375,7 +380,7 @@ button span {
     flex-wrap: wrap;
     height: 88vh;
     /* gap: 8vw; */
-    align-content: center;
+    align-content: flex-start;
     align-items: center;
     justify-content: center;
     gap: 2vw;
@@ -425,8 +430,8 @@ button span {
     text-align: center;
     width: 100%;
     padding: 0.5rem;
-    color: var(--border-color);
-    border: 1px solid var(--border-color);
+    color: var(--grayed-out-color-help-target);
+    border: 1px solid var(--grayed-out-color-help-target);
 }
 
 #information span {

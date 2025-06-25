@@ -244,31 +244,27 @@ function activateLinks() {
 
 function showBanner(text, color) {
   // Remove existing banner if present
-  const oldBanner = document.getElementById('screen-banner');
+  const oldBanner = document.getElementById('promptEndBanner');
   if (oldBanner) oldBanner.remove();
 
   // Create banner
   const banner = document.createElement('div');
-  banner.id = 'screen-banner';
+  banner.id = 'promptEndBanner';
   banner.innerText = text.toLowerCase();
-
-  // Style it
   Object.assign(banner.style, {
+    fontFamily: '"Inter", sans-serif',
     position: 'fixed',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    backgroundColor: 'transparent',
     color: color,
     fontSize: '4rem',
     fontWeight: '900',
-    fontFamily: 'sans-serif',
     textTransform: 'lowercase',
     textAlign: 'center',
     zIndex: '9999',
-    pointerEvents: 'none',
+    pointerEvents: 'none'
   });
-
   document.body.appendChild(banner);
 
   // Optional: fade out after 2 seconds
