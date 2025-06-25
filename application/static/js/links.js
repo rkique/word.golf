@@ -242,17 +242,53 @@ function activateLinks() {
     })
 }
 
+function showBanner(text, color) {
+  // Remove existing banner if present
+  const oldBanner = document.getElementById('screen-banner');
+  if (oldBanner) oldBanner.remove();
+
+  // Create banner
+  const banner = document.createElement('div');
+  banner.id = 'screen-banner';
+  banner.innerText = text.toLowerCase();
+
+  // Style it
+  Object.assign(banner.style, {
+    position: 'fixed',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    backgroundColor: 'transparent',
+    color: color,
+    fontSize: '4rem',
+    fontWeight: '900',
+    fontFamily: 'sans-serif',
+    textTransform: 'lowercase',
+    textAlign: 'center',
+    zIndex: '9999',
+    pointerEvents: 'none',
+  });
+
+  document.body.appendChild(banner);
+
+  // Optional: fade out after 2 seconds
+  setTimeout(() => {
+    banner.style.transition = 'opacity 0.8s ease';
+    banner.style.opacity = '0';
+    setTimeout(() => banner.remove(), 800);
+  }, 600);
+}
+
 function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
 
     // capping the maximum number of jumps 
-    let jmps = parseInt(localStorage.getItem('jumps')) || 0;
+    let jumps = parseInt(localStorage.getItem('jumps')) || 0;
     let resp;
-    if (jmps >= 12) {
+    if (jumps >= 12) {
         resp = sendAndReceiveXML(`end=true`);
     } else {
         resp = sendAndReceiveXML("word=" + word);
     }
-
     let prev_words = [];
     prev_words = JSON.parse(localStorage.getItem('previous_words'));
     if (!prev_words) prev_words = [];
@@ -267,14 +303,15 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
             let start_target = [word, resp.prompt[1]]
             renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps, start_target = start_target, score = resp.score)
         }
-        // else {
-        //     // we are finished now with the prompt
-        //     if (jmps <= 2) showBanner("Perfect", "green");
-        //     else if (jmps <= 4) showBanner("Impressive", "blue");
-        //     else if (jmps <= 6) showBanner("Amazing", "purple");
-        //     else if (jmps <= 8) showBanner("Great", "orange");
-        //     else if (jmps <= 12) showBanner("Close call", "red");
-        // }
+        else {
+            console.log(`[showBanner] ${jumps}`)
+            // we are finished now with the prompt
+            if (jumps <= 1) showBanner("Perfect!", "green");
+            else if (jumps <= 3) showBanner("Impressive!", "blue");
+            else if (jumps <= 5) showBanner("Great", "purple");
+            else if (jumps <= 7) showBanner("Good", "orange");
+            else if (jumps <= 9) showBanner("Close call..", "red");
+        }
         activateLinks()
     } else {
         const wordspace = document.getElementById("wordspace");

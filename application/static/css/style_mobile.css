@@ -3,14 +3,14 @@
     }
     #wordspace {
         width: 100vw;
-        height: 60vh;
+        height: 58vh;
         /*       top  left   bottom    right */
-        padding: 2.4rem 0.5rem 2.1rem 1.8rem;
-        /* display: grid; 
+        padding: 0rem 0.5rem 2.1rem 1.3rem;        /* display: grid; 
         justify-items: center;
         justify-content: end; */
     }
     #settings { 
+        margin-top: 0vh;
         padding: 0 1em;
         margin: 0 0;
     }
@@ -38,10 +38,10 @@
     }
 
     #prompts {
-        padding: 0 0;
-        width: 95vw; 
+        padding: 0 1.2rem;
+        width: 100vw;
         min-height: 30vh;
-        max-height: 40vh;
+        max-height: 32vh;
         justify-content: flex-start;
         display: flex;
         flex-direction: column;
@@ -58,6 +58,7 @@
         align-items: center;
         justify-content: space-between;
         min-height: 4.5vh;
+        font-size: 1.2rem;
     }
     .switch, .game-icon {
         padding: 0.5em 0em;

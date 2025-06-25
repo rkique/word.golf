@@ -8,7 +8,8 @@ START_GAME_DELAY_MS = 1500
  */
 function makePromptInfo(start_target) {
     let p = document.createElement("p");
-    p.innerHTML = `go from <span class="link--starting">${start_target[0]}</span> to <span class="link--starting">${start_target[1]}</span>`;
+    // p.innerHTML = `go from <span class="link--starting">${start_target[0]}</span> to <span class="link--starting">${start_target[1]}</span>`;
+    p.innerHTML = ''
     return p;
 }
 

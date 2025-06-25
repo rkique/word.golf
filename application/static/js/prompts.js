@@ -128,6 +128,9 @@ function makePromptTag(start_target, jumps) {
 // }
 
 function serializePrompts(jumpsA) {
+  if(localStorage.getItem('is_help') === 'true'){
+    return;
+  }
   const promptsEl = document.getElementById('prompts');
   if (!promptsEl) {
     console.warn('Element #prompts not found.');
