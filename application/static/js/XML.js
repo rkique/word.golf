@@ -33,11 +33,11 @@ function send_game_data_to_backend(response_text, message) {
         word = message.split("=")[1];
     }
 
-    console.log("here is the word");
-    console.log("here is the message");
-    console.log(message);
-    console.log(word);
-    console.log("before backend fetch");
+    // console.log("here is the word");
+    // console.log("here is the message");
+    // console.log(message);
+    // console.log(word);
+    // console.log("before backend fetch");
 
     fetch(`${window.backendURL}/update_game_state`, {
         method: 'POST',

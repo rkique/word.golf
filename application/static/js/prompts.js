@@ -15,6 +15,7 @@ function tallyAllPrompts(promptBoxes) {
         const prompts = promptBoxes[0].querySelectorAll('.prompt');
         promptCount = prompts ? prompts.length : 0;
     }
+    console.log(`[tallyAllPrompts] promptCount ${promptCount}`)
     if (promptCount >= 12){
         //for each prompt child of promptBox, set the sixth child border to none and clear the innerText
         for (let box of promptBoxes) {
@@ -70,14 +71,14 @@ function updateInnerTextSmooth(elem, newText) {
 
 //todo: we want to edit an existing promptTag.
 function fillPrompt(promptBox, start, target, score) {
-    console.log(`fillPrompt: start=${start}, target=${target}, score=${score}`);
+    // console.log(`fillPrompt: start=${start}, target=${target}, score=${score}`);
     if (promptBox.children.length === 0) {
         for (let i = 0; i < 6; i++) {
             let div = document.createElement("div");
             promptBox.appendChild(div);
         }
     }
-    console.log(`makeSpacedPromptTag: start=${start}, target=${target}, score=${score}`);
+    // console.log(`makeSpacedPromptTag: start=${start}, target=${target}, score=${score}`);
     //here idx is used to set the prompt-word div
     let idx = score < 0.2 ? 0 : score < 0.27 ? 1 :
             score < 0.35 ? 2 : score < 0.42 ? 3 : 4;

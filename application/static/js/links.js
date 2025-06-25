@@ -144,10 +144,10 @@ function showHelpPopup(message, transform, startSocket, endSocket) {
 function addDoneFocus(prompt, results, i) {
     const targetWord = prompt[1];
     const idx = results.indexOf(targetWord);
-    console.log("I am in add Done Focus");
-    console.log("target_word: ", targetWord, "index: ", idx);
-    console.log("Here is the prompt boxes");
-    console.log(document.querySelectorAll('#prompts .prompt-box .prompt'));
+    // console.log("I am in add Done Focus");
+    // console.log("target_word: ", targetWord, "index: ", idx);
+    // console.log("Here is the prompt boxes");
+    // console.log(document.querySelectorAll('#prompts .prompt-box .prompt'));
     if (idx !== -1) {
         const promptBoxes = document.querySelectorAll('#prompts .prompt-box .prompt');
         // promptBoxes[i].style.color = "orange";
@@ -240,7 +240,7 @@ function reportSessionEnded(debug_session_done) {
         resp = sendAndReceiveXML(`end=true`)
         _ = send_game_data_to_backend(resp, `end=true`);
     }
-    console.log('[reportSessionEnded] Response:', resp);
+    // console.log('[reportSessionEnded] Response:', resp);
     renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
     //If user has completed all prompts
     if (resp.hasOwnProperty('help_session_done')) {
@@ -311,10 +311,9 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
     // if (jumps >= 12) {
     //     resp = sendAndReceiveXML(`end=true`);
     // } else {
-    console.log('[postWord] called with Word:', word);
     const resp = sendAndReceiveXML("word=" + word);
     _ = send_game_data_to_backend(resp, "word=" + word);
-    console.log('[postWord] Response:', resp);
+    // console.log('[postWord] Response:', resp);
     // }
     let prev_words = [];
     prev_words = JSON.parse(localStorage.getItem('previous_words'));

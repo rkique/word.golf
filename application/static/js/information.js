@@ -18,7 +18,6 @@ function makePromptInfo(start_target) {
  * @returns {void}
  */
 function renderToFrom(start_target, jumps){
-    console.log(`renderToFrom called with start_target ${start_target}, jumps ${jumps}`);
     if (jumps != 0){
         
         let previous_words = JSON.parse(localStorage.getItem('previous_words'))
@@ -124,7 +123,7 @@ function renderFinish(jumpsA) {
     })
     .then(response => response.json())
     .then(finish_data => {
-        console.log('Database updated successfully:', finish_data);
+        // console.log('Database updated successfully:', finish_data);
         const daily_idx = daysSinceStartDate();
         // Display finish modal for user.
         is_logged_in = Boolean(localStorage.getItem('logged_in'))
@@ -153,7 +152,6 @@ function startGame() {
     _ = send_game_data_to_backend(resp, 'redirect=true');
     renderLinks(resp.prompt, resp.results)
     renderToFrom(resp.prompt, 0);
-    console.log('[reportSessionEnded] Rendering prompts..')
     start_target = resp.prompts[resp.i]
     renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps, start_target=start_target)
     activateLinks()
@@ -229,8 +227,6 @@ function generateLineGraph(scores) {
 
 function displayFinishModal(daily_idx, totalJumps, currentStreak, jumpsGridMessage, is_user=false) {
     const modalFinish = document.getElementById(is_user ? 'modal-finish-user' : 'modal-finish-guest');
-    console.log('[displayFinishModal] Displaying finish modal:', daily_idx, totalJumps, currentStreak, jumpsGridMessage, is_user);
-
     modalFinish.querySelector('.daily-idx').innerHTML = daily_idx;
     modalFinish.querySelector('.daily-idx').innerHTML = daily_idx;
     modalFinish.querySelector('.totalJumps').innerHTML = totalJumps;
@@ -281,7 +277,7 @@ function beginTutorial() {
     resp = sendAndReceiveXML(`help=true`)
     renderToFrom(resp.prompt, resp.jumps);
     document.querySelector('.prompt-box').style.border = '1px solid var(--border-color)';
-    console.log(`renderLinks: ${renderLinks}`)
+    // console.log(`renderLinks: ${renderLinks}`)
     renderLinks(resp.prompt, resp.results, resp.i)
     let start_target = resp.prompt
     renderPrompts(resp.prompts, resp.i, resp.jumpsA, start_target=start_target)
