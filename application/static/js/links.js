@@ -333,11 +333,11 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
         else {
             console.log(`[showBanner] ${jumps}`)
             // we are finished now with the prompt
-            if (jumps <= 1) showBanner("Perfect!", "green");
-            else if (jumps <= 3) showBanner("Impressive!", "blue");
-            else if (jumps <= 5) showBanner("Great", "purple");
-            else if (jumps <= 7) showBanner("Good", "orange");
-            else if (jumps <= 9) showBanner("Close call..", "red");
+            if (resp.jumps <= 2) showBanner("Perfect!", "green");
+            else if (resp.jumps <= 3) showBanner("Impressive!", "blue");
+            else if (resp.jumps <= 5) showBanner("Great", "purple");
+            else if (resp.jumps <= 7) showBanner("Good", "orange");
+            else if (resp.jumps <= 9) showBanner("Close call..", "red");
         }
         activateLinks()
     } else {
