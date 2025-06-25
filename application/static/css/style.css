@@ -12,6 +12,13 @@
     font-style: italic;
 }
 
+.word-tally-container {
+    display: flex;
+    min-height: 100%;
+    max-width: 100%;
+    gap: 0.25rem;
+}
+
 .finish-summary {
     font-size: 3rem;
     font-family: "Inter", sans-serif;
@@ -536,12 +543,16 @@ button span {
 }
 
  .tally {
-    transition: none;
+    /* transition: max-width 0.2s ease, padding 0.2s ease-out, background 0.2s ease; */
  }
 
- .prompt-word {
-    transition: padding 0.2s ease-out, background 0.2s ease;
- }
+.prompt-word {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  display: inline-block;
+  transition: max-width 0.2s ease, padding 0.2s ease, background 0.2s ease;
+}
 
 .prompt-box .prompt-word, .tally {
     min-height: 100%;
@@ -552,7 +563,7 @@ button span {
     width: auto;
     position: relative; /* necessary for z-index to apply */
     z-index: 1;
-    padding: 0rem 4rem;
+    padding: 0rem 3rem;
     color: var(--text-color);
     border: 1px solid var(--text-color);
     display: flex;

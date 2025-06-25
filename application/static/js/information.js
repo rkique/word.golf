@@ -141,7 +141,6 @@ function renderFinish(jumpsA) {
 
 /* Clears the modal, localStorage, and renders links with XML redirect=true*/
 function startGame() {
-    clearBoxes()
     document.getElementById('modal').style.display = 'none';
     localStorage.setItem('is_help', 'false');
     localStorage.removeItem('jumps');
@@ -150,10 +149,11 @@ function startGame() {
     localStorage.removeItem('results');
     resp = sendAndReceiveXML('redirect=true');
     _ = send_game_data_to_backend(resp, 'redirect=true');
+    clearBoxes()
     renderLinks(resp.prompt, resp.results)
     renderToFrom(resp.prompt, 0);
     start_target = resp.prompts[resp.i]
-    renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps, start_target=start_target)
+    renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps, start_target=start_target, serialize=false)
     activateLinks()
 }
 
@@ -270,7 +270,6 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, jumpsGridMessa
 }
 
 function beginTutorial() {
-    clearBoxes()
     localStorage.setItem('is_help', 'true');
     help = document.getElementById('help');
     help.style.display = 'none'
@@ -280,6 +279,7 @@ function beginTutorial() {
     // console.log(`renderLinks: ${renderLinks}`)
     renderLinks(resp.prompt, resp.results, resp.i)
     let start_target = resp.prompt
+    clearBoxes()
     renderPrompts(resp.prompts, resp.i, resp.jumpsA, start_target=start_target)
     activateLinks()
     addHelpFocuses(resp.prompt, resp.results)

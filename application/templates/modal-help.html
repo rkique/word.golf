@@ -7,8 +7,8 @@
         console.log(resp);
         renderToFrom(resp.prompt, resp.jumps);
         renderLinks(resp.prompt, resp.results)
-        console.log('[reportSessionEnded] Rendering prompts..')
-        renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
+        // alert('[beginTutorial] rendering prompts')
+        // renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
         activateLinks()
         addHelpFocuses(resp.prompt, resp.results)
     }

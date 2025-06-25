@@ -76,7 +76,7 @@
     })
         .then(response => response.json())
         .then(game_data => {
-            console.log("backend response: ", game_data);
+            // console.log("backend response: ", game_data);
             if ("logged_in" in game_data) {
                 if (game_data.email) {
                     renderLogin(game_data)
@@ -88,7 +88,7 @@
                 loaded = game_data
                 prompt_idx = game_data.prompt_idx
             } else {
-                console.log('Loading from data');
+                // console.log('Loading from data');
                 loaded = data;
                 prompt_idx = data['i'];
             }
@@ -101,23 +101,24 @@
             if (jumpsA.length > 5) {
                 jumpsA = jumpsA.slice(0, 5);
             }
-            console.log('jumpsA:', jumpsA, 'jumps:', jumps, 'results:', results, 'prompts:', prompts, 'start_target:', start_target);
-            console.log('prompt index:', prompt_idx);
+            // console.log('jumpsA:', jumpsA, 'jumps:', jumps, 'results:', results, 'prompts:', prompts, 'start_target:', start_target);
+            // console.log('prompt index:', prompt_idx);
 
             _ = editSession(jumpsA, jumps, results, prompt_idx, start_target);
             // we know we are at the end here 
             if (prompt_idx > 4) { 
-                console.log("finished game, setting prompt_idx to 4");
+                // console.log("finished game, setting prompt_idx to 4");
                 prompt_idx = 4 
                 start_target = prompts[prompt_idx]
                 renderToFrom(start_target, jumps)
+                alert('not rendering prompts on fresh reload')
                 // console.log("here is the start_target", start_target);
-                renderPrompts(prompts, prompt_idx, jumpsA, jumps, start_target=start_target)
+                // renderPrompts(prompts, prompt_idx, jumpsA, jumps, start_target=start_target)
                 renderLinks(start_target, results, prompt_idx, true)
             } else {
                 start_target = prompts[prompt_idx]
                 renderToFrom(start_target, jumps)
-                console.log(`[From index] prompts: ${prompts}, i: ${prompt_idx}, local_jumpsA: ${jumpsA}, jumps: ${jumps}`);
+                // alert('renderPrompt on fresh reload')
                 renderPrompts(prompts, prompt_idx, jumpsA, jumps, start_target=start_target)
                 renderLinks(start_target, results)
                 activateLinks()

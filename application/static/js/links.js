@@ -237,7 +237,6 @@ function clearPrompts() {
 
 //@Parent: maintainLinks
 function reportSessionEnded(debug_session_done) {
-    let resp;
     if (localStorage.getItem('is_help') == "true") {
         resp = sendAndReceiveXML(`help_end=true`)
         _ = send_game_data_to_backend(resp, `help_end=true`);
@@ -246,10 +245,12 @@ function reportSessionEnded(debug_session_done) {
         _ = send_game_data_to_backend(resp, `end=true`);
     }
     // console.log('[reportSessionEnded] Response:', resp);
-    renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
     //If user has completed all prompts
     if (resp.hasOwnProperty('help_session_done')) {
         renderHelpFinish()
+        const promptBoxes = document.querySelectorAll('#prompts .prompt-box');
+        tallyAllPrompts(promptBoxes, 0)
+        // renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
     }
     else if (resp.hasOwnProperty('session_done') || debug_session_done) {
         tallyScreen(resp.prompts, resp.i, resp.jumpsA)
@@ -336,7 +337,7 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
         //This is the source of nearly all renderPrompt calls.
         if (word !== resp.prompt[1]) {
             let start_target = [word, resp.prompt[1]]
-            renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps, start_target = start_target, score = resp.score)
+            renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps, start_target = start_target, score = resp.score, serialize=true);
         }
         else {
             console.log(`[showBanner] ${jumps}`)

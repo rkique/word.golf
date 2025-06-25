@@ -67,7 +67,7 @@ function sendAndReceiveXML(message) {
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.send(message);
     resp = {}
-    console.log(`[sendAndReceiveXML] Response from ${message}: `, xhttp.responseText);
+    // console.log(`[sendAndReceiveXML] Response from ${message}: `, xhttp.responseText);
     if (message.startsWith('end')) {
         let prompt_count = parseInt(localStorage.getItem('prompt_idx')) || 0;
         localStorage.setItem('prompt_idx', prompt_count + 1);
@@ -76,8 +76,6 @@ function sendAndReceiveXML(message) {
         j = JSON.parse(xhttp.responseText.substring(17));
         j['help_session_done'] = 1
         console.log("[help_session_done] Session is done, returning jumps and results")
-        console.log("here is the finish of the help session")
-        console.log(j)
         return j
     }
     if (xhttp.responseText.startsWith("session_done"))
@@ -95,9 +93,9 @@ function sendAndReceiveXML(message) {
             results = response_text["results"]; 
             prompts = response_text["prompts"]; 
             current_prompt = response_text["i"]; 
-            console.log("after backend fetch")
+            // console.log("after backend fetch")
             // handle update_state if needed
-            console.log(`[Send and Receive XML] results: ${results} jumpsA : ${jumpsA} prompts ${prompts}`);
+            // console.log(`[Send and Receive XML] results: ${results} jumpsA : ${jumpsA} prompts ${prompts}`);
             // fix this localstorage issue!!!
             
             console.log(response_text)
