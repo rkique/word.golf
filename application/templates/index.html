@@ -113,7 +113,7 @@
                 renderToFrom(start_target, jumps)
                 // console.log("here is the start_target", start_target);
                 renderPrompts(prompts, prompt_idx, jumpsA, jumps, start_target=start_target)
-                renderLinks(start_target, results, true)
+                renderLinks(start_target, results, prompt_idx, true)
             } else {
                 start_target = prompts[prompt_idx]
                 renderToFrom(start_target, jumps)
