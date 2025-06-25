@@ -22,7 +22,8 @@ function renderToFrom(start_target, jumps){
     if (jumps != 0){
         
         let previous_words = JSON.parse(localStorage.getItem('previous_words'))
-       
+        // let previous_words = game_data.selected_words;
+    
         let previous_word = previous_words.length > 0 ? previous_words[previous_words.length - 1] : start_target[0];
         start_target = [previous_word, start_target[1]];
 
@@ -34,37 +35,35 @@ function renderToFrom(start_target, jumps){
 }
 
 
-function update_database_with_finish(totalJumps, last_complete) {
-    let words_selected = JSON.parse((localStorage.getItem('previous_words') || null))
-    let jumpsA = JSON.parse((localStorage.getItem('jumpsA') || null));
-    jumpsA = jumpsA.map(jump => parseInt(jump, 10));
-    let last_jumps = parseInt(localStorage.getItem('jumps') || 0);
-    jumpsA.push(last_jumps);
-    localStorage.setItem('jumpsA', JSON.stringify(jumpsA));
+// function update_database_with_finish(last_complete) {
+//     // show that the game has finished (I think this is the correct way/method to do so )
+//     let words_selected = JSON.parse((localStorage.getItem('previous_words') || null))
+//     let jumpsA = JSON.parse((localStorage.getItem('jumpsA') || null));
+//     jumpsA = jumpsA.map(jump => parseInt(jump, 10));
+//     let last_jumps = parseInt(localStorage.getItem('jumps') || 0);
+//     jumpsA.push(last_jumps);
+//     localStorage.setItem('jumpsA', JSON.stringify(jumpsA));
 
-    const data = {
-        total_jumps: totalJumps,
-        last_complete: last_complete, // should be "YYYY-MM-DD"
-        words_selected: words_selected,
-        jumpsA: jumpsA,
-    };
+//     const data = {
+//         last_complete: last_complete, // should be "YYYY-MM-DD"
+//     };
 
-    fetch(window.backendURL + '/update_finish', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        credentials: 'include', // <-- Required for auth cookies
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Database updated successfully:', data);
-    })
-    .catch((error) => {
-        console.error('Error updating database:', error);
-    });
-}
+//     fetch(window.backendURL + '/update_finish', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json'
+//         },
+//         credentials: 'include', // <-- Required for auth cookies
+//         body: JSON.stringify(data)
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//         console.log('Database updated successfully:', data);
+//     })
+//     .catch((error) => {
+//         console.error('Error updating database:', error);
+//     });
+// }
 
 function displayModal(innerHTML){
     const modalEl = document.getElementById('modal');
@@ -99,24 +98,46 @@ function renderGrid(counts) {
 
 
 function renderFinish(jumpsA) {
-    const totalJumps = jumpsA.reduce((sum, jumps) => sum + jumps, 0);
+    // const totalJumps = jumpsA.reduce((sum, jumps) => sum + jumps, 0);
 
     const currentDate = new Date(localStorage.getItem('current_date'));
-    const lastCompleteDate = new Date(localStorage.getItem('lastComplete'));
-    const diffInDays = Math.floor((currentDate - lastCompleteDate) / (1000 * 60 * 60 * 24))
+    // const lastCompleteDate = new Date(localStorage.getItem('lastComplete'));
+    // const diffInDays = Math.floor((currentDate - lastCompleteDate) / (1000 * 60 * 60 * 24))
     
-    const isSameDay = diffInDays === 0;
-    const shouldResetStreak = diffInDays >= 2;
+    // const isSameDay = diffInDays === 0;
+    // const shouldResetStreak = diffInDays >= 2;
 
-    const currentStreak = parseInt(localStorage.getItem('streak')) || 1;
-    const newStreak = isSameDay ? currentStreak : shouldResetStreak ? 1 : currentStreak + 1;
-    localStorage.setItem('streak', newStreak);
-    update_database_with_finish(totalJumps, currentDate);
-    const daily_idx = daysSinceStartDate();
-    // Display finish modal for user.
-    is_logged_in = Boolean(localStorage.getItem('logged_in'))
-    jumpsGridMessage = renderGrid(jumpsA);
-    displayFinishModal(daily_idx, totalJumps, newStreak, jumpsGridMessage, is_logged_in);
+    // const currentStreak = parseInt(localStorage.getItem('streak')) || 1;
+    // const newStreak = isSameDay ? currentStreak : shouldResetStreak ? 1 : currentStreak + 1;
+
+    const data = {
+        last_complete: currentDate, // should be "YYYY-MM-DD"
+    };
+
+    fetch(window.backendURL + '/update_finish', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include', // <-- Required for auth cookies
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(finish_data => {
+        console.log('Database updated successfully:', finish_data);
+        const daily_idx = daysSinceStartDate();
+        // Display finish modal for user.
+        is_logged_in = Boolean(localStorage.getItem('logged_in'))
+        jumpsGridMessage = renderGrid(finish_data.jumpsA);
+        displayFinishModal(daily_idx, finish_data.total_jumps, finish_data.newStreak, jumpsGridMessage, is_logged_in);
+    })
+    .catch((error) => {
+        console.error('Error updating database:', error);
+    });
+
+    // localStorage.setItem('streak', newStreak);
+    // update_database_with_finish(totalJumps, currentDate);
+    
 }
 
 /* Clears the modal, localStorage, and renders links with XML redirect=true*/
@@ -126,10 +147,10 @@ function startGame() {
     localStorage.setItem('is_help', 'false');
     localStorage.removeItem('jumps');
     localStorage.removeItem('jumpsA');
-    localStorage.removeItem('prompt');
     localStorage.removeItem('prompts');
     localStorage.removeItem('results');
     resp = sendAndReceiveXML('redirect=true');
+    _ = send_game_data_to_backend(resp, 'redirect=true');
     renderLinks(resp.prompt, resp.results)
     renderToFrom(resp.prompt, 0);
     console.log('[reportSessionEnded] Rendering prompts..')

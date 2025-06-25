@@ -1,7 +1,10 @@
 <script>
     function beginTutorial() {
         localStorage.setItem('is_help', 'true');
-        resp = sendAndReceiveXML(`help=true`)
+        const resp = sendAndReceiveXML(`help=true`);
+        _ = send_game_data_to_backend(resp, `help=true`);
+        console.log("Here is the xml response in begin tutorial");
+        console.log(resp);
         renderToFrom(resp.prompt, resp.jumps);
         renderLinks(resp.prompt, resp.results)
         console.log('[reportSessionEnded] Rendering prompts..')

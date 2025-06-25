@@ -1,3 +1,20 @@
+<script>
+    function beginTutorial() {
+        localStorage.setItem('is_help', 'true');
+        help = document.getElementById('help');
+        help.style.display = 'none'
+        const resp = sendAndReceiveXML(`help=true`)
+        _ = send_game_data_to_backend(resp, `help=true`);
+        renderToFrom(resp.prompt, resp.jumps);
+        document.querySelector('.prompt-box').style.border = '1px solid var(--border-color)';
+        renderLinks(resp.prompt, resp.results)
+        let start_target = resp.prompt
+        renderPrompts(resp.prompts, resp.i, resp.jumpsA, start_target=start_target)
+        activateLinks()
+        addHelpFocuses(resp.prompt, resp.results)
+    }
+
+</script>
 <div id="help" class="help">
     <div class="help-container">
             <h1>How to play</h1>

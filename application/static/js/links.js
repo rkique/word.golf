@@ -144,6 +144,10 @@ function showHelpPopup(message, transform, startSocket, endSocket) {
 function addDoneFocus(prompt, results, i) {
     const targetWord = prompt[1];
     const idx = results.indexOf(targetWord);
+    console.log("I am in add Done Focus");
+    console.log("target_word: ", targetWord, "index: ", idx);
+    console.log("Here is the prompt boxes");
+    console.log(document.querySelectorAll('#prompts .prompt-box .prompt'));
     if (idx !== -1) {
         const promptBoxes = document.querySelectorAll('#prompts .prompt-box .prompt');
         // promptBoxes[i].style.color = "orange";
@@ -192,11 +196,32 @@ function addHelpFocuses(prompt, results) {
     for (const step of HELP_STEPS) {
         //[Check] if prompt is equal to the help prompt.
 
-        if (arrayEqual(prompt, step.prompt) && results[middleIdx] === step.result) {
-            showHelpPopup(step.message, step.transform, step.startSocket, step.endSocket);
-            focusLink(step.result, step.focus);
-            break;
+            if (arrayEqual(prompt, step.prompt) && results[middleIdx] === step.result) {
+                showHelpPopup(step.message, step.transform, step.startSocket, step.endSocket);
+                focusLink(step.result, step.focus);
+                break;
+            }
         }
+}
+
+//@Parent: postWord
+function renderLinks(prompt, results, i, debug_session_done = false) {
+    // console.log('[renderLinks] Rendering links for prompt:', prompt, 'with results:', results);
+    let wordspace = document.getElementById("wordspace")
+    clearChildren(wordspace)
+    let middleIndex = Math.floor(results.length / 2)
+    results.forEach((result, idx) => {
+        if (idx === middleIndex) {
+            wordspace.append(makeStartLink(prompt, result))
+        } else {
+            wordspace.append(makeLink(prompt, result))
+        }
+    })
+    addDoneFocus(prompt, results, i)
+    addHelpFocuses(prompt, results)
+    if(sessionEnded(prompt) || debug_session_done){
+    disableLinks()
+    reportSessionEnded(debug_session_done)
     }
 }
 
@@ -207,10 +232,13 @@ function clearPrompts() {
 
 //@Parent: maintainLinks
 function reportSessionEnded(debug_session_done) {
+    let resp;
     if (localStorage.getItem('is_help') == "true") {
         resp = sendAndReceiveXML(`help_end=true`)
+        _ = send_game_data_to_backend(resp, `help_end=true`);
     } else {
         resp = sendAndReceiveXML(`end=true`)
+        _ = send_game_data_to_backend(resp, `end=true`);
     }
     console.log('[reportSessionEnded] Response:', resp);
     renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
@@ -278,13 +306,16 @@ function showBanner(text, color) {
 function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
 
     // capping the maximum number of jumps 
-    let jumps = parseInt(localStorage.getItem('jumps')) || 0;
-    let resp;
-    if (jumps >= 12) {
-        resp = sendAndReceiveXML(`end=true`);
-    } else {
-        resp = sendAndReceiveXML("word=" + word);
-    }
+    // let jumps = parseInt(localStorage.getItem('jumps')) || 0;
+    // let resp;
+    // if (jumps >= 12) {
+    //     resp = sendAndReceiveXML(`end=true`);
+    // } else {
+    console.log('[postWord] called with Word:', word);
+    const resp = sendAndReceiveXML("word=" + word);
+    _ = send_game_data_to_backend(resp, "word=" + word);
+    console.log('[postWord] Response:', resp);
+    // }
     let prev_words = [];
     prev_words = JSON.parse(localStorage.getItem('previous_words'));
     if (!prev_words) prev_words = [];

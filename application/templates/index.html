@@ -63,13 +63,11 @@
     is_help = localStorage.getItem('is_help');
     if (is_help !== 'false') {
         startHelpSession()
-    }
+    } 
+    // else {
 
     localStorage.setItem('current_date', data['date']);
-    localStorage.setItem('daily_idx', data['daily_idx']);
-
-
-    fetch(`${window.backendURL}/is_logged_in`, {
+    fetch(`${window.backendURL}/user_and_game_state`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -77,17 +75,18 @@
         }
     })
         .then(response => response.json())
-        .then(login_data => {
-            if (login_data.logged_in) {
-                localStorage.setItem('logged_in', login_data.email);
-                renderLogin(login_data)
+        .then(game_data => {
+            console.log("backend response: ", game_data);
+            if ("logged_in" in game_data) {
+                if (game_data.email) {
+                    renderLogin(game_data)
+                }
             }
             let loaded;
             let prompt_idx;
-            if (localStorage.getItem('results')) {
-                console.log('Loading from local storage');
-                loaded = loadLocalStorage();
-                prompt_idx = loaded.prompt_idx;
+            if ("selected_words" in game_data && game_data["selected_words"] && game_data["selected_words"].length != 0) {
+                loaded = game_data
+                prompt_idx = game_data.prompt_idx
             } else {
                 console.log('Loading from data');
                 loaded = data;
@@ -97,11 +96,14 @@
             let jumps = loaded.jumps;
             let results = loaded.results || data['results'];
             let prompts = loaded.prompts;
-            let start_target = prompts[prompt_idx]
-            console.log(`[final] jumpsA: ${jumpsA}, jumps: ${jumps}, results: ${results}, prompt_idx: ${prompt_idx}, start_target: ${start_target}, prompts: ${prompts}`);
+            let start_target = prompts[prompt_idx];
+            
             if (jumpsA.length > 5) {
                 jumpsA = jumpsA.slice(0, 5);
             }
+            console.log('jumpsA:', jumpsA, 'jumps:', jumps, 'results:', results, 'prompts:', prompts, 'start_target:', start_target);
+            console.log('prompt index:', prompt_idx);
+
             _ = editSession(jumpsA, jumps, results, prompt_idx, start_target);
             // we know we are at the end here 
             if (prompt_idx > 4) { 
@@ -120,6 +122,48 @@
                 renderLinks(start_target, results)
                 activateLinks()
             }
-         })
+        });
+    // }
+
+
+        //     let loaded;
+        //     let prompt_idx;
+        //     if (localStorage.getItem('results')) {
+        //         console.log('Loading from local storage');
+        //         loaded = loadLocalStorage();
+        //         prompt_idx = loaded.prompt_idx;
+        //     } else {
+        //         console.log('Loading from data');
+        //         loaded = data;
+        //         prompt_idx = data['i'];
+        //     }
+        //     let jumpsA = loaded.jumpsA;
+        //     let jumps = loaded.jumps;
+        //     let results = loaded.results || data['results'];
+        //     let prompts = loaded.prompts;
+        //     let start_target = prompts[prompt_idx]
+        //     console.log(`[final] jumpsA: ${jumpsA}, jumps: ${jumps}, results: ${results}, prompt_idx: ${prompt_idx}, start_target: ${start_target}, prompts: ${prompts}`);
+        //     if (jumpsA.length > 5) {
+        //         jumpsA = jumpsA.slice(0, 5);
+        //     }
+        //     _ = editSession(jumpsA, jumps, results, prompt_idx, start_target);
+        //     // we know we are at the end here 
+        //     if (prompt_idx > 4) { 
+        //         console.log("finished game, setting prompt_idx to 4");
+        //         prompt_idx = 4 
+        //         start_target = prompts[prompt_idx]
+        //         renderToFrom(start_target, jumps)
+        //         // console.log("here is the start_target", start_target);
+        //         renderPrompts(prompts, prompt_idx, jumpsA, jumps, start_target=start_target)
+        //         renderLinks(start_target, results, true)
+        //     } else {
+        //         start_target = prompts[prompt_idx]
+        //         renderToFrom(start_target, jumps)
+        //         console.log(`[From index] prompts: ${prompts}, i: ${prompt_idx}, local_jumpsA: ${jumpsA}, jumps: ${jumps}`);
+        //         renderPrompts(prompts, prompt_idx, jumpsA, jumps, start_target=start_target)
+        //         renderLinks(start_target, results)
+        //         activateLinks()
+        //     }
+        //  })
 
 </script>
