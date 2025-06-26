@@ -185,7 +185,8 @@ function makeStartLink(prompt, word) {
     return startLink
 }
 
-function tallyScreen(prompts, i, jumpsA) {
+function tallyScreen(prompts, jumpsA) {
+    totalJumps = jumpsA.reduce((sum, jumps) => sum + jumps, 0);
     renderFinish(jumpsA)
     start_target = prompts[4]
     renderPrompts(prompts, jumpsA, 0, start_target = start_target)
@@ -247,11 +248,11 @@ function reportSessionEnded(debug_session_done) {
     // console.log('[reportSessionEnded] Response:', resp);
     //If user has completed all prompts
     if (resp.hasOwnProperty('help_session_done')) {
-        renderHelpFinish()
+        runAfterBannerDisappears(() => {renderHelpFinish()})
         tallyPrompts(resp.prompts, [3,2], resp.jumps)
     }
     else if (resp.hasOwnProperty('session_done') || debug_session_done) {
-        tallyScreen(resp.prompts, resp.i, resp.jumpsA)
+        tallyScreen(resp.prompts, resp.jumpsA)
         localStorage.setItem("lastComplete", data["date"])
     }
     else {
@@ -281,22 +282,10 @@ function showBanner(text, color) {
 
   // Create banner
   const banner = document.createElement('div');
-  banner.id = 'promptEndBanner';
-  banner.innerText = text.toLowerCase();
-  Object.assign(banner.style, {
-    fontFamily: '"Inter", sans-serif',
-    position: 'fixed',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    color: color,
-    fontSize: '4rem',
-    fontWeight: '900',
-    textTransform: 'lowercase',
-    textAlign: 'center',
-    zIndex: '9999',
-    pointerEvents: 'none'
-  });
+  banner.classList.add('promptEndBanner');
+  banner.innerText = text;
+  Object.assign(banner.style, {  });
+  banner.classList.add(color)
   document.body.appendChild(banner);
 
   // Optional: fade out after 2 seconds
@@ -340,11 +329,11 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
         else {
             console.log(`[showBanner] ${jumps}`)
             // we are finished now with the prompt
-            if (resp.jumps <= 2) showBanner("Perfect!", "green");
-            else if (resp.jumps <= 3) showBanner("Impressive!", "blue");
-            else if (resp.jumps <= 5) showBanner("Great", "purple");
-            else if (resp.jumps <= 7) showBanner("Good", "orange");
-            else if (resp.jumps <= 9) showBanner("Close call..", "red");
+            if (resp.jumps <= 2) showBanner("perfect!", "banner-perfect");
+            else if (resp.jumps <= 3) showBanner("superb!", "banner-impressive");
+            else if (resp.jumps <= 5) showBanner("great", "banner-great");
+            else if (resp.jumps <= 7) showBanner("good...", "banner-good");
+            else if (resp.jumps <= 9) showBanner("close call", "banner-closecall");
         }
         activateLinks()
     } else {

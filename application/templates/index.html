@@ -46,26 +46,11 @@
 </script>
 <script src="static/js/is_game_complete.js"> </script>
 <script>
-
-    function loadLocalStorage() {
-        let prompt_idx = parseInt(localStorage.getItem('prompt_idx')) || 0;
-        let jumpsA = localStorage.getItem('jumpsA') !== '' ? JSON.parse(localStorage.getItem('jumpsA')) : [];
-        let jumps = parseInt(localStorage.getItem('jumps')) || 0;
-        let results = JSON.parse(localStorage.getItem('results')) || [];
-        let prompts = JSON.parse(localStorage.getItem('prompts')) || [];
-        let start_target = prompts.slice(prompt_idx, prompt_idx + 2);
-        console.log(`Loading from local storage: prompt_idx: ${prompt_idx}, jumpsA: ${jumpsA}, jumps: ${jumps}, results: ${results}, start_target: ${start_target}, prompts: ${prompts}`);
-        return { jumpsA, jumps, results, prompt_idx, start_target, prompts };
-    }
-
-    //if the user has never completed the help sequence before, 
-    //use a help_session.
     is_help = localStorage.getItem('is_help');
     if (is_help !== 'false') {
         startHelpSession()
     } 
-    // else {
-
+    else {
     localStorage.setItem('current_date', data['date']);
     fetch(`${window.backendURL}/user_and_game_state`, {
         method: 'POST',
@@ -87,7 +72,7 @@
             if ("selected_words" in game_data && game_data["selected_words"] && game_data["selected_words"].length != 0) {
                 loaded = game_data
                 prompt_idx = game_data.prompt_idx
-            } else { //this only happens on first load.
+            } else {
                 loaded = data;
                 prompt_idx = data['i'];
             }
@@ -101,7 +86,12 @@
             start_target = prompts[prompt_idx]
             renderToFrom(start_target, jumps)
             renderPrompts(prompts, jumpsA, jumps, start_target=start_target)
-            renderLinks(start_target, results)
+            if (jumpsA.length == 5) {
+                renderLinks(start_target, results); 
+            } else {
+                renderLinks(start_target, results)
+            }
             activateLinks()
         });
+    }
 </script>

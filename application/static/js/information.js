@@ -95,10 +95,25 @@ function renderGrid(counts) {
     return gridMessage;
 }
 
+function runAfterBannerDisappears(callback) {
+  const banner = document.querySelector('.promptEndBanner');
+  if (!banner) {
+    callback();
+    return;
+  }
+  const observer = new MutationObserver(() => {
+    if (!document.body.contains(banner)) {
+      observer.disconnect();
+      callback();
+    }
+  });
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+  });
+}
 
 function renderFinish(jumpsA) {
-    totalJumps = jumpsA.reduce((sum, jumps) => sum + jumps, 0);
-    // alert(jumpsA)
     const currentDate = new Date(localStorage.getItem('current_date'));
     const data = {
         last_complete: currentDate, // should be "YYYY-MM-DD"
@@ -117,7 +132,7 @@ function renderFinish(jumpsA) {
         const daily_idx = daysSinceStartDate();
         is_logged_in = Boolean(localStorage.getItem('logged_in'))
         jumpsGridMessage = renderGrid(finish_data.jumpsA);
-        displayFinishModal(daily_idx, totalJumps, finish_data.newStreak, jumpsGridMessage, is_logged_in);
+        runAfterBannerDisappears(() => {displayFinishModal(daily_idx, totalJumps, finish_data.newStreak, jumpsGridMessage, is_logged_in)})
     })
     .catch((error) => {
         console.error('Error updating database:', error);
@@ -258,40 +273,28 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, jumpsGridMessa
     }
 }
 
-function beginTutorial() {
+
+
+function startHelpSteps(){
+    toggleElement('modal');
+}
+
+function startHelpSession() {
     localStorage.setItem('is_help', 'true');
     help = document.getElementById('help');
     help.style.display = 'none'
     data = sendAndReceiveXML(`help=true`)
     renderToFrom(data.prompt, data.jumps);
-    document.querySelector('.prompt-box').style.border = '1px solid var(--border-color)';
     renderLinks(data.prompt, data.results, data.i)
     let start_target = data.prompt
     clearBoxes()
     renderPrompts(data.prompts, data.jumpsA, 0, start_target=start_target)
     activateLinks()
     addHelpFocuses(data.prompt, data.results)
+    start_text = `<p id="modalText"> Welcome to word.golf, a sport played with the meanings of words!</p>
+    <button class="switch switch--outlined" onclick="startHelpSteps()"> OK </button>`
+    displayModal(start_text)
 }
-
-function startHelpSteps(){
-    toggleElement('modal');
-    beginTutorial()
-    // HELP_STEPS.unshift(
-    //     {
-    //         id: 0,
-    //         prompt: ['outside', 'layer'],
-    //         result: 'outside',
-    //         message: `Here are some words like <span class='link--disabled'>outside</span>.`,
-    //         transform: [20,60]
-    //     }
-    // )
-}
-function startHelpSession() {
-        localStorage.setItem('is_help', 'true');
-        start_text = `<p id="modalText"> Welcome to word.golf, a sport played with the meanings of words!</p>
-        <button class="switch switch--outlined" onclick="startHelpSteps()"> OK </button>`
-        displayModal(start_text)
-    }
 
 function clearInfoBox() {
     let info = document.getElementById("info-box")

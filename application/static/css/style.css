@@ -373,6 +373,39 @@ button span {
     }
 }
 
+.promptEndBanner {
+    font-family: "Inter", sans-serif;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 6rem;
+    font-weight: 700;
+    /* text-transform: lowercase; */
+    letter-spacing: -0.16rem;
+    text-align: center;
+    z-index: 9999;
+    pointer-events: none;
+    line-height: 0.92;
+    position: fixed;
+}
+
+.banner-perfect {
+    color: #22ffed;
+}
+.banner-impressive {
+    color: #00d92f;
+}
+.banner-great {
+    color: #2889ff;
+}
+.banner-good {
+    color: rgb(192, 202, 52)
+}
+.banner-closecall {
+    color: #d41b11; 
+}
+
 .prompt--done {
     color: var(--grayed-out-color);
 }
@@ -777,8 +810,9 @@ background-size: 800% 100%;
 } */
 
 .rainbow_text_animated {
-    color: orange !important;
+    color: rgb(255, 248, 119) !important;
 }
+
 
 #login-welcome {
   display: none;
