@@ -67,7 +67,7 @@ def add_days(days: int) -> datetime.timedelta:
     return datetime.timedelta(days=days)
 
 def elapsed_days(date : datetime.datetime) -> int:
-    start_date = datetime.datetime.strptime("05-30-2025", '%m-%d-%Y')
+    start_date = datetime.datetime.strptime("05-30-2025", '%m-%d-%Y').date()
     today = date
     return (today - start_date).days
 
@@ -82,7 +82,10 @@ def get_prompts_for_date(date : datetime.datetime) -> list:
 
 def load_time():
     global elapsed, prompts_today, neighbors_today, today
-    today = datetime.datetime.today() + add_days(DAYS)
+    eastern = datetime.timezone(datetime.timedelta(hours=-5))
+    now_utc = datetime.datetime.utcnow()
+    now_et = now_utc.replace(tzinfo=datetime.timezone.utc).astimezone(eastern)
+    today = now_et.replace(tzinfo=None).date() + add_days(DAYS)
     elapsed, prompts_today, neighbors_today = get_prompts_for_date(today)
 
 def jump(start : str) -> str:
@@ -110,12 +113,11 @@ def make_help_session():
     neighbor1 = HELP_NEIGHBORS[0]
     # Compute results for the first prompt
     results = get_curve(prompt1[0], prompt1[1], PRECOMPUTED, WV, neighbor=neighbor1)
-
     data = {
         'jumpsA': [],
         'jumps': 0,
         'i': 0,
-        'date': today.strftime('%Y-%m-%d') if today else datetime.datetime.today().strftime('%Y-%m-%d'),
+        'date': today.strftime('%Y-%m-%d'),
         'prompt': prompt1,
         'prompts': HELP_PROMPTS,
         'results': results,
