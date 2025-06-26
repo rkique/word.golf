@@ -188,7 +188,7 @@ function makeStartLink(prompt, word) {
 function tallyScreen(prompts, i, jumpsA) {
     renderFinish(jumpsA)
     start_target = prompts[4]
-    renderPrompts(prompts, i, jumpsA, 0, start_target = start_target)
+    renderPrompts(prompts, jumpsA, 0, start_target = start_target)
 }
 function arrayEqual(a, b) {
     return Array.isArray(a) && Array.isArray(b) &&
@@ -250,7 +250,6 @@ function reportSessionEnded(debug_session_done) {
         renderHelpFinish()
         const promptBoxes = document.querySelectorAll('#prompts .prompt-box');
         tallyAllPrompts(promptBoxes, 0)
-        // renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
     }
     else if (resp.hasOwnProperty('session_done') || debug_session_done) {
         tallyScreen(resp.prompts, resp.i, resp.jumpsA)
@@ -261,7 +260,7 @@ function reportSessionEnded(debug_session_done) {
         renderLinks(resp.prompt, resp.results)
         // console.log('[reportSessionEnded] Rendering prompts..')
         let start_target = resp.prompts[resp.i]
-        renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps, start_target = start_target)
+        renderPrompts(resp.prompts, resp.jumpsA, resp.jumps, start_target = start_target)
         activateLinks()
     }
 }
@@ -337,7 +336,7 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
         //This is the source of nearly all renderPrompt calls.
         if (word !== resp.prompt[1]) {
             let start_target = [word, resp.prompt[1]]
-            renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps, start_target = start_target, score = resp.score, serialize=true);
+            renderPrompts(resp.prompts, resp.jumpsA, resp.jumps, start_target = start_target, score = resp.score, serialize=true);
         }
         else {
             console.log(`[showBanner] ${jumps}`)
@@ -361,7 +360,7 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
             // console.log('[postWord] Rendering prompts..')
             if (word !== resp.prompt[1]) {
                 let start_target = [word, resp.prompt[1]]
-                renderPrompts(prompts, prompt_idx, jumpsA, jumps, start_target = start_target);
+                renderPrompts(prompts, jumpsA, jumps, start_target = start_target);
             }
             activateLinks();
         }

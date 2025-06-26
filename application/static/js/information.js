@@ -142,7 +142,7 @@ function startGame() {
     renderLinks(resp.prompt, resp.results)
     renderToFrom(resp.prompt, 0);
     start_target = resp.prompts[resp.i]
-    renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps, start_target=start_target, serialize=false)
+    renderPrompts(resp.prompts, resp.jumpsA, resp.jumps, start_target=start_target, serialize=false)
     activateLinks()
 }
 
@@ -268,7 +268,7 @@ function beginTutorial() {
     renderLinks(data.prompt, data.results, data.i)
     let start_target = data.prompt
     clearBoxes()
-    renderPrompts(data.prompts, data.i, data.jumpsA, 0, start_target=start_target)
+    renderPrompts(data.prompts, data.jumpsA, 0, start_target=start_target)
     activateLinks()
     addHelpFocuses(data.prompt, data.results)
 }

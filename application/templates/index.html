@@ -100,51 +100,8 @@
             _ = editSession(jumpsA, jumps, results, prompt_idx, start_target);
             start_target = prompts[prompt_idx]
             renderToFrom(start_target, jumps)
-            renderPrompts(prompts, prompt_idx, jumpsA, jumps, start_target=start_target)
+            renderPrompts(prompts, jumpsA, jumps, start_target=start_target)
             renderLinks(start_target, results)
             activateLinks()
         });
-    // }
-
-
-        //     let loaded;
-        //     let prompt_idx;
-        //     if (localStorage.getItem('results')) {
-        //         console.log('Loading from local storage');
-        //         loaded = loadLocalStorage();
-        //         prompt_idx = loaded.prompt_idx;
-        //     } else {
-        //         console.log('Loading from data');
-        //         loaded = data;
-        //         prompt_idx = data['i'];
-        //     }
-        //     let jumpsA = loaded.jumpsA;
-        //     let jumps = loaded.jumps;
-        //     let results = loaded.results || data['results'];
-        //     let prompts = loaded.prompts;
-        //     let start_target = prompts[prompt_idx]
-        //     console.log(`[final] jumpsA: ${jumpsA}, jumps: ${jumps}, results: ${results}, prompt_idx: ${prompt_idx}, start_target: ${start_target}, prompts: ${prompts}`);
-        //     if (jumpsA.length > 5) {
-        //         jumpsA = jumpsA.slice(0, 5);
-        //     }
-        //     _ = editSession(jumpsA, jumps, results, prompt_idx, start_target);
-        //     // we know we are at the end here 
-        //     if (prompt_idx > 4) { 
-        //         console.log("finished game, setting prompt_idx to 4");
-        //         prompt_idx = 4 
-        //         start_target = prompts[prompt_idx]
-        //         renderToFrom(start_target, jumps)
-        //         // console.log("here is the start_target", start_target);
-        //         renderPrompts(prompts, prompt_idx, jumpsA, jumps, start_target=start_target)
-        //         renderLinks(start_target, results, true)
-        //     } else {
-        //         start_target = prompts[prompt_idx]
-        //         renderToFrom(start_target, jumps)
-        //         console.log(`[From index] prompts: ${prompts}, i: ${prompt_idx}, local_jumpsA: ${jumpsA}, jumps: ${jumps}`);
-        //         renderPrompts(prompts, prompt_idx, jumpsA, jumps, start_target=start_target)
-        //         renderLinks(start_target, results)
-        //         activateLinks()
-        //     }
-        //  })
-
 </script>

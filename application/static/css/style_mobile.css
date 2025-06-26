@@ -1,14 +1,20 @@
 @media only screen and (max-width: 992px) {
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
     #global{
         gap: 0vw;
     }
     #wordspace {
         width: 100vw;
-        height: 58vh;
+        height: 53vh;
         /*       top  left   bottom    right */
         justify-items: center;
         justify-content: center; 
-        padding: 3rem;
+        padding: 1rem 3rem 2rem 3rem;
     }
     #wordspace-container {
     }
@@ -64,6 +70,10 @@
     }
     #prompts p {
         font-size: 1.2rem;
+    }
+    .tally {
+        max-width: 0.25rem !important;
+        min-width: 0.25rem !important;
     }
 
     .prompt-box {
