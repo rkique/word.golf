@@ -90,7 +90,7 @@ def jump(start : str) -> str:
     Jump to a new word and return the updated session data as stringified JSON.
     '''
     # print(f"Jumping to {start}")
-    print("Current session data:", session.get('data'))
+    # print("Current session data:", session.get('data'))
     _data = json.loads(session.get('data'))
     target = _data['prompt'][1]
     results = get_curve(start, target, PRECOMPUTED, WV)
@@ -125,7 +125,8 @@ def make_help_session():
 
 def shift_to(i):
     '''
-    Shifts the session data to the i-th prompt and returns the updated session data.
+    Shifts the session data to the i-th prompt and returns the updated session data as a dict.
+    The session['data'] variable should be set to data after making necessary modifications outside this scope.
     '''
     try:
         prompt = prompts_today[i]
@@ -136,18 +137,15 @@ def shift_to(i):
     except IndexError:
         print(f"Index {i} out of range for prompts_today or neighbors_today.")
         prompt,neighbor,results = None, None, None
-    jumpsA = []
-    i = session.get('i', 0)
-    data = {
-        'jumpsA': jumpsA,
-        'jumps': 0,
-        'i': i,
-        'date': today.strftime('%Y-%m-%d'),
-        'prompt': prompt,
-        'prompts': prompts_today,
-        'results': results}
-    
-    return json.dumps(data)
+    data = json.loads(session.get('data', '{}'))
+    data['i'] = i
+    data['jumps'] = 0
+    data['date'] = today.strftime('%Y-%m-%d')
+    data['prompt'] = prompt
+    data['prompts'] = prompts_today
+    print(f"[shift_to] prompts_today {prompts_today}")
+    data['results'] = results
+    return data
 
 def help_shift(data):
     data['jumpsA'].append(data['jumps'])
@@ -166,22 +164,11 @@ def help_shift(data):
     data['results'] = results
     return data
 
-# def save_activity():
-#     '''
-#     Saves a completed activity to the session.
-#     '''
-#     _data = json.loads(session.get('data'))
-#     session.get('jumpsA').append(_data['jumps'])
-#     _data['jumpsA'] = session['jumpsA']
-#     session['data'] = json.dumps(_data)
-#     return json.dumps(_data)
-
 def update_new_data(new_data, session_data):
-    new_data = json.loads(new_data)
     session_data = json.loads(session_data)
-    print(f'[UPDATE_NEW_DATA] {session_data.keys()}')
+    print(f"[update_new_data] updating with {session_data['jumps']}")
     new_data['jumpsA'] += [session_data['jumps']]
-    return json.dumps(new_data)
+    return new_data
     
 #Load both data and time once at the starting screen.
 @app.route('/')
@@ -189,70 +176,69 @@ def index():
     print('/ Starting Fresh..')
     load_data()
     load_time()
-    if 'i' not in session:
-        session['i'] = 0
+    #we need some way of persisting state on reload.
+    session['i'] = 0
     assert WV is not None, "Word vectors not loaded"
     data = shift_to(session['i'])
-    # print('/ data is set to:', session.get('data'))
-    return render_template('index.html', data=json.loads(data))
+    data['jumpsA'] = []
+    session['data'] = json.dumps(data)
+    print('/ data is set to:', session.get('data'))
+    return render_template('index.html', data=data)
 
+@app.route('/editsession', methods=['POST']) 
+def sesh_edit(): 
+    try: 
+        if request.form.get('edit') is not None: 
+            # save_activity() 
+            data = json.loads(session.get('data'))
+            jumpsA_str = request.form.get("jumpsA", "[]")
+            try:
+                # session['jumpsA'] = [int(x) for x in json.loads(jumpsA_str)]
+                data['jumpsA'] = [int(x) for x in json.loads(jumpsA_str)]
+            except json.JSONDecodeError:
+                # session['jumpsA'] = []
+                data['jumpsA'] = []
 
-# @app.route('/editsession', methods=['POST']) 
-# def sesh_edit(): 
-#     try: 
-#         if request.form.get('edit') is not None: 
-#             # save_activity() 
+            jumpsA_result = request.form.get("result", "[]")
+            try:
+                data['results'] = json.loads(jumpsA_result)
+            except json.JSONDecodeError:
+                data['results'] = []
 
-#             data = json.loads(session.get('data'))
-#             jumpsA_str = request.form.get("jumpsA", "[]")
+            jumps_str = request.form.get("jumps", "0")
             
-#             try:
-#                 # session['jumpsA'] = [int(x) for x in json.loads(jumpsA_str)]
-#                 data['jumpsA'] = [int(x) for x in json.loads(jumpsA_str)]
-#             except json.JSONDecodeError:
-#                 # session['jumpsA'] = []
-#                 data['jumpsA'] = []
+            # print(session['data']['jumps'])
+            try:
+                data['jumps'] = int(jumps_str)
+            except ValueError:
+                data['jumps'] = 0
 
-#             jumpsA_result = request.form.get("result", "[]")
-#             try:
-#                 data['results'] = json.loads(jumpsA_result)
-#             except json.JSONDecodeError:
-#                 data['results'] = []
+            # here is the session
+            i = request.form.get("i", "0")
+            try:
+                data['i'] = int(i)
+                # session['i'] = data['i']
+            except ValueError:
+                data['i'] = 0
+                # session['i'] = 0
 
-#             jumps_str = request.form.get("jumps", "0")
+            start_target = request.form.get("prompt", "")
+            # print("Start target:", start_target)
+            if start_target:
+                try:
+                    start_target = json.loads(start_target)
+                    data['prompt'] = start_target
+                except ValueError:
+                    data['prompt'] = ["", ""]
             
-#             # print(session['data']['jumps'])
-#             try:
-#                 data['jumps'] = int(jumps_str)
-#             except ValueError:
-#                 data['jumps'] = 0
+            session['data'] = json.dumps(data)
+            # print("Session data updated:",data)
 
-#             # here is the session
-#             i = request.form.get("i", "0")
-#             try:
-#                 data['i'] = int(i)
-#                 # session['i'] = data['i']
-#             except ValueError:
-#                 data['i'] = 0
-#                 # session['i'] = 0
-
-#             start_target = request.form.get("prompt", "")
-#             # print("Start target:", start_target)
-#             if start_target:
-#                 try:
-#                     start_target = json.loads(start_target)
-#                     data['prompt'] = start_target
-#                 except ValueError:
-#                     data['prompt'] = ["", ""]
-            
-#             session['data'] = json.dumps(data)
-#             # print("Session data updated:",data)
-
-#     except Exception as e: 
-#         print("Error in /editsession:", e)
+    except Exception as e: 
+        print("Error in /editsession:", e)
         
-#     # print("Session after edit:", session)
-#     return make_response(session.get('data', {}))
+    # print("Session after edit:", session)
+    return make_response(session.get('data', {}))
 
 @app.route('/login', methods=['GET'])
 def login():
@@ -266,6 +252,7 @@ def resetpassword():
 
 @app.route('/', methods=['POST'])
 def index_post():
+    # print(f'[/] Received: {request.form}')
     if request.form.get('help') is not None:
         session['data'] = make_help_session()
         print('[/] Help Session')
@@ -291,8 +278,7 @@ def index_post():
         if (session['i'] > PCOUNT):
             return make_response("session_done" + session.get('data'))
         _data = shift_to(session['i'])
-        print(session['data'])
-        session['data'] = update_new_data(_data, session['data'])
+        session['data'] = json.dumps(update_new_data(_data, session['data']))
         if (session['i'] == PCOUNT):
             return make_response("session_done" + session.get('data'))
         
@@ -300,10 +286,13 @@ def index_post():
         current_word = request.form.get('word') 
         print(f"[/] Jumping: {current_word}")
         session['data'] = jump(current_word)
+        print(f"[/ word] {session['data']}")
 
     elif request.form.get('redirect') is not None:
         print('[/] Redirecting to start...')
-        session['data'] = shift_to(0)
+        data = shift_to(0)
+        data['jumpsA'] = []
+        session['data'] = json.dumps(data)
         return make_response(json.loads(session['data']))
     else:
         print("[/] ERROR (None of the Above...) ", request.form)

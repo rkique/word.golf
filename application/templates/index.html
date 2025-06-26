@@ -87,8 +87,9 @@
             if ("selected_words" in game_data && game_data["selected_words"] && game_data["selected_words"].length != 0) {
                 loaded = game_data
                 prompt_idx = game_data.prompt_idx
+                alert(loaded.jumpsA)
             } else {
-                // console.log('Loading from data');
+                console.log('Loading from data');
                 loaded = data;
                 prompt_idx = data['i'];
             }
@@ -111,9 +112,8 @@
                 prompt_idx = 4 
                 start_target = prompts[prompt_idx]
                 renderToFrom(start_target, jumps)
-                alert('not rendering prompts on fresh reload')
                 // console.log("here is the start_target", start_target);
-                // renderPrompts(prompts, prompt_idx, jumpsA, jumps, start_target=start_target)
+                renderPrompts(prompts, prompt_idx, jumpsA, jumps, start_target=start_target)
                 renderLinks(start_target, results, prompt_idx, true)
             } else {
                 start_target = prompts[prompt_idx]

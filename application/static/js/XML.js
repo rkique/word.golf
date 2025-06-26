@@ -67,11 +67,6 @@ function sendAndReceiveXML(message) {
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.send(message);
     resp = {}
-    // console.log(`[sendAndReceiveXML] Response from ${message}: `, xhttp.responseText);
-    if (message.startsWith('end')) {
-        let prompt_count = parseInt(localStorage.getItem('prompt_idx')) || 0;
-        localStorage.setItem('prompt_idx', prompt_count + 1);
-    }
     if (xhttp.responseText.startsWith("help_session_done")) {
         j = JSON.parse(xhttp.responseText.substring(17));
         j['help_session_done'] = 1

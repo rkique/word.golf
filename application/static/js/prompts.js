@@ -166,9 +166,6 @@ function serializePrompts(jumpsA) {
 }
 
 function renderPrompts(promptTexts, i, jumpsA, current_jumps, start_target = null, score = null, serialize = false) {
-    if(jumpsA.length > 5){
-        return;
-    }
     console.log(`renderPrompts: ${promptTexts}, i: ${i}, jumpsA: ${jumpsA}, start_target: ${start_target}`);
     // get all prompt-box elements
     const promptBoxes = document.querySelectorAll('#prompts .prompt-box');
