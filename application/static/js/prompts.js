@@ -6,26 +6,20 @@ function clearBoxes() {
     }
 }
 
+function clearLastTallyContainer(ct) {
+    promptBoxes = document.querySelectorAll('#prompts .prompt-box');
+    const box = promptBoxes[ct-1];
+    if (box.children[5].classList.contains('word-tally-container')) {
+        clearChildren(box.children[5]);
+    }
+}
+
 //given a collection of (promptBox -> promptTallyContainer -> array(wordOrTally))
 // does something.
 function tallyAllPrompts(ct, current_jumps) {
     promptBoxes = document.querySelectorAll('#prompts .prompt-box');
     promptBoxes = Array.from(promptBoxes).slice(0, ct)
     console.log(`[tallyAllPrompts] current_jumps ${current_jumps}`)
-    //TODO: don't show last prompt.
-    // if (current_jumps >= 12){
-    //     for (let box of promptBoxes) {
-    //         let prompts = box.querySelectorAll('.prompt');
-    //         prompts.forEach(prompt => {
-    //         let sixthChild = prompt.children[5];
-    //         if (sixthChild) {
-    //             sixthChild.innerText = "";
-    //             sixthChild.classList.add('no-border')
-    //         }
-    //         });
-    //     }
-    // }
-    // else {
     for (let box of promptBoxes) {
         let promptWords = box.querySelectorAll('.prompt-word');
         promptWords.forEach(word => {
@@ -175,6 +169,7 @@ function tallyPrompts(prompts, jumpsA, current_jumps){
 }
 
 function renderPrompts(prompts, jumpsA, current_jumps, start_target, score = null) {
+    console.log(`[renderPrompts] prompts: ${prompts}, jumpsA: ${jumpsA}, current_jumps: ${current_jumps}, start_target: ${start_target}, score: ${score}`);
     tallyPrompts(prompts, jumpsA, current_jumps)
     let promptBoxes = document.querySelectorAll('#prompts .prompt-box');
     if (ct < prompts.length && promptBoxes[ct]) {

@@ -18,6 +18,7 @@ function syncColorMode() {
   currentMode = localStorage.getItem('darkMode')
   if (currentMode == 'true') {
     document.documentElement.style.setProperty('--hover-color', 'black');
+    document.documentElement.style.setProperty('--emphasis-color', 'rgb(210, 199, 0)');
     document.documentElement.style.setProperty('--border-color', '#a9a9a9');
     document.documentElement.style.setProperty('--logo-color', '#ddd');
     document.documentElement.style.setProperty('--text-color', '#333333');
@@ -28,6 +29,7 @@ function syncColorMode() {
   }
   else {
     document.documentElement.style.setProperty('--hover-color', 'white');
+    document.documentElement.style.setProperty('--emphasis-color', 'rgb(255, 248, 119)');
     document.documentElement.style.setProperty('--border-color', '#666');
     document.documentElement.style.setProperty('--logo-color', '#ddd');
     document.documentElement.style.setProperty('--text-color', '#b1b1b1');

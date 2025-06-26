@@ -810,7 +810,7 @@ background-size: 800% 100%;
 } */
 
 .rainbow_text_animated {
-    color: rgb(255, 248, 119) !important;
+    color: var(--emphasis-color) !important;
 }
 
 
