@@ -97,6 +97,7 @@ function sendAndReceiveXML(message) {
             if (jumps >= 12 ) { // cap it at 12 current jumps
                 let resp = sendAndReceiveXML(`end=true`);
                 _ = send_game_data_to_backend(resp, `end=true`);
+                clearLastTallyContainer(resp.jumpsA.length);
                 console.log(resp);
                 // see if the length of jumpsA is 
                 return resp;

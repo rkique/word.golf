@@ -325,12 +325,7 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
 
     if (!use_animations) {
         // check if we are at the ending page now (for when we have 12 jumps):
-        console.log("here is response jumpsA");
-        console.log(resp);
-        console.log(resp.jumpsA[resp.jumpsA.length - 1]);
-        console.log(resp.jumpsA.length)
         if (resp.jumpsA.length === 5 && resp.jumpsA[resp.jumpsA.length - 1] === 12) {
-            console.log("I AM IN THIS CASE HERE!!!!! -> about to call render links")
             renderLinks(resp.prompt, resp.results, resp.i, true);
             return;
         } else {
@@ -338,9 +333,15 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
             renderLinks(resp.prompt, resp.results, resp.i);
         }
         //This is the source of nearly all renderPrompt calls.
+        //how to know that the previous state was not rendered?
         if (word !== resp.prompt[1]) {
             let start_target = [word, resp.prompt[1]]
-            renderPrompts(resp.prompts, resp.jumpsA, resp.jumps, start_target = start_target, score = resp.score, serialize=true);
+            let score = resp.score;
+            if (resp.jumps === 0 && resp.jumpsA[resp.jumpsA.length - 1] === 12) {
+                start_target = resp.prompt;
+                score = 0;
+            }
+            renderPrompts(resp.prompts, resp.jumpsA, resp.jumps, start_target = start_target, score = score, serialize=true);
         }
         else {
             console.log(`[showBanner] ${jumps}`)
@@ -352,22 +353,23 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
             else if (resp.jumps <= 9) showBanner("close call", "banner-closecall");
         }
         activateLinks()
-    } else {
-        const wordspace = document.getElementById("wordspace");
-        function renderXMLAfterAnimation(word, resp) {
-            prompts = resp.prompts;
-            prompt_idx = resp.i;
-            jumpsA = resp.jumpsA;
-            jumps = resp.jumps;
-            // console.log(`[postWord] prompts: ${prompts}, prompt_idx: ${prompt_idx}, jumpsA: ${jumpsA}, jumps: ${jumps}`);
-            renderLinks(resp.prompt, resp.results, resp.i);
-            // console.log('[postWord] Rendering prompts..')
-            if (word !== resp.prompt[1]) {
-                let start_target = [word, resp.prompt[1]]
-                renderPrompts(prompts, jumpsA, jumps, start_target = start_target);
-            }
-            activateLinks();
-        }
-        animateToCenter(clickedElem, wordspace, renderXMLAfterAnimation, word, resp);
     }
+    // } else {
+    //     const wordspace = document.getElementById("wordspace");
+    //     function renderXMLAfterAnimation(word, resp) {
+    //         prompts = resp.prompts;
+    //         prompt_idx = resp.i;
+    //         jumpsA = resp.jumpsA;
+    //         jumps = resp.jumps;
+    //         // console.log(`[postWord] prompts: ${prompts}, prompt_idx: ${prompt_idx}, jumpsA: ${jumpsA}, jumps: ${jumps}`);
+    //         renderLinks(resp.prompt, resp.results, resp.i);
+    //         // console.log('[postWord] Rendering prompts..')
+    //         if (word !== resp.prompt[1]) {
+    //             let start_target = [word, resp.prompt[1]]
+    //             renderPrompts(prompts, jumpsA, jumps, start_target = start_target);
+    //         }
+    //         activateLinks();
+    //     }
+    //     animateToCenter(clickedElem, wordspace, renderXMLAfterAnimation, word, resp);
+    // }
 }
