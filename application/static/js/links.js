@@ -248,8 +248,7 @@ function reportSessionEnded(debug_session_done) {
     //If user has completed all prompts
     if (resp.hasOwnProperty('help_session_done')) {
         renderHelpFinish()
-        const promptBoxes = document.querySelectorAll('#prompts .prompt-box');
-        tallyAllPrompts(promptBoxes, 0)
+        tallyPrompts(resp.prompts, [3,2], resp.jumps)
     }
     else if (resp.hasOwnProperty('session_done') || debug_session_done) {
         tallyScreen(resp.prompts, resp.i, resp.jumpsA)

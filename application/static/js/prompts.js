@@ -1,6 +1,3 @@
-//[start, target], jumps, cos
-
-
 function clearBoxes() {
     // get all prompt-box elements
     const promptBoxes = document.querySelectorAll('#prompts .prompt-box');
@@ -11,7 +8,9 @@ function clearBoxes() {
 
 //given a collection of (promptBox -> promptTallyContainer -> array(wordOrTally))
 // does something.
-function tallyAllPrompts(promptBoxes, current_jumps) {
+function tallyAllPrompts(ct, current_jumps) {
+    promptBoxes = document.querySelectorAll('#prompts .prompt-box');
+    promptBoxes = Array.from(promptBoxes).slice(0, ct)
     console.log(`[tallyAllPrompts] current_jumps ${current_jumps}`)
     //TODO: don't show last prompt.
     // if (current_jumps >= 12){
@@ -47,7 +46,8 @@ function tallyAllPrompts(promptBoxes, current_jumps) {
 
 //given a collection of (promptBox -> promptTallyContainer -> array(wordOrTally))
 //updates .prompt-word to .tally when it does not contain target.
-function tallyNonTargetPrompts(promptBoxes, targets) {
+function tallyNonTargetPrompts(targets) {
+    promptBoxes = document.querySelectorAll('#prompts .prompt-box');
     for (let box of promptBoxes) {
         let promptWords = box.querySelectorAll('.prompt-word');
         promptWords.forEach(word => {
@@ -149,11 +149,7 @@ function serializePrompts(jumpsA) {
     const key = `prompt${i + 1}`;
     const existing = localStorage.getItem(key);
     const child = promptsEl.children[i];
-    if (
-      child &&
-      !existing &&
-      child.querySelectorAll('.prompt-word').length === 0
-    ) {
+    if (child && !existing && child.querySelectorAll('.prompt-word').length === 0) {
       localStorage.setItem(key, child.outerHTML);
     }
   }
@@ -162,7 +158,6 @@ function serializePrompts(jumpsA) {
     const key = `prompt${i + 1}`;
     const saved = localStorage.getItem(key);
     const child = promptsEl.children[i];
-    //replaces promptsEl.child with temp.innerHTML
     if (saved && child) {
       const temp = document.createElement('div');
       temp.innerHTML = saved;
@@ -172,28 +167,19 @@ function serializePrompts(jumpsA) {
   }
 }
 
-//how to take this renderPrompts backwards?
-function renderPrompts(promptTexts, jumpsA, current_jumps, start_target = null, score = null) {
-    console.log(`[renderPrompts] promptTexts ${promptTexts} start_target: ${start_target}`);
-    // get all prompt-box elements
-    const promptBoxes = document.querySelectorAll('#prompts .prompt-box');
-    targets = promptTexts.map(arr => arr[1]);
-    tallyNonTargetPrompts(promptBoxes, targets);
+function tallyPrompts(prompts, jumpsA, current_jumps){
+    let targets = prompts.map(arr => arr[1]);
     ct = jumpsA.length;
-    const done = promptTexts.slice(0, ct);
-    tallyAllPrompts(Array.from(promptBoxes).slice(0, ct), current_jumps)
-    
-    // update current prompt
-    if (ct < promptTexts.length && promptBoxes[ct]) {
-        let current_score = 0
-        start = start_target[0]
-        target = start_target[1]
-        if (score) { current_score = score }
-        else {
-        let current = promptTexts[ct];
-        start = current[0]
-        target = current[1]
-        }
+    tallyNonTargetPrompts(targets);
+    tallyAllPrompts(ct, current_jumps)
+}
+
+function renderPrompts(prompts, jumpsA, current_jumps, start_target, score = null) {
+    tallyPrompts(prompts, jumpsA, current_jumps)
+    let promptBoxes = document.querySelectorAll('#prompts .prompt-box');
+    if (ct < prompts.length && promptBoxes[ct]) {
+        let [start, target] = start_target || prompts[ct];
+        const current_score = score || 0;
         fillPrompt(promptBoxes[ct], start, target, current_score, current_jumps);
     }
     for (let j = ct + 1; j < promptBoxes.length; j++) {
