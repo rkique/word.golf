@@ -140,7 +140,6 @@ function serializePrompts(jumpsA) {
   for (let i = 0; i < completedCount; i++) {
     const key = `prompt${i + 1}`;
     const existing = localStorage.getItem(key);
-    // Step 1: Save completed prompt if not already stored and there are no .prompt-word children
     const child = promptsEl.children[i];
     if (
       child &&
@@ -165,8 +164,8 @@ function serializePrompts(jumpsA) {
   }
 }
 
-function renderPrompts(promptTexts, i, jumpsA, current_jumps, start_target = null, score = null, serialize = false) {
-    console.log(`renderPrompts: ${promptTexts}, i: ${i}, jumpsA: ${jumpsA}, start_target: ${start_target}`);
+function renderPrompts(promptTexts, i, jumpsA, current_jumps, start_target = null, score = null) {
+    // alert(`[renderPrompts] promptTexts ${promptTexts} start_target: ${start_target}`);
     // get all prompt-box elements
     const promptBoxes = document.querySelectorAll('#prompts .prompt-box');
     targets = promptTexts.map(arr => arr[1]);
@@ -206,7 +205,5 @@ function renderPrompts(promptTexts, i, jumpsA, current_jumps, start_target = nul
         // promptBoxes[i].style.borderLeft = '1px solid var(--grayed-out-color)';
         promptBoxes[j].innerHTML = '';
     }
-    if(serialize){
     serializePrompts(jumpsA)
-    }
 }

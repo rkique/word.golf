@@ -1,16 +1,15 @@
 <script>
     function beginTutorial() {
         localStorage.setItem('is_help', 'true');
-        const resp = sendAndReceiveXML(`help=true`);
-        _ = send_game_data_to_backend(resp, `help=true`);
-        console.log("Here is the xml response in begin tutorial");
-        console.log(resp);
-        renderToFrom(resp.prompt, resp.jumps);
-        renderLinks(resp.prompt, resp.results)
+        data = sendAndReceiveXML(`help=true`);
+        _ = send_game_data_to_backend(data, `help=true`);
+        renderToFrom(data.prompt, data.jumps);
+        renderLinks(data.prompt, data.results)
         // alert('[beginTutorial] rendering prompts')
-        // renderPrompts(resp.prompts, resp.i, resp.jumpsA, resp.jumps)
+        clearBoxes()
+        renderPrompts(data.prompts, data.i, data.jumpsA, data.jumps, start_target=data.prompt)
         activateLinks()
-        addHelpFocuses(resp.prompt, resp.results)
+        addHelpFocuses(data.prompt, data.results)
     }
 
         function renderLogin(text) {

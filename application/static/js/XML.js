@@ -92,9 +92,6 @@ function sendAndReceiveXML(message) {
             // handle update_state if needed
             // console.log(`[Send and Receive XML] results: ${results} jumpsA : ${jumpsA} prompts ${prompts}`);
             // fix this localstorage issue!!!
-            
-            console.log(response_text)
-            console.log("about to return from sendandreceivexml")
             if (jumps >= 12 ) { // cap it at 12 current jumps
                 let resp = sendAndReceiveXML(`end=true`);
                 _ = send_game_data_to_backend(resp, `end=true`);

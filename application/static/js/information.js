@@ -273,16 +273,15 @@ function beginTutorial() {
     localStorage.setItem('is_help', 'true');
     help = document.getElementById('help');
     help.style.display = 'none'
-    resp = sendAndReceiveXML(`help=true`)
-    renderToFrom(resp.prompt, resp.jumps);
+    data = sendAndReceiveXML(`help=true`)
+    renderToFrom(data.prompt, data.jumps);
     document.querySelector('.prompt-box').style.border = '1px solid var(--border-color)';
-    // console.log(`renderLinks: ${renderLinks}`)
-    renderLinks(resp.prompt, resp.results, resp.i)
-    let start_target = resp.prompt
+    renderLinks(data.prompt, data.results, data.i)
+    let start_target = data.prompt
     clearBoxes()
-    renderPrompts(resp.prompts, resp.i, resp.jumpsA, start_target=start_target)
+    renderPrompts(data.prompts, data.i, data.jumpsA, 0, start_target=start_target)
     activateLinks()
-    addHelpFocuses(resp.prompt, resp.results)
+    addHelpFocuses(data.prompt, data.results)
 }
 
 function startHelpSteps(){
