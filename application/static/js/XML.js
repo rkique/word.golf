@@ -26,6 +26,7 @@ function send_game_data_to_backend(response_text, message) {
     results = response_text["results"]; 
     prompts = response_text["prompts"]; 
     current_prompt = response_text["i"]; 
+    date = response_text["date"];
 
     let word = null;
 
@@ -51,7 +52,8 @@ function send_game_data_to_backend(response_text, message) {
             jumpsA: jumpsA,
             results: results,
             prompts: prompts,
-            prompt_idx: current_prompt
+            prompt_idx: current_prompt,
+            date: date
         })
     })
         .then(response => response.json())
@@ -95,6 +97,8 @@ function sendAndReceiveXML(message) {
             if (jumps >= 12 ) { // cap it at 12 current jumps
                 let resp = sendAndReceiveXML(`end=true`);
                 _ = send_game_data_to_backend(resp, `end=true`);
+                console.log(resp);
+                // see if the length of jumpsA is 
                 return resp;
             } else {
                 return response_text;

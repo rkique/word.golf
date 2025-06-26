@@ -76,11 +76,17 @@ function focusLink(startText, targetText) {
 
 //@Parent: postWord
 function renderLinks(prompt, results, i, debug_session_done = false) {
-    // console.log('[renderLinks] Rendering links for prompt:', prompt, 'with results:', results);
+    console.log('[renderLinks] Rendering links for prompt:', prompt, 'with results:', results);
     // if (!results) { //this will work when renderLinks is called again, but should not be here.
     //     disableLinks()
     //     reportSessionEnded(1)
     //     return;
+    // }
+    console.log(debug_session_done);
+    console.log(i);
+    // if (debug_session_done) {
+    //     disableLinks()
+    //     reportSessionEnded(debug_session_done)
     // }
     let wordspace = document.getElementById("wordspace")
     clearChildren(wordspace)
@@ -240,12 +246,13 @@ function clearPrompts() {
 function reportSessionEnded(debug_session_done) {
     if (localStorage.getItem('is_help') == "true") {
         resp = sendAndReceiveXML(`help_end=true`)
-        _ = send_game_data_to_backend(resp, `help_end=true`);
+        // _ = send_game_data_to_backend(resp, `help_end=true`);
     } else {
         resp = sendAndReceiveXML(`end=true`)
         _ = send_game_data_to_backend(resp, `end=true`);
     }
-    // console.log('[reportSessionEnded] Response:', resp);
+    console.log('[reportSessionEnded] Response:', resp);
+    
     //If user has completed all prompts
     if (resp.hasOwnProperty('help_session_done')) {
         runAfterBannerDisappears(() => {renderHelpFinish()})
@@ -305,7 +312,9 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
     //     resp = sendAndReceiveXML(`end=true`);
     // } else {
     const resp = sendAndReceiveXML("word=" + word);
-    _ = send_game_data_to_backend(resp, "word=" + word);
+    if (localStorage.getItem('is_help') != "true") {
+        _ = send_game_data_to_backend(resp, "word=" + word);
+    }
     // console.log('[postWord] Response:', resp);
     // }
     let prev_words = [];
@@ -316,11 +325,18 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
 
     if (!use_animations) {
         // check if we are at the ending page now (for when we have 12 jumps):
-        // if (sum(resp.jumpsA) == 60) {
-        //     renderLinks(resp.prompt, resp.results, resp.prompt_idx, true);
-        // }
-        renderToFrom(resp.prompt, resp.jumps);
-        renderLinks(resp.prompt, resp.results, resp.i);
+        console.log("here is response jumpsA");
+        console.log(resp);
+        console.log(resp.jumpsA[resp.jumpsA.length - 1]);
+        console.log(resp.jumpsA.length)
+        if (resp.jumpsA.length === 5 && resp.jumpsA[resp.jumpsA.length - 1] === 12) {
+            console.log("I AM IN THIS CASE HERE!!!!! -> about to call render links")
+            renderLinks(resp.prompt, resp.results, resp.i, true);
+            return;
+        } else {
+            renderToFrom(resp.prompt, resp.jumps);
+            renderLinks(resp.prompt, resp.results, resp.i);
+        }
         //This is the source of nearly all renderPrompt calls.
         if (word !== resp.prompt[1]) {
             let start_target = [word, resp.prompt[1]]

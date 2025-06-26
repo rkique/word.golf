@@ -2,7 +2,7 @@
     function beginTutorial() {
         localStorage.setItem('is_help', 'true');
         data = sendAndReceiveXML(`help=true`);
-        _ = send_game_data_to_backend(data, `help=true`);
+        // _ = send_game_data_to_backend(data, `help=true`);
         renderToFrom(data.prompt, data.jumps);
         renderLinks(data.prompt, data.results)
         // alert('[beginTutorial] rendering prompts')
@@ -24,9 +24,19 @@
 
     async function renderLogout(){
         try {
+            let data2 = JSON.parse('{{data|tojson|safe}}');
+            console.log("here is data2");
+            console.log(data2);
+            // pass in the date here 
             const res = await fetch(window.backendURL + "/logout", {
                 method: "POST",
                 credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
+                headers: {
+                    'Content-Type': 'application/json'  // Ensure this matches what the server expects
+                },
+                body: JSON.stringify({
+                    date: data2["date"]
+                })
             });
 
             const data = await res.json();
@@ -69,9 +79,10 @@
         <script src="https://accounts.google.com/gsi/client" async></script>
         <div id="g_id_onload"
             data-client_id="490339325235-2colln65cgm89aue0mihetv8upkmr5bl.apps.googleusercontent.com"
-            data-login_uri="https://routes.word.golf/login/google" 
+            data-login_uri="http://localhost:7000/login/google" 
             data-auto_prompt="false">
             <!-- change this to the deployed backend URL -->
+            <!-- data-login_uri="https://routes.word.golf/login/google"  -->
         </div>
 
         <div class="g_id_signin"

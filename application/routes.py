@@ -27,7 +27,7 @@ PRECOMPUTED = None
 @app.context_processor
 def inject_backend_url():
     backend_url = (
-        "http://127.0.0.1:7000"
+        "http://localhost:7000"
         if os.getenv("DEV", "false").lower() == "true"
         else "https://routes.word.golf"
     )
@@ -86,7 +86,12 @@ def load_time():
     now_utc = datetime.datetime.utcnow()
     now_et = now_utc.replace(tzinfo=datetime.timezone.utc).astimezone(eastern)
     today = now_et.replace(tzinfo=None).date() + add_days(DAYS)
+    print("this is today")
+    print(today)
     elapsed, prompts_today, neighbors_today = get_prompts_for_date(today)
+    print(elapsed)
+    print(prompts_today)
+    print(neighbors_today)
 
 def jump(start : str) -> str:
     '''
@@ -167,7 +172,8 @@ def help_shift(data):
 def update_new_data(new_data, session_data):
     session_data = json.loads(session_data)
     print(f"[update_new_data] updating with {session_data['jumps']}")
-    new_data['jumpsA'] += [session_data['jumps']]
+    if len(new_data['jumpsA']) < 5:
+        new_data['jumpsA'] += [session_data['jumps']]
     return new_data
     
 #Load both data and time once at the starting screen.
@@ -178,7 +184,20 @@ def index():
     load_time()
     #we need some way of persisting state on reload.
     #how to distinguish first load from others?
+    print("here is the session data")
+    print(session)
     session['i'] = session.get('i', 0)
+    try:
+        session_data = json.loads(session["data"])
+        if session_data['date'] != today.strftime('%Y-%m-%d'):
+            print("here is the session data data")
+            print(session_data['date'])
+            print("here is today")
+            print(today)
+            print(session_data['date'] == today.strftime('%Y-%m-%d'))
+            session['i'] = 0
+    except Exception:
+        pass
     assert WV is not None, "Word vectors not loaded"
     data = shift_to(session['i'])
     data['jumpsA'] = []
@@ -218,10 +237,10 @@ def sesh_edit():
             i = request.form.get("i", "0")
             try:
                 data['i'] = int(i)
-                # session['i'] = data['i']
+                session['i'] = data['i']
             except ValueError:
                 data['i'] = 0
-                # session['i'] = 0
+                session['i'] = 0
 
             start_target = request.form.get("prompt", "")
             # print("Start target:", start_target)
@@ -244,12 +263,15 @@ def sesh_edit():
 @app.route('/login', methods=['GET'])
 def login():
     # this returns the login page stored at /templates/login.html
-    return render_template('login.html')
+    date = today.strftime('%Y-%m-%d') if today else datetime.datetime.today().strftime('%Y-%m-%d')
+
+    return render_template('login.html', date=date)
 
 @app.route('/resetpassword', methods=['GET'])
 def resetpassword():
     # this returns the password reset page stored at /templates/resetpassword.html
-    return render_template('resetpassword.html')
+    date = today.strftime('%Y-%m-%d') if today else datetime.datetime.today().strftime('%Y-%m-%d')
+    return render_template('resetpassword.html', date=date)
 
 @app.route('/', methods=['POST'])
 def index_post():

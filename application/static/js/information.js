@@ -152,13 +152,63 @@ function startGame() {
     localStorage.removeItem('prompts');
     localStorage.removeItem('results');
     resp = sendAndReceiveXML('redirect=true');
-    _ = send_game_data_to_backend(resp, 'redirect=true');
+    // _ = send_game_data_to_backend(resp, 'redirect=true');
     clearBoxes()
-    renderLinks(resp.prompt, resp.results)
-    renderToFrom(resp.prompt, 0);
-    start_target = resp.prompts[resp.i]
-    renderPrompts(resp.prompts, resp.jumpsA, resp.jumps, start_target=start_target, serialize=false)
-    activateLinks()
+    // should be doing the same thing as index.html!
+    console.log("here is the response POST help screen");
+    console.log(resp);
+
+    // renderLinks(resp.prompt, resp.results)
+    // renderToFrom(resp.prompt, 0);
+    // start_target = resp.prompts[resp.i]
+    // renderPrompts(resp.prompts, resp.jumpsA, resp.jumps, start_target=start_target, serialize=false)
+    // activateLinks()
+    const data = resp;
+    fetch(`${window.backendURL}/user_and_game_state`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            date: data["date"]
+        })
+    })
+        .then(response => response.json())
+        .then(game_data => {
+            console.log("backend response: ", game_data);
+            if ("logged_in" in game_data) {
+                if (game_data.email) {
+                    renderLogin(game_data)
+                }
+            }
+            let loaded;
+            let prompt_idx;
+            if ("selected_words" in game_data && game_data["selected_words"] && game_data["selected_words"].length != 0) {
+                loaded = game_data;
+                prompt_idx = game_data.prompt_idx;
+                localStorage.setItem('previous_words', JSON.stringify(game_data.selected_words));
+            } else { //this only happens on first load.
+                loaded = data;
+                prompt_idx = data['i'];
+            }
+            let jumpsA = loaded.jumpsA;
+            let jumps = loaded.jumps;
+            let results = loaded.results || data['results'];
+            let prompts = loaded.prompts;
+            let start_target = prompts[prompt_idx];
+            console.log(`jumpsA ${jumpsA} prompt_idx ${prompt_idx}`);
+            _ = editSession(jumpsA, jumps, results, prompt_idx, start_target);
+            start_target = prompts[prompt_idx];
+            renderToFrom(start_target, jumps);
+            renderPrompts(prompts, jumpsA, jumps, start_target=start_target);
+            if (jumpsA.length == 5) {
+                renderLinks(start_target, results); 
+            } else {
+                renderLinks(start_target, results)
+            }
+            activateLinks();
+        });
 }
 
 function generateLineGraph(scores) {
