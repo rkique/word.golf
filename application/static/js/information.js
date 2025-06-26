@@ -97,18 +97,9 @@ function renderGrid(counts) {
 
 
 function renderFinish(jumpsA) {
-    // const totalJumps = jumpsA.reduce((sum, jumps) => sum + jumps, 0);
-
+    totalJumps = jumpsA.reduce((sum, jumps) => sum + jumps, 0);
+    // alert(jumpsA)
     const currentDate = new Date(localStorage.getItem('current_date'));
-    // const lastCompleteDate = new Date(localStorage.getItem('lastComplete'));
-    // const diffInDays = Math.floor((currentDate - lastCompleteDate) / (1000 * 60 * 60 * 24))
-    
-    // const isSameDay = diffInDays === 0;
-    // const shouldResetStreak = diffInDays >= 2;
-
-    // const currentStreak = parseInt(localStorage.getItem('streak')) || 1;
-    // const newStreak = isSameDay ? currentStreak : shouldResetStreak ? 1 : currentStreak + 1;
-
     const data = {
         last_complete: currentDate, // should be "YYYY-MM-DD"
     };
@@ -118,17 +109,15 @@ function renderFinish(jumpsA) {
         headers: {
             'Content-Type': 'application/json'
         },
-        credentials: 'include', // <-- Required for auth cookies
+        credentials: 'include', 
         body: JSON.stringify(data)
     })
     .then(response => response.json())
     .then(finish_data => {
-        // console.log('Database updated successfully:', finish_data);
         const daily_idx = daysSinceStartDate();
-        // Display finish modal for user.
         is_logged_in = Boolean(localStorage.getItem('logged_in'))
         jumpsGridMessage = renderGrid(finish_data.jumpsA);
-        displayFinishModal(daily_idx, finish_data.total_jumps, finish_data.newStreak, jumpsGridMessage, is_logged_in);
+        displayFinishModal(daily_idx, totalJumps, finish_data.newStreak, jumpsGridMessage, is_logged_in);
     })
     .catch((error) => {
         console.error('Error updating database:', error);

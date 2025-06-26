@@ -87,9 +87,7 @@
             if ("selected_words" in game_data && game_data["selected_words"] && game_data["selected_words"].length != 0) {
                 loaded = game_data
                 prompt_idx = game_data.prompt_idx
-                alert(loaded.jumpsA)
-            } else {
-                console.log('Loading from data');
+            } else { //this only happens on first load.
                 loaded = data;
                 prompt_idx = data['i'];
             }
@@ -98,31 +96,13 @@
             let results = loaded.results || data['results'];
             let prompts = loaded.prompts;
             let start_target = prompts[prompt_idx];
-            
-            if (jumpsA.length > 5) {
-                jumpsA = jumpsA.slice(0, 5);
-            }
-            // console.log('jumpsA:', jumpsA, 'jumps:', jumps, 'results:', results, 'prompts:', prompts, 'start_target:', start_target);
-            // console.log('prompt index:', prompt_idx);
-
+            console.log(`jumpsA ${jumpsA} prompt_idx ${prompt_idx}`)
             _ = editSession(jumpsA, jumps, results, prompt_idx, start_target);
-            // we know we are at the end here 
-            if (prompt_idx > 4) { 
-                // console.log("finished game, setting prompt_idx to 4");
-                prompt_idx = 4 
-                start_target = prompts[prompt_idx]
-                renderToFrom(start_target, jumps)
-                // console.log("here is the start_target", start_target);
-                renderPrompts(prompts, prompt_idx, jumpsA, jumps, start_target=start_target)
-                renderLinks(start_target, results, prompt_idx, true)
-            } else {
-                start_target = prompts[prompt_idx]
-                renderToFrom(start_target, jumps)
-                // alert('renderPrompt on fresh reload')
-                renderPrompts(prompts, prompt_idx, jumpsA, jumps, start_target=start_target)
-                renderLinks(start_target, results)
-                activateLinks()
-            }
+            start_target = prompts[prompt_idx]
+            renderToFrom(start_target, jumps)
+            renderPrompts(prompts, prompt_idx, jumpsA, jumps, start_target=start_target)
+            renderLinks(start_target, results)
+            activateLinks()
         });
     // }
 

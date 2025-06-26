@@ -29,7 +29,7 @@ function tallyAllPrompts(promptBoxes, current_jumps) {
     for (let box of promptBoxes) {
         let promptWords = box.querySelectorAll('.prompt-word');
         promptWords.forEach(word => {
-            updateInnerTextSmooth(word, '')
+            word.innerText = ''
             word.classList.remove("prompt-word");
             word.classList.add("tally");
         });
@@ -44,9 +44,9 @@ function tallyNonTargetPrompts(promptBoxes, targets) {
         let promptWords = box.querySelectorAll('.prompt-word');
         promptWords.forEach(word => {
             if (word.innerText !== "" && !targets.includes(word.innerText)) {
+                word.innerText = ''
                 word.classList.remove("prompt-word");
                 word.classList.add("tally");
-                updateInnerTextSmooth(word, '')
             }
         });
     }
@@ -164,14 +164,16 @@ function serializePrompts(jumpsA) {
   }
 }
 
+//how to take this renderPrompts backwards?
 function renderPrompts(promptTexts, i, jumpsA, current_jumps, start_target = null, score = null) {
-    // alert(`[renderPrompts] promptTexts ${promptTexts} start_target: ${start_target}`);
+    console.log(`[renderPrompts] ${i} promptTexts ${promptTexts} start_target: ${start_target}`);
     // get all prompt-box elements
     const promptBoxes = document.querySelectorAll('#prompts .prompt-box');
     targets = promptTexts.map(arr => arr[1]);
     tallyNonTargetPrompts(promptBoxes, targets);
-    const done = promptTexts.slice(0, i);
-    tallyAllPrompts(Array.from(promptBoxes).slice(0, i), current_jumps);
+    ct = jumpsA.length;
+    const done = promptTexts.slice(0, ct);
+    tallyAllPrompts(Array.from(promptBoxes).slice(0, ct), current_jumps);
     done.forEach((promptText, idx) => {
         const promptWords = promptBoxes[idx].querySelectorAll('.prompt-word');
         promptWords.forEach(word => {
@@ -181,8 +183,8 @@ function renderPrompts(promptTexts, i, jumpsA, current_jumps, start_target = nul
     });
 
     // update current prompt
-    if (i < promptTexts.length && promptBoxes[i]) {
-        let current = promptTexts[i];
+    if (ct < promptTexts.length && promptBoxes[ct]) {
+        let current = promptTexts[ct];
         let currentTag;
         let current_score = 0
         if (start_target && score) {
@@ -190,20 +192,20 @@ function renderPrompts(promptTexts, i, jumpsA, current_jumps, start_target = nul
             target = start_target[1]
             current_score = score
             // alert(`filling ${start} to ${target}`)
-            fillPrompt(promptBoxes[i], start, target, current_score, current_jumps);
+            fillPrompt(promptBoxes[ct], start, target, current_score, current_jumps);
         }
         else {
-            fillPrompt(promptBoxes[i], current[0], current[1], current_score, current_jumps)
+            fillPrompt(promptBoxes[ct], current[0], current[1], current_score, current_jumps)
         }
     }
 
-    console.log(`clearing prompt boxes ${i+1} to ${promptBoxes.length}`)
+    console.log(`clearing prompt boxes ${ct+1} to ${promptBoxes.length}`)
     // clear remaining boxes
-    for (let j = i + 1; j < promptBoxes.length; j++) {
+    for (let j = ct + 1; j < promptBoxes.length; j++) {
         promptBoxes[j].className = 'prompt-box';
         promptBoxes[j].style.color = 'var(--grayed-out-color)';
         // promptBoxes[i].style.borderLeft = '1px solid var(--grayed-out-color)';
         promptBoxes[j].innerHTML = '';
     }
-    serializePrompts(jumpsA)
+    serializePrompts(jumpsA) //this should save the first prompt when it renders the second.
 }

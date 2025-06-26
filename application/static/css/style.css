@@ -23,7 +23,6 @@
     font-size: 3rem;
     font-family: "Inter", sans-serif;
     font-weight: 700;
-    text-transform: uppercase;
     color: var(--grayed-out-color-help-target);
 }
 html {

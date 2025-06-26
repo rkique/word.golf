@@ -88,7 +88,7 @@ function sendAndReceiveXML(message) {
             results = response_text["results"]; 
             prompts = response_text["prompts"]; 
             current_prompt = response_text["i"]; 
-            // console.log("after backend fetch")
+            console.log(`[XML] ${current_prompt}`)
             // handle update_state if needed
             // console.log(`[Send and Receive XML] results: ${results} jumpsA : ${jumpsA} prompts ${prompts}`);
             // fix this localstorage issue!!!

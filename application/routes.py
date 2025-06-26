@@ -128,23 +128,21 @@ def shift_to(i):
     Shifts the session data to the i-th prompt and returns the updated session data as a dict.
     The session['data'] variable should be set to data after making necessary modifications outside this scope.
     '''
+    data = json.loads(session.get('data', '{}'))
     try:
         prompt = prompts_today[i]
         neighbor = neighbors_today[i]
         # print(f"[shift_to] prompt {i}: {prompt} with neighbor {neighbor}")
         results = get_curve(prompt[0], prompt[1], PRECOMPUTED, WV, neighbor=neighbor)
-
+        data['i'] = i
+        data['jumps'] = 0
+        data['date'] = today.strftime('%Y-%m-%d')
+        data['prompt'] = prompt
+        data['prompts'] = prompts_today
+        print(f"[shift_to] prompts_today {prompts_today}")
+        data['results'] = results
     except IndexError:
-        print(f"Index {i} out of range for prompts_today or neighbors_today.")
-        prompt,neighbor,results = None, None, None
-    data = json.loads(session.get('data', '{}'))
-    data['i'] = i
-    data['jumps'] = 0
-    data['date'] = today.strftime('%Y-%m-%d')
-    data['prompt'] = prompt
-    data['prompts'] = prompts_today
-    print(f"[shift_to] prompts_today {prompts_today}")
-    data['results'] = results
+        print(f"Index {i} out of range for prompts_today or neighbors_today, indicating user finish. Returning same data.")
     return data
 
 def help_shift(data):
@@ -177,7 +175,8 @@ def index():
     load_data()
     load_time()
     #we need some way of persisting state on reload.
-    session['i'] = 0
+    #how to distinguish first load from others?
+    session['i'] = session.get('i', 0)
     assert WV is not None, "Word vectors not loaded"
     data = shift_to(session['i'])
     data['jumpsA'] = []
@@ -274,13 +273,12 @@ def index_post():
 
     elif request.form.get('end') is not None:
         print(f"[/] Shifting to Prompt {session['i']+1}")
-        session['i'] += 1
-        if (session['i'] > PCOUNT):
+        if (session['i'] + 1 > PCOUNT):
+            session['i'] = 6
             return make_response("session_done" + session.get('data'))
+        session['i'] += 1
         _data = shift_to(session['i'])
         session['data'] = json.dumps(update_new_data(_data, session['data']))
-        if (session['i'] == PCOUNT):
-            return make_response("session_done" + session.get('data'))
         
     elif request.form.get('word') is not None:
         current_word = request.form.get('word') 
