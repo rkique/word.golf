@@ -125,40 +125,35 @@ function fillPrompt(promptBox, start, target, score, current_jumps) {
     }
 }
 
-
-// function makeDonePromptTag(start_target, jumps) {
-//     // Use makeSpacedPromptTag with start at idx 0 and finish at idx 5
-//     let spacedTag = makeSpacedPromptTag(start_target, 0); // score=0 puts start at idx 0
-//     spacedTag.className += " prompt--done";
-//     return spacedTag;
-// }
-
 function serializePrompts(jumpsA) {
-  if(localStorage.getItem('is_help') === 'true'){
-    return;
-  }
-  const promptsEl = document.getElementById('prompts');
-  const completedCount = jumpsA.length;
-  for (let i = 0; i < completedCount; i++) {
-    const key = `prompt${i + 1}`;
-    const existing = localStorage.getItem(key);
-    const child = promptsEl.children[i];
-    if (child && !existing && child.querySelectorAll('.prompt-word').length === 0) {
-      localStorage.setItem(key, child.outerHTML);
+    if (localStorage.getItem('is_help') === 'true') {
+        return;
     }
-  }
-  // Step 2: Restore any saved prompt HTML if it's missing in DOM
-  for (let i = 0; i < completedCount; i++) {
-    const key = `prompt${i + 1}`;
-    const saved = localStorage.getItem(key);
-    const child = promptsEl.children[i];
-    if (saved && child) {
-      const temp = document.createElement('div');
-      temp.innerHTML = saved;
-      promptsEl.replaceChild(temp.firstElementChild, child);
-      console.log(`Restored prompt ${i + 1} from localStorage.`);
+    const promptBoxes = document.querySelectorAll('#prompts .prompt-box');
+    const completedCount = jumpsA.length;
+    for (let i = 0; i < completedCount; i++) {
+        const key = `prompt${i + 1}`;
+        const existing = localStorage.getItem(key);
+        const promptBox = promptBoxes[i];
+        //save when prompt-box contains only tallies.
+        if (promptBox && !existing 
+                      && child.querySelectorAll('.prompt-word').length === 0 
+                      && child.querySelectorAll('.tally').length !== 0) {
+            localStorage.setItem(key, child.outerHTML);
+        }
     }
-  }
+    //
+    for (let i = 0; i < completedCount; i++) {
+        const key = `prompt${i + 1}`;
+        const saved = localStorage.getItem(key);
+        const child = promptsEl.children[i];
+        if (saved && child) {
+            const temp = document.createElement('div');
+            temp.innerHTML = saved;
+            promptsEl.replaceChild(temp.firstElementChild, child);
+            console.log(`Restored prompt ${i + 1} from localStorage.`);
+        }
+    }
 }
 
 function tallyPrompts(prompts, jumpsA, current_jumps){
