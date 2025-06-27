@@ -77,17 +77,8 @@ function focusLink(startText, targetText) {
 //@Parent: postWord
 function renderLinks(prompt, results, i, debug_session_done = false) {
     console.log('[renderLinks] Rendering links for prompt:', prompt, 'with results:', results);
-    // if (!results) { //this will work when renderLinks is called again, but should not be here.
-    //     disableLinks()
-    //     reportSessionEnded(1)
-    //     return;
-    // }
-    console.log(debug_session_done);
-    console.log(i);
-    // if (debug_session_done) {
-    //     disableLinks()
-    //     reportSessionEnded(debug_session_done)
-    // }
+    // console.log(debug_session_done);
+    // console.log(i);
     let wordspace = document.getElementById("wordspace")
     clearChildren(wordspace)
     let middleIndex = Math.floor(results.length / 2)
