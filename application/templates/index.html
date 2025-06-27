@@ -92,7 +92,7 @@
             if ("selected_words" in game_data && game_data["selected_words"] && game_data["selected_words"].length != 0) {
                 loaded = game_data;
                 prompt_idx = game_data.prompt_idx;
-                localStorage.setItem('previous_words', JSON.stringify(game_data.selected_words));
+                // localStorage.setItem('previous_words', JSON.stringify(game_data.selected_words));
             } else { //this only happens on first load.
                 loaded = data;
                 prompt_idx = data['i'];
@@ -111,7 +111,7 @@
                 //this should only be when end on max.
                 //manually construct a session to end here:
                 start_target = prompts[4]
-                renderToFrom(start_target, jumps)
+                // renderToFrom(start_target, jumps)
                 renderPrompts(prompts, jumpsA, jumps, start_target=start_target)
                 renderLinks(start_target, results)
                 tallyScreen(prompts, jumpsA)
@@ -119,7 +119,7 @@
                 renderFinish(jumpsA)
             }
             start_target = prompts[prompt_idx];
-            renderToFrom(start_target, jumps);
+            // renderToFrom(start_target, jumps);
             renderPrompts(prompts, jumpsA, jumps, start_target=start_target);
             renderLinks(start_target, results)
             activateLinks();

@@ -255,7 +255,7 @@ function reportSessionEnded(debug_session_done) {
         localStorage.setItem("lastComplete", data["date"])
     }
     else {
-        renderToFrom(resp.prompt, resp.jumps);
+        // renderToFrom(resp.prompt, resp.jumps);
         renderLinks(resp.prompt, resp.results)
         // console.log('[reportSessionEnded] Rendering prompts..')
         let start_target = resp.prompts[resp.i]
@@ -309,11 +309,11 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
     }
     // console.log('[postWord] Response:', resp);
     // }
-    let prev_words = [];
-    prev_words = JSON.parse(localStorage.getItem('previous_words'));
-    if (!prev_words) prev_words = [];
-    prev_words.push(word);
-    localStorage.setItem('previous_words', JSON.stringify(prev_words));
+    // let prev_words = [];
+    // prev_words = JSON.parse(localStorage.getItem('previous_words'));
+    // if (!prev_words) prev_words = [];
+    // prev_words.push(word);
+    // localStorage.setItem('previous_words', JSON.stringify(prev_words));
 
     if (!use_animations) {
         // check if we are at the ending page now (for when we have 12 jumps):
@@ -321,7 +321,7 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
             renderLinks(resp.prompt, resp.results, resp.i, true);
             return;
         } else {
-            renderToFrom(resp.prompt, resp.jumps);
+            // renderToFrom(resp.prompt, resp.jumps);
             renderLinks(resp.prompt, resp.results, resp.i);
         }
         //This is the source of nearly all renderPrompt calls.
