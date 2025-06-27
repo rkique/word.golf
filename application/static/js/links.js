@@ -93,6 +93,7 @@ function renderLinks(prompt, results, i, debug_session_done = false) {
     addHelpFocuses(prompt, results)
     if (sessionEnded(prompt) || debug_session_done) {
         disableLinks()
+
         reportSessionEnded(debug_session_done)
     }
 }
@@ -170,8 +171,8 @@ function makeLink(prompt, word) {
     link.appendChild(span)
     link.className = "link"
     if (prompt[1] == word) {
-        link.className = "link link--target rainbow_text_animated"
-
+        link.id = 'rainbow_text_animated'
+        link.className = "link link--target"
     }
     return link
 }
@@ -228,6 +229,21 @@ function addHelpFocuses(prompt, results) {
 //     }
 // }
 
+function saveWordspace() {
+    const wordspace = document.getElementById("wordspace");
+    if (wordspace) {
+        localStorage.setItem("wordspace", wordspace.innerHTML);
+    }
+}
+
+function showWordspace() {
+    const wordspace = document.getElementById("wordspace");
+    const saved = localStorage.getItem("wordspace");
+    if (wordspace && saved) {
+        wordspace.innerHTML = saved;
+    }
+}
+
 function clearPrompts() {
     const promptWords = document.querySelectorAll('.prompt-box .prompt .prompt-word');
     promptWords.forEach(el => el.remove());
@@ -252,6 +268,7 @@ function reportSessionEnded(debug_session_done) {
     else if (resp.hasOwnProperty('session_done') || debug_session_done) {
         // alert('received session_done')
         tallyScreen(resp.prompts, resp.jumpsA)
+        saveWordspace()
         localStorage.setItem("lastComplete", data["date"])
     }
     else {
