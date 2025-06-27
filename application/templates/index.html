@@ -97,18 +97,13 @@
                     prompt_idx = data['i'];
                 }
                 let jumpsA = loaded.jumpsA;
-                // if (jumpsA.length > 5) {
-                //     jumpsA = jumpsA.slice(0, 5);
-                // }
                 let jumps = loaded.jumps;
                 let results = loaded.results || data['results'];
                 let prompts = loaded.prompts;
                 let start_target = prompts[prompt_idx];
                 // check if prompt_idx is 5 
                 const isPromptIdxFive = (prompt_idx >= 5);
-                if (isPromptIdxFive) {
-                    prompt_idx = 4;
-                }
+                if (isPromptIdxFive) {prompt_idx = 4;}
                 console.log(`jumpsA ${jumpsA} prompt_idx ${prompt_idx}`);
                 _ = editSession(jumpsA, jumps, results, prompt_idx, start_target);
                 start_target = prompts[prompt_idx];
