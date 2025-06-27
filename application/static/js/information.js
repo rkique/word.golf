@@ -69,8 +69,8 @@ function renderFinish(jumpsArray) {
     .then(finish_data => {
         const daily_idx = daysSinceStartDate();
         is_logged_in = Boolean(localStorage.getItem('logged_in'))
-        jumpsGridMessage = renderGrid(finish_data.jumpsArray);
-        runAfterBannerDisappears(() => {displayFinishModal(daily_idx, totalJumps, finish_data.newStreak, jumpsGridMessage, is_logged_in)})
+        jumpsGridMessage = renderGrid(finish_data.jumpsA);
+        runAfterBannerDisappears(() => {displayFinishModal(daily_idx, finish_data.total_jumps, finish_data.newStreak, jumpsGridMessage, is_logged_in)})
     })
     .catch((error) => {
         console.error('Error updating database:', error);
@@ -118,15 +118,18 @@ function startGame() {
             }
             let loaded;
             let prompt_idx;
+            let jumpsArray;
             if ("selected_words" in game_data && game_data["selected_words"] && game_data["selected_words"].length != 0) {
                 loaded = game_data;
                 prompt_idx = game_data.prompt_idx;
                 localStorage.setItem('previous_words', JSON.stringify(game_data.selected_words));
+                jumpsArray = loaded.jumpsA;
             } else { //this only happens on first load.
                 loaded = data;
                 prompt_idx = data['i'];
+                jumpsArray = loaded.jumpsArray;
             }
-            let jumpsArray = loaded.jumpsArray;
+            
             // if (jumpsArray.length > 5) {
             //     jumpsArray = jumpsArray.slice(0, 5);
             // }

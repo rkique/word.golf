@@ -49,7 +49,7 @@ function send_game_data_to_backend(response_text, message) {
         body: JSON.stringify({
             ...(word ? { word: word } : {}),
             current_jumps: jumps,
-            jumpsArray: jumpsArray,
+            jumpsA: jumpsArray,
             results: results,
             prompts: prompts,
             prompt_idx: current_prompt,
