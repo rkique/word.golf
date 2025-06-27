@@ -108,10 +108,7 @@
                 _ = editSession(jumpsA, jumps, results, prompt_idx, start_target);
                 start_target = prompts[prompt_idx];
                 // renderToFrom(start_target, jumps);
-                renderPrompts(prompts, jumpsA, jumps, start_target=start_target);
-                // if (isPromptIdxFive) {
-                //     renderLinks(start_target, results, prompt_idx, isPromptIdxFive); 
-                // }
+                renderPrompts(prompts, jumpsA, jumps, start_target=start_target, is_reload=true);
                 renderLinks(start_target, results, prompt_idx, isPromptIdxFive); 
                 activateLinks();
             });

@@ -350,7 +350,7 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
                 start_target = resp.prompt;
                 score = 0;
             }
-            renderPrompts(resp.prompts, resp.jumpsA, resp.jumps, start_target = start_target, score = score, serialize=true);
+            renderPrompts(resp.prompts, resp.jumpsA, resp.jumps, start_target, false, score);
         }
         else {
             console.log(`[showBanner] ${jumps}`)

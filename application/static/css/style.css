@@ -582,6 +582,7 @@ button span {
   white-space: nowrap;
   display: inline-block;
   transition: max-width 0.2s ease, padding 0.2s ease, background 0.2s ease;
+  padding: 0rem 0.5rem;
 }
 
 .prompt-box .prompt-word, .tally {
