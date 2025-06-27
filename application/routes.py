@@ -83,15 +83,10 @@ def get_prompts_for_date(date : datetime.datetime) -> list:
 def load_time():
     global elapsed, prompts_today, neighbors_today, today
     eastern = datetime.timezone(datetime.timedelta(hours=-5))
-    now_utc = datetime.datetime.utcnow()
+    now_utc = datetime.datetime.utcnow() + datetime.timedelta(hours=8)
     now_et = now_utc.replace(tzinfo=datetime.timezone.utc).astimezone(eastern)
     today = now_et.replace(tzinfo=None).date() + add_days(DAYS)
-    print("this is today")
-    print(today)
     elapsed, prompts_today, neighbors_today = get_prompts_for_date(today)
-    print(elapsed)
-    print(prompts_today)
-    print(neighbors_today)
 
 def jump(start : str) -> str:
     '''
@@ -120,7 +115,6 @@ def make_help_session():
     results = get_curve(prompt1[0], prompt1[1], PRECOMPUTED, WV, neighbor=neighbor1)
     data = {
         'jumpsArray': [],
-        'wordArray': [],
         'jumps': 0,
         'i': 0,
         'date': today.strftime('%Y-%m-%d'),
@@ -206,11 +200,9 @@ def index():
     i = session_data.get('i', 0)
     data = shift_to(i)
     data['jumpsArray'] = []
-    data['wordArray'] = [] #this is a previous_words array
     session['data'] = json.dumps(data)
     print('/ data is set to:', session.get('data'))
     return render_template('index.html', data=data)
-
 
 @app.route('/editsession', methods=['POST']) 
 def sesh_edit(): 
