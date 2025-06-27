@@ -27,7 +27,7 @@ PRECOMPUTED = None
 @app.context_processor
 def inject_backend_url():
     backend_url = (
-        "http://127.0.0.1:7000"
+        "http://localhost:7000"
         if os.getenv("DEV", "false").lower() == "true"
         else "https://routes.word.golf"
     )
@@ -150,6 +150,7 @@ def shift_to(i):
         data['results'] = results
     except IndexError:
         print(f"Index {i} out of range for prompts_today or neighbors_today, indicating user finish. Returning same data.")
+        data['i'] = i
     return data
 
 def help_shift(data):
@@ -186,20 +187,22 @@ def index():
     #how to distinguish first load from others?
     print("here is the session data")
     print(session)
-    session['i'] = session.get('i', 0)
+    # Ensure 'i' exists in session['data'], set to 0 if not present
+    # Ensure session['data'] exists and is a dict with 'i'
     try:
-        session_data = json.loads(session["data"])
-        if session_data['date'] != today.strftime('%Y-%m-%d'):
+        session_data = json.loads(session.get("data", "{}"))
+        if session_data.get('date') != today.strftime('%Y-%m-%d'):
             print("here is the session data data")
-            print(session_data['date'])
+            print(session_data.get('date'))
             print("here is today")
             print(today)
-            print(session_data['date'] == today.strftime('%Y-%m-%d'))
-            session['i'] = 0
+            print(session_data.get('date') == today.strftime('%Y-%m-%d'))
+            session_data['i'] = 0
     except Exception:
-        pass
+        session_data = {}
     assert WV is not None, "Word vectors not loaded"
-    data = shift_to(session['i'])
+    i = session_data.get('i', 0)
+    data = shift_to(i)
     data['jumpsA'] = []
     session['data'] = json.dumps(data)
     print('/ data is set to:', session.get('data'))
@@ -237,10 +240,10 @@ def sesh_edit():
             i = request.form.get("i", "0")
             try:
                 data['i'] = int(i)
-                session['i'] = data['i']
+                # session['i'] = data['i']
             except ValueError:
                 data['i'] = 0
-                session['i'] = 0
+                # session['i'] = 0
 
             start_target = request.form.get("prompt", "")
             # print("Start target:", start_target)
@@ -296,12 +299,14 @@ def index_post():
             session['data'] = json.dumps(data)
 
     elif request.form.get('end') is not None:
-        print(f"[/] Shifting to Prompt {session['i']+1}")
-        if (session['i'] + 1 > PCOUNT):
-            session['i'] = 6
+        data = json.loads(session.get('data', '{}'))
+        print(f"[/] Shifting to Prompt {data.get('i', 0)+1}")
+        if (data.get('i', 0) + 1 > PCOUNT):
+            data['i'] = 6
+            session['data'] = json.dumps(data)
             return make_response("session_done" + session.get('data'))
-        session['i'] += 1
-        _data = shift_to(session['i'])
+        data['i'] += 1
+        _data = shift_to(data['i'])
         session['data'] = json.dumps(update_new_data(_data, session['data']))
         
     elif request.form.get('word') is not None:

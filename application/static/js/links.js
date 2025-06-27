@@ -315,7 +315,7 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
     if (localStorage.getItem('is_help') != "true") {
         _ = send_game_data_to_backend(resp, "word=" + word);
     }
-    // console.log('[postWord] Response:', resp);
+    console.log('[postWord] Response:', resp);
     // }
     let prev_words = [];
     prev_words = JSON.parse(localStorage.getItem('previous_words'));
