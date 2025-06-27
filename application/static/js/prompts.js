@@ -58,7 +58,7 @@ function updateInnerTextSmooth(elem, newText) {
     const container = elem.closest('.word-tally-container');
     if (!container) return;
     elem.style.maxWidth = 'none';
-    const currentWidth = elem.offsetWidth;
+    const currentWidth = elem.scrollWidth;
     elem.style.maxWidth = currentWidth + 'px';
 
     requestAnimationFrame(() => {
@@ -68,8 +68,8 @@ function updateInnerTextSmooth(elem, newText) {
             const newWidth = elem.scrollWidth;
             // Apply new max-width with transition
             elem.style.maxWidth = newWidth + 'px';
+            savePrompts();
         });
-        savePrompts();
     });
 }
 
