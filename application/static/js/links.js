@@ -77,17 +77,8 @@ function focusLink(startText, targetText) {
 //@Parent: postWord
 function renderLinks(prompt, results, i, debug_session_done = false) {
     console.log('[renderLinks] Rendering links for prompt:', prompt, 'with results:', results);
-    // if (!results) { //this will work when renderLinks is called again, but should not be here.
-    //     disableLinks()
-    //     reportSessionEnded(1)
-    //     return;
-    // }
-    console.log(debug_session_done);
-    console.log(i);
-    // if (debug_session_done) {
-    //     disableLinks()
-    //     reportSessionEnded(debug_session_done)
-    // }
+    // console.log(debug_session_done);
+    // console.log(i);
     let wordspace = document.getElementById("wordspace")
     clearChildren(wordspace)
     let middleIndex = Math.floor(results.length / 2)
@@ -259,11 +250,12 @@ function reportSessionEnded(debug_session_done) {
         tallyPrompts(resp.prompts, [3,2], resp.jumps)
     }
     else if (resp.hasOwnProperty('session_done') || debug_session_done) {
+        // alert('received session_done')
         tallyScreen(resp.prompts, resp.jumpsA)
         localStorage.setItem("lastComplete", data["date"])
     }
     else {
-        renderToFrom(resp.prompt, resp.jumps);
+        // renderToFrom(resp.prompt, resp.jumps);
         renderLinks(resp.prompt, resp.results)
         // console.log('[reportSessionEnded] Rendering prompts..')
         let start_target = resp.prompts[resp.i]
@@ -317,11 +309,11 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
     }
     console.log('[postWord] Response:', resp);
     // }
-    let prev_words = [];
-    prev_words = JSON.parse(localStorage.getItem('previous_words'));
-    if (!prev_words) prev_words = [];
-    prev_words.push(word);
-    localStorage.setItem('previous_words', JSON.stringify(prev_words));
+    // let prev_words = [];
+    // prev_words = JSON.parse(localStorage.getItem('previous_words'));
+    // if (!prev_words) prev_words = [];
+    // prev_words.push(word);
+    // localStorage.setItem('previous_words', JSON.stringify(prev_words));
 
     if (!use_animations) {
         // check if we are at the ending page now (for when we have 12 jumps):
@@ -329,7 +321,7 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
             renderLinks(resp.prompt, resp.results, resp.i, true);
             return;
         } else {
-            renderToFrom(resp.prompt, resp.jumps);
+            // renderToFrom(resp.prompt, resp.jumps);
             renderLinks(resp.prompt, resp.results, resp.i);
         }
         //This is the source of nearly all renderPrompt calls.

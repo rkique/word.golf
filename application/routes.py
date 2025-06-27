@@ -151,6 +151,7 @@ def shift_to(i):
     except IndexError:
         print(f"Index {i} out of range for prompts_today or neighbors_today, indicating user finish. Returning same data.")
         data['i'] = i
+        data['i'] = i
     return data
 
 def help_shift(data):

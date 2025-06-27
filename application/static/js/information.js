@@ -1,69 +1,6 @@
 HELP_FINISH_DELAY_MS = 500
 START_GAME_DELAY_MS = 1500
 
-/**
- * Creates a prompt header e.g. go from "vigor" to "workout"
- * @param {string} prompt
- * @returns {HTMLParagraphElement}
- */
-function makePromptInfo(start_target) {
-    let p = document.createElement("p");
-    // p.innerHTML = `go from <span class="link--starting">${start_target[0]}</span> to <span class="link--starting">${start_target[1]}</span>`;
-    p.innerHTML = ''
-    return p;
-}
-
-/**
- * @param {string} prompt
- * @returns {void}
- */
-function renderToFrom(start_target, jumps){
-    if (jumps != 0){
-        
-        let previous_words = JSON.parse(localStorage.getItem('previous_words'))
-        // let previous_words = game_data.selected_words;
-    
-        let previous_word = previous_words.length > 0 ? previous_words[previous_words.length - 1] : start_target[0];
-        start_target = [previous_word, start_target[1]];
-
-    }
-    let information = /** @type {HTMLElement} */ (document.getElementById("information"));
-    clearChildren(information);
-    let promptInfoEl = makePromptInfo(start_target);
-    information.append(promptInfoEl);
-}
-
-
-// function update_database_with_finish(last_complete) {
-//     // show that the game has finished (I think this is the correct way/method to do so )
-//     let words_selected = JSON.parse((localStorage.getItem('previous_words') || null))
-//     let jumpsA = JSON.parse((localStorage.getItem('jumpsA') || null));
-//     jumpsA = jumpsA.map(jump => parseInt(jump, 10));
-//     let last_jumps = parseInt(localStorage.getItem('jumps') || 0);
-//     jumpsA.push(last_jumps);
-//     localStorage.setItem('jumpsA', JSON.stringify(jumpsA));
-
-//     const data = {
-//         last_complete: last_complete, // should be "YYYY-MM-DD"
-//     };
-
-//     fetch(window.backendURL + '/update_finish', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         },
-//         credentials: 'include', // <-- Required for auth cookies
-//         body: JSON.stringify(data)
-//     })
-//     .then(response => response.json())
-//     .then(data => {
-//         console.log('Database updated successfully:', data);
-//     })
-//     .catch((error) => {
-//         console.error('Error updating database:', error);
-//     });
-// }
-
 function displayModal(innerHTML){
     const modalEl = document.getElementById('modal');
     modalEl.innerHTML = innerHTML;
@@ -114,6 +51,7 @@ function runAfterBannerDisappears(callback) {
 }
 
 function renderFinish(jumpsA) {
+    totalJumps = jumpsA.reduce((acc, val) => acc + val, 0);
     const currentDate = new Date(localStorage.getItem('current_date'));
     const data = {
         last_complete: currentDate, // should be "YYYY-MM-DD"
@@ -140,7 +78,6 @@ function renderFinish(jumpsA) {
 
     // localStorage.setItem('streak', newStreak);
     // update_database_with_finish(totalJumps, currentDate);
-    
 }
 
 /* Clears the modal, localStorage, and renders links with XML redirect=true*/
@@ -155,9 +92,6 @@ function startGame() {
     // _ = send_game_data_to_backend(resp, 'redirect=true');
     clearBoxes()
     // should be doing the same thing as index.html!
-    console.log("here is the response POST help screen");
-    console.log(resp);
-
     // renderLinks(resp.prompt, resp.results)
     // renderToFrom(resp.prompt, 0);
     // start_target = resp.prompts[resp.i]
@@ -187,7 +121,7 @@ function startGame() {
             if ("selected_words" in game_data && game_data["selected_words"] && game_data["selected_words"].length != 0) {
                 loaded = game_data;
                 prompt_idx = game_data.prompt_idx;
-                localStorage.setItem('previous_words', JSON.stringify(game_data.selected_words));
+                // localStorage.setItem('previous_words', JSON.stringify(game_data.selected_words));
             } else { //this only happens on first load.
                 loaded = data;
                 prompt_idx = data['i'];
@@ -200,7 +134,7 @@ function startGame() {
             console.log(`jumpsA ${jumpsA} prompt_idx ${prompt_idx}`);
             _ = editSession(jumpsA, jumps, results, prompt_idx, start_target);
             start_target = prompts[prompt_idx];
-            renderToFrom(start_target, jumps);
+            // renderToFrom(start_target, jumps);
             renderPrompts(prompts, jumpsA, jumps, start_target=start_target);
             if (jumpsA.length == 5) {
                 renderLinks(start_target, results); 
@@ -334,7 +268,7 @@ function startHelpSession() {
     help = document.getElementById('help');
     help.style.display = 'none'
     data = sendAndReceiveXML(`help=true`)
-    renderToFrom(data.prompt, data.jumps);
+    // renderToFrom(data.prompt, data.jumps);
     renderLinks(data.prompt, data.results, data.i)
     let start_target = data.prompt
     clearBoxes()
@@ -350,7 +284,7 @@ function clearInfoBox() {
     let info = document.getElementById("info-box")
     info.innerHTML = '';
     info.style.display = "none";
-    localStorage.removeItem('previous_words');
+    // localStorage.removeItem('previous_words');
 }
 
 function renderHelpFinish(){

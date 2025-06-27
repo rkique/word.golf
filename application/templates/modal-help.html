@@ -3,7 +3,7 @@
         localStorage.setItem('is_help', 'true');
         data = sendAndReceiveXML(`help=true`);
         // _ = send_game_data_to_backend(data, `help=true`);
-        renderToFrom(data.prompt, data.jumps);
+        // renderToFrom(data.prompt, data.jumps);
         renderLinks(data.prompt, data.results)
         // alert('[beginTutorial] rendering prompts')
         clearBoxes()
