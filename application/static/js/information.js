@@ -108,8 +108,8 @@ function startGame() {
             date: data["date"]
         })
     })
-        .then(response => response.json())
-        .then(game_data => {
+    .then(response => response.json())
+    .then(game_data => {
             console.log("backend response: ", game_data);
             if ("logged_in" in game_data) {
                 if (game_data.email) {
@@ -121,28 +121,36 @@ function startGame() {
             if ("selected_words" in game_data && game_data["selected_words"] && game_data["selected_words"].length != 0) {
                 loaded = game_data;
                 prompt_idx = game_data.prompt_idx;
-                // localStorage.setItem('previous_words', JSON.stringify(game_data.selected_words));
+                localStorage.setItem('previous_words', JSON.stringify(game_data.selected_words));
             } else { //this only happens on first load.
                 loaded = data;
                 prompt_idx = data['i'];
             }
             let jumpsA = loaded.jumpsA;
+            // if (jumpsA.length > 5) {
+            //     jumpsA = jumpsA.slice(0, 5);
+            // }
             let jumps = loaded.jumps;
             let results = loaded.results || data['results'];
             let prompts = loaded.prompts;
             let start_target = prompts[prompt_idx];
+            // check if prompt_idx is 5 
+            const isPromptIdxFive = (prompt_idx >= 5);
+            if (isPromptIdxFive) {
+                prompt_idx = 4;
+            }
             console.log(`jumpsA ${jumpsA} prompt_idx ${prompt_idx}`);
             _ = editSession(jumpsA, jumps, results, prompt_idx, start_target);
             start_target = prompts[prompt_idx];
             // renderToFrom(start_target, jumps);
             renderPrompts(prompts, jumpsA, jumps, start_target=start_target);
-            if (jumpsA.length == 5) {
-                renderLinks(start_target, results); 
-            } else {
-                renderLinks(start_target, results)
-            }
+            // if (isPromptIdxFive) {
+            //     renderLinks(start_target, results, prompt_idx, isPromptIdxFive); 
+            // }
+            renderLinks(start_target, results, prompt_idx, isPromptIdxFive); 
             activateLinks();
         });
+ 
 }
 
 function generateLineGraph(scores) {
