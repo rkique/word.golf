@@ -259,6 +259,7 @@ function reportSessionEnded(debug_session_done) {
         tallyPrompts(resp.prompts, [3,2], resp.jumps)
     }
     else if (resp.hasOwnProperty('session_done') || debug_session_done) {
+        alert('received session_done')
         tallyScreen(resp.prompts, resp.jumpsA)
         localStorage.setItem("lastComplete", data["date"])
     }

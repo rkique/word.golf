@@ -150,6 +150,7 @@ def shift_to(i):
         data['results'] = results
     except IndexError:
         print(f"Index {i} out of range for prompts_today or neighbors_today, indicating user finish. Returning same data.")
+        data['i'] = i
     return data
 
 def help_shift(data):
@@ -184,23 +185,24 @@ def index():
     load_time()
     #we need some way of persisting state on reload.
     #how to distinguish first load from others?
-    print("here is the session data")
-    print(session)
+    # print("here is the session data")
+    # print(session)
     session['i'] = session.get('i', 0)
     try:
         session_data = json.loads(session["data"])
         if session_data['date'] != today.strftime('%Y-%m-%d'):
-            print("here is the session data data")
-            print(session_data['date'])
-            print("here is today")
-            print(today)
-            print(session_data['date'] == today.strftime('%Y-%m-%d'))
+            # print("here is the session data data")
+            # print(session_data['date'])
+            # print("here is today")
+            # print(today)
+            # print(session_data['date'] == today.strftime('%Y-%m-%d'))
             session['i'] = 0
     except Exception:
         pass
     assert WV is not None, "Word vectors not loaded"
     data = shift_to(session['i'])
-    data['jumpsA'] = []
+    if 'jumpsA' not in data:
+        data['jumpsA'] = []
     session['data'] = json.dumps(data)
     print('/ data is set to:', session.get('data'))
     return render_template('index.html', data=data)
@@ -298,7 +300,7 @@ def index_post():
     elif request.form.get('end') is not None:
         print(f"[/] Shifting to Prompt {session['i']+1}")
         if (session['i'] + 1 > PCOUNT):
-            session['i'] = 6
+            session['i'] = 5
             return make_response("session_done" + session.get('data'))
         session['i'] += 1
         _data = shift_to(session['i'])

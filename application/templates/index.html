@@ -107,14 +107,21 @@
             let start_target = prompts[prompt_idx];
             console.log(`jumpsA ${jumpsA} prompt_idx ${prompt_idx}`);
             _ = editSession(jumpsA, jumps, results, prompt_idx, start_target);
+            if(prompt_idx == 5){
+                //this should only be when end on max.
+                //manually construct a session to end here:
+                start_target = prompts[4]
+                renderToFrom(start_target, jumps)
+                renderPrompts(prompts, jumpsA, jumps, start_target=start_target)
+                renderLinks(start_target, results)
+                tallyScreen(prompts, jumpsA)
+                disableLinks()
+                renderFinish(jumpsA)
+            }
             start_target = prompts[prompt_idx];
             renderToFrom(start_target, jumps);
             renderPrompts(prompts, jumpsA, jumps, start_target=start_target);
-            if (jumpsA.length == 5) {
-                renderLinks(start_target, results); 
-            } else {
-                renderLinks(start_target, results)
-            }
+            renderLinks(start_target, results)
             activateLinks();
         });
     }

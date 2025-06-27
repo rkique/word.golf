@@ -114,6 +114,7 @@ function runAfterBannerDisappears(callback) {
 }
 
 function renderFinish(jumpsA) {
+    totalJumps = jumpsA.reduce((acc, val) => acc + val, 0);
     const currentDate = new Date(localStorage.getItem('current_date'));
     const data = {
         last_complete: currentDate, // should be "YYYY-MM-DD"
