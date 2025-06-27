@@ -6,7 +6,7 @@ function editSession(jumpsAValue, jumpsValue, result_value, i, prompt_text) {
     xhttp.open("POST", "/editsession", false); 
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded"); 
 
-    let message = `edit=true&jumpsA=${encodeURIComponent(JSON.stringify(jumpsAValue))}&jumps=${encodeURIComponent(jumpsValue)}&result=${encodeURIComponent(JSON.stringify(result_value))}&i=${encodeURIComponent(i)}&prompt=${encodeURIComponent(JSON.stringify(prompt_text))}`; 
+    let message = `edit=true&jumpsArray=${encodeURIComponent(JSON.stringify(jumpsAValue))}&jumps=${encodeURIComponent(jumpsValue)}&result=${encodeURIComponent(JSON.stringify(result_value))}&i=${encodeURIComponent(i)}&prompt=${encodeURIComponent(JSON.stringify(prompt_text))}`; 
     
     xhttp.send(message); 
 
@@ -22,7 +22,7 @@ function editSession(jumpsAValue, jumpsValue, result_value, i, prompt_text) {
 
 function send_game_data_to_backend(response_text, message) {
     jumps = response_text["jumps"]; 
-    jumpsA = response_text["jumpsA"]; 
+    jumpsArray = response_text["jumpsArray"]; 
     results = response_text["results"]; 
     prompts = response_text["prompts"]; 
     current_prompt = response_text["i"]; 
@@ -49,7 +49,7 @@ function send_game_data_to_backend(response_text, message) {
         body: JSON.stringify({
             ...(word ? { word: word } : {}),
             current_jumps: jumps,
-            jumpsA: jumpsA,
+            jumpsArray: jumpsArray,
             results: results,
             prompts: prompts,
             prompt_idx: current_prompt,
@@ -86,20 +86,20 @@ function sendAndReceiveXML(message) {
         try {
             response_text = JSON.parse(xhttp.responseText);
             jumps = response_text["jumps"]; 
-            jumpsA = response_text["jumpsA"]; 
+            jumpsArray = response_text["jumpsArray"]; 
             results = response_text["results"]; 
             prompts = response_text["prompts"]; 
             current_prompt = response_text["i"]; 
             console.log(`[XML] ${current_prompt}`)
             // handle update_state if needed
-            // console.log(`[Send and Receive XML] results: ${results} jumpsA : ${jumpsA} prompts ${prompts}`);
+            // console.log(`[Send and Receive XML] results: ${results} jumpsArray : ${jumpsArray} prompts ${prompts}`);
             // fix this localstorage issue!!!
             if (jumps >= 12 ) { // cap it at 12 current jumps
                 let resp = sendAndReceiveXML(`end=true`);
                 _ = send_game_data_to_backend(resp, `end=true`);
-                clearLastTallyContainer(resp.jumpsA.length);
+                clearLastTallyContainer(resp.jumpsArray.length);
                 console.log(resp);
-                // see if the length of jumpsA is 
+                // see if the length of jumpsArray is 
                 return resp;
             } else {
                 return response_text;

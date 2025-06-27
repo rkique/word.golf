@@ -16,10 +16,9 @@ function clearLastTallyContainer(ct) {
 
 //given a collection of (promptBox -> promptTallyContainer -> array(wordOrTally))
 // does something.
-function tallyAllPrompts(ct, current_jumps) {
+function tallyAllPrompts(ct) {
     promptBoxes = document.querySelectorAll('#prompts .prompt-box');
     promptBoxes = Array.from(promptBoxes).slice(0, ct)
-    console.log(`[tallyAllPrompts] current_jumps ${current_jumps}`)
     for (let box of promptBoxes) {
         let promptWords = box.querySelectorAll('.prompt-word');
         promptWords.forEach(word => {
@@ -39,8 +38,8 @@ function tallyAllPrompts(ct, current_jumps) {
 }
 
 //given a collection of (promptBox -> promptTallyContainer -> array(wordOrTally))
-//updates .prompt-word to .tally when it does not contain target.
-function tallyNonTargetPrompts(targets) {
+//updates the start prompt-word to tally.
+function tallyStarts(targets) {
     promptBoxes = document.querySelectorAll('#prompts .prompt-box');
     for (let box of promptBoxes) {
         let promptWords = box.querySelectorAll('.prompt-word');
@@ -73,9 +72,9 @@ function updateInnerTextSmooth(elem, newText) {
     });
 }
 
-//todo: we want to edit an existing promptTag.
+//Updates existing prompts with new start and target. 
+//Adds tally in correct place but does not resolve 
 function fillPrompt(promptBox, start, target, score, current_jumps) {
-    // console.log(`fillPrompt: start=${start}, target=${target}, score=${score}`);
     if (promptBox.children.length === 0) {
         for (let i = 0; i < 6; i++) {
             let div = document.createElement("div");
@@ -127,12 +126,12 @@ function fillPrompt(promptBox, start, target, score, current_jumps) {
     }
 }
 
-function serializePrompts(jumpsA) {
+function serializePrompts(jumpsArray) {
     if (localStorage.getItem('is_help') === 'true') {
         return;
     }
     const promptBoxes = document.querySelectorAll('#prompts .prompt-box');
-    const completedCount = jumpsA.length;
+    const completedCount = jumpsArray.length;
     for (let i = 0; i < completedCount; i++) {
         const key = `prompt${i + 1}`;
         const existing = localStorage.getItem(key);
@@ -176,22 +175,22 @@ function setPrompts() {
     }
 }
 
-function tallyPrompts(prompts, jumpsA, current_jumps) {
+function tallyPrompts(prompts, jumpsArray, current_jumps) {
     let targets = prompts.map(arr => arr[1]);
-    ct = jumpsA.length;
-    tallyNonTargetPrompts(targets);
+    ct = jumpsArray.length;
+    tallyStarts(targets);
     tallyAllPrompts(ct, current_jumps)
 }
 
-function renderPrompts(prompts, jumpsA, current_jumps, start_target, is_reload = false, score = null) {
+function renderPrompts(prompts, jumpsArray, current_jumps, start_target, is_reload = false, score = null) {
     if (is_reload) {
         console.log('is_reload true')
         setPrompts()
     }
     else {
-        console.log(`[renderPrompts] prompts: ${prompts}, jumpsA: ${jumpsA}, current_jumps: ${current_jumps}, start_target: ${start_target}, score: ${score}`);
+        console.log(`[renderPrompts] prompts: ${prompts}, jumpsArray: ${jumpsArray}, current_jumps: ${current_jumps}, start_target: ${start_target}, score: ${score}`);
         let promptBoxes = document.querySelectorAll('#prompts .prompt-box');
-        tallyPrompts(prompts, jumpsA, current_jumps)
+        tallyPrompts(prompts, jumpsArray, current_jumps)
         if (ct < prompts.length && promptBoxes[ct]) {
             let [start, target] = start_target || prompts[ct];
             const current_score = score || 0;

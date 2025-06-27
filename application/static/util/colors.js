@@ -11,7 +11,7 @@ function changeColorMode() {
 }
 
 function syncGraph(){
-    jumpsArray = JSON.parse(localStorage.getItem('jumpsA') || null);
+    jumpsArray = JSON.parse(localStorage.getItem('jumpsArray') || null);
     // if (jumpsArray !== null) generateLineGraph(jumpsArray);
 }
 function syncColorMode() {

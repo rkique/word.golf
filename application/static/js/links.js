@@ -183,11 +183,11 @@ function makeStartLink(prompt, word) {
     return startLink
 }
 
-function tallyScreen(prompts, jumpsA) {
-    totalJumps = jumpsA.reduce((sum, jumps) => sum + jumps, 0);
-    renderFinish(jumpsA)
+function tallyScreen(prompts, jumpsArray) {
+    totalJumps = jumpsArray.reduce((sum, jumps) => sum + jumps, 0);
+    renderFinish(jumpsArray)
     start_target = prompts[4]
-    renderPrompts(prompts, jumpsA, 0, start_target = start_target)
+    renderPrompts(prompts, jumpsArray, 0, start_target = start_target)
 }
 function arrayEqual(a, b) {
     return Array.isArray(a) && Array.isArray(b) &&
@@ -267,8 +267,7 @@ function reportSessionEnded(debug_session_done) {
     }
     else if (resp.hasOwnProperty('session_done') || debug_session_done) {
         // alert('received session_done')
-        tallyScreen(resp.prompts, resp.jumpsA)
-        saveWordspace()
+        tallyScreen(resp.prompts, resp.jumpsArray)
         localStorage.setItem("lastComplete", data["date"])
     }
     else {
@@ -276,7 +275,7 @@ function reportSessionEnded(debug_session_done) {
         renderLinks(resp.prompt, resp.results)
         // console.log('[reportSessionEnded] Rendering prompts..')
         let start_target = resp.prompts[resp.i]
-        renderPrompts(resp.prompts, resp.jumpsA, resp.jumps, start_target = start_target)
+        renderPrompts(resp.prompts, resp.jumpsArray, resp.jumps, start_target = start_target)
         activateLinks()
     }
 }
@@ -313,28 +312,15 @@ function showBanner(text, color) {
 }
 
 function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
-
-    // capping the maximum number of jumps 
-    // let jumps = parseInt(localStorage.getItem('jumps')) || 0;
-    // let resp;
-    // if (jumps >= 12) {
-    //     resp = sendAndReceiveXML(`end=true`);
-    // } else {
     const resp = sendAndReceiveXML("word=" + word);
     if (localStorage.getItem('is_help') != "true") {
         _ = send_game_data_to_backend(resp, "word=" + word);
     }
     console.log('[postWord] Response:', resp);
-    // }
-    // let prev_words = [];
-    // prev_words = JSON.parse(localStorage.getItem('previous_words'));
-    // if (!prev_words) prev_words = [];
-    // prev_words.push(word);
-    // localStorage.setItem('previous_words', JSON.stringify(prev_words));
-
+ 
     if (!use_animations) {
         // check if we are at the ending page now (for when we have 12 jumps):
-        if (resp.jumpsA.length === 5 && resp.jumpsA[resp.jumpsA.length - 1] === 12) {
+        if (resp.jumpsArray.length === 5 && resp.jumpsArray[resp.jumpsArray.length - 1] === 12) {
             renderLinks(resp.prompt, resp.results, resp.i, true);
             return;
         } else {
@@ -342,40 +328,40 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
             renderLinks(resp.prompt, resp.results, resp.i);
         }
         //This is the source of nearly all renderPrompt calls.
-        //how to know that the previous state was not rendered?
         if (word !== resp.prompt[1]) {
             let start_target = [word, resp.prompt[1]]
             let score = resp.score;
-            if (resp.jumps === 0 && resp.jumpsA[resp.jumpsA.length - 1] === 12) {
+            if (resp.jumps === 0 && resp.jumpsArray[resp.jumpsArray.length - 1] === 12) {
                 start_target = resp.prompt;
                 score = 0;
             }
-            renderPrompts(resp.prompts, resp.jumpsA, resp.jumps, start_target, false, score);
+            renderPrompts(resp.prompts, resp.jumpsArray, resp.jumps, start_target, false, score);
         }
         else {
             console.log(`[showBanner] ${jumps}`)
-            // we are finished now with the prompt
             if (resp.jumps <= 2) showBanner("perfect!", "banner-perfect");
             else if (resp.jumps <= 3) showBanner("superb!", "banner-impressive");
             else if (resp.jumps <= 5) showBanner("great", "banner-great");
             else if (resp.jumps <= 7) showBanner("good...", "banner-good");
             else if (resp.jumps <= 9) showBanner("close call", "banner-closecall");
+            if (resp.jumps == 12) showBanner("skipped", "banner-closecall");
         }
         activateLinks()
     }
+    /////////// ANIMATE_CODE (XML in callback) ///////////
     // } else {
     //     const wordspace = document.getElementById("wordspace");
     //     function renderXMLAfterAnimation(word, resp) {
     //         prompts = resp.prompts;
     //         prompt_idx = resp.i;
-    //         jumpsA = resp.jumpsA;
+    //         jumpsArray = resp.jumpsArray;
     //         jumps = resp.jumps;
-    //         // console.log(`[postWord] prompts: ${prompts}, prompt_idx: ${prompt_idx}, jumpsA: ${jumpsA}, jumps: ${jumps}`);
+    //         // console.log(`[postWord] prompts: ${prompts}, prompt_idx: ${prompt_idx}, jumpsArray: ${jumpsArray}, jumps: ${jumps}`);
     //         renderLinks(resp.prompt, resp.results, resp.i);
     //         // console.log('[postWord] Rendering prompts..')
     //         if (word !== resp.prompt[1]) {
     //             let start_target = [word, resp.prompt[1]]
-    //             renderPrompts(prompts, jumpsA, jumps, start_target = start_target);
+    //             renderPrompts(prompts, jumpsArray, jumps, start_target = start_target);
     //         }
     //         activateLinks();
     //     }

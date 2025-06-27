@@ -96,7 +96,7 @@
                     loaded = data;
                     prompt_idx = data['i'];
                 }
-                let jumpsA = loaded.jumpsA;
+                let jumpsArray = loaded.jumpsArray;
                 let jumps = loaded.jumps;
                 let results = loaded.results || data['results'];
                 let prompts = loaded.prompts;
@@ -104,13 +104,17 @@
                 // check if prompt_idx is 5 
                 const isPromptIdxFive = (prompt_idx >= 5);
                 if (isPromptIdxFive) {prompt_idx = 4;}
-                console.log(`jumpsA ${jumpsA} prompt_idx ${prompt_idx}`);
-                _ = editSession(jumpsA, jumps, results, prompt_idx, start_target);
+                console.log(`jumpsArray ${jumpsArray} prompt_idx ${prompt_idx}`);
+                _ = editSession(jumpsArray, jumps, results, prompt_idx, start_target);
                 start_target = prompts[prompt_idx];
                 // renderToFrom(start_target, jumps);
-                renderPrompts(prompts, jumpsA, jumps, start_target=start_target, is_reload=true);
+                renderPrompts(prompts, jumpsArray, jumps, start_target=start_target, is_reload=true);
                 renderLinks(start_target, results, prompt_idx, isPromptIdxFive); 
                 activateLinks();
             });
     }
+
+//mutationObserver: on any change to the screen that is visible, we save the screen state.
+//on reload: we load that exact screen.
+//localStorage: 
 </script>

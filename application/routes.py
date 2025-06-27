@@ -119,7 +119,8 @@ def make_help_session():
     # Compute results for the first prompt
     results = get_curve(prompt1[0], prompt1[1], PRECOMPUTED, WV, neighbor=neighbor1)
     data = {
-        'jumpsA': [],
+        'jumpsArray': [],
+        'wordArray': [],
         'jumps': 0,
         'i': 0,
         'date': today.strftime('%Y-%m-%d'),
@@ -155,7 +156,7 @@ def shift_to(i):
     return data
 
 def help_shift(data):
-    data['jumpsA'].append(data['jumps'])
+    data['jumpsArray'].append(data['jumps'])
     data['jumps'] = 0
     i = data['i'] + 1
     data['i'] = i
@@ -174,8 +175,8 @@ def help_shift(data):
 def update_new_data(new_data, session_data):
     session_data = json.loads(session_data)
     print(f"[update_new_data] updating with {session_data['jumps']}")
-    if len(new_data['jumpsA']) < 5:
-        new_data['jumpsA'] += [session_data['jumps']]
+    if len(new_data['jumpsArray']) < 5:
+        new_data['jumpsArray'] += [session_data['jumps']]
     return new_data
     
 #Load both data and time once at the starting screen.
@@ -204,10 +205,12 @@ def index():
     assert WV is not None, "Word vectors not loaded"
     i = session_data.get('i', 0)
     data = shift_to(i)
-    data['jumpsA'] = []
+    data['jumpsArray'] = []
+    data['wordArray'] = [] #this is a previous_words array
     session['data'] = json.dumps(data)
     print('/ data is set to:', session.get('data'))
     return render_template('index.html', data=data)
+
 
 @app.route('/editsession', methods=['POST']) 
 def sesh_edit(): 
@@ -215,13 +218,13 @@ def sesh_edit():
         if request.form.get('edit') is not None: 
             # save_activity() 
             data = json.loads(session.get('data'))
-            jumpsA_str = request.form.get("jumpsA", "[]")
+            jumpsA_str = request.form.get("jumpsArray", "[]")
             try:
-                # session['jumpsA'] = [int(x) for x in json.loads(jumpsA_str)]
-                data['jumpsA'] = [int(x) for x in json.loads(jumpsA_str)]
+                # session['jumpsArray'] = [int(x) for x in json.loads(jumpsA_str)]
+                data['jumpsArray'] = [int(x) for x in json.loads(jumpsA_str)]
             except json.JSONDecodeError:
-                # session['jumpsA'] = []
-                data['jumpsA'] = []
+                # session['jumpsArray'] = []
+                data['jumpsArray'] = []
 
             jumpsA_result = request.form.get("result", "[]")
             try:
@@ -291,7 +294,7 @@ def index_post():
             print('[/] Finished Help')
             data['is_help'] = False
             data['i'] = 0
-            data['jumpsA'] = []
+            data['jumpsArray'] = []
             data['jumps'] = 0
             session['data'] = json.dumps(data)
             return make_response("help_session_done" + session.get('data'))
@@ -319,7 +322,7 @@ def index_post():
     elif request.form.get('redirect') is not None:
         print('[/] Redirecting to start...')
         data = shift_to(0)
-        data['jumpsA'] = []
+        data['jumpsArray'] = []
         session['data'] = json.dumps(data)
         return make_response(json.loads(session['data']))
     else:

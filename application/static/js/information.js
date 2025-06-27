@@ -50,8 +50,8 @@ function runAfterBannerDisappears(callback) {
   });
 }
 
-function renderFinish(jumpsA) {
-    totalJumps = jumpsA.reduce((acc, val) => acc + val, 0);
+function renderFinish(jumpsArray) {
+    totalJumps = jumpsArray.reduce((acc, val) => acc + val, 0);
     const currentDate = new Date(localStorage.getItem('current_date'));
     const data = {
         last_complete: currentDate, // should be "YYYY-MM-DD"
@@ -69,7 +69,7 @@ function renderFinish(jumpsA) {
     .then(finish_data => {
         const daily_idx = daysSinceStartDate();
         is_logged_in = Boolean(localStorage.getItem('logged_in'))
-        jumpsGridMessage = renderGrid(finish_data.jumpsA);
+        jumpsGridMessage = renderGrid(finish_data.jumpsArray);
         runAfterBannerDisappears(() => {displayFinishModal(daily_idx, totalJumps, finish_data.newStreak, jumpsGridMessage, is_logged_in)})
     })
     .catch((error) => {
@@ -85,7 +85,7 @@ function startGame() {
     document.getElementById('modal').style.display = 'none';
     localStorage.setItem('is_help', 'false');
     localStorage.removeItem('jumps');
-    localStorage.removeItem('jumpsA');
+    localStorage.removeItem('jumpsArray');
     localStorage.removeItem('prompts');
     localStorage.removeItem('results');
     resp = sendAndReceiveXML('redirect=true');
@@ -95,7 +95,7 @@ function startGame() {
     // renderLinks(resp.prompt, resp.results)
     // renderToFrom(resp.prompt, 0);
     // start_target = resp.prompts[resp.i]
-    // renderPrompts(resp.prompts, resp.jumpsA, resp.jumps, start_target=start_target, serialize=false)
+    // renderPrompts(resp.prompts, resp.jumpsArray, resp.jumps, start_target=start_target, serialize=false)
     // activateLinks()
     const data = resp;
     fetch(`${window.backendURL}/user_and_game_state`, {
@@ -126,9 +126,9 @@ function startGame() {
                 loaded = data;
                 prompt_idx = data['i'];
             }
-            let jumpsA = loaded.jumpsA;
-            // if (jumpsA.length > 5) {
-            //     jumpsA = jumpsA.slice(0, 5);
+            let jumpsArray = loaded.jumpsArray;
+            // if (jumpsArray.length > 5) {
+            //     jumpsArray = jumpsArray.slice(0, 5);
             // }
             let jumps = loaded.jumps;
             let results = loaded.results || data['results'];
@@ -139,11 +139,11 @@ function startGame() {
             if (isPromptIdxFive) {
                 prompt_idx = 4;
             }
-            console.log(`jumpsA ${jumpsA} prompt_idx ${prompt_idx}`);
-            _ = editSession(jumpsA, jumps, results, prompt_idx, start_target);
+            console.log(`jumpsArray ${jumpsArray} prompt_idx ${prompt_idx}`);
+            _ = editSession(jumpsArray, jumps, results, prompt_idx, start_target);
             start_target = prompts[prompt_idx];
             // renderToFrom(start_target, jumps);
-            renderPrompts(prompts, jumpsA, jumps, start_target=start_target);
+            renderPrompts(prompts, jumpsArray, jumps, start_target=start_target);
             // if (isPromptIdxFive) {
             //     renderLinks(start_target, results, prompt_idx, isPromptIdxFive); 
             // }
@@ -154,7 +154,7 @@ function startGame() {
 }
 
 function generateLineGraph(scores) {
-    localStorage.setItem('jumpsA', JSON.stringify(scores));
+    localStorage.setItem('jumpsArray', JSON.stringify(scores));
     const graphContainer = document.getElementById("scoresGraph");
     if (!graphContainer) return;
     const rootStyles = getComputedStyle(document.documentElement);
@@ -280,7 +280,7 @@ function startHelpSession() {
     renderLinks(data.prompt, data.results, data.i)
     let start_target = data.prompt
     clearBoxes()
-    renderPrompts(data.prompts, data.jumpsA, 0, start_target=start_target)
+    renderPrompts(data.prompts, data.jumpsArray, 0, start_target=start_target)
     activateLinks()
     addHelpFocuses(data.prompt, data.results)
     start_text = `<p id="modalText"> Welcome to word.golf, a sport played with the meanings of words!</p>
