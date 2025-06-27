@@ -281,9 +281,9 @@ function startHelpSession() {
 }
 
 function clearInfoBox() {
-    let info = document.getElementById("info-box")
+    let info = document.getElementById("information")
     info.innerHTML = '';
-    info.style.display = "none";
+    // info.style.display = "none";
     // localStorage.removeItem('previous_words');
 }
 

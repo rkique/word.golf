@@ -365,7 +365,6 @@ button span {
     }
     50% {
         transform: scale(1.08);
-        color: var(--emphasis-color);
     }
     100% {
         transform: scale(1);
@@ -479,7 +478,7 @@ button span {
 
 #prompts-container {
     justify-content: flex-start;
-    margin-top: 2rem;
+    margin-top: 0.5rem;
 }
 #prompts-container, #wordspace-container {
     flex-direction: column;
