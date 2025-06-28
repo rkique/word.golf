@@ -121,15 +121,18 @@ function startGame() {
             }
             let loaded;
             let prompt_idx;
+            let jumpsArray;
             if ("selected_words" in game_data && game_data["selected_words"] && game_data["selected_words"].length != 0) {
                 loaded = game_data;
                 prompt_idx = game_data.prompt_idx;
                 localStorage.setItem('previous_words', JSON.stringify(game_data.selected_words));
+                jumpsArray = loaded.jumpsA;
             } else { //this only happens on first load.
                 loaded = data;
                 prompt_idx = data['i'];
+                jumpsArray = loaded.jumpsArray;
             }
-            let jumpsArray = loaded.jumpsArray;
+            
             // if (jumpsArray.length > 5) {
             //     jumpsArray = jumpsArray.slice(0, 5);
             // }

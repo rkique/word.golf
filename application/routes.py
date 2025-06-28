@@ -83,7 +83,7 @@ def get_prompts_for_date(date : datetime.datetime) -> list:
 def load_time():
     global elapsed, prompts_today, neighbors_today, today
     eastern = datetime.timezone(datetime.timedelta(hours=-5))
-    now_utc = datetime.datetime.utcnow() + datetime.timedelta(hours=8)
+    now_utc = datetime.datetime.utcnow()
     now_et = now_utc.replace(tzinfo=datetime.timezone.utc).astimezone(eastern)
     today = now_et.replace(tzinfo=None).date() + add_days(DAYS)
     elapsed, prompts_today, neighbors_today = get_prompts_for_date(today)
