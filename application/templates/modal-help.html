@@ -23,6 +23,8 @@
         }
 
     async function renderLogout(){
+        let data = JSON.parse('{{data|tojson|safe}}');
+        if ((data.jumps == 0 && data.jumpsA.length === 0) || (data.jumpsA.length === 5)) {
         try {
             let data2 = JSON.parse('{{data|tojson|safe}}');
             console.log("here is data2");
@@ -54,6 +56,7 @@
             }
         } catch (err) {
             console.log("Error during logout:", err);
+        }
         }
     }
 

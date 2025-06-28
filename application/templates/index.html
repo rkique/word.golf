@@ -44,11 +44,29 @@
     </div>
 
 </div>
-
+<script>
+    let BACKEND_OK = true
+    //**** FALLBACK: render data as normal without saving ***** //
+    fetch(`${window.backendURL}/is_logged_in`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' }
+    })
+    .then(response => {
+    if (!response.ok) throw new Error('POST blocked (mostly likely CORS)');
+    })
+    .catch(error => {
+    console.warn(`[word.golf] Hey! The backend is either blocked or offline, not saving -- Eric`, error);
+    BACKEND_OK = false;
+    });
+    startHelpSession();
+</script>
 <script src="static/js/is_game_complete.js"> </script>
 <script>
     localStorage.setItem('current_date', data['date']);
     is_help = localStorage.getItem('is_help');
+
+    //start help session
     if (is_help !== 'false') { 
         fetch(`${window.backendURL}/user_and_game_state`, {
         method: 'POST',
@@ -66,8 +84,6 @@
         });
     } 
     else {
-        console.log("Here is data");
-        console.log(data);
         fetch(`${window.backendURL}/user_and_game_state`, {
             method: 'POST',
             credentials: 'include',
@@ -114,7 +130,4 @@
             });
     }
 
-//mutationObserver: on any change to the screen that is visible, we save the screen state.
-//on reload: we load that exact screen.
-//localStorage: 
 </script>

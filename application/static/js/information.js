@@ -57,6 +57,7 @@ function renderFinish(jumpsArray) {
         last_complete: currentDate, // should be "YYYY-MM-DD"
     };
 
+
     fetch(window.backendURL + '/update_finish', {
         method: 'POST',
         headers: {
@@ -69,19 +70,21 @@ function renderFinish(jumpsArray) {
     .then(finish_data => {
         const daily_idx = daysSinceStartDate();
         is_logged_in = Boolean(localStorage.getItem('logged_in'))
-        jumpsGridMessage = renderGrid(finish_data.jumpsArray);
+        let jumpsGridMessage = finish_data.jumpsArray ? renderGrid(finish_data.jumpsArray) : '';
         runAfterBannerDisappears(() => {displayFinishModal(daily_idx, totalJumps, finish_data.newStreak, jumpsGridMessage, is_logged_in)})
     })
     .catch((error) => {
         console.error('Error updating database:', error);
     });
-
     // localStorage.setItem('streak', newStreak);
     // update_database_with_finish(totalJumps, currentDate);
 }
 
 /* Clears the modal, localStorage, and renders links with XML redirect=true*/
 function startGame() {
+    clearInfoBox()
+    document.getElementById("information").innerHTML =
+            ``;
     document.getElementById('modal').style.display = 'none';
     localStorage.setItem('is_help', 'false');
     localStorage.removeItem('jumps');
@@ -150,8 +153,7 @@ function startGame() {
             renderLinks(start_target, results, prompt_idx, isPromptIdxFive); 
             activateLinks();
         });
- 
-}
+    }
 
 function generateLineGraph(scores) {
     localStorage.setItem('jumpsArray', JSON.stringify(scores));
@@ -289,10 +291,9 @@ function startHelpSession() {
 }
 
 function clearInfoBox() {
-    let info = document.getElementById("information")
+    let info = document.getElementById("info-box")
     info.innerHTML = '';
-    // info.style.display = "none";
-    // localStorage.removeItem('previous_words');
+    info.style.display = 'none'; //hide container.
 }
 
 function renderHelpFinish(){

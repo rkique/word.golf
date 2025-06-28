@@ -135,6 +135,7 @@
     #modal {
         max-width: 90vw;
         min-height: 50vh;
+        min-width: 70vw;
     }
     #modal button {
         font-size: 1.4rem;

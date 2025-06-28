@@ -183,6 +183,13 @@ function tallyPrompts(prompts, jumpsArray, current_jumps) {
 }
 
 function renderPrompts(prompts, jumpsArray, current_jumps, start_target, is_reload = false, score = null) {
+    if (!prompts || !jumpsArray || !start_target) {
+        console.warn('[renderPrompts] Missing required arguments:', {
+            prompts,
+            jumpsArray,
+            start_target
+        });
+    }
     if (is_reload) {
         console.log('is_reload true')
         setPrompts()

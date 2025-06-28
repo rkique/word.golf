@@ -140,7 +140,7 @@ function showHelpPopup(message, transform, startSocket, endSocket) {
         }
     } else {
         document.getElementById("information").innerHTML =
-            `<p class='info-box'>${message}</p>`;
+            `${message}`;
     }
 }
 
@@ -344,7 +344,7 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
             else if (resp.jumps <= 5) showBanner("great", "banner-great");
             else if (resp.jumps <= 7) showBanner("good...", "banner-good");
             else if (resp.jumps <= 9) showBanner("close call", "banner-closecall");
-            if (resp.jumps == 12) showBanner("skipped", "banner-closecall");
+            else if (resp.jumps == 11) showBanner("skipped", "banner-closecall");
         }
         activateLinks()
     }
