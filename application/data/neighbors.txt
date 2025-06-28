@@ -144,12 +144,9 @@ necklace,ring,wrestling
 ending,outcome,closeness
 buzzer,dunking,painting
 classroom,recess,delay
-interruption,distraction,plaything
 pickle,pumpkin,foliage
-booze,hangover,twinge
 handshake,autograph,artwork
 chrome,exterior,building
-embryo,twins,uncle
 shroud,husk,pineapple
 escort,decoy,trick
 guest,limo,buggy

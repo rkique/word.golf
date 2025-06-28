@@ -4,7 +4,9 @@ import random
 import ast
 
 LAZY_EXCLUDE = ["fuckable", "shitshow", "jegging", "daddy", "brat",
-                "dominatrix"," hotness"," sexiness"," perky"," kissable"," fatale"," seductive", "aybe", "orgasmed", "sodomized", "sodomize", "kinkier", "ravish", "ravage"
+                "dominatrix"," hotness"," sexiness"," perky"," kissable"," fatale"," seductive", "aybe",
+                  "orgasmed", "sodomized", "sodomize", "kinkier", "ravish", "ravage",
+                  "mindfuck","perv","foreplay","makeout","polyamorous"
                 ]
 
 def txt_to_set(path):
