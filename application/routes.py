@@ -33,15 +33,12 @@ def inject_backend_url():
     )
     return {"backend_url": backend_url}
 
-#DEV: no caching of static files.
-# @app.after_request
-# def add_header(response):
-#     if os.getenv("DEV", "false").lower() == "true":
-#         if request.path.startswith('/static/'):
-#             response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
-#             response.headers['Pragma'] = 'no-cache'
-#             response.headers['Expires'] = '0'
-#     return response
+#max-age=0: forces the browser to revalidate on first load
+@app.after_request
+def add_cache_header(response):
+    if request.path.startswith('/static/'):
+        response.headers['Cache-Control'] = 'public, max-age=0, stale-while-revalidate=31536000'
+    return response
 
 @app.route('/solutions')
 def serve_data():
