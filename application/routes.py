@@ -199,7 +199,7 @@ def index():
     data['jumpsArray'] = []
     session['data'] = json.dumps(data)
     print('/ data is set to:', session.get('data'))
-    return render_template('index.v1.html', data=data)
+    return render_template('index.html', data=data)
 
 @app.route('/editsession', methods=['POST']) 
 def sesh_edit(): 
