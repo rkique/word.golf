@@ -3,14 +3,34 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 {% set version = 'v1.02' %}
-<script src="{{ url_for('static', filename='js/app.js') }}?{{ version }}"></script>
+<script>
+    if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(function(regs) {
+    for (let reg of regs) {
+      reg.unregister();
+    }
+  });
+
+  // Optional: clear all CacheStorage
+  if (caches) {
+    caches.keys().then(keys => {
+      keys.forEach(key => caches.delete(key));
+    });
+  }
+}
+</script>
 
 <head>
     {% include 'head.html' %}
     <title>word.golf</title>
 </head>
 
-<script>data = JSON.parse('{{data|tojson|safe}}');
+<script>
+window.onpageshow = function(evt) {
+  if (evt.persisted) window.location.reload();
+};
+data = JSON.parse('{{data|tojson|safe}}');
+
 </script>
 
 <script src="{{ url_for('static', filename='util/leader-line.v1.min.js') }}"></script>
@@ -69,7 +89,7 @@
     });
     startHelpSession();
 </script> -->
-<script src="static/js/is_game_complete.js"> </script>
+<script src="static/js/is_game_complete.v1.js"> </script>
 <script>
     localStorage.setItem('current_date', data['date']);
     is_help = localStorage.getItem('is_help');
