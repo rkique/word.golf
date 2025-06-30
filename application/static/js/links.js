@@ -183,6 +183,16 @@ function makeStartLink(prompt, word) {
     return startLink
 }
 
+function switchToLoggedIn() {
+    document.getElementById('guest-buttons').style.display = 'none';
+    document.getElementById('logged_in-buttons').style.display = 'flex';
+    const logoutBtn = document.createElement('button');
+    logoutBtn.textContent = 'logout';
+    logoutBtn.className = 'switch switch--outlined';
+    logoutBtn.onclick = renderLogout();
+    document.getElementById('logged_in-buttons').appendChild(logoutBtn);
+}
+
 function tallyScreen(prompts, jumpsArray) {
     totalJumps = jumpsArray.reduce((sum, jumps) => sum + jumps, 0);
     renderFinish(jumpsArray)
@@ -190,14 +200,11 @@ function tallyScreen(prompts, jumpsArray) {
     renderPrompts(prompts, jumpsArray, 0, start_target = start_target)
     let is_logged_in = Boolean(localStorage.getItem('logged_in'));
     if (is_logged_in) {
-        const logoutBtn = document.createElement('button');
-        logoutBtn.textContent = 'logout';
-        logoutBtn.className = 'switch switch--outlined';
-        logoutBtn.onclick = renderLogout();
-        document.getElementById('logged_in-buttons').appendChild(logoutBtn);
+        switchToLoggedIn();
     }
     
 }
+
 function arrayEqual(a, b) {
     return Array.isArray(a) && Array.isArray(b) &&
         a.length === b.length &&
