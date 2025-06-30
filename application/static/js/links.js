@@ -189,7 +189,7 @@ function switchToLoggedIn() {
     const logoutBtn = document.createElement('button');
     logoutBtn.textContent = 'logout';
     logoutBtn.className = 'switch switch--outlined';
-    logoutBtn.onclick = renderLogout();
+    logoutBtn.onclick = renderLogout;
     document.getElementById('logged_in-buttons').appendChild(logoutBtn);
 }
 
@@ -199,6 +199,8 @@ function tallyScreen(prompts, jumpsArray) {
     start_target = prompts[4]
     renderPrompts(prompts, jumpsArray, 0, start_target = start_target)
     let is_logged_in = Boolean(localStorage.getItem('logged_in'));
+    console.log("I am in tally screen here is logged in");
+    console.log(is_logged_in);
     if (is_logged_in) {
         switchToLoggedIn();
     }
