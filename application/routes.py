@@ -35,9 +35,11 @@ def inject_backend_url():
 
 #max-age=0: forces the browser to revalidate on first load
 @app.after_request
-def add_cache_header(response):
-    if request.path.startswith('/static/'):
-        response.headers['Cache-Control'] = 'public, max-age=0, stale-while-revalidate=31536000'
+def no_cache_index(response):
+    if request.path == '/' or request.path.endswith('.html'):
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
     return response
 
 @app.route('/solutions')

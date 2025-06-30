@@ -13,17 +13,6 @@
 <script>data = JSON.parse('{{data|tojson|safe}}');
 </script>
 
-<script>
-/*Disable service workers to remove persistent caching on iOS Safari*/
-
-navigator.serviceWorker.getRegistrations().then(function(regs) {
-    for (let reg of regs) {
-        reg.unregister();
-    }
-});
-
-</script>
-
 <script src="{{ url_for('static', filename='util/leader-line.v1.min.js') }}"></script>
 <script src="{{ url_for('static', filename='util/colors.v1.js') }}"></script>
 <script src="https://cdn.plot.ly/plotly-3.0.1.min.js" charset="utf-8"></script>
