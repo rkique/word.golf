@@ -11,6 +11,10 @@ process/test_sbert/top_100_all-MiniLM-L6-v2.csv
 process/test_sbert/top_100_all-mpnet-base-v2.csv
 process/w2v/*
 
+application/data/candidates_filtered.txt
+application/data/candidates.txt
+application/data/*.py
+
 application/data/embed_w2v_16.csv
 
 #Ignore environment files
