@@ -24,18 +24,18 @@ navigator.serviceWorker.getRegistrations().then(function(regs) {
 
 </script>
 
-<script src="{{ url_for('static', filename='util/leader-line.min.js') }}?{{ version }}"></script>
-<script src="{{ url_for('static', filename='util/colors.js') }}?{{ version }}"></script>
+<script src="{{ url_for('static', filename='util/leader-line.v1.min.js') }}"></script>
+<script src="{{ url_for('static', filename='util/colors.v1.js') }}"></script>
 <script src="https://cdn.plot.ly/plotly-3.0.1.min.js" charset="utf-8"></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z90RQN4KLB"></script>
-<script src="{{ url_for('static', filename='js/gtag.js') }}?{{ version }}"></script>
-<script src="{{ url_for('static', filename='js/XML.js') }}?{{ version }}"></script>
-<script src="{{ url_for('static', filename='js/links__util.js') }}?{{ version }}"></script>
-<script src="{{ url_for('static', filename='js/key_commands.js') }}?{{ version }}"></script>
-<script src="{{ url_for('static', filename='js/animation.js') }}?{{ version }}"></script>
-<script src="{{ url_for('static', filename='js/links.js') }}?{{ version }}"></script>
-<script src="{{ url_for('static', filename='js/information.js') }}?{{ version }}"></script>
-<script src="{{ url_for('static', filename='js/prompts.js') }}?{{ version }}"></script>
+<script src="{{ url_for('static', filename='js/gtag.v1.js') }}"></script>
+<script src="{{ url_for('static', filename='js/XML.v1.js') }}"></script>
+<script src="{{ url_for('static', filename='js/links__util.v1.js') }}"></script>
+<script src="{{ url_for('static', filename='js/key_commands.v1.js') }}"></script>
+<script src="{{ url_for('static', filename='js/animation.v1.js') }}"></script>
+<script src="{{ url_for('static', filename='js/links.v1.js') }}"></script>
+<script src="{{ url_for('static', filename='js/information.v1.js') }}"></script>
+<script src="{{ url_for('static', filename='js/prompts.v1.js') }}"></script>
 
 {% if backend_url != "https://routes.word.golf" %}
   <p style="position: absolute; top: 0; left: 0; font-size: 0.6rem;">Dev: {{ backend_url }}</p>
