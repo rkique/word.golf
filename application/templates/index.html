@@ -110,7 +110,7 @@
                     prompt_idx = game_data.prompt_idx;
                     localStorage.setItem('previous_words', JSON.stringify(game_data.selected_words));
                     jumpsArray = loaded.jumpsA;
-                } else { //this only happens on first load.
+                } else { 
                     loaded = data;
                     prompt_idx = data['i'];
                     jumpsArray = loaded.jumpsArray;

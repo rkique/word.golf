@@ -57,7 +57,6 @@ function renderFinish(jumpsArray) {
         last_complete: currentDate, // should be "YYYY-MM-DD"
     };
 
-
     fetch(window.backendURL + '/update_finish', {
         method: 'POST',
         headers: {

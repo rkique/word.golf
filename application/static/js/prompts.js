@@ -61,7 +61,7 @@ function updateInnerTextSmooth(elem, newText) {
     elem.style.maxWidth = currentWidth + 'px';
 
     requestAnimationFrame(() => {
-        console.log(`[updateInnerTextSmooth] replacing ${elem.innerText} with ${newText}`)
+        // console.log(`[updateInnerTextSmooth] replacing ${elem.innerText} with ${newText}`)
         elem.innerText = newText;
         requestAnimationFrame(() => {
             const newWidth = elem.scrollWidth;
@@ -159,19 +159,21 @@ function savePrompts() {
     if (localStorage.getItem('is_help') === 'true') { return; }
     const prompts = document.getElementById('prompts');
     if (prompts) {
-            localStorage.setItem('prompts', prompts.outerHTML);
+        localStorage.setItem('prompts', prompts.outerHTML);
     }
 }
 
+//return whether prompts have been restored.
 function setPrompts() {
-    if (localStorage.getItem('is_help') === 'true') { return; }
-    console.log('[setPrompts] setting prompts from last save.')
+    if (localStorage.getItem('is_help') === 'true') { return false; }
     const savedPrompts = localStorage.getItem('prompts');
     if (savedPrompts) {
+        console.log('[setPrompts] setting prompts from last save.')
         const container = document.getElementById('prompts');
-        if (container) {
-            container.outerHTML = savedPrompts;
-        }
+        container.outerHTML = savedPrompts;
+        return true
+    } else {
+        return false
     }
 }
 
@@ -184,29 +186,30 @@ function tallyPrompts(prompts, jumpsArray, current_jumps) {
 
 function renderPrompts(prompts, jumpsArray, current_jumps, start_target, is_reload = false, score = null) {
     if (!prompts || !jumpsArray || !start_target) {
-        console.warn('[renderPrompts] Missing required arguments:', {
-            prompts,
-            jumpsArray,
-            start_target
-        });
+        // console.warn('[renderPrompts] Missing required arguments:', {
+        //     prompts,
+        //     jumpsArray,
+        //     start_target
+        // });
+    } else {
+        // console.log('[renderPrompts] args:', { prompts, jumpsArray, current_jumps, start_target, is_reload, score });
     }
     if (is_reload) {
         console.log('is_reload true')
-        setPrompts()
+        if (setPrompts()) {
+            return //exit
+        }
     }
-    else {
-        console.log(`[renderPrompts] prompts: ${prompts}, jumpsArray: ${jumpsArray}, current_jumps: ${current_jumps}, start_target: ${start_target}, score: ${score}`);
-        let promptBoxes = document.querySelectorAll('#prompts .prompt-box');
-        tallyPrompts(prompts, jumpsArray, current_jumps)
-        if (ct < prompts.length && promptBoxes[ct]) {
-            let [start, target] = start_target || prompts[ct];
-            const current_score = score || 0;
-            fillPrompt(promptBoxes[ct], start, target, current_score, current_jumps);
-        }
-        for (let j = ct + 1; j < promptBoxes.length; j++) {
-            promptBoxes[j].className = 'prompt-box';
-            promptBoxes[j].style.color = 'var(--grayed-out-color)';
-            promptBoxes[j].innerHTML = '';
-        }
+    let promptBoxes = document.querySelectorAll('#prompts .prompt-box');
+    tallyPrompts(prompts, jumpsArray, current_jumps)
+    if (ct < prompts.length && promptBoxes[ct]) {
+        let [start, target] = start_target || prompts[ct];
+        const current_score = score || 0;
+        fillPrompt(promptBoxes[ct], start, target, current_score, current_jumps);
+    }
+    for (let j = ct + 1; j < promptBoxes.length; j++) {
+        promptBoxes[j].className = 'prompt-box';
+        promptBoxes[j].style.color = 'var(--grayed-out-color)';
+        promptBoxes[j].innerHTML = '';
     }
 }

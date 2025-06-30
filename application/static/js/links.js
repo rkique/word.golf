@@ -336,6 +336,7 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
             // renderToFrom(resp.prompt, resp.jumps);
             renderLinks(resp.prompt, resp.results, resp.i);
         }
+        console.log('word:', word, 'resp.prompt[1]:', resp.prompt[1], 'jumps:', resp.jumps);
         //This is the source of nearly all renderPrompt calls.
         if (word !== resp.prompt[1]) {
             let start_target = [word, resp.prompt[1]]
@@ -343,6 +344,7 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
             if (resp.jumps === 0 && resp.jumpsArray[resp.jumpsArray.length - 1] === 12) {
                 start_target = resp.prompt;
                 score = 0;
+                showBanner("skipped :(", "banner");
             }
             renderPrompts(resp.prompts, resp.jumpsArray, resp.jumps, start_target, false, score);
         }
@@ -353,7 +355,6 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
             else if (resp.jumps <= 5) showBanner("great", "banner-great");
             else if (resp.jumps <= 7) showBanner("good...", "banner-good");
             else if (resp.jumps <= 9) showBanner("close call", "banner-closecall");
-            else if (resp.jumps == 11) showBanner("skipped", "banner-closecall");
         }
         activateLinks()
     }
