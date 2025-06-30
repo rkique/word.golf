@@ -23,12 +23,12 @@
         }
 
     async function renderLogout(){
-        let data = JSON.parse('{{data|tojson|safe}}');
-        if ((data.jumps == 0 && data.jumpsA.length === 0) || (data.jumpsA.length === 5)) {
+        // let data = JSON.parse('{{data|tojson|safe}}');
+        // if ((data.jumps == 0 && data.jumpsA.length === 0) || (data.jumpsA.length === 5)) {
         try {
-            let data2 = JSON.parse('{{data|tojson|safe}}');
-            console.log("here is data2");
-            console.log(data2);
+            // let data2 = JSON.parse('{{data|tojson|safe}}');
+            // console.log("here is data2");
+            // console.log(data2);
             // pass in the date here 
             const res = await fetch(window.backendURL + "/logout", {
                 method: "POST",
@@ -37,7 +37,7 @@
                     'Content-Type': 'application/json'  // Ensure this matches what the server expects
                 },
                 body: JSON.stringify({
-                    date: data2["date"]
+                    date: new Date().toISOString().split('T')[0]
                 })
             });
 
@@ -57,7 +57,7 @@
         } catch (err) {
             console.log("Error during logout:", err);
         }
-        }
+        // }
     }
 
 </script>
@@ -74,7 +74,7 @@
         </div>
         <div class="logged_in-buttons" id="logged_in-buttons">
             <p>Logged in as <span id="logged_in-username"></span></p>
-            <button onclick="renderLogout()" class="switch switch--outlined">logout</button>
+            <!-- <button onclick="renderLogout()" class="switch switch--outlined">logout</button> -->
 
         </div>
         <div class="guest-buttons" id="guest-buttons">
