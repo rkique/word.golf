@@ -2,6 +2,10 @@
     function beginTutorial() {
         localStorage.setItem('is_help', 'true');
         data = sendAndReceiveXML(`help=true`);
+        if (localStorage.getItem('prompts')) {
+            _prompts = localStorage.getItem('prompts');
+            localStorage.setItem('_prompts', _prompts)
+        }
         // _ = send_game_data_to_backend(data, `help=true`);
         renderLinks(data.prompt, data.results)
         // alert('[beginTutorial] rendering prompts')
@@ -11,7 +15,7 @@
         addHelpFocuses(data.prompt, data.results)
     }
 
-        function renderLogin(text) {
+    function renderLogin(text) {
             localStorage.setItem('logged_in', text.email);
             document.getElementById('logged_in-username').textContent = text.email;
             // const loginWelcome = document.getElementById('login-welcome');

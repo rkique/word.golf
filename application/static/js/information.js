@@ -145,7 +145,7 @@ function startGame() {
             }
             _ = editSession(jumpsArray, jumps, results, prompt_idx, start_target);
             start_target = prompts[prompt_idx];
-            renderPrompts(prompts, jumpsArray, jumps, start_target=start_target);
+            if(!setPrompts()){renderPrompts(prompts, jumpsArray, jumps, start_target=start_target)}
             // if (isPromptIdxFive) {
             //     renderLinks(start_target, results, prompt_idx, isPromptIdxFive); 
             // }

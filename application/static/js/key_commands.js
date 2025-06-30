@@ -17,7 +17,7 @@ document.addEventListener('keydown', function (event) {
     if (!isHidden) {
       helpOff(); 
     } else if (isHelp) {
-      sendAndReceiveXML('help_end=true')
+      resp = sendAndReceiveXML('help_end=true')
       runAfterBannerDisappears(() => {renderHelpFinish()})
       tallyPrompts(resp.prompts, [3,2], resp.jumps)
       startGame(); 

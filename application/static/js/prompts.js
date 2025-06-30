@@ -126,39 +126,11 @@ function fillPrompt(promptBox, start, target, score, current_jumps) {
     }
 }
 
-function serializePrompts(jumpsArray) {
-    if (localStorage.getItem('is_help') === 'true') {
-        return;
-    }
-    const promptBoxes = document.querySelectorAll('#prompts .prompt-box');
-    const completedCount = jumpsArray.length;
-    for (let i = 0; i < completedCount; i++) {
-        const key = `prompt${i + 1}`;
-        const existing = localStorage.getItem(key);
-        const promptBox = promptBoxes[i];
-        //save when prompt-box contains only tallies.
-        if (promptBox && !existing
-            && promptBox.querySelectorAll('.prompt-word').length === 0
-            && promptBox.querySelectorAll('.tally').length !== 0) {
-            localStorage.setItem(key, promptBox.outerHTML);
-        }
-    }
-    //
-    for (let i = 0; i < completedCount; i++) {
-        const key = `prompt${i + 1}`;
-        const saved = localStorage.getItem(key);
-        const promptBox = promptBoxes[i];
-        if (saved && promptBox) {
-            promptBox.outerHTML = saved;
-            console.log(`Restored prompt ${i + 1} from localStorage.`);
-        }
-    }
-}
-
 function savePrompts() {
     if (localStorage.getItem('is_help') === 'true') { return; }
     const prompts = document.getElementById('prompts');
     if (prompts) {
+        // console.log('[savePrompts] saving prompts')
         localStorage.setItem('prompts', prompts.outerHTML);
     }
 }
@@ -166,6 +138,12 @@ function savePrompts() {
 //return whether prompts have been restored.
 function setPrompts() {
     if (localStorage.getItem('is_help') === 'true') { return false; }
+    if (localStorage.getItem('_prompts')) {
+        console.log('[setPrompts] setting prompts from _prompts backup.');
+        const container = document.getElementById('prompts');
+        container.outerHTML = localStorage.getItem('_prompts');
+        return true;
+    }
     const savedPrompts = localStorage.getItem('prompts');
     if (savedPrompts) {
         console.log('[setPrompts] setting prompts from last save.')
@@ -186,11 +164,11 @@ function tallyPrompts(prompts, jumpsArray, current_jumps) {
 
 function renderPrompts(prompts, jumpsArray, current_jumps, start_target, is_reload = false, score = null) {
     if (!prompts || !jumpsArray || !start_target) {
-        // console.warn('[renderPrompts] Missing required arguments:', {
-        //     prompts,
-        //     jumpsArray,
-        //     start_target
-        // });
+        console.warn('[renderPrompts] Missing required arguments:', {
+            prompts,
+            jumpsArray,
+            start_target
+        });
     } else {
         // console.log('[renderPrompts] args:', { prompts, jumpsArray, current_jumps, start_target, is_reload, score });
     }

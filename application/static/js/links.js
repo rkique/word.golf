@@ -276,7 +276,7 @@ function reportSessionEnded(debug_session_done) {
         resp = sendAndReceiveXML(`end=true`)
         _ = send_game_data_to_backend(resp, `end=true`);
     }
-    console.log('[reportSessionEnded] Response:', resp);
+    // console.log('[reportSessionEnded] Response:', resp);
     
     //If user has completed all prompts
     if (resp.hasOwnProperty('help_session_done')) {
@@ -333,7 +333,7 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
     if (localStorage.getItem('is_help') != "true") {
         _ = send_game_data_to_backend(resp, "word=" + word);
     }
-    console.log('[postWord] Response:', resp);
+    // console.log('[postWord] Response:', resp);
  
     if (!use_animations) {
         // check if we are at the ending page now (for when we have 12 jumps):
@@ -343,7 +343,7 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
         } else {
             renderLinks(resp.prompt, resp.results, resp.i);
         }
-        console.log('word:', word, 'resp.prompt[1]:', resp.prompt[1], 'jumps:', resp.jumps);
+        // console.log('word:', word, 'resp.prompt[1]:', resp.prompt[1], 'jumps:', resp.jumps);
         //This is the source of nearly all renderPrompt calls.
         if (word !== resp.prompt[1]) {
             let start_target = [word, resp.prompt[1]]
@@ -356,7 +356,7 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
             renderPrompts(resp.prompts, resp.jumpsArray, resp.jumps, start_target, false, score);
         }
         else {
-            console.log(`[showBanner] ${jumps}`)
+            // console.log(`[showBanner] ${jumps}`)
             if (resp.jumps <= 2) showBanner("perfect!", "banner-perfect");
             else if (resp.jumps <= 3) showBanner("superb!", "banner-impressive");
             else if (resp.jumps <= 5) showBanner("great", "banner-great");
