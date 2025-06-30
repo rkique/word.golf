@@ -69,7 +69,7 @@ function renderFinish(jumpsArray) {
     .then(finish_data => {
         const daily_idx = daysSinceStartDate();
         is_logged_in = Boolean(localStorage.getItem('logged_in'))
-        let jumpsGridMessage = finish_data.jumpsArray ? renderGrid(finish_data.jumpsArray) : '';
+        let jumpsGridMessage = finish_data.jumpsA ? renderGrid(finish_data.jumpsA) : '';
         runAfterBannerDisappears(() => {displayFinishModal(daily_idx, totalJumps, finish_data.newStreak, jumpsGridMessage, is_logged_in)})
     })
     .catch((error) => {
