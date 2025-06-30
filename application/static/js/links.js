@@ -76,7 +76,7 @@ function focusLink(startText, targetText) {
 
 //@Parent: postWord
 function renderLinks(prompt, results, i, debug_session_done = false) {
-    console.log('[renderLinks] Rendering links for prompt:', prompt, 'with results:', results);
+    // console.log('[renderLinks] Rendering links for prompt:', prompt, 'with results:', results);
     // console.log(debug_session_done);
     // console.log(i);
     let wordspace = document.getElementById("wordspace")
@@ -280,7 +280,6 @@ function reportSessionEnded(debug_session_done) {
         localStorage.setItem("lastComplete", data["date"])
     }
     else {
-        // renderToFrom(resp.prompt, resp.jumps);
         renderLinks(resp.prompt, resp.results)
         // console.log('[reportSessionEnded] Rendering prompts..')
         let start_target = resp.prompts[resp.i]
@@ -333,7 +332,6 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
             renderLinks(resp.prompt, resp.results, resp.i, true);
             return;
         } else {
-            // renderToFrom(resp.prompt, resp.jumps);
             renderLinks(resp.prompt, resp.results, resp.i);
         }
         console.log('word:', word, 'resp.prompt[1]:', resp.prompt[1], 'jumps:', resp.jumps);

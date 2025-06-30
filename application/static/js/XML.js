@@ -90,16 +90,11 @@ function sendAndReceiveXML(message) {
             results = response_text["results"]; 
             prompts = response_text["prompts"]; 
             current_prompt = response_text["i"]; 
-            console.log(`[XML] ${current_prompt}`)
-            // handle update_state if needed
             // console.log(`[Send and Receive XML] results: ${results} jumpsArray : ${jumpsArray} prompts ${prompts}`);
-            // fix this localstorage issue!!!
             if (jumps >= 12 ) { // cap it at 12 current jumps
                 let resp = sendAndReceiveXML(`end=true`);
                 _ = send_game_data_to_backend(resp, `end=true`);
                 clearLastTallyContainer(resp.jumpsArray.length);
-                console.log(resp);
-                // see if the length of jumpsArray is 
                 return resp;
             } else {
                 return response_text;

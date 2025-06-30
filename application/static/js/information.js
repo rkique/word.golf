@@ -95,7 +95,6 @@ function startGame() {
     clearBoxes()
     // should be doing the same thing as index.html!
     // renderLinks(resp.prompt, resp.results)
-    // renderToFrom(resp.prompt, 0);
     // start_target = resp.prompts[resp.i]
     // renderPrompts(resp.prompts, resp.jumpsArray, resp.jumps, start_target=start_target, serialize=false)
     // activateLinks()
@@ -144,10 +143,8 @@ function startGame() {
             if (isPromptIdxFive) {
                 prompt_idx = 4;
             }
-            console.log(`jumpsArray ${jumpsArray} prompt_idx ${prompt_idx}`);
             _ = editSession(jumpsArray, jumps, results, prompt_idx, start_target);
             start_target = prompts[prompt_idx];
-            // renderToFrom(start_target, jumps);
             renderPrompts(prompts, jumpsArray, jumps, start_target=start_target);
             // if (isPromptIdxFive) {
             //     renderLinks(start_target, results, prompt_idx, isPromptIdxFive); 
@@ -280,7 +277,6 @@ function startHelpSession() {
     help = document.getElementById('help');
     help.style.display = 'none'
     data = sendAndReceiveXML(`help=true`)
-    // renderToFrom(data.prompt, data.jumps);
     renderLinks(data.prompt, data.results, data.i)
     let start_target = data.prompt
     clearBoxes()

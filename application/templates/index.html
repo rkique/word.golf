@@ -122,10 +122,8 @@
                 // check if prompt_idx is 5 
                 const isPromptIdxFive = (prompt_idx >= 5);
                 if (isPromptIdxFive) {prompt_idx = 4;}
-                console.log(`jumpsArray ${jumpsArray} prompt_idx ${prompt_idx}`);
                 _ = editSession(jumpsArray, jumps, results, prompt_idx, start_target);
                 start_target = prompts[prompt_idx];
-                // renderToFrom(start_target, jumps);
                 renderPrompts(prompts, jumpsArray, jumps, start_target=start_target, is_reload=true);
                 renderLinks(start_target, results, prompt_idx, isPromptIdxFive); 
                 activateLinks();
