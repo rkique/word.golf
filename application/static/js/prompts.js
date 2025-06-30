@@ -130,7 +130,7 @@ function savePrompts() {
     if (localStorage.getItem('is_help') === 'true') { return; }
     const prompts = document.getElementById('prompts');
     if (prompts) {
-        // console.log('[savePrompts] saving prompts')
+        console.log('[savePrompts] saving prompts')
         localStorage.setItem('prompts', prompts.outerHTML);
     }
 }
@@ -141,7 +141,10 @@ function setPrompts() {
     if (localStorage.getItem('_prompts')) {
         console.log('[setPrompts] setting prompts from _prompts backup.');
         const container = document.getElementById('prompts');
-        container.outerHTML = localStorage.getItem('_prompts');
+        _prompts = localStorage.getItem('_prompts');
+        container.outerHTML = _prompts
+        localStorage.setItem('prompts', _prompts)
+        localStorage.removeItem('_prompts')
         return true;
     }
     const savedPrompts = localStorage.getItem('prompts');
