@@ -19,14 +19,26 @@ function daysSinceStartDate(startDateStr = '2025-05-31', storageKey = 'current_d
 }
 
 function renderGrid(counts) {
-    const full = '■';
-    const empty = '□';
+    const colorEmojis = {
+        1: '🟩', // cyan (using blue as closest)
+        2: '🟩', // green
+        3: '🟦', // blue
+        4: '🟨', // yellow
+        5: '🟥', // red
+        6: '⬜', // white
+    };
     const numRows = 5;
-    const numCols = 6;
-    let gridMessage = ''
+    let gridMessage = '';
     for (let row = 0; row < numRows; row++) {
-        let count = Math.ceil(counts[row] / 2)
-        let line = full.repeat(count) + empty.repeat(numCols - count);
+        let count = Math.ceil(counts[row] / 2);
+        let line = '';
+        for (let i = 1; i <= 6; i++) {
+            if (i <= count) {
+                line += colorEmojis[i];
+            } else {
+                line += '⬛';
+            }
+        }
         gridMessage += line + '\n';
     }
     return gridMessage;
@@ -229,8 +241,12 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, jumpsGridMessa
     modalFinish.querySelector('.totalJumps').innerHTML = totalJumps;
     modalFinish.querySelector('.streak').innerHTML = currentStreak;
     modalFinish.style.display = "flex";
-
-    const tweetMessage = `www.word.golf #${daily_idx} ${totalJumps} \n${jumpsGridMessage}`;
+    let tweetMessage;
+    if(is_user){
+        tweetMessage = `https://word.golf #${daily_idx} \nJumps: ${totalJumps} \nStreak: ${currentStreak} \n${jumpsGridMessage}`;
+    } else {
+        tweetMessage = `https://word.golf #${daily_idx} \n\nJumps: ${totalJumps} \n${jumpsGridMessage}`;
+    }
     const shareLink = modalFinish.querySelector('#shareLink');
     shareLink.addEventListener('click', () => {
         navigator.clipboard.writeText(tweetMessage)
