@@ -3,24 +3,6 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 {% set version = 'v1.02' %}
-<script>
-// if ('serviceWorker' in navigator) {
-//   navigator.serviceWorker.getRegistrations().then(function (regs) {
-//     for (let reg of regs) {
-//       reg.unregister();
-//     }
-//   }).finally(() => {
-//     if ('caches' in window) {
-//       caches.keys().then(function (names) {
-//         for (let name of names) caches.delete(name);
-//       });
-//     }
-//     // Force reload without bfcache
-//     window.location.reload(true);
-//   });
-// }
-</script>
-
 <head>
     {% include 'head.html' %}
     <title>word.golf</title>
@@ -50,13 +32,13 @@ function isSafari() {
 data = JSON.parse('{{data|tojson|safe}}');
 
 </script>
-<script src="{{ url_for('static', filename='js/XML.v1.js') }}?{{ version }}"></script>
-<script src="{{ url_for('static', filename='js/links__util.v1.js') }}?{{ version }}"></script>
-<script src="{{ url_for('static', filename='js/key_commands.v1.js') }}?{{ version }}"></script>
-<script src="{{ url_for('static', filename='js/animation.v1.js') }}?{{ version }}"></script>
-<script src="{{ url_for('static', filename='js/links.v1.js') }}?{{ version }}"></script>
-<script src="{{ url_for('static', filename='js/information.v1.js') }}?{{ version }}"></script>
-<script src="{{ url_for('static', filename='js/prompts.v1.js') }}?{{ version }}"></script>
+<script src="{{ url_for('static', filename='js/XML.js') }}?{{ version }}"></script>
+<script src="{{ url_for('static', filename='js/links__util.js') }}?{{ version }}"></script>
+<script src="{{ url_for('static', filename='js/key_commands.js') }}?{{ version }}"></script>
+<script src="{{ url_for('static', filename='js/animation.js') }}?{{ version }}"></script>
+<script src="{{ url_for('static', filename='js/links.js') }}?{{ version }}"></script>
+<script src="{{ url_for('static', filename='js/information.js') }}?{{ version }}"></script>
+<script src="{{ url_for('static', filename='js/prompts.js') }}?{{ version }}"></script>
 
 {% if backend_url != "https://routes.word.golf" %}
   <p style="position: absolute; top: 0; left: 0; font-size: 0.6rem;">Dev: {{ backend_url }}</p>
@@ -101,7 +83,7 @@ data = JSON.parse('{{data|tojson|safe}}');
     });
     startHelpSession();
 </script> -->
-<script src="static/js/is_game_complete.v1.js"> </script>
+<script src="static/js/is_game_complete.js"> </script>
 <script>
     localStorage.setItem('current_date', data['date']);
     is_help = localStorage.getItem('is_help');

@@ -84,8 +84,7 @@ function fillPrompt(promptBox, start, target, score, current_jumps) {
     }
     // console.log(`makeSpacedPromptTag: start=${start}, target=${target}, score=${score}`);
     //here idx is used to set the prompt-word div
-    let idx = score < 0.2 ? 0 : score < 0.27 ? 1 :
-        score < 0.35 ? 2 : score < 0.42 ? 3 : 4;
+    idx = simToIndex(score)
     let wordTallyContainers = promptBox.children;
     let wordTallyContainer = wordTallyContainers[idx]
     let promptWord;

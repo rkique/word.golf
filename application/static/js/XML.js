@@ -62,6 +62,22 @@ function send_game_data_to_backend(response_text, message) {
         });
 }
 
+function simToIndex(score){
+    const thresholds = [0.2, 0.27, 0.35, 0.42];
+    let idx = thresholds.findIndex(t => score < t);
+    idx = idx === -1 ? thresholds.length : idx;
+    return idx;
+}
+
+//updates jumpsA with most recent score. 
+function updateJumpsA(jumpsA, score){
+    const lastWordIdx = simToIndex(score)
+    let zeroRowIdx = jumpsA.findIndex(row => row.every(val => val === 0));
+    let insertIdx = Math.max(0, zeroRowIdx === -1 ? jumpsA.length : zeroRowIdx - 1);
+    jumpsA[insertIdx][lastWordIdx] += 1
+    return jumpsA
+}
+
 function sendAndReceiveXML(message) {
     // alert(`[sendAndReceiveXML] Sending message: ${message}`);
     let xhttp = new XMLHttpRequest();
@@ -93,6 +109,7 @@ function sendAndReceiveXML(message) {
             // console.log(`[Send and Receive XML] results: ${results} jumpsArray : ${jumpsArray} prompts ${prompts}`);
             if (jumps >= 12 ) { // cap it at 12 current jumps
                 let resp = sendAndReceiveXML(`end=true`);
+                resp.jumpsA = updateJumpsA(resp.jumpsA, resp.previous_words[-1], resp.score)
                 _ = send_game_data_to_backend(resp, `end=true`);
                 clearLastTallyContainer(resp.jumpsArray.length);
                 return resp;
