@@ -137,6 +137,11 @@ function savePrompts() {
 
 //return whether prompts have been restored.
 function setPrompts() {
+    const currentDate = localStorage.getItem('current_date');
+    const lastComplete = localStorage.getItem('lastComplete');
+    if ((currentDate && lastComplete) && (currentDate !== lastComplete)) {
+        return false;
+    }
     if (localStorage.getItem('is_help') === 'true') { return false; }
     if (localStorage.getItem('_prompts')) {
         console.log('[setPrompts] setting prompts from _prompts backup.');
