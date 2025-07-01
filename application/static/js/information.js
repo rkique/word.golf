@@ -65,29 +65,14 @@ function runAfterBannerDisappears(callback) {
 function renderFinish(jumpsArray) {
     totalJumps = jumpsArray.reduce((acc, val) => acc + val, 0);
     const currentDate = new Date(localStorage.getItem('current_date'));
-    const data = {
-        last_complete: currentDate, // should be "YYYY-MM-DD"
-    };
-
-    fetch(window.backendURL + '/update_finish', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        credentials: 'include', 
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(finish_data => {
-        const daily_idx = daysSinceStartDate();
-        is_logged_in = Boolean(localStorage.getItem('logged_in'))
-        let jumpsGridMessage = finish_data.jumpsA ? renderGrid(finish_data.jumpsA) : '';
-        runAfterBannerDisappears(() => {displayFinishModal(daily_idx, totalJumps, finish_data.newStreak, jumpsGridMessage, is_logged_in)})
-    })
-    .catch((error) => {
-        console.error('Error updating database:', error);
+    const daily_idx = daysSinceStartDate();
+    const is_logged_in = Boolean(localStorage.getItem('logged_in'));
+    // Use global data object instead of finish_data
+    let jumpsGridMessage = (typeof data !== 'undefined' && data.jumpsA) ? renderGrid(data.jumpsA) : '';
+    runAfterBannerDisappears(() => {
+        displayFinishModal(daily_idx, totalJumps, (typeof data !== 'undefined' && data.newStreak) ? data.newStreak : 0, jumpsGridMessage, is_logged_in);
     });
-    // localStorage.setItem('streak', newStreak);
+    localStorage.setItem('streak', newStreak);
     // update_database_with_finish(totalJumps, currentDate);
 }
 
