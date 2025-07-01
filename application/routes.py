@@ -1,6 +1,7 @@
 from flask import current_app as app
 from flask import render_template, request, session, make_response, send_from_directory
 from .utils import get_curve, similarity
+from zoneinfo import ZoneInfo
 import json
 import datetime
 import pandas as pd
@@ -27,7 +28,7 @@ PRECOMPUTED = None
 @app.context_processor
 def inject_backend_url():
     backend_url = (
-        "http://127.0.0.1:7000"
+        "http://localhost:7000"
         if os.getenv("DEV", "false").lower() == "true"
         else "https://routes.word.golf"
     )
@@ -81,10 +82,8 @@ def get_prompts_for_date(date : datetime.datetime) -> list:
 
 def load_time():
     global elapsed, prompts_today, neighbors_today, today
-    eastern = datetime.timezone(datetime.timedelta(hours=-5))
-    now_utc = datetime.datetime.utcnow()
-    now_et = now_utc.replace(tzinfo=datetime.timezone.utc).astimezone(eastern)
-    today = now_et.replace(tzinfo=None).date() + add_days(DAYS)
+    now_et = datetime.datetime.now(tz=ZoneInfo("America/New_York"))
+    today = now_et.date() + add_days(DAYS)
     elapsed, prompts_today, neighbors_today = get_prompts_for_date(today)
 
 def jump(start : str) -> str:
@@ -260,9 +259,9 @@ def sesh_edit():
 
 @app.route('/login', methods=['GET'])
 def login():
-    # this returns the login page stored at /templates/login.html
-    date = today.strftime('%Y-%m-%d') if today else datetime.datetime.today().strftime('%Y-%m-%d')
-
+    if today is None:
+        raise RuntimeError("The 'today' variable is not set.")
+    date = today.strftime('%Y-%m-%d')
     return render_template('login.html', date=date)
 
 @app.route('/resetpassword', methods=['GET'])

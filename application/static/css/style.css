@@ -19,6 +19,24 @@
     gap: 0.25rem;
 }
 
+.footer-div {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    padding: 1rem;
+    text-align: left;
+    width: 100vw;
+}
+
+.footer-div p {
+    margin: 0.5rem;
+}
+.footer-div p, a {
+    font-size: 1.1rem;
+    color: var(--grayed-out-color);
+}
+
+
 .finish-summary {
     font-size: 3rem;
     font-family: "Inter", sans-serif;
@@ -32,6 +50,7 @@ html {
     font-optical-sizing: auto;
     background-color: var(--background-color);
     color: var(--text-color);
+    overflow-x: hidden;
 }
 /* Topbar game icon (?) and switch (darkmode) */
 .switch {
@@ -416,6 +435,7 @@ button span {
     display: flex;
     flex-wrap: wrap;
     height: 88vh;
+    max-height:88vh;
     /* gap: 8vw; */
     align-content: flex-start;
     align-items: center;

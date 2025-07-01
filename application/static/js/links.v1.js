@@ -44,7 +44,7 @@ let HELP_STEPS = [
         id: 5,
         prompt: ['mercury', 'razor'],
         result: 'toothpaste',
-        message: "<p>Five prompts per day, the best score is 10. </p>",
+        message: "<p>Five prompts daily. The best, lowest score is 10. </p>",
         focus: 'razor',
         transform: [10, 20],
         startSocket: 'bottom',

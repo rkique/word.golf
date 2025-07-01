@@ -182,11 +182,9 @@ padding,armor,cavalry
 twinge,hangover,drinking
 lesson,brush,undergrowth
 closet,shower,downpour
-cloth,towel,tantrum
 hurry,rush,torrent
 vacation,getaway,bandit
 attic,blaze,crash
-shoreline,water,drink
 blank,void,realm
 piece,jewel,glory
 number,turnout,snowing
