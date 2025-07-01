@@ -28,6 +28,25 @@
 
 <script>
 
+window.addEventListener('load', function() {
+    // Check if the browser is Safari
+    if (isSafari()) {
+        if (window.location.search.indexOf('v=') === -1) {
+
+            var uniqueParam = 'v=' + new Date().getTime(); 
+
+            var newUrl = window.location.href.split('?')[0] + '?' + uniqueParam;
+
+            window.location.replace(newUrl);
+        }
+    }
+});
+
+function isSafari() {
+    var userAgent = navigator.userAgent;
+    return /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
+}
+
 data = JSON.parse('{{data|tojson|safe}}');
 
 </script>
