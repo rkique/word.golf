@@ -15,15 +15,15 @@
         addHelpFocuses(data.prompt, data.results)
     }
 
-    function renderLogin(text) {
-            localStorage.setItem('logged_in', text.email);
-            document.getElementById('logged_in-username').textContent = text.email;
-            // const loginWelcome = document.getElementById('login-welcome');
-            // loginWelcome.style.display = 'flex';
-            // loginWelcome.querySelector('.welcome-email').textContent = text.email;
-            document.getElementById('guest-buttons').style.display = 'none';
-            document.getElementById('logged_in-buttons').style.display = 'flex';
-        }
+    function renderLogin(email) {
+        localStorage.setItem('logged_in', email);
+        document.getElementById('logged_in-username').textContent = email;
+        // const loginWelcome = document.getElementById('login-welcome');
+        // loginWelcome.style.display = 'flex';
+        // loginWelcome.querySelector('.welcome-email').textContent = text.email;
+        document.getElementById('guest-buttons').style.display = 'none';
+        document.getElementById('logged_in-buttons').style.display = 'flex';
+    }
 
     async function renderLogout(){
         // let data = JSON.parse('{{data|tojson|safe}}');

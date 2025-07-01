@@ -10,24 +10,24 @@
 
 <script>
 
-window.addEventListener('load', function() {
-    // Check if the browser is Safari
-    if (isSafari()) {
-        if (window.location.search.indexOf('v=') === -1) {
+// window.addEventListener('load', function() {
+//     // Check if the browser is Safari
+//     if (isSafari()) {
+//         if (window.location.search.indexOf('v=') === -1) {
 
-            var uniqueParam = 'v=' + new Date().getTime(); 
+//             var uniqueParam = 'v=' + new Date().getTime(); 
 
-            var newUrl = 'https://www.word.golf?' + uniqueParam;
+//             var newUrl = 'https://www.word.golf?' + uniqueParam;
 
-            window.location.replace(newUrl);
-        }
-    }
-});
+//             window.location.replace(newUrl);
+//         }
+//     }
+// });
 
-function isSafari() {
-    var userAgent = navigator.userAgent;
-    return /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
-}
+// function isSafari() {
+//     var userAgent = navigator.userAgent;
+//     return /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
+// }
 
 data = JSON.parse('{{data|tojson|safe}}');
 
@@ -90,66 +90,31 @@ data = JSON.parse('{{data|tojson|safe}}');
 
     //start help session
     if (is_help !== 'false') { 
-        fetch(`${window.backendURL}/user_and_game_state`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            date: data["date"]
-        })
-    })
-        .then(response => response.json())
-        .then(game_data => {
         startHelpSession()
-        });
     } 
     else {
-        fetch(`${window.backendURL}/user_and_game_state`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                date: data["date"]
-            })
-        })
-            .then(response => response.json())
-            .then(game_data => {
-                console.log("backend response: ", game_data);
-                if ("logged_in" in game_data) {
-                    if (game_data.email) {
-                        renderLogin(game_data)
-                    }
-                }
-                let loaded;
-                let prompt_idx;
-                let jumpsArray;
-                if ("selected_words" in game_data && game_data["selected_words"] && game_data["selected_words"].length != 0) {
-                    loaded = game_data;
-                    prompt_idx = game_data.prompt_idx;
-                    localStorage.setItem('previous_words', JSON.stringify(game_data.selected_words));
-                    jumpsArray = loaded.jumpsA;
-                } else { 
-                    loaded = data;
-                    prompt_idx = data['i'];
-                    jumpsArray = loaded.jumpsArray;
-                }
-                let jumps = loaded.jumps;
-                let results = loaded.results || data['results'];
-                let prompts = loaded.prompts;
-                let start_target = prompts[prompt_idx];
-                // check if prompt_idx is 5 
-                const isPromptIdxFive = (prompt_idx >= 5);
-                if (isPromptIdxFive) {prompt_idx = 4;}
-                _ = editSession(jumpsArray, jumps, results, prompt_idx, start_target);
-                start_target = prompts[prompt_idx];
-                renderPrompts(prompts, jumpsArray, jumps, start_target=start_target, is_reload=true);
-                renderLinks(start_target, results, prompt_idx, isPromptIdxFive); 
-                activateLinks();
-            });
+        if ("logged_in" in data) { // figure out this logic a bit later not now
+            if (data.logged_in) {
+                renderLogin(data.logged_in)
+            }
+        }
+        console.log("here is the data from the backend");
+        console.log(data);
+        let loaded = data;
+        let prompt_idx = data['i'];
+        let jumpsArray = loaded.jumpsArray;
+        let jumps = loaded.jumps;
+        let results = loaded.results || data['results'];
+        let prompts = loaded.prompts;
+        let start_target = prompts[prompt_idx];
+        // check if prompt_idx is 5 
+        const isPromptIdxFive = (prompt_idx >= 5);
+        if (isPromptIdxFive) {prompt_idx = 4;}
+        // _ = editSession(jumpsArray, jumps, results, prompt_idx, start_target);
+        start_target = prompts[prompt_idx];
+        renderPrompts(prompts, jumpsArray, jumps, start_target=start_target, is_reload=true);
+        renderLinks(start_target, results, prompt_idx, isPromptIdxFive); 
+        activateLinks();
     }
 
 </script>

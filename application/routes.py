@@ -9,6 +9,12 @@ import ast
 from .utils import get_prompts, txt_to_list, txt_to_dict
 from flask import redirect
 import os
+import uuid
+from .internals.auth import get_user_from_cookie, create_guest_user
+from .internals.gameprogress import update_game_state
+from .models import GameState
+
+# store logged_in in routes.py
 
 prompt_neighbor_dict = get_prompts(txt_to_list("application/data/neighbors.txt"))
 PROMPTS = list(prompt_neighbor_dict.keys())
@@ -171,7 +177,32 @@ def update_new_data(new_data, session_data):
     if len(new_data['jumpsArray']) < 5:
         new_data['jumpsArray'] += [session_data['jumps']]
     return new_data
-    
+
+def new_edit_sesssion():
+    user = get_user_from_cookie()
+    if not user:
+        return None
+
+    # Get today's date as a date object (not string)
+    # 'today' should already be set by load_time()
+    game_state = GameState.query.filter_by(user_id=user.id, current_date=today).first()
+
+    if game_state:
+        return {
+            'jumpsArray': game_state.jumpsA or [],
+            'jumps': game_state.current_jumps or 0,
+            'i': game_state.prompt_idx or 0,
+            'date': today.strftime('%Y-%m-%d'),
+            'results': game_state.results or [],
+            'prompts': game_state.prompts or [],
+            'prompt': game_state.prompts[game_state.prompt_idx],
+            'logged_in': user.email if user.email else None
+        }
+    else:
+        # If no game state exists, return a default structure
+        return None
+
+
 #Load both data and time once at the starting screen.
 @app.route('/')
 def index():
@@ -182,26 +213,31 @@ def index():
     #how to distinguish first load from others?
     print("here is the session data")
     print(session)
-    # Ensure 'i' exists in session['data'], set to 0 if not present
-    # Ensure session['data'] exists and is a dict with 'i'
-    try:
-        session_data = json.loads(session.get("data", "{}"))
-        if session_data.get('date') != today.strftime('%Y-%m-%d'):
-            print("here is the session data data")
-            print(session_data.get('date'))
-            print("here is today")
-            print(today)
-            print(session_data.get('date') == today.strftime('%Y-%m-%d'))
-            session_data['i'] = 0
-    except Exception:
-        session_data = {}
+    if 'user_id' not in session: # set the user id 
+        session['user_id'] = str(uuid.uuid4()) 
+    # check if user exists in the database
+    new_data = new_edit_sesssion()
+    if new_data:
+        session["data"] = json.dumps(new_data)
+    else:
+        # Ensure 'i' exists in session['data'], set to 0 if not present
+        # Ensure session['data'] exists and is a dict with 'i'
+        usr = create_guest_user(today, session["user_id"])
+        try:
+            session_data = json.loads(session.get("data", "{}"))
+            if session_data.get('date') != today.strftime('%Y-%m-%d'):
+                session_data['i'] = 0
+        except Exception:
+            session_data = {}
+        
+        i = session_data.get('i', 0)
+        data = shift_to(i)
+        data['jumpsArray'] = []
+        session['data'] = json.dumps(data)
     assert WV is not None, "Word vectors not loaded"
-    i = session_data.get('i', 0)
-    data = shift_to(i)
-    data['jumpsArray'] = []
-    session['data'] = json.dumps(data)
     print('/ data is set to:', session.get('data'))
-    return render_template('index.html', data=data)
+    return render_template('index.html', data=json.loads(session.get('data')))
+
 
 @app.route('/editsession', methods=['POST']) 
 def sesh_edit(): 
@@ -262,7 +298,6 @@ def sesh_edit():
 def login():
     # this returns the login page stored at /templates/login.html
     date = today.strftime('%Y-%m-%d') if today else datetime.datetime.today().strftime('%Y-%m-%d')
-
     return render_template('login.html', date=date)
 
 @app.route('/resetpassword', methods=['GET'])
@@ -303,12 +338,18 @@ def index_post():
         data['i'] += 1
         _data = shift_to(data['i'])
         session['data'] = json.dumps(update_new_data(_data, session['data']))
+        update_game_state(json.loads(session['data']))
+        # update the database with the correct state 
         
     elif request.form.get('word') is not None:
         current_word = request.form.get('word') 
         print(f"[/] Jumping: {current_word}")
         session['data'] = jump(current_word)
         print(f"[/ word] {session['data']}")
+        new_data = json.loads(session['data'])
+        new_data['word'] = current_word
+        update_game_state(new_data)
+        # update the database with the correct state 
 
     elif request.form.get('redirect') is not None:
         print('[/] Redirecting to start...')

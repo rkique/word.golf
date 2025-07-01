@@ -69,14 +69,14 @@ function simToIndex(score){
     return idx;
 }
 
-//updates jumpsA with most recent score. 
-function updateJumpsA(jumpsA, score){
-    const lastWordIdx = simToIndex(score)
-    let zeroRowIdx = jumpsA.findIndex(row => row.every(val => val === 0));
-    let insertIdx = Math.max(0, zeroRowIdx === -1 ? jumpsA.length : zeroRowIdx - 1);
-    jumpsA[insertIdx][lastWordIdx] += 1
-    return jumpsA
-}
+// //updates jumpsA with most recent score. 
+// function updateJumpsA(jumpsA, score){
+//     const lastWordIdx = simToIndex(score)
+//     let zeroRowIdx = jumpsA.findIndex(row => row.every(val => val === 0));
+//     let insertIdx = Math.max(0, zeroRowIdx === -1 ? jumpsA.length : zeroRowIdx - 1);
+//     jumpsA[insertIdx][lastWordIdx] += 1
+//     return jumpsA
+// }
 
 function sendAndReceiveXML(message) {
     // alert(`[sendAndReceiveXML] Sending message: ${message}`);
@@ -109,9 +109,9 @@ function sendAndReceiveXML(message) {
             // console.log(`[Send and Receive XML] results: ${results} jumpsArray : ${jumpsArray} prompts ${prompts}`);
             if (jumps >= 12 ) { // cap it at 12 current jumps
                 let resp = sendAndReceiveXML(`end=true`);
-                resp.jumpsA = updateJumpsA(resp.jumpsA, resp.previous_words[-1], resp.score)
-                _ = send_game_data_to_backend(resp, `end=true`);
-                clearLastTallyContainer(resp.jumpsArray.length);
+                // resp.jumpsA = updateJumpsA(resp.jumpsA, resp.previous_words[-1], resp.score)
+                // _ = send_game_data_to_backend(resp, `end=true`);
+                // clearLastTallyContainer(resp.jumpsArray.length);
                 return resp;
             } else {
                 return response_text;

@@ -130,7 +130,7 @@ document.getElementById("SubmitBtn").addEventListener("click", async (e) => {
     if (submitBtn) submitBtn.style.display = "none";
     // in a real application, make the POST request to the backend to check if the user exists
     try {
-      const res = await fetch(window.backendURL + "/user_exist", {
+      const res = await fetch("/user_exist", {
           method: "POST",
           credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
           headers: {
@@ -191,7 +191,7 @@ document.getElementById("LoginBtn").addEventListener("click", async (e) => {
 
     // Uncomment during production, this is just for testing purposes
     try {
-      const res = await fetch(window.backendURL + "/login", {
+      const res = await fetch("/authlogin", {
           method: "POST",
           credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
           headers: {
@@ -240,7 +240,7 @@ document.getElementById("CreateAccountBtn").addEventListener("click", async (e) 
 
     // Uncomment during production, this is just for testing purposes
     try {
-      const res = await fetch(window.backendURL + "/create_user", {
+      const res = await fetch("/authcreate", {
         method: "POST",
         credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
         headers: {

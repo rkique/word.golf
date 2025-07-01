@@ -111,60 +111,37 @@ function startGame() {
     // renderPrompts(resp.prompts, resp.jumpsArray, resp.jumps, start_target=start_target, serialize=false)
     // activateLinks()
     const data = resp;
-    fetch(`${window.backendURL}/user_and_game_state`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            date: data["date"]
-        })
-    })
-    .then(response => response.json())
-    .then(game_data => {
-            console.log("backend response: ", game_data);
-            if ("logged_in" in game_data) {
-                if (game_data.email) {
-                    renderLogin(game_data)
-                }
-            }
-            let loaded;
-            let prompt_idx;
-            let jumpsArray;
-            if ("selected_words" in game_data && game_data["selected_words"] && game_data["selected_words"].length != 0) {
-                loaded = game_data;
-                prompt_idx = game_data.prompt_idx;
-                localStorage.setItem('previous_words', JSON.stringify(game_data.selected_words));
-                jumpsArray = loaded.jumpsA;
-            } else { //this only happens on first load.
-                loaded = data;
-                prompt_idx = data['i'];
-                jumpsArray = loaded.jumpsArray;
-            }
-            
-            // if (jumpsArray.length > 5) {
-            //     jumpsArray = jumpsArray.slice(0, 5);
-            // }
-            let jumps = loaded.jumps;
-            let results = loaded.results || data['results'];
-            let prompts = loaded.prompts;
-            let start_target = prompts[prompt_idx];
-            // check if prompt_idx is 5 
-            const isPromptIdxFive = (prompt_idx >= 5);
-            if (isPromptIdxFive) {
-                prompt_idx = 4;
-            }
-            _ = editSession(jumpsArray, jumps, results, prompt_idx, start_target);
-            start_target = prompts[prompt_idx];
-            if(!setPrompts()){renderPrompts(prompts, jumpsArray, jumps, start_target=start_target)}
-            // if (isPromptIdxFive) {
-            //     renderLinks(start_target, results, prompt_idx, isPromptIdxFive); 
-            // }
-            renderLinks(start_target, results, prompt_idx, isPromptIdxFive); 
-            activateLinks();
-        });
+    // console.log("backend response: ", game_data);
+    if ("logged_in" in data) { // figure out this logic a bit later not now
+        if (data.logged_in) {
+            renderLogin(data.logged_in)
+        }
     }
+    let loaded = data;
+    let prompt_idx = data['i'];
+    let jumpsArray = loaded.jumpsArray;
+    
+    // if (jumpsArray.length > 5) {
+    //     jumpsArray = jumpsArray.slice(0, 5);
+    // }
+    let jumps = loaded.jumps;
+    let results = loaded.results || data['results'];
+    let prompts = loaded.prompts;
+    let start_target = prompts[prompt_idx];
+    // check if prompt_idx is 5 
+    const isPromptIdxFive = (prompt_idx >= 5);
+    if (isPromptIdxFive) {
+        prompt_idx = 4;
+    }
+    // _ = editSession(jumpsArray, jumps, results, prompt_idx, start_target);
+    start_target = prompts[prompt_idx];
+    if(!setPrompts()){renderPrompts(prompts, jumpsArray, jumps, start_target=start_target)}
+    // if (isPromptIdxFive) {
+    //     renderLinks(start_target, results, prompt_idx, isPromptIdxFive); 
+    // }
+    renderLinks(start_target, results, prompt_idx, isPromptIdxFive); 
+    activateLinks();
+}
 
 function generateLineGraph(scores) {
     localStorage.setItem('jumpsArray', JSON.stringify(scores));

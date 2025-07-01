@@ -274,7 +274,7 @@ function reportSessionEnded(debug_session_done) {
         // _ = send_game_data_to_backend(resp, `help_end=true`);
     } else {
         resp = sendAndReceiveXML(`end=true`)
-        _ = send_game_data_to_backend(resp, `end=true`);
+        // _ = send_game_data_to_backend(resp, `end=true`);
     }
     // console.log('[reportSessionEnded] Response:', resp);
     
@@ -330,9 +330,9 @@ function showBanner(text, color) {
 
 function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
     const resp = sendAndReceiveXML("word=" + word);
-    if (localStorage.getItem('is_help') != "true") {
-        _ = send_game_data_to_backend(resp, "word=" + word);
-    }
+    // if (localStorage.getItem('is_help') != "true") {
+    //     _ = send_game_data_to_backend(resp, "word=" + word);
+    // }
     // console.log('[postWord] Response:', resp);
  
     if (!use_animations) {
