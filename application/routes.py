@@ -260,9 +260,9 @@ def sesh_edit():
 
 @app.route('/login', methods=['GET'])
 def login():
-    # this returns the login page stored at /templates/login.html
-    date = today.strftime('%Y-%m-%d') if today else datetime.datetime.today().strftime('%Y-%m-%d')
-
+    if today is None:
+        raise RuntimeError("The 'today' variable is not set.")
+    date = today.strftime('%Y-%m-%d')
     return render_template('login.html', date=date)
 
 @app.route('/resetpassword', methods=['GET'])
