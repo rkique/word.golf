@@ -1,6 +1,7 @@
 from flask import current_app as app
 from flask import render_template, request, session, make_response, send_from_directory
 from .utils import get_curve, similarity
+from zoneinfo import ZoneInfo
 import json
 import datetime
 import pandas as pd
@@ -81,10 +82,8 @@ def get_prompts_for_date(date : datetime.datetime) -> list:
 
 def load_time():
     global elapsed, prompts_today, neighbors_today, today
-    eastern = datetime.timezone(datetime.timedelta(hours=-5))
-    now_utc = datetime.datetime.utcnow()
-    now_et = now_utc.replace(tzinfo=datetime.timezone.utc).astimezone(eastern)
-    today = now_et.replace(tzinfo=None).date() + add_days(DAYS)
+    now_et = datetime.datetime.now(tz=ZoneInfo("America/New_York"))
+    today = now_et.date() + add_days(DAYS)
     elapsed, prompts_today, neighbors_today = get_prompts_for_date(today)
 
 def jump(start : str) -> str:
