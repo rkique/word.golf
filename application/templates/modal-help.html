@@ -34,7 +34,7 @@
             // console.log("here is data2");
             // console.log(data2);
             // pass in the date here 
-            const res = await fetch(window.backendURL + "/logout", {
+            const res = await fetch("/logout", {
                 method: "POST",
                 credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
                 headers: {
@@ -44,9 +44,7 @@
                     date: new Date().toISOString().split('T')[0]
                 })
             });
-
             const data = await res.json();
-
             if (res.ok) {
                 localStorage.removeItem('logged_in');
                 const loginWelcome = document.getElementById('login-welcome');
@@ -55,6 +53,7 @@
                 logged_in_buttons.style.display = 'none';
                 const logoutButton = document.getElementById('guest-buttons');
                 logoutButton.style.display = 'flex';
+                console.log("logout succeeded")
             } else {
                 console.log("Logout failed:", data);
             }
@@ -86,7 +85,7 @@
         <script src="https://accounts.google.com/gsi/client" async></script>
         <div id="g_id_onload"
             data-client_id="490339325235-2colln65cgm89aue0mihetv8upkmr5bl.apps.googleusercontent.com"
-            data-login_uri="https://routes.word.golf/login/google"  
+            data-login_uri="http://localhost:8080/login/google"  
             data-auto_prompt="false"> 
             <!-- change this to the deployed backend URL --> 
             <!-- data-login_uri="http://127.0.0.1:7000/login/google"  -->

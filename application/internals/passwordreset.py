@@ -21,8 +21,7 @@ def send_reset_pin_email(to_email, pin):
     msg.body = f"Your password reset PIN is: {pin}. It will expire in 15 minutes. Please do not share this PIN with anyone. \n Best regards, \n Word Golf Team"
     mail.send(msg)
 
-
-
+@app.route('/forgot_password', methods=['POST'])
 def forgot_password():
     data = request.get_json()
     email = data.get('email')
@@ -49,8 +48,7 @@ def forgot_password():
 
     return jsonify({"message": "Reset PIN sent via email."})
 
-
-
+@app.route('/reset_password', methods=['POST'])
 def reset_password():
     data = request.get_json()
     email = data.get('email')

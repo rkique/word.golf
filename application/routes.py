@@ -10,7 +10,7 @@ from .utils import get_prompts, txt_to_list, txt_to_dict
 from flask import redirect
 import os
 import uuid
-from .internals.auth import get_user_from_cookie, create_guest_user
+from .internals.auth import get_user_from_session, create_guest_user, user_session_exists
 from .internals.gameprogress import update_game_state
 from .models import GameState
 
@@ -179,7 +179,7 @@ def update_new_data(new_data, session_data):
     return new_data
 
 def new_edit_sesssion():
-    user = get_user_from_cookie()
+    user = get_user_from_session()
     if not user:
         return None
 
@@ -195,7 +195,7 @@ def new_edit_sesssion():
             'date': today.strftime('%Y-%m-%d'),
             'results': game_state.results or [],
             'prompts': game_state.prompts or [],
-            'prompt': game_state.prompts[game_state.prompt_idx],
+            'prompt': game_state.prompts[game_state.prompt_idx] if game_state.prompt_idx < 5 else game_state.prompts[4],
             'logged_in': user.email if user.email else None
         }
     else:
@@ -222,7 +222,9 @@ def index():
     else:
         # Ensure 'i' exists in session['data'], set to 0 if not present
         # Ensure session['data'] exists and is a dict with 'i'
-        usr = create_guest_user(today, session["user_id"])
+        if (user_session_exists() == False):
+            usr = create_guest_user(today, session["user_id"])
+        
         try:
             session_data = json.loads(session.get("data", "{}"))
             if session_data.get('date') != today.strftime('%Y-%m-%d'):

@@ -1,7 +1,8 @@
 from .. import db
 from flask import current_app as app, jsonify
-from .auth import get_user_from_cookie
+from .auth import get_user_from_session
 from ..models import User, GameState
+import json
 
 @app.route('/delete_fake_users', methods=['GET'])
 def delete_fake_users():
@@ -78,7 +79,7 @@ def print_db_contents():
 
 @app.route('/delete_most_recent_gamestate', methods=['POST'])
 def delete_most_recent_gamestate():
-    user = get_user_from_cookie()
+    user = get_user_from_session()
     if not user:
         return jsonify({"error": "Not authenticated"}), 401
 
@@ -93,7 +94,7 @@ def delete_most_recent_gamestate():
 
 @app.route('/delete_all_gamestates', methods=['POST'])
 def delete_all_gamestates():
-    user = get_user_from_cookie()
+    user = get_user_from_session()
     if not user:
         return jsonify({"error": "Not authenticated"}), 401
 
@@ -104,7 +105,7 @@ def delete_all_gamestates():
 
 @app.route('/list_gamestates', methods=['GET'])
 def list_gamestates():
-    user = get_user_from_cookie()
+    user = get_user_from_session()
     if not user:
         return jsonify({"error": "Not authenticated"}), 401
 
@@ -129,7 +130,7 @@ def list_gamestates():
 
 @app.route("/data", methods=["GET"])
 def get_user_data():
-    user = get_user_from_cookie()
+    user = get_user_from_session()
     if not user:
         return jsonify({"error": "Not authenticated"}), 200
 
@@ -159,3 +160,43 @@ def get_user_data():
             "prompts": game_state.prompts if game_state else []
         }
     })
+
+@app.route("/user_history", methods=["GET"])
+def game_history():
+    user = get_user_from_session()
+    if not user:
+        return jsonify({"error": "Not authenticated"}), 401
+
+    history = GameState.query.filter_by(user_id=user.id).order_by(GameState.current_date.desc()).all()
+
+    result = [{
+        "date": g.current_date.isoformat(),
+        "selected_words": g.selected_words,
+        "jumpsA": g.jumpsA,
+        "total_jumps": g.total_jumps
+    } for g in history]
+
+    return jsonify(result)
+
+def print_user(user):
+    user_dict = {
+        "id": user.id,
+        "email": user.email,
+        "streak": user.streak,
+        "date_created": str(user.date_created) if user.date_created else None,
+        "last_date_completed": str(user.last_date_completed) if user.last_date_completed else None,
+    }
+    print(json.dumps(user_dict))
+
+
+def print_gamestate(gamestate):
+    gamestate_dict = {
+        "id": gamestate.id,
+        "user_id": gamestate.user_id,
+        "current_date": str(gamestate.current_date) if gamestate.current_date else None,
+        "selected_words": gamestate.selected_words,
+        "jumpsA": gamestate.jumpsA,
+        "results": gamestate.results,
+        "prompts": gamestate.prompts,
+    }
+    print(json.dumps(gamestate_dict))

@@ -69,7 +69,7 @@ function renderFinish(jumpsArray) {
         last_complete: currentDate, // should be "YYYY-MM-DD"
     };
 
-    fetch(window.backendURL + '/update_finish', {
+    fetch('/update_finish', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -87,8 +87,6 @@ function renderFinish(jumpsArray) {
     .catch((error) => {
         console.error('Error updating database:', error);
     });
-    // localStorage.setItem('streak', newStreak);
-    // update_database_with_finish(totalJumps, currentDate);
 }
 
 /* Clears the modal, localStorage, and renders links with XML redirect=true*/
