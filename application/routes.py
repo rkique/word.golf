@@ -144,13 +144,11 @@ def shift_to(i):
         data['i'] = i
         data['jumps'] = 0
         data['date'] = today.strftime('%Y-%m-%d')
-        data['prompt'] = prompt
-        data['prompts'] = prompts_today
+        data['prompt'], data['prompts'] = prompt, prompts_today
         print(f"[shift_to] prompts_today {prompts_today}")
         data['results'] = results
     except IndexError:
         print(f"Index {i} out of range for prompts_today or neighbors_today, indicating user finish. Returning same data.")
-        data['i'] = i
         data['i'] = i
     return data
 
@@ -159,10 +157,8 @@ def help_shift(data):
     data['jumps'] = 0
     i = data['i'] + 1
     data['i'] = i
-    #(in case there was a reload)
     data['prompts'] = HELP_PROMPTS
     data['neighbors'] = HELP_NEIGHBORS
-
     neighbor = data['neighbors'][i]
     prompt = data['prompts'][i]
     data['prompt'] = prompt
@@ -186,9 +182,9 @@ def new_edit_sesssion():
     # Get today's date as a date object (not string)
     # 'today' should already be set by load_time()
     game_state = GameState.query.filter_by(user_id=user.id, current_date=today).first()
-
+    
     if game_state:
-        return {
+        data =  {
             'jumpsArray': game_state.jumpsA or [],
             'jumps': game_state.current_jumps or 0,
             'i': game_state.prompt_idx or 0,
@@ -198,24 +194,18 @@ def new_edit_sesssion():
             'prompt': game_state.prompts[game_state.prompt_idx] if game_state.prompt_idx < 5 else game_state.prompts[4],
             'logged_in': user.email if user.email else None
         }
+        return data
     else:
         # If no game state exists, return a default structure
         return None
 
-
-#Load both data and time once at the starting screen.
 @app.route('/')
 def index():
     print('/ Starting Fresh..')
     load_data()
     load_time()
-    #we need some way of persisting state on reload.
-    #how to distinguish first load from others?
-    print("here is the session data")
-    print(session)
     if 'user_id' not in session: # set the user id 
         session['user_id'] = str(uuid.uuid4()) 
-    # check if user exists in the database
     new_data = new_edit_sesssion()
     if new_data:
         session["data"] = json.dumps(new_data)
@@ -230,6 +220,7 @@ def index():
             if session_data.get('date') != today.strftime('%Y-%m-%d'):
                 session_data['i'] = 0
         except Exception:
+            print('[/] Exception in loading session_data')
             session_data = {}
         
         i = session_data.get('i', 0)
@@ -237,7 +228,7 @@ def index():
         data['jumpsArray'] = []
         session['data'] = json.dumps(data)
     assert WV is not None, "Word vectors not loaded"
-    print('/ data is set to:', session.get('data'))
+    # print('/ data is set to:', session.get('data'))
     return render_template('index.html', data=json.loads(session.get('data')))
 
 
@@ -294,7 +285,11 @@ def sesh_edit():
         print("Error in /editsession:", e)
         
     # print("Session after edit:", session)
-    return make_response(session.get('data', {}))
+    return app.response_class(
+        response=session.get('data', '{}'),
+        status=200,
+        mimetype='application/json'
+    )
 
 @app.route('/login', methods=['GET'])
 def login():
@@ -333,9 +328,10 @@ def index_post():
     elif request.form.get('end') is not None:
         data = json.loads(session.get('data', '{}'))
         print(f"[/] Shifting to Prompt {data.get('i', 0)+1}")
-        if (data.get('i', 0) + 1 > PCOUNT):
-            data['i'] = 6
-            session['data'] = json.dumps(data)
+        if (data.get('i', 0) + 1 == PCOUNT):
+            #do not allow overflow.
+            data['i'] = 4
+            session['data'] = json.dumps(update_new_data(data, session['data']))
             return make_response("session_done" + session.get('data'))
         data['i'] += 1
         _data = shift_to(data['i'])
