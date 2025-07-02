@@ -130,7 +130,7 @@ function savePrompts() {
     if (localStorage.getItem('is_help') === 'true') { return; }
     const prompts = document.getElementById('prompts');
     if (prompts) {
-        console.log('[savePrompts] saving prompts')
+        // console.log('[savePrompts] saving prompts')
         localStorage.setItem('prompts', prompts.outerHTML);
     }
 }
@@ -139,7 +139,7 @@ function savePrompts() {
 function setPrompts() {
     if (localStorage.getItem('is_help') === 'true') { return false; }
     if (localStorage.getItem('_prompts')) {
-        console.log('[setPrompts] setting prompts from _prompts backup.');
+        // console.log('[setPrompts] setting prompts from _prompts backup.');
         const container = document.getElementById('prompts');
         _prompts = localStorage.getItem('_prompts');
         container.outerHTML = _prompts
@@ -149,7 +149,7 @@ function setPrompts() {
     }
     const savedPrompts = localStorage.getItem('prompts');
     if (savedPrompts) {
-        console.log('[setPrompts] setting prompts from last save.')
+        // console.log('[setPrompts] setting prompts from last save.')
         const container = document.getElementById('prompts');
         container.outerHTML = savedPrompts;
         return true
