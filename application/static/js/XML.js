@@ -20,48 +20,6 @@ function editSession(jumpsAValue, jumpsValue, result_value, i, prompt_text) {
 }
 
 
-function send_game_data_to_backend(response_text, message) {
-    jumps = response_text["jumps"]; 
-    jumpsArray = response_text["jumpsArray"]; 
-    results = response_text["results"]; 
-    prompts = response_text["prompts"]; 
-    current_prompt = response_text["i"]; 
-    date = response_text["date"];
-
-    let word = null;
-
-    if (message.includes("word")) {
-        word = message.split("=")[1];
-    }
-
-    // console.log("here is the word");
-    // console.log("here is the message");
-    // console.log(message);
-    // console.log(word);
-    // console.log("before backend fetch");
-
-    fetch(`${window.backendURL}/update_game_state`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            ...(word ? { word: word } : {}),
-            current_jumps: jumps,
-            jumpsA: jumpsArray,
-            results: results,
-            prompts: prompts,
-            prompt_idx: current_prompt,
-            date: date
-        })
-    })
-        .then(response => response.json())
-        .then(update_state => {
-            return update_state;
-        });
-}
-
 function simToIndex(score){
     const thresholds = [0.2, 0.27, 0.35, 0.42];
     let idx = thresholds.findIndex(t => score < t);

@@ -165,7 +165,7 @@ def help_shift(data):
     data['results'] = results
     return data
 
-def update_new_data(new_data, session_data):
+def update_jumps_array(new_data, session_data):
     session_data = json.loads(session_data)
     print(f"[update_new_data] updating with {session_data['jumps']}")
     if len(new_data['jumpsArray']) < 5:
@@ -173,18 +173,12 @@ def update_new_data(new_data, session_data):
     return new_data
 
 #if user exists and game state for user exists, return it. Else, None.
-def new_edit_sesssion():
+def get_existing_data():
     user = get_user_from_cookie()
     if not user:
         return None
     
-    # Get today's date as a date object (not string)
-    # 'today' should already be set by load_time()
     game_state = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
-    data = {
-        'jumpsArray': [],
-    }
-    #GameState initialization: it should be the gamestate on first load.
     data = {
         'jumpsArray': [],
         'jumps': 0,
@@ -195,19 +189,14 @@ def new_edit_sesssion():
         'prompt': [],
         'logged_in': user.email if user.email else None,
             }
-
     if game_state:
-        data =  {
-            'jumpsArray': game_state.jumpsA or [],
-            'jumps': game_state.current_jumps or 0,
-            'i': game_state.prompt_idx or 0,
-            'date': today.today.strftime('%Y-%m-%d'),
-            'results': game_state.results or [],
-            'prompts': game_state.prompts or [],
-            'prompt': game_state.prompts[game_state.prompt_idx] if game_state.prompts and game_state.prompt_idx < 5 \
-                    else (game_state.prompts[4] if game_state.prompts else []),
-            'logged_in': user.email if user.email else None
-        }
+        data['jumpsArray'] = game_state.jumpsA
+        data['results'] = game_state.results
+        data['prompts'] = game_state.prompts
+        data['prompt'] = game_state.prompts[game_state.prompt_idx] 
+        data['jumps'] = game_state.current_jumps
+        data['i'] = game_state.prompt_idx
+        data['logged_in'] = user.email
     return data
 
 @app.route('/')
@@ -216,7 +205,7 @@ def index():
     load_data()
     load_time()
     print('[index.html] Current Date: ', today.today)
-    data_or_none = new_edit_sesssion()
+    data_or_none = get_existing_data()
     if data_or_none:
         data = data_or_none
         # use data_today as base
@@ -332,22 +321,20 @@ def resetpassword():
 
 @app.route('/', methods=['POST'])
 def index_post():
-    # print(f'[/] Received: {request.form}')
     if request.form.get('help') is not None:
         session['data'] = make_help_session()
         print('[/] Help Session')
     
     elif request.form.get('help_end') is not None:
         data = json.loads(session.get('data'))
-        print(f"[/] Next Help Prompt ({data['i']+1}/{len(data['prompts'])})")
-        if data['i'] == len(data['prompts']) - 1:
+        num_prompts = len(HELP_PROMPTS)
+        if data['i'] == num_prompts - 1:
             print('[/] Finished Help')
-            # make session data match that in the database 
             data['i'] = 0
             data['jumpsArray'] = []
             data['jumps'] = 0
             data['is_help'] = False
-            new_data = new_edit_sesssion()
+            new_data = get_existing_data()
             print("[index_post help_end] here is new_data: ", new_data)
             if new_data:
                 new_data['is_help'] = False
@@ -363,20 +350,17 @@ def index_post():
         data = json.loads(session.get('data', '{}'))
         print(f"[/] Shifting to Prompt {data.get('i', 0)+1}")
         if (data.get('i', 0) + 1 >= PCOUNT):
-            #do not allow overflow.
             data['i'] = 4
             streak = finished_game(request)
-            #streak and total_jumps.
             print(f'streak: [{streak}]')
             data['streak'] = streak
-            session['data'] = json.dumps(update_new_data(data, session['data']))
+            session['data'] = json.dumps(update_jumps_array(data, session['data']))
             update_game_state(json.loads(session['data']))
             return make_response("session_done" + session.get('data'))
         data['i'] += 1
         _data = shift_to(data['i'])
-        session['data'] = json.dumps(update_new_data(_data, session['data']))
+        session['data'] = json.dumps(update_jumps_array(_data, session['data']))
         update_game_state(json.loads(session['data']))
-        # update the database with the correct state 
         
     elif request.form.get('word') is not None:
         current_word = request.form.get('word') 
@@ -387,7 +371,6 @@ def index_post():
         new_data['word'] = current_word
         if new_data['is_help'] == False:
             update_game_state(new_data)
-        # update the database with the correct state 
 
     elif request.form.get('redirect') is not None:
         print('[/] Redirecting to start...')

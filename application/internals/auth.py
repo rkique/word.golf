@@ -11,7 +11,6 @@ from . import today
 
 def get_user_from_cookie(finish_request=None):
     if finish_request:
-        print(f'[get_user_from_cookie] received {finish_request}')
         token = finish_request.cookies.get("auth_token")
     else:
         token = request.cookies.get("auth_token")

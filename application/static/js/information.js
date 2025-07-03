@@ -80,17 +80,10 @@ function startGame() {
     localStorage.removeItem('prompts');
     localStorage.removeItem('results');
     resp = sendAndReceiveXML('redirect=true');
-    // _ = send_game_data_to_backend(resp, 'redirect=true');
     clearBoxes()
-    // should be doing the same thing as index.html!
-    // renderLinks(resp.prompt, resp.results)
-    // start_target = resp.prompts[resp.i]
-    // renderPrompts(resp.prompts, resp.jumpsArray, resp.jumps, start_target=start_target, serialize=false)
-    // activateLinks()
     const data = resp;
     console.log("[start Game] backend response: ", resp);
-    // console.log("backend response: ", game_data);
-    if ("logged_in" in data) { // figure out this logic a bit later not now
+    if ("logged_in" in data) {
         if (data.logged_in) {
             renderLogin(data.logged_in)
         }
@@ -102,7 +95,7 @@ function startGame() {
     let results = loaded.results || data['results'];
     let prompts = loaded.prompts;
     let start_target = prompts[prompt_idx];
-    // check if prompt_idx is 5 
+    // total_jumps is only passed after game end.
     const is_end = 'total_jumps' in loaded ? loaded.total_jumps : 0;
     start_target = prompts[prompt_idx];
     if(!setPrompts()){renderPrompts(prompts, jumpsArray, jumps, start_target=start_target)}
