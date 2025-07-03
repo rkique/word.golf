@@ -22,7 +22,7 @@ PROMPTS = list(prompt_neighbor_dict.keys())
 NEIGHBORS = list(prompt_neighbor_dict.values())
 
 PCOUNT = 5
-DAYS = 1
+DAYS = 0
 
 HELP_PROMPTS = [["outside", "layer"],["mercury", "razor"]]
 HELP_NEIGHBORS = ["underneath", "toothpaste"]
@@ -188,7 +188,8 @@ def get_existing_data():
         'prompts': [],
         'prompt': [],
         'logged_in': user.email if user.email else None,
-            }
+    }
+
     if game_state:
         data['jumpsArray'] = game_state.jumpsA
         data['results'] = game_state.results
@@ -351,7 +352,7 @@ def index_post():
         print(f"[/] Shifting to Prompt {data.get('i', 0)+1}")
         if (data.get('i', 0) + 1 >= PCOUNT):
             data['i'] = 4
-            streak = finished_game(request)
+            streak, total_jumps = finished_game(request)
             print(f'streak: [{streak}]')
             data['streak'] = streak
             session['data'] = json.dumps(update_jumps_array(data, session['data']))
