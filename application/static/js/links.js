@@ -193,9 +193,10 @@ function switchToLoggedIn() {
     document.getElementById('logged_in-buttons').appendChild(logoutBtn);
 }
 
-function tallyScreen(prompts, jumpsArray) {
-    totalJumps = jumpsArray.reduce((sum, jumps) => sum + jumps, 0);
-    renderFinish(jumpsArray)
+function renderSessionDone(resp) {
+    renderFinish(resp)
+    prompts = resp.prompts
+    jumpsArray = resp.jumpsArray
     start_target = prompts[4]
     renderPrompts(prompts, jumpsArray, 0, start_target = start_target)
     let is_logged_in = Boolean(localStorage.getItem('logged_in'));
@@ -204,7 +205,6 @@ function tallyScreen(prompts, jumpsArray) {
     if (is_logged_in) {
         switchToLoggedIn();
     }
-    
 }
 
 function arrayEqual(a, b) {
@@ -285,7 +285,7 @@ function reportSessionEnded(debug_session_done) {
     }
     else if (resp.hasOwnProperty('session_done') || debug_session_done) {
         // alert('received session_done')
-        tallyScreen(resp.prompts, resp.jumpsArray)
+        renderSessionDone(resp)
         localStorage.setItem("lastComplete", data["date"])
     }
     else {

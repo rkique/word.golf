@@ -11,7 +11,7 @@ from flask import redirect
 import os
 import uuid
 from .internals.auth import get_user_from_cookie, create_guest_user, user_session_exists, set_response_cookie
-from .internals.gameprogress import update_game_state
+from .internals.gameprogress import update_game_state, finished_game
 from .models import GameState
 from . import cookie_signer
 from .internals import today
@@ -22,7 +22,7 @@ PROMPTS = list(prompt_neighbor_dict.keys())
 NEIGHBORS = list(prompt_neighbor_dict.values())
 
 PCOUNT = 5
-DAYS = 0
+DAYS = 1
 
 HELP_PROMPTS = [["outside", "layer"],["mercury", "razor"]]
 HELP_NEIGHBORS = ["underneath", "toothpaste"]
@@ -172,15 +172,30 @@ def update_new_data(new_data, session_data):
         new_data['jumpsArray'] += [session_data['jumps']]
     return new_data
 
+#if user exists and game state for user exists, return it. Else, None.
 def new_edit_sesssion():
     user = get_user_from_cookie()
     if not user:
         return None
-
+    
     # Get today's date as a date object (not string)
     # 'today' should already be set by load_time()
     game_state = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
-    
+    data = {
+        'jumpsArray': [],
+    }
+    #GameState initialization: it should be the gamestate on first load.
+    data = {
+        'jumpsArray': [],
+        'jumps': 0,
+        'i': 0,
+        'date': today.today.strftime('%Y-%m-%d'),
+        'results': [],
+        'prompts': [],
+        'prompt': [],
+        'logged_in': user.email if user.email else None,
+            }
+
     if game_state:
         data =  {
             'jumpsArray': game_state.jumpsA or [],
@@ -189,13 +204,11 @@ def new_edit_sesssion():
             'date': today.today.strftime('%Y-%m-%d'),
             'results': game_state.results or [],
             'prompts': game_state.prompts or [],
-            'prompt': game_state.prompts[game_state.prompt_idx] if game_state.prompts and game_state.prompt_idx < 5 else (game_state.prompts[4] if game_state.prompts else []),
+            'prompt': game_state.prompts[game_state.prompt_idx] if game_state.prompts and game_state.prompt_idx < 5 \
+                    else (game_state.prompts[4] if game_state.prompts else []),
             'logged_in': user.email if user.email else None
         }
-        return data
-    else:
-        # If no game state exists, return a default structure
-        return None
+    return data
 
 @app.route('/')
 def index():
@@ -205,19 +218,16 @@ def index():
     print('[index.html] Current Date: ', today.today)
     data_or_none = new_edit_sesssion()
     if data_or_none:
-        print('There is an existing user')
         data = data_or_none
-        # check the data and ensure that nothing has existed 
+        # use data_today as base
         if data["results"] == []:
             i = data.get('i', 0)
             data_today = shift_to(i)
             data_today['jumpsArray'] = []
             data_today['logged_in'] = data["logged_in"]
-            data_today['is_help'] = False
-            session['data'] = json.dumps(data_today)
-        else:
-            data['is_help'] = False
-            session["data"] = json.dumps(data)
+            data = data_today
+        data['is_help'] = False
+        session['data'] = json.dumps(data)
         response = make_response(render_template('index.html', data=json.loads(session.get('data'))))
     else:
         print('Creating new user')
@@ -355,8 +365,12 @@ def index_post():
         if (data.get('i', 0) + 1 >= PCOUNT):
             #do not allow overflow.
             data['i'] = 4
+            streak = finished_game(request)
+            #streak and total_jumps.
+            print(f'streak: [{streak}]')
+            data['streak'] = streak
             session['data'] = json.dumps(update_new_data(data, session['data']))
-            return make_response("session_done" + session.get('data'))
+            return make_response("session_done" + session['data'])
         data['i'] += 1
         _data = shift_to(data['i'])
         session['data'] = json.dumps(update_new_data(_data, session['data']))

@@ -58,32 +58,14 @@ function runAfterBannerDisappears(callback) {
   });
 }
 
-function renderFinish(jumpsArray) {
-    totalJumps = jumpsArray.reduce((acc, val) => acc + val, 0);
-    const currentDate = new Date(localStorage.getItem('current_date'));
-    const data = {
-        last_complete: currentDate, // should be "YYYY-MM-DD"
-    };
-
-    fetch('/update_finish', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        credentials: 'include', 
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(finish_data => {
-        console.log("[render_finish] finish data: ", finish_data)
-        const daily_idx = daysSinceStartDate();
-        is_logged_in = Boolean(localStorage.getItem('logged_in'))
-        let jumpsGridMessage = finish_data.jumpsA ? renderGrid(finish_data.jumpsA) : '';
-        runAfterBannerDisappears(() => {displayFinishModal(daily_idx, totalJumps, finish_data.newStreak, jumpsGridMessage, is_logged_in)})
-    })
-    .catch((error) => {
-        console.error('Error updating database:', error);
-    });
+//we're guaranteed resp.newStreak because renderFinish only called with session_done.
+function renderFinish(resp) {
+    totalJumps = resp.jumpsArray.reduce((acc, val) => acc + val, 0);
+    console.log("[render_finish] session_done data: ", data)
+    const daily_idx = daysSinceStartDate();
+    is_logged_in = Boolean(localStorage.getItem('logged_in'))
+    let jumpsGridMessage = resp.jumpsA ? renderGrid(resp.jumpsA) : '';
+    runAfterBannerDisappears(() => {displayFinishModal(daily_idx, totalJumps, resp.streak, jumpsGridMessage, is_logged_in)})
 }
 
 /* Clears the modal, localStorage, and renders links with XML redirect=true*/

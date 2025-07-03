@@ -16,7 +16,6 @@ def sum_jumpsA(jumpsA):
         # 1D list 
         return sum(jumpsA)     
 
-
 def game_progress():
     user = get_user_from_cookie()
     if not user:
@@ -92,31 +91,21 @@ def update_game_state(data):
     return jsonify({"message": "Game state updated successfully."}), 200
 
 
-@app.route("/update_finish", methods=["POST"])
-def finished_game():
-    user = get_user_from_cookie()
+def finished_game(finish_request):
+    user = get_user_from_cookie(finish_request)
     if not user:
         return jsonify({"error": "Not authenticated"}), 401
-
 
     game = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
     if not game:
         return jsonify({"error": "Should already have a game state"}), 400
-
-
-    # print(f"GameState fields: id={game.id}, user_id={game.user_id}, current_date={game.current_date}, "
-    #       f"selected_words={game.selected_words}, jumpsA={game.jumpsA}, total_jumps={game.total_jumps}, "
-    #       f"results={game.results}, prompt_idx={game.prompt_idx}, current_jumps={game.current_jumps}, "
-    #       f"prompts={game.prompts}")
-
-
+    
     if today.today != user.last_date_completed: # if it is the same do nothing 
         last_prompt = game.prompts[-1][-1]
         game.selected_words.append(last_prompt)
         # game.jumpsA = data["jumpsA"]
         game.total_jumps = sum_jumpsA(game.jumpsA)
 
-        # Update the user's streak based on the last date completed
         if user.last_date_completed:
             if user.last_date_completed == today.today - timedelta(days=1):
                 user.streak += 1  # Increment streak if the last date was yesterday
@@ -131,12 +120,5 @@ def finished_game():
         user.last_date_completed = today.today
         # db.session.add(game)
         db.session.commit()
-    
 
-    result = {
-        "newStreak": user.streak,
-        "jumpsA": game.jumpsA,
-        "total_jumps": game.total_jumps,
-    }
-
-    return jsonify(result), 200
+    return user.streak

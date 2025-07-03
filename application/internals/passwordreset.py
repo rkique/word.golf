@@ -15,11 +15,11 @@ def generate_pin(length=6):
 
 def send_reset_pin_email(to_email, pin):
     msg = Message(
-        subject="Word Golf Password Reset PIN",
+        subject="Reset your word.golf password",
         sender=os.environ.get('MAIL_USER'),
         recipients=[to_email]
     )
-    msg.body = f"Your password reset PIN is: {pin}. It will expire in 15 minutes. Please do not share this PIN with anyone. \n Best regards, \n Word Golf Team"
+    msg.body = f"Your password reset PIN is: {pin}. Please do not share this PIN with anyone."
     mail.send(msg)
 
 @app.route('/forgot_password', methods=['POST'])
@@ -47,7 +47,7 @@ def forgot_password():
 
     send_reset_pin_email(email, pin)
 
-    return jsonify({"message": "Reset PIN sent via email."})
+    return jsonify({"message": "Check your email for a reset PIN"})
 
 @app.route('/reset_password', methods=['POST'])
 def reset_password():

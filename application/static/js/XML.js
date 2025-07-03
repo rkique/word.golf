@@ -82,6 +82,7 @@ function sendAndReceiveXML(message) {
     // alert(`[sendAndReceiveXML] Sending message: ${message}`);
     let xhttp = new XMLHttpRequest();
     xhttp.open("POST", '/', false);
+    xhttp.withCredentials = true;
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.send(message);
     resp = {}

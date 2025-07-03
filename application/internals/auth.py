@@ -9,11 +9,12 @@ import json
 import itsdangerous
 from . import today
 
-def get_user_from_cookie():
-    token = request.cookies.get("auth_token")
-    # print(f"Token from cookie: {token}")
-    # print("here is request.cookies:", request.cookies)
-    # print("here is full request:", request)
+def get_user_from_cookie(finish_request=None):
+    if finish_request:
+        print(f'[get_user_from_cookie] received {finish_request}')
+        token = finish_request.cookies.get("auth_token")
+    else:
+        token = request.cookies.get("auth_token")
     if not token:
         return None
     try:
@@ -169,7 +170,6 @@ def create_user():
         )
     
     return response
-
 
 def create_guest_user(date, id):
     user = User(
