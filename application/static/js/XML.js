@@ -111,7 +111,7 @@ function sendAndReceiveXML(message) {
                 let resp = sendAndReceiveXML(`end=true`);
                 // resp.jumpsA = updateJumpsA(resp.jumpsA, resp.previous_words[-1], resp.score)
                 // _ = send_game_data_to_backend(resp, `end=true`);
-                clearLastTallyContainer(resp.jumpsArray.length);
+                // clearLastTallyContainer(resp.jumpsArray.length);
                 return resp;
             } else {
                 return response_text;

@@ -103,17 +103,13 @@ def finished_game():
     if not game:
         return jsonify({"error": "Should already have a game state"}), 400
 
-
-    # print(f"GameState fields: id={game.id}, user_id={game.user_id}, current_date={game.current_date}, "
-    #       f"selected_words={game.selected_words}, jumpsA={game.jumpsA}, total_jumps={game.total_jumps}, "
-    #       f"results={game.results}, prompt_idx={game.prompt_idx}, current_jumps={game.current_jumps}, "
-    #       f"prompts={game.prompts}")
-
-
     if today.today != user.last_date_completed: # if it is the same do nothing 
         last_prompt = game.prompts[-1][-1]
         game.selected_words.append(last_prompt)
         # game.jumpsA = data["jumpsA"]
+        # game.jumpsA.append(game.current_jumps)
+        print("[finished_game]: appending current jumps: ", game.current_jumps)
+        print("[finished_game]: here is new jumpsA: ", game.jumpsA)
         game.total_jumps = sum_jumpsA(game.jumpsA)
 
         # Update the user's streak based on the last date completed
@@ -131,8 +127,13 @@ def finished_game():
         user.last_date_completed = today.today
         # db.session.add(game)
         db.session.commit()
-    
 
+    
+    print(f"GameState fields: id={game.id}, user_id={game.user_id}, current_date={game.current_date}, "
+          f"selected_words={game.selected_words}, jumpsA={game.jumpsA}, total_jumps={game.total_jumps}, "
+          f"results={game.results}, prompt_idx={game.prompt_idx}, current_jumps={game.current_jumps}, "
+          f"prompts={game.prompts}")
+    
     result = {
         "newStreak": user.streak,
         "jumpsA": game.jumpsA,

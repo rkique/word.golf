@@ -190,7 +190,8 @@ def new_edit_sesssion():
             'results': game_state.results or [],
             'prompts': game_state.prompts or [],
             'prompt': game_state.prompts[game_state.prompt_idx] if game_state.prompts and game_state.prompt_idx < 5 else (game_state.prompts[4] if game_state.prompts else []),
-            'logged_in': user.email if user.email else None
+            'logged_in': user.email if user.email else None,
+            'total_jumps': game_state.total_jumps
         }
         return data
     else:
@@ -356,6 +357,7 @@ def index_post():
             #do not allow overflow.
             data['i'] = 4
             session['data'] = json.dumps(update_new_data(data, session['data']))
+            update_game_state(json.loads(session['data']))
             return make_response("session_done" + session.get('data'))
         data['i'] += 1
         _data = shift_to(data['i'])
