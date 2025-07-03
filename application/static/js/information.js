@@ -103,13 +103,10 @@ function startGame() {
     let prompts = loaded.prompts;
     let start_target = prompts[prompt_idx];
     // check if prompt_idx is 5 
-    const isPromptIdxFive = (prompt_idx >= 5);
-    if (isPromptIdxFive) {
-        prompt_idx = 4;
-    }
+    const is_end = 'total_jumps' in loaded ? loaded.total_jumps : 0;
     start_target = prompts[prompt_idx];
     if(!setPrompts()){renderPrompts(prompts, jumpsArray, jumps, start_target=start_target)}
-    renderLinks(start_target, results, prompt_idx, isPromptIdxFive); 
+    renderLinks(start_target, results, prompt_idx, is_end); 
     activateLinks();
 }
 

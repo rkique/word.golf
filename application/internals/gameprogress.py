@@ -100,10 +100,14 @@ def finished_game(finish_request):
     if not game:
         return jsonify({"error": "Should already have a game state"}), 400
     
+
     if today.today != user.last_date_completed: # if it is the same do nothing 
         last_prompt = game.prompts[-1][-1]
         game.selected_words.append(last_prompt)
         # game.jumpsA = data["jumpsA"]
+        # game.jumpsA.append(game.current_jumps)
+        print("[finished_game]: appending current jumps: ", game.current_jumps)
+        print("[finished_game]: here is new jumpsA: ", game.jumpsA)
         game.total_jumps = sum_jumpsA(game.jumpsA)
 
         if user.last_date_completed:

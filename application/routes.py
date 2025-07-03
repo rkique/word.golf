@@ -370,7 +370,8 @@ def index_post():
             print(f'streak: [{streak}]')
             data['streak'] = streak
             session['data'] = json.dumps(update_new_data(data, session['data']))
-            return make_response("session_done" + session['data'])
+            update_game_state(json.loads(session['data']))
+            return make_response("session_done" + session.get('data'))
         data['i'] += 1
         _data = shift_to(data['i'])
         session['data'] = json.dumps(update_new_data(_data, session['data']))
