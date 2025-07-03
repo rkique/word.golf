@@ -4,7 +4,7 @@ from ..models import GameState
 from .auth import get_user_from_cookie
 from dateutil import parser
 from datetime import timedelta
-from . import globaldate
+from . import today
 
 def sum_jumpsA(jumpsA): 
     if not jumpsA: 
@@ -22,13 +22,13 @@ def game_progress():
     if not user:
         return jsonify({"error": "Not authenticated"}), 401
 
-    game_state = GameState.query.filter_by(user_id=user.id, current_date=globaldate.today).first()
+    game_state = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
 
     if not game_state:
         # create a new game state for today to reference and update
         starting_game_state = GameState(
             user_id=user.id,
-            current_date=globaldate.today,
+            current_date=today.today,
             selected_words=[],
             jumpsA=[],
             total_jumps=0,
@@ -62,26 +62,30 @@ def update_game_state(data):
     if not user:
         return jsonify({"error": "Not authenticated"}), 401
 
-    game_state = GameState.query.filter_by(user_id=user.id, current_date=globaldate.today).first()
+    game_state = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
 
     if not game_state:
-        game_state = GameState(user_id=user.id, current_date=globaldate.today)
+        game_state = GameState(user_id=user.id, current_date=today.today)
         db.session.add(game_state)
         db.session.commit()
 
-    game_state.jumpsA = data.get('jumpsArray', [])
-    game_state.results = data.get('results', [])
-    game_state.prompt_idx = data.get('i', 0)
-    game_state.current_jumps = data.get('jumps', 0)
-    game_state.prompts = data.get('prompts', [])
+    required_keys = ['jumpsArray', 'results', 'i', 'jumps', 'prompts']
+    for key in required_keys:
+        assert key in data, f"Missing required key: {key}"
 
-    wrd = data.get('word', None)
+    game_state.jumpsA = data['jumpsArray'] 
+    game_state.results = data['results']
+    game_state.prompt_idx = data['i'] 
+    game_state.current_jumps = data['jumps'] 
+    game_state.prompts = data['prompts']
+
+    word = data.get('word', None)
     # print("here is word in update_game_state")
     # print(wrd)
-    if wrd:
+    if word:
         if game_state.selected_words is None:
             game_state.selected_words = []
-        game_state.selected_words.append(wrd)
+        game_state.selected_words.append(word)
     
     db.session.commit()
 
@@ -95,18 +99,18 @@ def finished_game():
         return jsonify({"error": "Not authenticated"}), 401
 
 
-    game = GameState.query.filter_by(user_id=user.id, current_date=globaldate.today).first()
+    game = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
     if not game:
         return jsonify({"error": "Should already have a game state"}), 400
 
 
-    print(f"GameState fields: id={game.id}, user_id={game.user_id}, current_date={game.current_date}, "
-          f"selected_words={game.selected_words}, jumpsA={game.jumpsA}, total_jumps={game.total_jumps}, "
-          f"results={game.results}, prompt_idx={game.prompt_idx}, current_jumps={game.current_jumps}, "
-          f"prompts={game.prompts}")
+    # print(f"GameState fields: id={game.id}, user_id={game.user_id}, current_date={game.current_date}, "
+    #       f"selected_words={game.selected_words}, jumpsA={game.jumpsA}, total_jumps={game.total_jumps}, "
+    #       f"results={game.results}, prompt_idx={game.prompt_idx}, current_jumps={game.current_jumps}, "
+    #       f"prompts={game.prompts}")
 
 
-    if globaldate.today != user.last_date_completed: # if it is the same do nothing 
+    if today.today != user.last_date_completed: # if it is the same do nothing 
         last_prompt = game.prompts[-1][-1]
         game.selected_words.append(last_prompt)
         # game.jumpsA = data["jumpsA"]
@@ -114,9 +118,9 @@ def finished_game():
 
         # Update the user's streak based on the last date completed
         if user.last_date_completed:
-            if user.last_date_completed == globaldate.today - timedelta(days=1):
+            if user.last_date_completed == today.today - timedelta(days=1):
                 user.streak += 1  # Increment streak if the last date was yesterday
-            elif user.last_date_completed < globaldate.today - timedelta(days=1):
+            elif user.last_date_completed < today.today - timedelta(days=1):
                 user.streak = 1  # Reset streak if the last date was more than a day ago
         else:
             # if the user has never completed a game, set streak to 1
@@ -124,7 +128,7 @@ def finished_game():
         # If the last date is the same as the game date, do nothing (explicitly handled)
 
         # Update user's streak and last date
-        user.last_date_completed = globaldate.today
+        user.last_date_completed = today.today
         # db.session.add(game)
         db.session.commit()
     

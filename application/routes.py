@@ -10,14 +10,13 @@ from .utils import get_prompts, txt_to_list, txt_to_dict
 from flask import redirect
 import os
 import uuid
-from .internals.auth import get_user_from_cookie, create_guest_user, user_session_exists
+from .internals.auth import get_user_from_cookie, create_guest_user, user_session_exists, set_response_cookie
 from .internals.gameprogress import update_game_state
 from .models import GameState
 from . import cookie_signer
-from .internals import globaldate
+from .internals import today
 
 # store logged_in in routes.py
-
 prompt_neighbor_dict = get_prompts(txt_to_list("application/data/neighbors.txt"))
 PROMPTS = list(prompt_neighbor_dict.keys())
 NEIGHBORS = list(prompt_neighbor_dict.values())
@@ -74,8 +73,8 @@ def add_days(days: int) -> datetime.timedelta:
 
 def elapsed_days(date : datetime.datetime) -> int:
     start_date = datetime.datetime.strptime("05-30-2025", '%m-%d-%Y').date()
-    globaldate.today = date
-    return (globaldate.today - start_date).days
+    today.today = date
+    return (today.today - start_date).days
 
 def get_prompts_for_date(date : datetime.datetime) -> list:
     '''
@@ -83,7 +82,6 @@ def get_prompts_for_date(date : datetime.datetime) -> list:
     '''
     elapsed = elapsed_days(date)
     prompt_range = range(elapsed * PCOUNT, (elapsed + 1) * PCOUNT)
-    print(f"Loading prompts: {prompt_range}")
     return elapsed, [PROMPTS[i] for i in prompt_range], [NEIGHBORS[i] for i in prompt_range]
 
 def load_time():
@@ -91,8 +89,8 @@ def load_time():
     eastern = datetime.timezone(datetime.timedelta(hours=-5))
     now_utc = datetime.datetime.utcnow()
     now_et = now_utc.replace(tzinfo=datetime.timezone.utc).astimezone(eastern)
-    globaldate.today = now_et.replace(tzinfo=None).date() + add_days(DAYS)
-    elapsed, prompts_today, neighbors_today = get_prompts_for_date(globaldate.today)
+    today.today = now_et.replace(tzinfo=None).date() + add_days(DAYS)
+    elapsed, prompts_today, neighbors_today = get_prompts_for_date(today.today)
 
 def jump(start : str) -> str:
     '''
@@ -123,7 +121,7 @@ def make_help_session():
         'jumpsArray': [],
         'jumps': 0,
         'i': 0,
-        'date': globaldate.today.strftime('%Y-%m-%d'),
+        'date': today.today.strftime('%Y-%m-%d'),
         'prompt': prompt1,
         'prompts': HELP_PROMPTS,
         'results': results,
@@ -144,7 +142,7 @@ def shift_to(i):
         results = get_curve(prompt[0], prompt[1], PRECOMPUTED, WV, neighbor=neighbor)
         data['i'] = i
         data['jumps'] = 0
-        data['date'] = globaldate.today.strftime('%Y-%m-%d')
+        data['date'] = today.today.strftime('%Y-%m-%d')
         data['prompt'], data['prompts'] = prompt, prompts_today
         print(f"[shift_to] prompts_today {prompts_today}")
         data['results'] = results
@@ -156,8 +154,7 @@ def shift_to(i):
 def help_shift(data):
     data['jumpsArray'].append(data['jumps'])
     data['jumps'] = 0
-    i = data['i'] + 1
-    data['i'] = i
+    data['i'] += 1
     data['prompts'] = HELP_PROMPTS
     data['neighbors'] = HELP_NEIGHBORS
     neighbor = data['neighbors'][i]
@@ -182,14 +179,14 @@ def new_edit_sesssion():
 
     # Get today's date as a date object (not string)
     # 'today' should already be set by load_time()
-    game_state = GameState.query.filter_by(user_id=user.id, current_date=globaldate.today).first()
+    game_state = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
     
     if game_state:
         data =  {
             'jumpsArray': game_state.jumpsA or [],
             'jumps': game_state.current_jumps or 0,
             'i': game_state.prompt_idx or 0,
-            'date': globaldate.today.strftime('%Y-%m-%d'),
+            'date': today.today.strftime('%Y-%m-%d'),
             'results': game_state.results or [],
             'prompts': game_state.prompts or [],
             'prompt': game_state.prompts[game_state.prompt_idx] if game_state.prompts and game_state.prompt_idx < 5 else (game_state.prompts[4] if game_state.prompts else []),
@@ -205,62 +202,46 @@ def index():
     print('/ Starting Fresh..')
     load_data()
     load_time()
-    print('[index.html] Current Date: ', globaldate.today)
-    new_data = new_edit_sesssion()
-    if new_data:
+    print('[index.html] Current Date: ', today.today)
+    data_or_none = new_edit_sesssion()
+    if data_or_none:
         print('There is an existing user')
+        data = data_or_none
         # check the data and ensure that nothing has existed 
-        if new_data["results"] == [] and new_data["prompts"] == [] and new_data["prompt"] == []:
-            i = new_data.get('i', 0)
-            data = shift_to(i)
-            data['jumpsArray'] = []
-            data['logged_in'] = new_data["logged_in"]
-            data['is_help'] = False
-            session['data'] = json.dumps(data)
+        if data["results"] == []:
+            i = data.get('i', 0)
+            data_today = shift_to(i)
+            data_today['jumpsArray'] = []
+            data_today['logged_in'] = data["logged_in"]
+            data_today['is_help'] = False
+            session['data'] = json.dumps(data_today)
         else:
-            new_data['is_help'] = False
-            session["data"] = json.dumps(new_data)
+            data['is_help'] = False
+            session["data"] = json.dumps(data)
         response = make_response(render_template('index.html', data=json.loads(session.get('data'))))
     else:
-        # Set a cookie here!!!
-        # Ensure 'i' exists in session['data'], set to 0 if not present
-        # Ensure session['data'] exists and is a dict with 'i'
         print('Creating new user')
-        usr = create_guest_user(globaldate.today, str(uuid.uuid4()))
-        try:
-            session_data = json.loads(session.get("data", "{}"))
-            if session_data.get('date') != globaldate.today.strftime('%Y-%m-%d'):
-                session_data['i'] = 0
-        except Exception:
-            print('[/] Exception in loading session_data')
-            session_data = {}
-        
-        i = session_data.get('i', 0)
-        data = shift_to(i)
+        guest_user = create_guest_user(today.today, str(uuid.uuid4()))
+        # try:
+        #     #
+        #     session_data = json.loads(session.get("data", "{}"))
+        #     if session_data.get('date') != today.today.strftime('%Y-%m-%d'):
+        #         session_data['i'] = 0
+        # except Exception:
+        #     print('[/] Exception in loading session_data')
+        #     session_data = {}
+        # i = session_data.get('i', 0)
+
+        data = shift_to(0)
         data['jumpsArray'] = []
         session['data'] = json.dumps(data)
         response = make_response(render_template('index.html', data=json.loads(session.get('data'))))
-        token = cookie_signer.dumps({"user_id": usr.id})
+        token = cookie_signer.dumps({"user_id": guest_user.id})
+
         if os.getenv("DEV", "false").lower() == "true":
-            response.set_cookie(
-                "auth_token",
-                token,
-                path='/',
-                httponly=True,
-                # secure=True, 
-                samesite="Lax",
-                max_age=60 * 60 * 24 * 365
-            )
+            set_response_cookie(response, token)
         else:
-            response.set_cookie(
-                "auth_token",
-                token,
-                path='/',
-                httponly=True,
-                secure=True, 
-                samesite="Lax",
-                max_age=60 * 60 * 24 * 365
-            )
+            set_response_cookie(response, token, secure=True)
 
     assert WV is not None, "Word vectors not loaded"
     print('/ data is set to:', session.get('data'))
@@ -330,13 +311,13 @@ def sesh_edit():
 @app.route('/login', methods=['GET'])
 def login():
     # this returns the login page stored at /templates/login.html
-    date = globaldate.today.strftime('%Y-%m-%d') if globaldate.today else datetime.datetime.today().strftime('%Y-%m-%d')
+    date = today.today.strftime('%Y-%m-%d') if today.today else datetime.datetime.today().strftime('%Y-%m-%d')
     return render_template('login.html', date=date)
 
 @app.route('/resetpassword', methods=['GET'])
 def resetpassword():
     # this returns the password reset page stored at /templates/resetpassword.html
-    date = globaldate.today.strftime('%Y-%m-%d') if globaldate.today else datetime.datetime.today().strftime('%Y-%m-%d')
+    date = today.today.strftime('%Y-%m-%d') if today.today else datetime.datetime.today().strftime('%Y-%m-%d')
     return render_template('resetpassword.html', date=date)
 
 @app.route('/', methods=['POST'])
@@ -371,7 +352,7 @@ def index_post():
     elif request.form.get('end') is not None:
         data = json.loads(session.get('data', '{}'))
         print(f"[/] Shifting to Prompt {data.get('i', 0)+1}")
-        if (data.get('i', 0) + 1 == PCOUNT):
+        if (data.get('i', 0) + 1 >= PCOUNT):
             #do not allow overflow.
             data['i'] = 4
             session['data'] = json.dumps(update_new_data(data, session['data']))

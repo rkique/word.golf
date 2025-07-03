@@ -7,13 +7,13 @@ from datetime import datetime, timedelta
 import uuid
 import json
 import itsdangerous
-from . import globaldate
+from . import today
 
 def get_user_from_cookie():
     token = request.cookies.get("auth_token")
-    print(f"Token from cookie: {token}")
-    print("here is request.cookies:", request.cookies)
-    print("here is full request:", request)
+    # print(f"Token from cookie: {token}")
+    # print("here is request.cookies:", request.cookies)
+    # print("here is full request:", request)
     if not token:
         return None
     try:
@@ -49,7 +49,7 @@ def authlogin():
         token = cookie_signer.dumps({"user_id": user.id})
         # Find the game state using the user ID from the cookie
         if current_user:
-            game_state = GameState.query.filter_by(user_id=current_user.id, current_date=globaldate.today).first()
+            game_state = GameState.query.filter_by(user_id=current_user.id, current_date=today.today).first()
             if game_state:
                 existing = GameState.query.filter_by(user_id=user.id, current_date=game_state.current_date).first()
                 if existing:
@@ -230,12 +230,12 @@ def logout():
     user = get_user_from_cookie()
     if not user:
         # If not authenticated, just create a guest user and set cookie
-        new_user = create_guest_user(globaldate.today, str(uuid.uuid4()))
+        new_user = create_guest_user(today.today, str(uuid.uuid4()))
     else:
         # Create a new guest user
-        new_user = create_guest_user(globaldate.today, str(uuid.uuid4()))
+        new_user = create_guest_user(today.today, str(uuid.uuid4()))
         # Transfer today's game state from the logged-in user to the guest user
-        old_game_state = GameState.query.filter_by(user_id=user.id, current_date=globaldate.today).first()
+        old_game_state = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
         if old_game_state:
             # Use the existing blank GameState created by create_guest_user and update its fields
             guest_game_state = GameState.query.filter_by(user_id=new_user.id, current_date=old_game_state.current_date).first()
@@ -310,7 +310,7 @@ def authorize_google():
             provider='google',
             provider_id=user_info['id'],
             email=user_info.get('email'),
-            date_created=globaldate.today,
+            date_created=today.today,
             streak=0,
             last_date_completed=None
         )
@@ -319,7 +319,7 @@ def authorize_google():
         db.session.commit()
     
     if current_user:
-        game_state = GameState.query.filter_by(user_id=current_user.id, current_date=globaldate.today).first()
+        game_state = GameState.query.filter_by(user_id=current_user.id, current_date=today.today).first()
         if game_state:
             existing = GameState.query.filter_by(user_id=user.id, current_date=game_state.current_date).first()
             if existing:
@@ -405,3 +405,25 @@ def user_session_exists():
         return True
     else:
         return False
+    
+
+def set_response_cookie(response, token, secure=True):
+    response.set_cookie(
+            "auth_token",
+            token,
+            path='/',
+            httponly=True,
+            samesite="Lax",
+            max_age=60 * 60 * 24 * 365
+        )
+    if secure:
+        response.set_cookie(
+            "auth_token",
+            token,
+            path='/',
+            httponly=True,
+            secure=True,
+            samesite="Lax",
+            max_age=60 * 60 * 24 * 365
+        )
+    return response
