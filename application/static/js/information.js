@@ -20,25 +20,21 @@ function daysSinceStartDate(startDateStr = '2025-05-31', storageKey = 'current_d
 
 function renderGrid(counts) {
     const colorEmojis = {
-        1: '🟩', // cyan (using blue as closest)
-        2: '🟩', // green
-        3: '🟦', // blue
-        4: '🟨', // yellow
-        5: '🟥', // red
+        1: '🟩', // green
+        2: '🟩', // blue
+        3: '🟦', // yellow
+        4: '🟨', // red
+        5: '🟥', // white
         6: '⬜', // white
+        7: '⬛',
     };
     const numRows = 5;
+    const numCols = 6;
     let gridMessage = '';
     for (let row = 0; row < numRows; row++) {
         let count = Math.ceil(counts[row] / 2);
-        let line = '';
-        for (let i = 1; i <= 6; i++) {
-            if (i <= count) {
-                line += colorEmojis[i];
-            } else {
-                line += '⬛';
-            }
-        }
+        let emoji = colorEmojis[count] || colorEmojis[7];
+        let line = emoji.repeat(count) + colorEmojis[7].repeat(numCols - count);
         gridMessage += line + '\n';
     }
     return gridMessage;
