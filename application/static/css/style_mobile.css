@@ -194,7 +194,7 @@
     .finish_container {
         width: 100%
     }
-    
+
     .finish-container .stat {
         font-size: 1.8rem;
     }
@@ -203,6 +203,7 @@
         margin: 0 0;
         font-size: 0.9rem;
     }
+    
     .finish-container .solutions{
         margin-top: 1rem;
     }
