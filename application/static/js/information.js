@@ -279,6 +279,19 @@ function clearInfoBox() {
     info.style.display = 'none'; //hide container.
 }
 
+function renderTransientModal(duration){
+    let modal = document.getElementById('modal');
+    modal.style.zIndex = 200;
+    document.body.style.pointerEvents = 'none';
+    let overlay = document.createElement('div');
+    overlay.classList.add('tint-background')
+    document.body.appendChild(overlay);
+    setTimeout(() => {
+        overlay.parentNode.removeChild(overlay);
+        document.body.style.pointerEvents = 'auto';
+    }, duration);
+}
+
 function renderHelpFinish(){
     clearInfoBox()
     help_finish_text = `<div>
@@ -292,6 +305,7 @@ function renderHelpFinish(){
 
     setTimeout(() => {
         displayModal(help_finish_text);
+        renderTransientModal(START_GAME_DELAY_MS + HELP_FINISH_DELAY_MS)
         setTimeout(startGame, START_GAME_DELAY_MS);
     }, HELP_FINISH_DELAY_MS);
 }

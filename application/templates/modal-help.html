@@ -1,12 +1,15 @@
 <script>
     function beginTutorial() {
+
+        //clear help finish modal if necessary.
+        document.getElementById('modal-finish-guest').style.display = 'none';
+        document.getElementById('modal-finish-user').style.display = 'none';
         localStorage.setItem('is_help', 'true');
         data = sendAndReceiveXML(`help=true`);
         if (localStorage.getItem('prompts')) {
             _prompts = localStorage.getItem('prompts');
             localStorage.setItem('_prompts', _prompts)
         }
-        // _ = send_game_data_to_backend(data, `help=true`);
         renderLinks(data.prompt, data.results)
         // alert('[beginTutorial] rendering prompts')
         clearBoxes()

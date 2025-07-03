@@ -176,7 +176,6 @@
     #modal-finish-guest, #modal-finish-user {
         width: 92vw;
         max-width: 92vw;
-        height: 80vh;
         padding: 0 0;
     }
     #finish-container {
@@ -192,6 +191,10 @@
         font-size: 1.6rem;
     }
 
+    .finish_container {
+        width: 100%
+    }
+    
     .finish-container .stat {
         font-size: 1.8rem;
     }

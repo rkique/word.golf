@@ -157,8 +157,8 @@ def help_shift(data):
     data['i'] += 1
     data['prompts'] = HELP_PROMPTS
     data['neighbors'] = HELP_NEIGHBORS
-    neighbor = data['neighbors'][i]
-    prompt = data['prompts'][i]
+    neighbor = data['neighbors'][data['i']]
+    prompt = data['prompts'][data['i']]
     data['prompt'] = prompt
     results = get_curve(prompt[0], prompt[1], 
     PRECOMPUTED, WV, neighbor=neighbor)
