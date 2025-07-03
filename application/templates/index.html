@@ -86,18 +86,17 @@ data = JSON.parse('{{data|tojson|safe}}');
 <script src="static/js/is_game_complete.js"> </script>
 <script>
     localStorage.setItem('current_date', data['date']);
-    is_help = localStorage.getItem('is_help');
-
+    let is_help = localStorage.getItem('is_help');
+    if ("logged_in" in data) { // figure out this logic a bit later not now
+        if (data.logged_in) {
+            renderLogin(data.logged_in)
+        }
+    }
     // start help session
-    if (is_help !== 'false') { 
+    if (is_help !== 'false' && !data.logged_in) { 
         startHelpSession()
     } 
     else {
-        if ("logged_in" in data) { // figure out this logic a bit later not now
-            if (data.logged_in) {
-                renderLogin(data.logged_in)
-            }
-        }
         console.log("here is the data from the backend");
         console.log(data);
         let loaded = data;

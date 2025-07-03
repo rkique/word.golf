@@ -79,6 +79,7 @@ function renderFinish(jumpsArray) {
     })
     .then(response => response.json())
     .then(finish_data => {
+        console.log("[render_finish] finish data: ", finish_data)
         const daily_idx = daysSinceStartDate();
         is_logged_in = Boolean(localStorage.getItem('logged_in'))
         let jumpsGridMessage = finish_data.jumpsA ? renderGrid(finish_data.jumpsA) : '';
@@ -109,6 +110,7 @@ function startGame() {
     // renderPrompts(resp.prompts, resp.jumpsArray, resp.jumps, start_target=start_target, serialize=false)
     // activateLinks()
     const data = resp;
+    console.log("[start Game] backend response: ", resp);
     // console.log("backend response: ", game_data);
     if ("logged_in" in data) { // figure out this logic a bit later not now
         if (data.logged_in) {
@@ -118,10 +120,6 @@ function startGame() {
     let loaded = data;
     let prompt_idx = data['i'];
     let jumpsArray = loaded.jumpsArray;
-    
-    // if (jumpsArray.length > 5) {
-    //     jumpsArray = jumpsArray.slice(0, 5);
-    // }
     let jumps = loaded.jumps;
     let results = loaded.results || data['results'];
     let prompts = loaded.prompts;
@@ -131,12 +129,8 @@ function startGame() {
     if (isPromptIdxFive) {
         prompt_idx = 4;
     }
-    // _ = editSession(jumpsArray, jumps, results, prompt_idx, start_target);
     start_target = prompts[prompt_idx];
     if(!setPrompts()){renderPrompts(prompts, jumpsArray, jumps, start_target=start_target)}
-    // if (isPromptIdxFive) {
-    //     renderLinks(start_target, results, prompt_idx, isPromptIdxFive); 
-    // }
     renderLinks(start_target, results, prompt_idx, isPromptIdxFive); 
     activateLinks();
 }

@@ -17,6 +17,7 @@
 
     function renderLogin(email) {
         localStorage.setItem('logged_in', email);
+        localStorage.setItem('is_help', false);
         document.getElementById('logged_in-username').textContent = email;
         // const loginWelcome = document.getElementById('login-welcome');
         // loginWelcome.style.display = 'flex';

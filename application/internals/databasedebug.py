@@ -1,6 +1,6 @@
 from .. import db
 from flask import current_app as app, jsonify
-from .auth import get_user_from_session
+from .auth import get_user_from_cookie
 from ..models import User, GameState
 import json
 
@@ -79,7 +79,7 @@ def print_db_contents():
 
 @app.route('/delete_most_recent_gamestate', methods=['POST'])
 def delete_most_recent_gamestate():
-    user = get_user_from_session()
+    user = get_user_from_cookie()
     if not user:
         return jsonify({"error": "Not authenticated"}), 401
 
@@ -94,7 +94,7 @@ def delete_most_recent_gamestate():
 
 @app.route('/delete_all_gamestates', methods=['POST'])
 def delete_all_gamestates():
-    user = get_user_from_session()
+    user = get_user_from_cookie()
     if not user:
         return jsonify({"error": "Not authenticated"}), 401
 
@@ -105,7 +105,7 @@ def delete_all_gamestates():
 
 @app.route('/list_gamestates', methods=['GET'])
 def list_gamestates():
-    user = get_user_from_session()
+    user = get_user_from_cookie()
     if not user:
         return jsonify({"error": "Not authenticated"}), 401
 
@@ -130,7 +130,7 @@ def list_gamestates():
 
 @app.route("/data", methods=["GET"])
 def get_user_data():
-    user = get_user_from_session()
+    user = get_user_from_cookie()
     if not user:
         return jsonify({"error": "Not authenticated"}), 200
 
@@ -163,7 +163,7 @@ def get_user_data():
 
 @app.route("/user_history", methods=["GET"])
 def game_history():
-    user = get_user_from_session()
+    user = get_user_from_cookie()
     if not user:
         return jsonify({"error": "Not authenticated"}), 401
 

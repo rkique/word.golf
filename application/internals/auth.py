@@ -6,17 +6,25 @@ from cryptography.hazmat.primitives import constant_time
 from datetime import datetime, timedelta
 import uuid
 import json
-# from .databasedebug import print_gamestate, print_user
+import itsdangerous
+from . import globaldate
 
-def get_user_from_session():
-    user_id = session.get('user_id')
-    if not user_id:
+def get_user_from_cookie():
+    token = request.cookies.get("auth_token")
+    print(f"Token from cookie: {token}")
+    print("here is request.cookies:", request.cookies)
+    print("here is full request:", request)
+    if not token:
         return None
-    return User.query.filter_by(id=user_id).first()
+    try:
+        data = cookie_signer.loads(token, max_age=60 * 60 * 24 * 365) 
+        return User.query.filter_by(id=data["user_id"]).first()
+    except itsdangerous.BadSignature:
+        return None
 
 @app.route('/authlogin', methods=['POST'])
 def authlogin():
-    current_user = get_user_from_session()
+    current_user = get_user_from_cookie()
     if request.method == "POST":
         data = request.get_json()
     else:
@@ -38,18 +46,19 @@ def authlogin():
         return jsonify({"error": "Password processing failed"}), 500
 
     if constant_time.bytes_eq(hashed, user.password):
+        token = cookie_signer.dumps({"user_id": user.id})
         # Find the game state using the user ID from the cookie
         if current_user:
-            game_state = GameState.query.filter_by(user_id=current_user.id, current_date=data["date"]).first()
+            game_state = GameState.query.filter_by(user_id=current_user.id, current_date=globaldate.today).first()
             if game_state:
                 existing = GameState.query.filter_by(user_id=user.id, current_date=game_state.current_date).first()
                 if existing:
-                    print(f"existing GameState: id={existing.id}, user_id={existing.user_id}, current_date={existing.current_date}, "
-                        f"selected_words={existing.selected_words}, jumpsA={existing.jumpsA}, total_jumps={existing.total_jumps}, "
-                        f"results={existing.results}, prompt_idx={existing.prompt_idx}, current_jumps={existing.current_jumps}, "
-                        f"prompts={existing.prompts}")
+                    db.session.delete(existing)
+                    db.session.commit()
                 else:
                     print("existing GameState: None")
+                
+                game_state.user_id = user.id
 
                 # need to update the previous words to update the user's streak
                 if game_state and not existing and game_state.selected_words and game_state.prompts and game_state.prompts[-1]:
@@ -72,9 +81,29 @@ def authlogin():
 
                             # Update user's streak and last date
                             user.last_date_completed = game_state.current_date
-                            db.session.commit()
+                
+                db.session.commit()
+
         response = jsonify({"message": "Login successful"})
-        session["user_id"] = user.id
+        if app.debug:
+            response.set_cookie(
+                "auth_token",
+                token,
+                path='/',
+                httponly=True,
+                samesite="Lax",
+                max_age=60 * 60 * 24 * 365
+            )
+        else:
+            response.set_cookie(
+                "auth_token",
+                token,
+                path='/',
+                httponly=True,
+                secure=True,
+                samesite="Lax",
+                max_age=60 * 60 * 24 * 365
+            )
         return response
 
     return jsonify({"error": "Invalid email or password"}), 401
@@ -98,7 +127,7 @@ def create_user():
         return jsonify({"error": "email already exists"}), 200
 
     # Get the current user from the cookie (should be a guest user)
-    user = get_user_from_session()
+    user = get_user_from_cookie()
     if not user:
         return jsonify({"error": "Not authenticated"}), 401
 
@@ -117,7 +146,28 @@ def create_user():
 
     db.session.commit()
 
+    token = cookie_signer.dumps({"user_id": user.id})
     response = jsonify({"message": "User created and logged in successfully"})
+    if app.debug:
+        response.set_cookie(
+            "auth_token",
+            token,
+            path='/',
+            httponly=True,
+            samesite="Lax",
+            max_age=60 * 60 * 24 * 365
+        )
+    else:
+        response.set_cookie(
+            "auth_token",
+            token,
+            path='/',
+            httponly=True,
+            secure=True,
+            samesite="Lax",
+            max_age=60 * 60 * 24 * 365
+        )
+    
     return response
 
 
@@ -150,7 +200,6 @@ def create_guest_user(date, id):
     return user
 
 
-
 def print_user(user):
     user_dict = {
         "id": user.id,
@@ -174,19 +223,19 @@ def print_gamestate(gamestate):
     }
     print(json.dumps(gamestate_dict))
 
+
 @app.route("/logout", methods=["POST"])
 def logout():
     # Get the current (logged-in) user
-    user = get_user_from_session()
-    date = datetime.today().strftime('%Y-%m-%d')
+    user = get_user_from_cookie()
     if not user:
         # If not authenticated, just create a guest user and set cookie
-        new_user = create_guest_user(date, str(uuid.uuid4()))
+        new_user = create_guest_user(globaldate.today, str(uuid.uuid4()))
     else:
         # Create a new guest user
-        new_user = create_guest_user(date, str(uuid.uuid4()))
+        new_user = create_guest_user(globaldate.today, str(uuid.uuid4()))
         # Transfer today's game state from the logged-in user to the guest user
-        old_game_state = GameState.query.filter_by(user_id=user.id, current_date=date).first()
+        old_game_state = GameState.query.filter_by(user_id=user.id, current_date=globaldate.today).first()
         if old_game_state:
             # Use the existing blank GameState created by create_guest_user and update its fields
             guest_game_state = GameState.query.filter_by(user_id=new_user.id, current_date=old_game_state.current_date).first()
@@ -201,11 +250,31 @@ def logout():
             db.session.commit()
 
     # Set the auth cookie to the new guest user
+    token = cookie_signer.dumps({"user_id": new_user.id})
     session_data = json.loads(session["data"])
     session_data["logged_in"] = None
     session["data"] = json.dumps(session_data)
-    session["user_id"] = new_user.id
+
     response = jsonify({"message": "Logged out successfully"})
+    if app.debug:
+        response.set_cookie(
+            "auth_token",
+            token,
+            path='/',
+            httponly=True,
+            samesite="Lax",
+            max_age=60 * 60 * 24 * 365
+        )
+    else:
+        response.set_cookie(
+            "auth_token",
+            token,
+            path='/',
+            httponly=True,
+            secure=True,
+            samesite="Lax",
+            max_age=60 * 60 * 24 * 365
+        )
     return response
 
 
@@ -213,14 +282,17 @@ def logout():
 def login_google():
     # redirect_uri = url_for('authorize_google', _external=True) use this for local development
     # redirect_uri = "https://routes.word.golf/authorize/google" # production
-    redirect_uri = "http://localhost:8080/authorize/google" # development
+    if app.debug:
+        redirect_uri = "http://localhost:8080/authorize/google" # development
+    else:
+        redirect_uri = "https://word.golf/authorize/google"
     return oauth.google.authorize_redirect(redirect_uri)
 
 @app.route('/authorize/google', methods=['POST', 'GET'])
 def authorize_google():
     token = oauth.google.authorize_access_token()
     user_info = oauth.google.get('userinfo').json()
-    current_user = get_user_from_session()
+    current_user = get_user_from_cookie()
 
 
     # Check if a user with the same email already exists
@@ -238,7 +310,7 @@ def authorize_google():
             provider='google',
             provider_id=user_info['id'],
             email=user_info.get('email'),
-            date_created=datetime.utcnow().date(),
+            date_created=globaldate.today,
             streak=0,
             last_date_completed=None
         )
@@ -247,17 +319,16 @@ def authorize_google():
         db.session.commit()
     
     if current_user:
-        date_today = datetime.utcnow().date()
-        game_state = GameState.query.filter_by(user_id=current_user.id, current_date=date_today).first()
+        game_state = GameState.query.filter_by(user_id=current_user.id, current_date=globaldate.today).first()
         if game_state:
             existing = GameState.query.filter_by(user_id=user.id, current_date=game_state.current_date).first()
             if existing:
-                print(f"existing GameState: id={existing.id}, user_id={existing.user_id}, current_date={existing.current_date}, "
-                        f"selected_words={existing.selected_words}, jumpsA={existing.jumpsA}, total_jumps={existing.total_jumps}, "
-                        f"results={existing.results}, prompt_idx={existing.prompt_idx}, current_jumps={existing.current_jumps}, "
-                        f"prompts={existing.prompts}")
+                db.session.delete(existing)
+                db.session.commit()
             else:
                 print("existing GameState: None")
+            
+            game_state.user_id = user.id
 
             # need to update the previous words to update the user's streak
             if game_state and not existing and game_state.selected_words and game_state.prompts and game_state.prompts[-1]:
@@ -280,14 +351,36 @@ def authorize_google():
 
                         # Update user's streak and last date
                         user.last_date_completed = game_state.current_date
-                        db.session.commit()
+            db.session.commit()
 
     session["user_id"] = user.id
-    print("new user here")
-    print_user(user)
+    token = cookie_signer.dumps({"user_id": user.id})
+
     # response = redirect("https://dev.word.golf") # production version
     # response = redirect("https://word.golf")
-    response = redirect("http://127.0.0.1:8080") # development version
+    if app.debug:
+        response = redirect("http://localhost:8080") # development version
+    else:
+        response = redirect("https://word.golf")
+    if app.debug:
+        response.set_cookie(
+            "auth_token",
+            token,
+            path='/',
+            httponly=True,
+            samesite="Lax",
+            max_age=60 * 60 * 24 * 365
+        )
+    else:
+        response.set_cookie(
+            "auth_token",
+            token,
+            path='/',
+            httponly=True,
+            secure=True,
+            samesite="Lax",
+            max_age=60 * 60 * 24 * 365
+        )
     return response
 
 
@@ -307,7 +400,7 @@ def user_exist():
         return jsonify({"exists": False}), 200
 
 def user_session_exists():
-    user = get_user_from_session()
+    user = get_user_from_cookie()
     if user:
         return True
     else:

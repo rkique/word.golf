@@ -1,12 +1,13 @@
-from .. import db, mail
+from .. import db, mail, cookie_signer
 from flask import current_app as app, jsonify, request
 from ..models import User, PasswordResetPin
 import random
 from flask_mail import Message
 import os
 from datetime import datetime, timedelta
-from crypto import generate_salt, PasswordKDF, Hash
+from .crypto import generate_salt, PasswordKDF, Hash
 
+# DO NOT USE GLOBAL DATE FOR THIS CASE (needs to be real time date)
 
 def generate_pin(length=6):
     return ''.join(str(random.randint(0, 9)) for _ in range(length))
@@ -30,7 +31,7 @@ def forgot_password():
 
     user = User.query.filter_by(email=email).first()
     if not user:
-        return jsonify({"error": "User not found"}), 404
+        return jsonify({"error": "User not found"}), 400
 
     pin = generate_pin()
     expires_at = datetime.utcnow() + timedelta(minutes=15)
@@ -60,7 +61,7 @@ def reset_password():
 
     user = User.query.filter_by(email=email).first()
     if not user:
-        return jsonify({"error": "User not found"}), 404
+        return jsonify({"error": "User not found"}), 400
 
     reset_pin = PasswordResetPin.query.filter_by(user_id=user.id, pin=pin).first()
     if not reset_pin or reset_pin.expires_at < datetime.utcnow():
@@ -76,4 +77,30 @@ def reset_password():
     db.session.delete(reset_pin)
     db.session.commit()
 
-    return jsonify({"message": "Password reset successful."})
+    token = cookie_signer.dumps({"user_id": user.id})
+
+    # fix this logic to match login and create user 
+
+    response = jsonify({"message": "Password reset successful."})
+
+    if app.debug:
+        response.set_cookie(
+            "auth_token",
+            token,
+            path='/',
+            httponly=True,
+            samesite="Lax",
+            max_age=60 * 60 * 24 * 365
+        )
+    else:
+        response.set_cookie(
+            "auth_token",
+            token,
+            path='/',
+            httponly=True,
+            secure=True,
+            samesite="Lax",
+            max_age=60 * 60 * 24 * 365
+        )
+
+    return response

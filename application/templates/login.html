@@ -66,9 +66,6 @@
 
     </form>
 </div>
-<script>
-  const current_date = "{{ date }}";
-</script>
 
 <script>
 
@@ -165,7 +162,7 @@ document.getElementById("LoginBtn").addEventListener("click", async (e) => {
           headers: {
               "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, password, date: current_date}),
+          body: JSON.stringify({ email, password}),
       });
       const data = await res.json();
       if (res.ok) {
@@ -214,7 +211,7 @@ document.getElementById("CreateAccountBtn").addEventListener("click", async (e) 
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password , date: current_date}),
+        body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
       if (res.ok) {

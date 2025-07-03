@@ -1,9 +1,10 @@
 from .. import db
 from flask import current_app as app, request, jsonify
 from ..models import GameState
-from .auth import get_user_from_session
+from .auth import get_user_from_cookie
 from dateutil import parser
 from datetime import timedelta
+from . import globaldate
 
 def sum_jumpsA(jumpsA): 
     if not jumpsA: 
@@ -17,18 +18,17 @@ def sum_jumpsA(jumpsA):
 
 
 def game_progress():
-    user = get_user_from_session()
+    user = get_user_from_cookie()
     if not user:
         return jsonify({"error": "Not authenticated"}), 401
-    data = request.get_json()
 
-    game_state = GameState.query.filter_by(user_id=user.id, current_date=data["date"]).first()
+    game_state = GameState.query.filter_by(user_id=user.id, current_date=globaldate.today).first()
 
     if not game_state:
         # create a new game state for today to reference and update
         starting_game_state = GameState(
             user_id=user.id,
-            current_date=data["date"],
+            current_date=globaldate.today,
             selected_words=[],
             jumpsA=[],
             total_jumps=0,
@@ -58,14 +58,14 @@ def game_progress():
 
 
 def update_game_state(data):
-    user = get_user_from_session()
+    user = get_user_from_cookie()
     if not user:
         return jsonify({"error": "Not authenticated"}), 401
 
-    game_state = GameState.query.filter_by(user_id=user.id, current_date=data["date"]).first()
+    game_state = GameState.query.filter_by(user_id=user.id, current_date=globaldate.today).first()
 
     if not game_state:
-        game_state = GameState(user_id=user.id, current_date=data["date"])
+        game_state = GameState(user_id=user.id, current_date=globaldate.today)
         db.session.add(game_state)
         db.session.commit()
 
@@ -90,24 +90,12 @@ def update_game_state(data):
 
 @app.route("/update_finish", methods=["POST"])
 def finished_game():
-    user = get_user_from_session()
+    user = get_user_from_cookie()
     if not user:
         return jsonify({"error": "Not authenticated"}), 401
 
-    data = request.get_json()
-    # required = ["last_complete"]
-    print("here is the data received")
-    print(data)
-    if "last_complete" not in data:
-        return jsonify({"error": "Missing required fields"}), 400
 
-    game_date = parser.isoparse(data["last_complete"]).date()
-    
-    print("here is user")
-    print(user)
-    print("here is game_date")
-    print(game_date)
-    game = GameState.query.filter_by(user_id=user.id, current_date=game_date).first()
+    game = GameState.query.filter_by(user_id=user.id, current_date=globaldate.today).first()
     if not game:
         return jsonify({"error": "Should already have a game state"}), 400
 
@@ -118,7 +106,7 @@ def finished_game():
           f"prompts={game.prompts}")
 
 
-    if game_date != user.last_date_completed: # if it is the same do nothing 
+    if globaldate.today != user.last_date_completed: # if it is the same do nothing 
         last_prompt = game.prompts[-1][-1]
         game.selected_words.append(last_prompt)
         # game.jumpsA = data["jumpsA"]
@@ -126,9 +114,9 @@ def finished_game():
 
         # Update the user's streak based on the last date completed
         if user.last_date_completed:
-            if user.last_date_completed == game_date - timedelta(days=1):
+            if user.last_date_completed == globaldate.today - timedelta(days=1):
                 user.streak += 1  # Increment streak if the last date was yesterday
-            elif user.last_date_completed < game_date - timedelta(days=1):
+            elif user.last_date_completed < globaldate.today - timedelta(days=1):
                 user.streak = 1  # Reset streak if the last date was more than a day ago
         else:
             # if the user has never completed a game, set streak to 1
@@ -136,7 +124,7 @@ def finished_game():
         # If the last date is the same as the game date, do nothing (explicitly handled)
 
         # Update user's streak and last date
-        user.last_date_completed = game_date
+        user.last_date_completed = globaldate.today
         # db.session.add(game)
         db.session.commit()
     
