@@ -22,7 +22,7 @@ PROMPTS = list(prompt_neighbor_dict.keys())
 NEIGHBORS = list(prompt_neighbor_dict.values())
 
 PCOUNT = 5
-DAYS = 1
+DAYS = 0
 
 HELP_PROMPTS = [["outside", "layer"],["mercury", "razor"]]
 HELP_NEIGHBORS = ["underneath", "toothpaste"]
@@ -194,7 +194,7 @@ def new_edit_sesssion():
         'prompts': [],
         'prompt': [],
         'logged_in': user.email if user.email else None,
-            }
+    }
 
     if game_state:
         data =  {
@@ -206,7 +206,8 @@ def new_edit_sesssion():
             'prompts': game_state.prompts or [],
             'prompt': game_state.prompts[game_state.prompt_idx] if game_state.prompts and game_state.prompt_idx < 5 \
                     else (game_state.prompts[4] if game_state.prompts else []),
-            'logged_in': user.email if user.email else None
+            'logged_in': user.email if user.email else None,
+            'total_jumps': game_state.total_jumps if game_state.total_jumps else None
         }
     return data
 
@@ -365,10 +366,11 @@ def index_post():
         if (data.get('i', 0) + 1 >= PCOUNT):
             #do not allow overflow.
             data['i'] = 4
-            streak = finished_game(request)
+            streak, total_jumps = finished_game(request)
             #streak and total_jumps.
             print(f'streak: [{streak}]')
             data['streak'] = streak
+            data['total_jumps'] = total_jumps
             session['data'] = json.dumps(update_new_data(data, session['data']))
             update_game_state(json.loads(session['data']))
             return make_response("session_done" + session.get('data'))

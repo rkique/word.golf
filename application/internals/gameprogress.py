@@ -108,7 +108,7 @@ def finished_game(finish_request):
         # game.jumpsA.append(game.current_jumps)
         print("[finished_game]: appending current jumps: ", game.current_jumps)
         print("[finished_game]: here is new jumpsA: ", game.jumpsA)
-        game.total_jumps = sum_jumpsA(game.jumpsA)
+        game.total_jumps = sum_jumpsA(game.jumpsA) + game.current_jumps
 
         if user.last_date_completed:
             if user.last_date_completed == today.today - timedelta(days=1):
@@ -125,4 +125,4 @@ def finished_game(finish_request):
         # db.session.add(game)
         db.session.commit()
 
-    return user.streak
+    return user.streak, game.total_jumps
