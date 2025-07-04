@@ -188,7 +188,7 @@ def shift_to(i):
     return data
 
 def help_shift(data):
-    data['jumpsArray'].append(data['jumps'])
+    data = update_jumps_array(data)
     data['jumps'] = 0
     data['i'] += 1
     data['prompts'] = HELP_PROMPTS

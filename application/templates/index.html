@@ -93,10 +93,10 @@ data = JSON.parse('{{data|tojson|safe}}');
         }
     }
     // start help session
-    // if (is_help !== 'false' && !data.logged_in) { 
-    //     startHelpSession()
-    // } 
-    // else {
+    if (is_help !== 'false' && !data.logged_in) { 
+        startHelpSession()
+    } 
+    else {
         console.log("here is the data from the backend");
         console.log(data);
         let prompt_idx = data['i'];
@@ -113,6 +113,6 @@ data = JSON.parse('{{data|tojson|safe}}');
         renderPrompts(jumpsArray, startTargetIdxs, start_target);
         renderLinks(start_target, results, prompt_idx, is_end); 
         activateLinks();
-    // }
+    }
 
 </script>

@@ -36,6 +36,15 @@ function simToIndex(score){
 //     return jumpsA
 // }
 
+function lastNonzeroRow(jumpsArray) {
+    for (let i = jumpsArray.length - 1; i >= 0; i--) {
+        if (jumpsArray[i].some(val => val !== 0)) {
+            return i; 
+        }
+    }
+    return -1 //last valid index.
+}
+
 function sendAndReceiveXML(message) {
     // alert(`[sendAndReceiveXML] Sending message: ${message}`);
     let xhttp = new XMLHttpRequest();
@@ -60,13 +69,12 @@ function sendAndReceiveXML(message) {
     else {
         try {
             response_text = JSON.parse(xhttp.responseText);
-            jumps = response_text["jumps"]; 
             jumpsArray = response_text["jumpsArray"]; 
             results = response_text["results"]; 
             prompts = response_text["prompts"]; 
-            current_prompt = response_text["i"]; 
-            // console.log(`[Send and Receive XML] results: ${results} jumpsArray : ${jumpsArray} prompts ${prompts}`);
-            if (jumps >= 12 ) { // cap it at 12 current jumps
+            current_prompt = lastNonzeroRow(jumpsArray)
+            let jumps = jumpsArray[current_prompt].reduce((a, b) => a + b, 0);
+            if (jumps >= 14) { // cap it at 12 current jumps
                 let resp = sendAndReceiveXML(`end=true`);
                 // resp.jumpsA = updateJumpsA(resp.jumpsA, resp.previous_words[-1], resp.score)
                 // _ = send_game_data_to_backend(resp, `end=true`);

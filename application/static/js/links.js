@@ -281,7 +281,7 @@ function reportSessionEnded(debug_session_done) {
     //If user has completed all prompts
     if (resp.hasOwnProperty('help_session_done')) {
         runAfterBannerDisappears(() => {renderHelpFinish()})
-        tallyPrompts(resp.prompts, [3,2], resp.jumps)
+        renderPrompts(resp.jumpsArray, resp.startTargetIdxs, resp.prompts[0], end=true)
     }
     else if (resp.hasOwnProperty('session_done') || debug_session_done) {
         // alert('received session_done')
@@ -330,7 +330,8 @@ function showBanner(text, color) {
 
 function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
     const resp = sendAndReceiveXML("word=" + word);
- 
+    current_prompt = lastNonzeroRow(resp.jumpsArray)
+    let jumps = jumpsArray[current_prompt].reduce((a, b) => a + b, 0) - 1;
     if (!use_animations) {
         // check if we are at the ending page now (for when we have 12 jumps):
         if (resp.jumpsArray.length === 5 && resp.jumpsArray[resp.jumpsArray.length - 1] === 12) {
@@ -344,7 +345,7 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
         if (word !== resp.prompt[1]) {
             let start_target = [word, resp.prompt[1]]
             let score = resp.score;
-            if (resp.jumps === 0 && resp.jumpsArray[resp.jumpsArray.length - 1] === 12) {
+            if (jumps === 0 && resp.jumpsArray[resp.jumpsArray.length - 1] === 12) {
                 start_target = resp.prompt;
                 score = 0;
                 showBanner("skipped :(", "banner");
@@ -353,11 +354,11 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
         }
         else {
             // console.log(`[showBanner] ${jumps}`)
-            if (resp.jumps <= 2) showBanner("perfect!", "banner-perfect");
-            else if (resp.jumps <= 3) showBanner("superb!", "banner-impressive");
-            else if (resp.jumps <= 5) showBanner("great", "banner-great");
-            else if (resp.jumps <= 7) showBanner("good...", "banner-good");
-            else if (resp.jumps <= 9) showBanner("close call", "banner-closecall");
+            if (jumps <= 2) showBanner("perfect!", "banner-perfect");
+            else if (jumps <= 3) showBanner("superb!", "banner-impressive");
+            else if (jumps <= 5) showBanner("great", "banner-great");
+            else if (jumps <= 7) showBanner("good...", "banner-good");
+            else if (jumps <= 9) showBanner("close call", "banner-closecall");
         }
         activateLinks()
     }
