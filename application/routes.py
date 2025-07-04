@@ -122,7 +122,7 @@ def update_jumps(jumpsArray, score):
     jumpsArray[non_zero_row][col] += 1
     return jumpsArray, [non_zero_row, col]
 
-def jump(start : str) -> str:
+def jump(start : str, update = True) -> str:
     ''' 
     Jump to a new word and return the updated session data as stringified JSON. 
     ''' 
@@ -136,7 +136,8 @@ def jump(start : str) -> str:
     _data['score'] =  similarity(start, target, WV)
     #Moving jump logic into this method.
     [startIdx, targetIdx] = _data['startTargetIdxs']
-    _data['jumpsArray'], startIdx = update_jumps(_data['jumpsArray'], _data['score'])
+    if update:
+        _data['jumpsArray'], startIdx = update_jumps(_data['jumpsArray'], _data['score'])
     _data['startTargetIdxs'] = [startIdx, targetIdx]
     session['data'] = json.dumps(_data)
     return json.dumps(_data)
@@ -202,11 +203,11 @@ def help_shift(data):
 
 
 def update_jumps_array(new_data):
-    for row,i in enumerate(new_data['jumpsArray']):
+    for i, row in enumerate(new_data['jumpsArray']):
         if row == [0,0,0,0,0,0]:
-            row = [1,0,0,0,0,1]
+            new_data['jumpsArray'][i] = [1,0,0,0,0,1]
+            new_data['startTargetIdxs'] = [[i,0],[i,5]]
             break
-    new_data['startTargetIdxs'] = [[i,0],[i,5]]
     print("[update_jumps_array] jumpsArray: ", new_data)
     return new_data
 
@@ -275,7 +276,7 @@ def index():
         data = shift_to(0)
         data['jumpsArray'] = BASE_JUMPS_ARRAY
         data['startTargetIdxs'] = BASE_START_TARGET_IDXS
-        # data['is_help'] = False
+        data['is_help'] = False
         session['data'] = json.dumps(data)
         response = make_response(render_template('index.html', data=json.loads(session.get('data'))))
         token = cookie_signer.dumps({"user_id": guest_user.id})
@@ -352,7 +353,8 @@ def index_post():
     elif request.form.get('word') is not None:
         current_word = request.form.get('word') 
         print(f"[/] Jumping: {current_word}")
-        session['data'] = jump(current_word)
+        prev_data = json.loads(session['data'])
+        session['data'] = jump(current_word, current_word != prev_data['prompt'][1])
         print(f"[/ word] {session['data']}")
         new_data = json.loads(session['data'])
         new_data['word'] = current_word

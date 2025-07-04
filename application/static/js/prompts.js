@@ -133,9 +133,14 @@ function removeTallyDiv(row, column) {
 
 
 
-function clearAllPromptWords() {
+function clearAllPromptWords(end) {
     const promptWords = document.querySelectorAll('.prompt-word');
-    promptWords.forEach(word => word.remove());
+    if (end == false) {
+        promptWords.forEach(word => word.remove());
+    } else {
+        promptWords.forEach(word => word.classList.remove('prompt-word'));
+        promptWords.forEach(word => word.innerText = '');
+    }
 }
 
 //Updates existing prompts with new start and target. 
@@ -254,16 +259,20 @@ function addTallyContainers(promptBox){
  * @param {[[number, number], [number, number]]} idxs 
  * @param {[string, string]} start_target
  */
-function renderPrompts(jumpsArray, idxs, start_target) {
+function renderPrompts(jumpsArray, idxs, start_target, end = false) {
     console.log(
         '[renderPrompts] jumpsArray:', jumpsArray, typeof jumpsArray,
         'idxs:', idxs, typeof idxs,
-        'start_target:', start_target, typeof start_target
+        'start_target:', start_target, typeof start_target,
+        'end', end
     );
-    clearAllPromptWords();
-    const [start_idx, target_idx] = idxs
-    const [start, target] = start_target
-    renderTallies(jumpsArray);
-    renderWord(start, ...start_idx)
-    renderWord(target, ...target_idx)
+    clearAllPromptWords(end);
+    if (!end) {
+        const [start_idx, target_idx] = idxs
+        const [start, target] = start_target
+        renderTallies(jumpsArray);
+        renderWord(start, ...start_idx)
+        renderWord(target, ...target_idx)
+    }
+    
 }

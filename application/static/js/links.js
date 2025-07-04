@@ -198,7 +198,7 @@ function renderSessionDone(resp) {
     prompts = resp.prompts
     jumpsArray = resp.jumpsArray
     start_target = prompts[4]
-    renderPrompts(jumpsArray, resp.startTargetIdxs, start_target)
+    renderPrompts(jumpsArray, resp.startTargetIdxs, start_target, true)
     let is_logged_in = Boolean(localStorage.getItem('logged_in'));
     console.log("I am in tally screen here is logged in");
     console.log(is_logged_in);
@@ -292,7 +292,7 @@ function reportSessionEnded(debug_session_done) {
         renderLinks(resp.prompt, resp.results)
         // console.log('[reportSessionEnded] Rendering prompts..')
         let start_target = resp.prompts[resp.i]
-        renderPrompts(resp.prompts, resp.jumpsArray, resp.jumps, start_target = start_target)
+        renderPrompts(resp.jumpsArray, resp.startTargetIdxs, start_target)
         activateLinks()
     }
 }
@@ -330,7 +330,6 @@ function showBanner(text, color) {
 
 function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
     const resp = sendAndReceiveXML("word=" + word);
-    // console.log('[postWord] Response:', resp);
  
     if (!use_animations) {
         // check if we are at the ending page now (for when we have 12 jumps):

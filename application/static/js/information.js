@@ -62,6 +62,7 @@ function runAfterBannerDisappears(callback) {
 function renderFinish(resp) {
     // totalJumps = resp.jumpsArray.reduce((acc, val) => acc + val, 0);
     console.log("[render_finish] session_done data: ", data)
+    clearAllPromptWords();
     const daily_idx = daysSinceStartDate();
     is_logged_in = Boolean(localStorage.getItem('logged_in'))
     let jumpsGridMessage = resp.jumpsA ? renderGrid(resp.jumpsA) : '';
