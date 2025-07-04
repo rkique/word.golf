@@ -13,7 +13,7 @@ document.addEventListener('keydown', function (event) {
   const isHelp = localStorage.getItem('is_help') === 'true';
   const isHidden = getComputedStyle(helpEl).display === 'none';
 
-  if (event.key === 'Escape' && (location.hostname === "localhost" || location.hostname.startsWith("127."))) {
+  if (event.key === 'Escape') {
     if (!isHidden) {
       helpOff(); 
     } else if (isHelp) {
