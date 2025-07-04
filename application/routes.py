@@ -92,18 +92,45 @@ def load_time():
     today.today = now_et.replace(tzinfo=None).date() + add_days(DAYS)
     elapsed, prompts_today, neighbors_today = get_prompts_for_date(today.today)
 
+def sim_to_index(score):
+    thresholds = [0.2, 0.27, 0.35, 0.42]
+    idx = next((i for i, t in enumerate(thresholds) if score < t), len(thresholds))
+    return idx
+
+def update_jumps(jumpsArray, score):
+    '''
+    Insert the tally/score correctly into the jumpsArray
+    '''
+    index = sim_to_index(score)
+
+    non_zero_index = -1
+    for i in range(len(jumpsArray)):
+        if jumpsArray[i] == [0,0,0,0,0,0]:
+            non_zero_index = i - 1
+            break
+
+    if(non_zero_index == -1):
+        non_zero_index = len(jumpsArray) - 1 #4
+    
+    jumpsArray[non_zero_index][index] += 1
+    return jumpsArray
+
 def jump(start : str) -> str:
-    '''
-    Jump to a new word and return the updated session data as stringified JSON.
-    '''
-    # print(f"Jumping to {start}")
-    # print("Current session data:", session.get('data'))
+    ''' 
+    Jump to a new word and return the updated session data as stringified JSON. 
+    ''' 
+    # print(f"Jumping to {start}") 
+    # print("Current session data:", session.get('data')) 
     _data = json.loads(session.get('data'))
     target = _data['prompt'][1]
     results = get_curve(start, target, PRECOMPUTED, WV)
-    _data['jumps'] = _data['jumps']+1
+    # _data['jumps'] = _data['jumps']+1
     _data['results'] = results
     _data['score'] =  similarity(start, target, WV)
+    if (_data['score'] < 0.99):
+        _data['jumpsArray'] = update_jumps(_data['jumpsArray'], _data['score'])
+    # here is the place where I need to update the jumpsArray logic 
+
     session['data'] = json.dumps(_data)
     return json.dumps(_data)
 
@@ -165,11 +192,15 @@ def help_shift(data):
     data['results'] = results
     return data
 
-def update_jumps_array(new_data, session_data):
-    session_data = json.loads(session_data)
-    print(f"[update_new_data] updating with {session_data['jumps']}")
-    if len(new_data['jumpsArray']) < 5:
-        new_data['jumpsArray'] += [session_data['jumps']]
+
+def update_jumps_array(new_data):
+    print("[update_jumps_array] here is passed in jumpsArray: ", new_data)
+    for row in new_data['jumpsArray']:
+        if all(cell == 0 for cell in row):
+            row[0] = 1 # 1,0,0,0,0,1
+            row[5] = 1
+            break
+    print("[update_jumps_array] here is the returned jumpsArray: ", new_data)
     return new_data
 
 #if user exists and game state for user exists, return it. Else, None.
@@ -180,7 +211,11 @@ def get_existing_data():
     
     game_state = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
     data = {
-        'jumpsArray': [],
+        'jumpsArray': [[1,0,0,0,0,1],
+                    [0,0,0,0,0,0],
+                    [0,0,0,0,0,0],
+                    [0,0,0,0,0,0],
+                    [0,0,0,0,0,0]],
         'jumps': 0,
         'i': 0,
         'date': today.today.strftime('%Y-%m-%d'),
@@ -194,7 +229,7 @@ def get_existing_data():
         data['jumpsArray'] = game_state.jumpsA
         data['results'] = game_state.results
         data['prompts'] = game_state.prompts
-        data['prompt'] = game_state.prompts[game_state.prompt_idx] 
+        data['prompt'] = game_state.prompts[game_state.prompt_idx] if game_state.prompts else [] 
         data['jumps'] = game_state.current_jumps
         data['i'] = game_state.prompt_idx
         data['logged_in'] = user.email
@@ -213,7 +248,11 @@ def index():
         if data["results"] == []:
             i = data.get('i', 0)
             data_today = shift_to(i)
-            data_today['jumpsArray'] = []
+            data_today['jumpsArray'] = [[1,0,0,0,0,1],
+                    [0,0,0,0,0,0],
+                    [0,0,0,0,0,0],
+                    [0,0,0,0,0,0],
+                    [0,0,0,0,0,0]]
             data_today['logged_in'] = data["logged_in"]
             data = data_today
         data['is_help'] = False
@@ -233,7 +272,12 @@ def index():
         # i = session_data.get('i', 0)
 
         data = shift_to(0)
-        data['jumpsArray'] = []
+        data['jumpsArray'] = [[1,0,0,0,0,1],
+                            [0,0,0,0,0,0],
+                            [0,0,0,0,0,0],
+                            [0,0,0,0,0,0],
+                            [0,0,0,0,0,0]]
+        # data['is_help'] = False
         session['data'] = json.dumps(data)
         response = make_response(render_template('index.html', data=json.loads(session.get('data'))))
         token = cookie_signer.dumps({"user_id": guest_user.id})
@@ -247,66 +291,6 @@ def index():
     print('/ data is set to:', session.get('data'))
     # return render_template('index.html', data=json.loads(session.get('data')))
     return response
-
-
-@app.route('/editsession', methods=['POST']) 
-def sesh_edit(): 
-    try: 
-        if request.form.get('edit') is not None: 
-            # save_activity() 
-            data = json.loads(session.get('data'))
-            jumpsA_str = request.form.get("jumpsArray", "[]")
-            try:
-                # session['jumpsArray'] = [int(x) for x in json.loads(jumpsA_str)]
-                data['jumpsArray'] = [int(x) for x in json.loads(jumpsA_str)]
-            except json.JSONDecodeError:
-                # session['jumpsArray'] = []
-                data['jumpsArray'] = []
-
-            jumpsA_result = request.form.get("result", "[]")
-            try:
-                data['results'] = json.loads(jumpsA_result)
-            except json.JSONDecodeError:
-                data['results'] = []
-
-            jumps_str = request.form.get("jumps", "0")
-            
-            # print(session['data']['jumps'])
-            try:
-                data['jumps'] = int(jumps_str)
-            except ValueError:
-                data['jumps'] = 0
-
-            # here is the session
-            i = request.form.get("i", "0")
-            try:
-                data['i'] = int(i)
-                # session['i'] = data['i']
-            except ValueError:
-                data['i'] = 0
-                # session['i'] = 0
-
-            start_target = request.form.get("prompt", "")
-            # print("Start target:", start_target)
-            if start_target:
-                try:
-                    start_target = json.loads(start_target)
-                    data['prompt'] = start_target
-                except ValueError:
-                    data['prompt'] = ["", ""]
-            
-            session['data'] = json.dumps(data)
-            # print("Session data updated:",data)
-
-    except Exception as e: 
-        print("Error in /editsession:", e)
-        
-    # print("Session after edit:", session)
-    return app.response_class(
-        response=session.get('data', '{}'),
-        status=200,
-        mimetype='application/json'
-    )
 
 @app.route('/login', methods=['GET'])
 def login():
@@ -332,7 +316,11 @@ def index_post():
         if data['i'] == num_prompts - 1:
             print('[/] Finished Help')
             data['i'] = 0
-            data['jumpsArray'] = []
+            data['jumpsArray'] = [[1,0,0,0,0,1],
+                    [0,0,0,0,0,0],
+                    [0,0,0,0,0,0],
+                    [0,0,0,0,0,0],
+                    [0,0,0,0,0,0]]
             data['jumps'] = 0
             data['is_help'] = False
             new_data = get_existing_data()
@@ -352,15 +340,18 @@ def index_post():
         print(f"[/] Shifting to Prompt {data.get('i', 0)+1}")
         if (data.get('i', 0) + 1 >= PCOUNT):
             data['i'] = 4
+            data = update_jumps_array(data)
+            update_game_state(data)
             streak, total_jumps = finished_game(request)
             print(f'streak: [{streak}]')
             data['streak'] = streak
-            session['data'] = json.dumps(update_jumps_array(data, session['data']))
+            data['total_jumps'] = total_jumps
+            session['data'] = json.dumps(data)
             update_game_state(json.loads(session['data']))
             return make_response("session_done" + session.get('data'))
         data['i'] += 1
         _data = shift_to(data['i'])
-        session['data'] = json.dumps(update_jumps_array(_data, session['data']))
+        session['data'] = json.dumps(update_jumps_array(_data))
         update_game_state(json.loads(session['data']))
         
     elif request.form.get('word') is not None:
@@ -379,7 +370,11 @@ def index_post():
         print("[index_post redirect] Here is session data: ", session_data)
         if session_data["prompts"] == HELP_PROMPTS or session_data["results"] == []: 
             data = shift_to(0)
-            data['jumpsArray'] = []
+            data['jumpsArray'] = [[1,0,0,0,0,1],
+                    [0,0,0,0,0,0],
+                    [0,0,0,0,0,0],
+                    [0,0,0,0,0,0],
+                    [0,0,0,0,0,0]]
             session['data'] = json.dumps(data)
         return make_response(json.loads(session['data']))
     else:

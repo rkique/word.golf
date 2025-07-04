@@ -185,7 +185,11 @@ def create_guest_user(date, id):
         user_id=user.id,
         current_date=date,
         selected_words=[],
-        jumpsA=[],
+        jumpsA=[[1,0,0,0,0,1],
+                [0,0,0,0,0,0],
+                [0,0,0,0,0,0],
+                [0,0,0,0,0,0],
+                [0,0,0,0,0,0]],
         total_jumps=0,
         results=[],
         prompt_idx=0,
@@ -240,7 +244,11 @@ def logout():
             guest_game_state = GameState.query.filter_by(user_id=new_user.id, current_date=old_game_state.current_date).first()
             if guest_game_state:
                 guest_game_state.selected_words = list(old_game_state.selected_words) if old_game_state.selected_words else []
-                guest_game_state.jumpsA = old_game_state.jumpsA if old_game_state.jumpsA else []
+                guest_game_state.jumpsA = old_game_state.jumpsA if old_game_state.jumpsA else [[1,0,0,0,0,1],
+                    [0,0,0,0,0,0],
+                    [0,0,0,0,0,0],
+                    [0,0,0,0,0,0],
+                    [0,0,0,0,0,0]],
                 guest_game_state.total_jumps = old_game_state.total_jumps
                 guest_game_state.results = old_game_state.results if old_game_state.results else []
                 guest_game_state.prompt_idx = old_game_state.prompt_idx

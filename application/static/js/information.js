@@ -60,12 +60,12 @@ function runAfterBannerDisappears(callback) {
 
 //we're guaranteed resp.newStreak because renderFinish only called with session_done.
 function renderFinish(resp) {
-    totalJumps = resp.jumpsArray.reduce((acc, val) => acc + val, 0);
+    // totalJumps = resp.jumpsArray.reduce((acc, val) => acc + val, 0);
     console.log("[render_finish] session_done data: ", data)
     const daily_idx = daysSinceStartDate();
     is_logged_in = Boolean(localStorage.getItem('logged_in'))
     let jumpsGridMessage = resp.jumpsA ? renderGrid(resp.jumpsA) : '';
-    runAfterBannerDisappears(() => {displayFinishModal(daily_idx, totalJumps, resp.streak, jumpsGridMessage, is_logged_in)})
+    runAfterBannerDisappears(() => {displayFinishModal(daily_idx, resp.total_jumps, resp.streak, jumpsGridMessage, is_logged_in)})
 }
 
 /* Clears the modal, localStorage, and renders links with XML redirect=true*/

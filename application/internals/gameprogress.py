@@ -11,12 +11,12 @@ def sum_jumpsA(jumpsA):
         return 0 
     if all(isinstance(x, list) for x in jumpsA): 
         # 2D list: flatten and sum 
-        return sum(sum(sublist) - 1 for sublist in jumpsA if sublist) - 1 
+        return sum(sum(sublist) - 1 for sublist in jumpsA if sublist) # - 1 
     else: 
         # 1D list 
-        return sum(jumpsA)     
+        return sum(jumpsA) 
 
-def game_progress():
+def game_progress(): 
     user = get_user_from_cookie()
     if not user:
         return jsonify({"error": "Not authenticated"}), 401
@@ -29,7 +29,11 @@ def game_progress():
             user_id=user.id,
             current_date=today.today,
             selected_words=[],
-            jumpsA=[],
+            jumpsA=[[1,0,0,0,0,1],
+                    [0,0,0,0,0,0],
+                    [0,0,0,0,0,0],
+                    [0,0,0,0,0,0],
+                    [0,0,0,0,0,0]],
             total_jumps=0,
             results=[],
             prompt_idx=0,
@@ -56,7 +60,7 @@ def game_progress():
     return jsonify(result)
 
 
-def update_game_state(data):
+def update_game_state(data): 
     user = get_user_from_cookie()
     if not user:
         return jsonify({"error": "Not authenticated"}), 401
@@ -108,7 +112,7 @@ def finished_game(finish_request):
         # game.jumpsA.append(game.current_jumps)
         print("[finished_game]: appending current jumps: ", game.current_jumps)
         print("[finished_game]: here is new jumpsA: ", game.jumpsA)
-        game.total_jumps = sum_jumpsA(game.jumpsA) + game.current_jumps
+        game.total_jumps = sum_jumpsA(game.jumpsA)
 
         if user.last_date_completed:
             if user.last_date_completed == today.today - timedelta(days=1):
