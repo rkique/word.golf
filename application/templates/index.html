@@ -57,11 +57,11 @@ data = JSON.parse('{{data|tojson|safe}}');
     <div id="prompts-container">
         <p class="prompts-title">Prompts</p>
         <div id="prompts">
-            <div class="prompt-box"> </div>
-            <div class="prompt-box"> </div>
-            <div class="prompt-box"> </div>
-            <div class="prompt-box"> </div>
-            <div class="prompt-box"> </div>
+            <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
+            <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
+            <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
+            <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
+            <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
         </div>
     </div>
 
@@ -93,26 +93,26 @@ data = JSON.parse('{{data|tojson|safe}}');
         }
     }
     // start help session
-    if (is_help !== 'false' && !data.logged_in) { 
-        startHelpSession()
-    } 
-    else {
+    // if (is_help !== 'false' && !data.logged_in) { 
+    //     startHelpSession()
+    // } 
+    // else {
         console.log("here is the data from the backend");
         console.log(data);
-        let loaded = data;
         let prompt_idx = data['i'];
-        let jumpsArray = loaded.jumpsArray;
-        let jumps = loaded.jumps;
-        let results = loaded.results || data['results'];
-        let prompts = loaded.prompts;
+        let jumpsArray = data.jumpsArray;
+        let jumps = data.jumps;
+        let results = data.results;
+        let prompts = data.prompts;
         let start_target = prompts[prompt_idx];
+        let startTargetIdxs = data.startTargetIdxs
         // check if prompt_idx is 5 
-        const is_end = 'total_jumps' in loaded ? loaded.total_jumps : 0;
+        const is_end = 'total_jumps' in data ? data.total_jumps : 0;
         // _ = editSession(jumpsArray, jumps, results, prompt_idx, start_target);
         start_target = prompts[prompt_idx];
-        renderPrompts(prompts, jumpsArray, jumps, start_target=start_target, is_reload=true);
+        renderPrompts(jumpsArray, startTargetIdxs, start_target);
         renderLinks(start_target, results, prompt_idx, is_end); 
         activateLinks();
-    }
+    // }
 
 </script>

@@ -21,6 +21,13 @@ prompt_neighbor_dict = get_prompts(txt_to_list("application/data/neighbors.txt")
 PROMPTS = list(prompt_neighbor_dict.keys())
 NEIGHBORS = list(prompt_neighbor_dict.values())
 
+BASE_JUMPS_ARRAY = [[1,0,0,0,0,1],
+                    [0,0,0,0,0,0],
+                    [0,0,0,0,0,0],
+                    [0,0,0,0,0,0],
+                    [0,0,0,0,0,0]]
+
+BASE_START_TARGET_IDXS = [[0,0], [0,5]]
 PCOUNT = 5
 DAYS = 0
 
@@ -99,21 +106,21 @@ def sim_to_index(score):
 
 def update_jumps(jumpsArray, score):
     '''
-    Insert the tally/score correctly into the jumpsArray
+    Add one jump to jumpsArray (no rows.)
     '''
-    index = sim_to_index(score)
+    col = sim_to_index(score)
 
-    non_zero_index = -1
+    non_zero_row = -1
     for i in range(len(jumpsArray)):
         if jumpsArray[i] == [0,0,0,0,0,0]:
-            non_zero_index = i - 1
+            non_zero_row = i - 1
             break
 
-    if(non_zero_index == -1):
-        non_zero_index = len(jumpsArray) - 1 #4
+    if(non_zero_row == -1):
+        non_zero_row = len(jumpsArray) - 1 #4
     
-    jumpsArray[non_zero_index][index] += 1
-    return jumpsArray
+    jumpsArray[non_zero_row][col] += 1
+    return jumpsArray, [non_zero_row, col]
 
 def jump(start : str) -> str:
     ''' 
@@ -127,10 +134,10 @@ def jump(start : str) -> str:
     # _data['jumps'] = _data['jumps']+1
     _data['results'] = results
     _data['score'] =  similarity(start, target, WV)
-    if (_data['score'] < 0.99):
-        _data['jumpsArray'] = update_jumps(_data['jumpsArray'], _data['score'])
-    # here is the place where I need to update the jumpsArray logic 
-
+    #Moving jump logic into this method.
+    [startIdx, targetIdx] = _data['startTargetIdxs']
+    _data['jumpsArray'], startIdx = update_jumps(_data['jumpsArray'], _data['score'])
+    _data['startTargetIdxs'] = [startIdx, targetIdx]
     session['data'] = json.dumps(_data)
     return json.dumps(_data)
 
@@ -145,7 +152,8 @@ def make_help_session():
     # Compute results for the first prompt
     results = get_curve(prompt1[0], prompt1[1], PRECOMPUTED, WV, neighbor=neighbor1)
     data = {
-        'jumpsArray': [],
+        'jumpsArray': BASE_JUMPS_ARRAY,
+        'startTargetIdxs': BASE_START_TARGET_IDXS,
         'jumps': 0,
         'i': 0,
         'date': today.today.strftime('%Y-%m-%d'),
@@ -194,13 +202,12 @@ def help_shift(data):
 
 
 def update_jumps_array(new_data):
-    print("[update_jumps_array] here is passed in jumpsArray: ", new_data)
-    for row in new_data['jumpsArray']:
-        if all(cell == 0 for cell in row):
-            row[0] = 1 # 1,0,0,0,0,1
-            row[5] = 1
+    for row,i in enumerate(new_data['jumpsArray']):
+        if row == [0,0,0,0,0,0]:
+            row = [1,0,0,0,0,1]
             break
-    print("[update_jumps_array] here is the returned jumpsArray: ", new_data)
+    new_data['startTargetIdxs'] = [[i,0],[i,5]]
+    print("[update_jumps_array] jumpsArray: ", new_data)
     return new_data
 
 #if user exists and game state for user exists, return it. Else, None.
@@ -211,11 +218,8 @@ def get_existing_data():
     
     game_state = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
     data = {
-        'jumpsArray': [[1,0,0,0,0,1],
-                    [0,0,0,0,0,0],
-                    [0,0,0,0,0,0],
-                    [0,0,0,0,0,0],
-                    [0,0,0,0,0,0]],
+        'jumpsArray': BASE_JUMPS_ARRAY,
+        'startTargetIdxs': BASE_START_TARGET_IDXS,
         'jumps': 0,
         'i': 0,
         'date': today.today.strftime('%Y-%m-%d'),
@@ -248,11 +252,8 @@ def index():
         if data["results"] == []:
             i = data.get('i', 0)
             data_today = shift_to(i)
-            data_today['jumpsArray'] = [[1,0,0,0,0,1],
-                    [0,0,0,0,0,0],
-                    [0,0,0,0,0,0],
-                    [0,0,0,0,0,0],
-                    [0,0,0,0,0,0]]
+            data_today['jumpsArray'] = BASE_JUMPS_ARRAY
+            data_today['startTargetIdxs'] = BASE_START_TARGET_IDXS
             data_today['logged_in'] = data["logged_in"]
             data = data_today
         data['is_help'] = False
@@ -272,11 +273,8 @@ def index():
         # i = session_data.get('i', 0)
 
         data = shift_to(0)
-        data['jumpsArray'] = [[1,0,0,0,0,1],
-                            [0,0,0,0,0,0],
-                            [0,0,0,0,0,0],
-                            [0,0,0,0,0,0],
-                            [0,0,0,0,0,0]]
+        data['jumpsArray'] = BASE_JUMPS_ARRAY
+        data['startTargetIdxs'] = BASE_START_TARGET_IDXS
         # data['is_help'] = False
         session['data'] = json.dumps(data)
         response = make_response(render_template('index.html', data=json.loads(session.get('data'))))
@@ -316,11 +314,8 @@ def index_post():
         if data['i'] == num_prompts - 1:
             print('[/] Finished Help')
             data['i'] = 0
-            data['jumpsArray'] = [[1,0,0,0,0,1],
-                    [0,0,0,0,0,0],
-                    [0,0,0,0,0,0],
-                    [0,0,0,0,0,0],
-                    [0,0,0,0,0,0]]
+            data['jumpsArray'] = BASE_JUMPS_ARRAY
+            data['startTargetIdxs'] = BASE_START_TARGET_IDXS
             data['jumps'] = 0
             data['is_help'] = False
             new_data = get_existing_data()
@@ -370,11 +365,8 @@ def index_post():
         print("[index_post redirect] Here is session data: ", session_data)
         if session_data["prompts"] == HELP_PROMPTS or session_data["results"] == []: 
             data = shift_to(0)
-            data['jumpsArray'] = [[1,0,0,0,0,1],
-                    [0,0,0,0,0,0],
-                    [0,0,0,0,0,0],
-                    [0,0,0,0,0,0],
-                    [0,0,0,0,0,0]]
+            data['jumpsArray'] = BASE_JUMPS_ARRAY
+            data['startTargetIdxs'] = BASE_START_TARGET_IDXS
             session['data'] = json.dumps(data)
         return make_response(json.loads(session['data']))
     else:

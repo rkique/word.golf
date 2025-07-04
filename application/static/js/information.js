@@ -77,6 +77,7 @@ function startGame() {
     localStorage.setItem('is_help', 'false');
     localStorage.removeItem('jumps');
     localStorage.removeItem('jumpsArray');
+    localStorage.removeItem('startTargetIdxs')
     localStorage.removeItem('prompts');
     localStorage.removeItem('results');
     resp = sendAndReceiveXML('redirect=true');
@@ -88,17 +89,16 @@ function startGame() {
             renderLogin(data.logged_in)
         }
     }
-    let loaded = data;
     let prompt_idx = data['i'];
-    let jumpsArray = loaded.jumpsArray;
-    let jumps = loaded.jumps;
-    let results = loaded.results || data['results'];
-    let prompts = loaded.prompts;
+    let jumpsArray = data.jumpsArray;
+    let results = data.results;
+    let prompts = data.prompts;
     let start_target = prompts[prompt_idx];
+    let startTargetIdxs = data.startTargetIdxs
     // total_jumps is only passed after game end.
-    const is_end = 'total_jumps' in loaded ? loaded.total_jumps : 0;
+    const is_end = 'total_jumps' in data ? data.total_jumps : 0;
     start_target = prompts[prompt_idx];
-    if(!setPrompts()){renderPrompts(prompts, jumpsArray, jumps, start_target=start_target)}
+    if(!setPrompts()){renderPrompts(jumpsArray, startTargetIdxs, start_target=start_target)}
     renderLinks(start_target, results, prompt_idx, is_end); 
     activateLinks();
 }
@@ -233,7 +233,7 @@ function startHelpSession() {
     renderLinks(data.prompt, data.results, data.i)
     let start_target = data.prompt
     clearBoxes()
-    renderPrompts(data.prompts, data.jumpsArray, 0, start_target=start_target)
+    renderPrompts(data.jumpsArray, data.startTargetIdxs, start_target)
     activateLinks()
     addHelpFocuses(data.prompt, data.results)
     start_text = `<p id="modalText"> Welcome to word.golf, a sport played with the meanings of words!</p>

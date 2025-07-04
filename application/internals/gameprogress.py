@@ -77,6 +77,7 @@ def update_game_state(data):
         assert key in data, f"Missing required key: {key}"
 
     game_state.jumpsA = data['jumpsArray'] 
+    # game_state.startTargetIdxs = data['startTargetIdxs']
     game_state.results = data['results']
     game_state.prompt_idx = data['i'] 
     game_state.current_jumps = data['jumps'] 

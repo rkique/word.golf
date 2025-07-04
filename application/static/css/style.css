@@ -78,8 +78,8 @@ html {
   
 .tally {
     flex: 0 0 auto;
-    max-width: 0.5rem !important;
-    min-width: 0.5rem !important;
+    max-width: 0.5rem;
+    min-width: 0.5rem;
     padding: 0 !important;
     min-height: 3vh;
     border: 1px solid var(--grayed-out-color) !important;
@@ -601,7 +601,6 @@ button span {
     white-space: nowrap;
     max-width: 24rem;
     min-width: 4rem;
-    width: auto;
     position: relative; /* necessary for z-index to apply */
     z-index: 1;
     padding: 0rem 3rem;

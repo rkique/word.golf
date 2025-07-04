@@ -198,7 +198,7 @@ function renderSessionDone(resp) {
     prompts = resp.prompts
     jumpsArray = resp.jumpsArray
     start_target = prompts[4]
-    renderPrompts(prompts, jumpsArray, 0, start_target = start_target)
+    renderPrompts(jumpsArray, resp.startTargetIdxs, start_target)
     let is_logged_in = Boolean(localStorage.getItem('logged_in'));
     console.log("I am in tally screen here is logged in");
     console.log(is_logged_in);
@@ -350,7 +350,7 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
                 score = 0;
                 showBanner("skipped :(", "banner");
             }
-            renderPrompts(resp.prompts, resp.jumpsArray, resp.jumps, start_target, false, score);
+            renderPrompts(resp.jumpsArray, resp.startTargetIdxs, start_target);
         }
         else {
             // console.log(`[showBanner] ${jumps}`)
