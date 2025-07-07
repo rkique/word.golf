@@ -48,7 +48,7 @@
                 logged_in_buttons.style.display = 'none';
                 const logoutButton = document.getElementById('guest-buttons');
                 logoutButton.style.display = 'flex';
-                console.log("logout succeeded")
+                window.location.href = '/';
             } else {
                 console.log("Logout failed:", data);
             }

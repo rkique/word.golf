@@ -22,6 +22,12 @@ def get_user_from_cookie(finish_request=None):
     except itsdangerous.BadSignature:
         return None
 
+def get_last_nonzero_row(jumpsA):
+    for i in reversed(range(len(jumpsA))):
+        if any(jumpsA[i]):
+            return i
+    return len(jumpsA) -1
+
 @app.route('/authlogin', methods=['POST'])
 def authlogin():
     current_user = get_user_from_cookie()
@@ -51,17 +57,20 @@ def authlogin():
         if current_user:
             game_state = GameState.query.filter_by(user_id=current_user.id, current_date=today.today).first()
             if game_state:
-                existing = GameState.query.filter_by(user_id=user.id, current_date=game_state.current_date).first()
-                if existing:
-                    db.session.delete(existing)
-                    db.session.commit()
+                login_state = GameState.query.filter_by(user_id=user.id, current_date=game_state.current_date).first()
+                if login_state:
+                    # check this one 
+                    if get_last_nonzero_row(game_state.jumpsA) > get_last_nonzero_row(login_state.jumpsA):
+                        db.session.delete(login_state)
+                        db.session.commit()
+                        game_state.user_id = user.id
                 else:
-                    print("existing GameState: None")
+                    game_state.user_id = user.id
                 
-                game_state.user_id = user.id
+                
 
                 # need to update the previous words to update the user's streak
-                if game_state and not existing and game_state.selected_words and game_state.prompts and game_state.prompts[-1]:
+                if game_state and not login_state and game_state.selected_words and game_state.prompts and game_state.prompts[-1]:
                     
                     if game_state.selected_words[-1] == game_state.prompts[-1][-1]:
                         # update the user's streak and other metrics (we just finished a day)
@@ -228,38 +237,13 @@ def print_gamestate(gamestate):
 
 
 @app.route("/logout", methods=["POST"])
-def logout():
-    # Get the current (logged-in) user
-    user = get_user_from_cookie()
-    if not user:
-        # If not authenticated, just create a guest user and set cookie
-        new_user = create_guest_user(today.today, str(uuid.uuid4()))
-    else:
-        # Create a new guest user
-        new_user = create_guest_user(today.today, str(uuid.uuid4()))
-        # Transfer today's game state from the logged-in user to the guest user
-        old_game_state = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
-        if old_game_state:
-            # Use the existing blank GameState created by create_guest_user and update its fields
-            guest_game_state = GameState.query.filter_by(user_id=new_user.id, current_date=old_game_state.current_date).first()
-            if guest_game_state:
-                guest_game_state.selected_words = list(old_game_state.selected_words) if old_game_state.selected_words else []
-                guest_game_state.jumpsA = old_game_state.jumpsA if old_game_state.jumpsA else [[1,0,0,0,0,1],
-                    [0,0,0,0,0,0],
-                    [0,0,0,0,0,0],
-                    [0,0,0,0,0,0],
-                    [0,0,0,0,0,0]],
-                guest_game_state.total_jumps = old_game_state.total_jumps
-                guest_game_state.results = old_game_state.results if old_game_state.results else []
-                guest_game_state.prompt_idx = old_game_state.prompt_idx
-                guest_game_state.current_jumps = old_game_state.current_jumps
-                guest_game_state.prompts = old_game_state.prompts if old_game_state.prompts else []
-            db.session.commit()
+def logout(): 
+    new_user = create_guest_user(today.today, str(uuid.uuid4()))
 
     # Set the auth cookie to the new guest user
     token = cookie_signer.dumps({"user_id": new_user.id})
     session_data = json.loads(session["data"])
-    session_data["logged_in"] = None
+    session_data.clear()
     session["data"] = json.dumps(session_data)
 
     response = jsonify({"message": "Logged out successfully"})
@@ -328,17 +312,18 @@ def authorize_google():
     if current_user:
         game_state = GameState.query.filter_by(user_id=current_user.id, current_date=today.today).first()
         if game_state:
-            existing = GameState.query.filter_by(user_id=user.id, current_date=game_state.current_date).first()
-            if existing:
-                db.session.delete(existing)
-                db.session.commit()
+            login_state = GameState.query.filter_by(user_id=user.id, current_date=game_state.current_date).first()
+            if login_state:
+                # check this one 
+                if get_last_nonzero_row(game_state.jumpsA) > get_last_nonzero_row(login_state.jumpsA):
+                    db.session.delete(login_state)
+                    db.session.commit()
+                    game_state.user_id = user.id
             else:
-                print("existing GameState: None")
-            
-            game_state.user_id = user.id
+                game_state.user_id = user.id
 
             # need to update the previous words to update the user's streak
-            if game_state and not existing and game_state.selected_words and game_state.prompts and game_state.prompts[-1]:
+            if game_state and not login_state and game_state.selected_words and game_state.prompts and game_state.prompts[-1]:
                 
                 if game_state.selected_words[-1] == game_state.prompts[-1][-1]:
                     # update the user's streak and other metrics (we just finished a day)

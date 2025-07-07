@@ -1,17 +1,19 @@
 from .. import db, mail, cookie_signer
-from flask import current_app as app, jsonify, request
-from ..models import User, PasswordResetPin
+from flask import current_app as app, jsonify, request, session
+from ..models import User, PasswordResetPin, GameState
 import random
 from flask_mail import Message
 import os
 from datetime import datetime, timedelta
 from .crypto import generate_salt, PasswordKDF, Hash
+from .auth import get_user_from_cookie, get_last_nonzero_row
+from . import today
+
 
 # DO NOT USE GLOBAL DATE FOR THIS CASE (needs to be real time date)
 
 def generate_pin(length=6):
     return ''.join(str(random.randint(0, 9)) for _ in range(length))
-
 
 def send_reset_pin_email(to_email, pin):
     msg = Message(
@@ -51,6 +53,7 @@ def forgot_password():
 
 @app.route('/reset_password', methods=['POST'])
 def reset_password():
+    current_user = get_user_from_cookie()
     data = request.get_json()
     email = data.get('email')
     pin = data.get('pin')
@@ -77,9 +80,45 @@ def reset_password():
     db.session.delete(reset_pin)
     db.session.commit()
 
+    if current_user:
+        game_state = GameState.query.filter_by(user_id=current_user.id, current_date=today.today).first()
+        if game_state:
+            login_state = GameState.query.filter_by(user_id=user.id, current_date=game_state.current_date).first()
+            if login_state:
+                # check this one 
+                if get_last_nonzero_row(game_state.jumpsA) > get_last_nonzero_row(login_state.jumpsA):
+                    db.session.delete(login_state)
+                    db.session.commit()
+                    game_state.user_id = user.id
+            else:
+                game_state.user_id = user.id
+
+            # need to update the previous words to update the user's streak
+            if game_state and not login_state and game_state.selected_words and game_state.prompts and game_state.prompts[-1]:
+                
+                if game_state.selected_words[-1] == game_state.prompts[-1][-1]:
+                    # update the user's streak and other metrics (we just finished a day)
+                    if game_state.current_date != user.last_date_completed: # if it is the same do nothing 
+                        game_state.user_id = user.id
+
+                        # Update the user's streak based on the last date completed
+                        if user.last_date_completed:
+                            if user.last_date_completed == game_state.current_date - timedelta(days=1):
+                                user.streak += 1  # Increment streak if the last date was yesterday
+                            elif user.last_date_completed < game_state.current_date - timedelta(days=1):
+                                user.streak = 1  # Reset streak if the last date was more than a day ago
+                        else:
+                            # if the user has never completed a game, set streak to 1
+                            user.streak = 1
+                        # If the last date is the same as the game date, do nothing (explicitly handled)
+
+                        # Update user's streak and last date
+                        user.last_date_completed = game_state.current_date
+            db.session.commit()
+
     token = cookie_signer.dumps({"user_id": user.id})
 
-    # fix this logic to match login and create user 
+    session["user_id"] = user.id
 
     response = jsonify({"message": "Password reset successful."})
 
