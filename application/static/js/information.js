@@ -23,7 +23,7 @@ function daysSinceStartDate(startDateStr = '2025-05-31', storageKey = 'current_d
 function renderGrid(counts) {
     let sums = counts.map(inner => Math.max(0, inner.reduce((a, b) => a + b, 0) - 1));
     const colorEmojis = {
-        1: '🟩',
+        1: '🟢',
         2: '🟩',
         3: '🟦', 
         4: '🟨',
@@ -34,14 +34,16 @@ function renderGrid(counts) {
     const numRows = 5;
     const numCols = 6;
     let gridMessage = '';
-    let tiers = [1, 3, 5, 7, 9, 12];
+    let tiers = [2, 3, 5, 7, 9, 12];
     for (let row = 0; row < numRows; row++) {
-        let count = Math.max(0, Math.ceil(sums[row] / 2));
         // Find the lowest tier that count fits in
+        let count = sums[row];
         let tierIdx = tiers.findIndex(tier => count <= tier);
         let emojiKey = tierIdx !== -1 ? tierIdx + 1 : 6;
         let emoji = colorEmojis[emojiKey] || colorEmojis[7];
-        let line = emoji.repeat(count) + colorEmojis[7].repeat(numCols - count);
+        // Display tierIdx number of emojis instead of count
+        let emojiCount = tierIdx !== -1 ? tierIdx + 1 : 6;
+        let line = emoji.repeat(emojiCount) + colorEmojis[7].repeat(numCols - emojiCount);
         gridMessage += line + '\n';
     }
     return gridMessage;
