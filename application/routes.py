@@ -248,7 +248,7 @@ def get_existing_data():
         data['jumpsArray'] = game_state.jumpsA
         data['results'] = game_state.results
         data['prompts'] = game_state.prompts
-        data['prompt'] = game_state.prompts[game_state.prompt_idx] if game_state.prompts else [] 
+        data['prompt'] = game_state.prompts[game_state.prompt_idx] if game_state.prompts and game_state.prompt_idx else prompts_today[0]
         data['jumps'] = game_state.current_jumps
         data['i'] = game_state.prompt_idx
         data['logged_in'] = user.email
