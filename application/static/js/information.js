@@ -20,7 +20,7 @@ function daysSinceStartDate(startDateStr = '2025-05-31', storageKey = 'current_d
 
 /* Sums a 2D count array to produce a message */
 function renderGrid(counts) {
-    let sums = counts.map(inner => inner.reduce((a, b) => a + b, 0));
+    let sums = counts.map(inner => Math.max(0, inner.reduce((a, b) => a + b, 0) - 1));
     const colorEmojis = {
         1: '🟩',
         2: '🟩',
@@ -34,7 +34,7 @@ function renderGrid(counts) {
     const numCols = 6;
     let gridMessage = '';
     for (let row = 0; row < numRows; row++) {
-        let count = Math.ceil(sums[row] / 2);
+        let count = Math.max(0, Math.ceil(sums[row] / 2));
         let emoji = colorEmojis[count] || colorEmojis[7];
         let line = emoji.repeat(count) + colorEmojis[7].repeat(numCols - count);
         gridMessage += line + '\n';
