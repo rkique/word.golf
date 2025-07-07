@@ -276,7 +276,7 @@ def login_google():
     if app.debug:
         redirect_uri = "http://localhost:8080/authorize/google" # development
     else:
-        redirect_uri = "https://word.golf/authorize/google"
+        redirect_uri = "https://dev.word.golf/authorize/google"
     return oauth.google.authorize_redirect(redirect_uri)
 
 @app.route('/authorize/google', methods=['POST', 'GET'])
@@ -353,7 +353,7 @@ def authorize_google():
     if app.debug:
         response = redirect("http://localhost:8080") # development version
     else:
-        response = redirect("https://word.golf")
+        response = redirect("https://dev.word.golf")
     if app.debug:
         response.set_cookie(
             "auth_token",
