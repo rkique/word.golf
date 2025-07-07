@@ -91,41 +91,33 @@ def generate_indices(n: int, num: int,indices,seen,linear=False, exp=2) -> list[
                 return indices
         return
     
-def backoff_selection(start, target, start_neighbors: list[str], target_neighbors: list[str],\
-                      exp=2, num=20, linear=False, neighbor=None) -> list[str]:
+def backoff_selection(results: list[str], target: str, exp=2, num=20, linear=False, neighbor=None) -> list[str]:
     '''
     Given an array of text in results,
     Selects a subarray of a specified number, with an exponential backoff.
     '''
+    n = len(results)
     indices = []
     seen = set()
 
     if neighbor is not None:
         # print(f'neighbor: {neighbor}, target:{target}, results: {results}')
         print(f'[Neighbor] {neighbor}')
-        assert neighbor in start_neighbors, "Neighbor must be in results"
-        neighbor_idx = start_neighbors.index(neighbor)
+        assert neighbor in results, "Neighbor must be in results"
+        neighbor_idx = results.index(neighbor)
         seen.add(neighbor_idx)
         indices.append(neighbor_idx)
 
     #If target among 100, append immediately.
-    if target in start_neighbors:
-        print(f"[Target]")
-        target_idx = start_neighbors.index(target)
+    if target in results:
+        print(f"[Target] {target}")
+        target_idx = results.index(target)
         seen.add(target_idx)
         indices.append(target_idx)
 
-    elif start in target_neighbors:
-        print(f"[Start in TargetN]")
-        start_neighbors.append(target)
-        neighbor_idx = len(start_neighbors) - 1
-        seen.add(neighbor_idx)
-        indices.append(neighbor_idx)
-
-    n = len(start_neighbors)
     # Generate indices with exponential backoff
     generate_indices(n, num, indices, seen, linear=linear, exp=exp)
-    selected = [start_neighbors[i] for i in indices]
+    selected = [results[i] for i in indices]
     return selected
 
 def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict, linear=False,neighbor=None) -> list[str]:
@@ -134,14 +126,13 @@ def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict, linear=Fals
     Returns neighbors of the word which are biased towards the target.
     Linear is easier than exponential backoff.
     ''' 
-    start_neighbors = [result for result in PRECOMPUTED[word] if result not in LAZY_EXCLUDE]
-    target_neighbors = [result for result in PRECOMPUTED[target] if result not in LAZY_EXCLUDE]
+    results = PRECOMPUTED[word]
+    results = [result for result in results if result not in LAZY_EXCLUDE]
     def similarity_to_target(x): 
         return similarity(x, target, WV)
-    start_neighbors.sort(key=similarity_to_target, reverse=True)
+    results.sort(key=similarity_to_target, reverse=True)
     #exponential backoff from 0 to 100
-    results__biased = backoff_selection(word, target, start_neighbors, target_neighbors,\
-                                         neighbor=neighbor, linear=linear)
+    results__biased = backoff_selection(results, target, neighbor=neighbor, linear=linear)
     random.seed(len(word))
     random.shuffle(results__biased)
     results__biased.insert(10,word)

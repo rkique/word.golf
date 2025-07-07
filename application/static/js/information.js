@@ -1,6 +1,5 @@
 HELP_FINISH_DELAY_MS = 500
 START_GAME_DELAY_MS = 1500
-TINT_OFFSET_MS = -400
 
 function displayModal(displayHTML){
     const modalEl = document.getElementById('modal');
@@ -276,7 +275,7 @@ function renderHelpFinish(){
 
     setTimeout(() => {
         displayModal(help_finish_text);
-        renderTransientModal(START_GAME_DELAY_MS + HELP_FINISH_DELAY_MS + TINT_OFFSET_MS)
+        renderTransientModal(START_GAME_DELAY_MS + HELP_FINISH_DELAY_MS)
         setTimeout(startGame, START_GAME_DELAY_MS);
     }, HELP_FINISH_DELAY_MS);
 }

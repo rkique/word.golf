@@ -123,7 +123,6 @@ data = JSON.parse('{{data|tojson|safe}}');
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        cueStartWordOnHover()
         const idxSpan = document.getElementById('footer-daily-idx');
         if (idxSpan) {
             idxSpan.textContent = daysSinceStartDate();
