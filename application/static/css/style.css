@@ -645,7 +645,7 @@ button span {
     width: auto;
     position: relative; /* necessary for z-index to apply */
     z-index: 1;
-    padding: 0rem 3rem;
+    padding: 0rem 2.5rem;
     color: var(--text-color);
     border: 1px solid var(--text-color);
     display: flex;
