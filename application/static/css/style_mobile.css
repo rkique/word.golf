@@ -89,7 +89,7 @@
         min-width: 0.25rem;
     }
     .prompt-box .prompt-word {
-        max-width: none;
+        max-width: 9rem !important;
         min-width: 6rem;
     }
     .prompt-box {
