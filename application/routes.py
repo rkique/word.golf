@@ -31,8 +31,8 @@ BASE_START_TARGET_IDXS = [[0,0], [0,5]]
 PCOUNT = 5
 DAYS = 0
 
-HELP_PROMPTS = [["outside", "layer"],["mercury", "razor"]]
-HELP_NEIGHBORS = ["underneath", "toothpaste"]
+HELP_PROMPTS = [["outside", "layer"],["cellphone", "fluff"]]
+HELP_NEIGHBORS = ["underneath", "airtime"]
 
 WV = None
 PRECOMPUTED = None
