@@ -1,9 +1,9 @@
 HELP_FINISH_DELAY_MS = 500
 START_GAME_DELAY_MS = 1500
 
-function displayModal(innerHTML){
+function displayModal(displayHTML){
     const modalEl = document.getElementById('modal');
-    modalEl.innerHTML = innerHTML;
+    modalEl.innerHTML = displayHTML;
     modalEl.style.display = 'flex';
 }
 
@@ -18,16 +18,16 @@ function daysSinceStartDate(startDateStr = '2025-05-31', storageKey = 'current_d
     return Math.floor(diffMs / (1000 * 60 * 60 * 24));
 }
 
+/* Sums a 2D count array to produce a message */
 function renderGrid(counts) {
-    // counts is now a 2d array, sum each inner array to make 1d counts
     let sums = counts.map(inner => inner.reduce((a, b) => a + b, 0));
     const colorEmojis = {
-        1: '🟩', // green
-        2: '🟩', // blue
-        3: '🟦', // yellow
-        4: '🟨', // red
-        5: '🟥', // white
-        6: '⬜', // white
+        1: '🟩',
+        2: '🟩',
+        3: '🟦', 
+        4: '🟨',
+        5: '🟥', 
+        6: '⬜',
         7: '⬛',
     };
     const numRows = 5;
@@ -42,6 +42,7 @@ function renderGrid(counts) {
     return gridMessage;
 }
 
+/* Waits for the banner to disappear before executing a fn. */
 function runAfterBannerDisappears(callback) {
   const banner = document.querySelector('.promptEndBanner');
   if (!banner) {
@@ -60,10 +61,8 @@ function runAfterBannerDisappears(callback) {
   });
 }
 
-//we're guaranteed resp.newStreak because renderFinish only called with session_done.
+
 function renderFinish(resp) {
-    // totalJumps = resp.jumpsArray.reduce((acc, val) => acc + val, 0);
-    console.log("[render_finish] session_done data: ", data)
     clearAllPromptWords();
     const daily_idx = daysSinceStartDate();
     is_logged_in = Boolean(localStorage.getItem('logged_in'))
@@ -72,34 +71,27 @@ function renderFinish(resp) {
 }
 
 /* Clears the modal, localStorage, and renders links with XML redirect=true*/
+/* Called at the end of tutorial */
 function startGame() {
     clearInfoBox()
-    document.getElementById("information").innerHTML =
-            ``;
+    document.getElementById("information").innerHTML = ``;
     document.getElementById('modal').style.display = 'none';
     localStorage.setItem('is_help', 'false');
-    localStorage.removeItem('jumps');
-    localStorage.removeItem('jumpsArray');
-    localStorage.removeItem('startTargetIdxs')
-    localStorage.removeItem('prompts');
-    localStorage.removeItem('results');
-    resp = sendAndReceiveXML('redirect=true');
+    let toDelete = ['jumps', 'jumpsArray', 'startTargetIdxs', 'prompts', 'results']
+    toDelete.forEach(key => localStorage.removeItem(key));
+    let resp = sendAndReceiveXML('redirect=true');
     clearBoxes()
-    const data = resp;
-    console.log("[start Game] backend response: ", resp);
-    if ("logged_in" in data) {
-        if (data.logged_in) {
-            renderLogin(data.logged_in)
-        }
-    }
-    let prompt_idx = data['i'];
-    let jumpsArray = data.jumpsArray;
-    let results = data.results;
-    let prompts = data.prompts;
+    if ("logged_in" in resp && resp.logged_in) {
+        renderLogin(resp.logged_in);
+    } 
+    let prompt_idx = resp['i'];
+    let jumpsArray = resp.jumpsArray;
+    let results = resp.results;
+    let prompts = resp.prompts;
     let start_target = prompts[prompt_idx];
-    let startTargetIdxs = data.startTargetIdxs
+    let startTargetIdxs = resp.startTargetIdxs
     // total_jumps is only passed after game end.
-    const is_end = 'total_jumps' in data ? data.total_jumps : 0;
+    const is_end = 'total_jumps' in resp ? resp.total_jumps : 0;
     start_target = prompts[prompt_idx];
     start_target[0] = results[10];
     renderPrompts(jumpsArray, startTargetIdxs, start_target=start_target, is_end)
@@ -233,13 +225,13 @@ function startHelpSession() {
     localStorage.setItem('is_help', 'true');
     help = document.getElementById('help');
     help.style.display = 'none'
-    data = sendAndReceiveXML(`help=true`)
-    renderLinks(data.prompt, data.results, data.i)
-    let start_target = data.prompt
+    resp = sendAndReceiveXML(`help=true`)
+    renderLinks(resp.prompt, resp.results, resp.i)
+    let start_target = resp.prompt
     clearBoxes()
-    renderPrompts(data.jumpsArray, data.startTargetIdxs, start_target)
+    renderPrompts(resp.jumpsArray, resp.startTargetIdxs, start_target)
     activateLinks()
-    addHelpFocuses(data.prompt, data.results)
+    addHelpFocuses(resp.prompt, resp.results)
     start_text = `<p id="modalText"> Welcome to word.golf, a sport played with the meanings of words!</p>
     <button class="switch switch--outlined" onclick="startHelpSteps()"> OK </button>`
     displayModal(start_text)
@@ -248,7 +240,7 @@ function startHelpSession() {
 function clearInfoBox() {
     let info = document.getElementById("info-box")
     info.innerHTML = '';
-    info.style.display = 'none'; //hide container.
+    info.style.display = 'none'; 
 }
 
 function renderTransientModal(duration){

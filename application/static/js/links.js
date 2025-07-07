@@ -147,14 +147,8 @@ function showHelpPopup(message, transform, startSocket, endSocket) {
 function addDoneFocus(prompt, results, i) {
     const targetWord = prompt[1];
     const idx = results.indexOf(targetWord);
-    // console.log("I am in add Done Focus");
-    // console.log("target_word: ", targetWord, "index: ", idx);
-    // console.log("Here is the prompt boxes");
-    // console.log(document.querySelectorAll('#prompts .prompt-box .prompt'));
     if (idx !== -1) {
         const promptBoxes = document.querySelectorAll('#prompts .prompt-box .prompt');
-        // promptBoxes[i].style.color = "orange";
-
         if (promptBoxes[i]) {
             promptBoxes[i].querySelectorAll('.prompt-word').forEach(el => {
                 // el.style.border = "1px solid orange";
@@ -207,23 +201,27 @@ function renderSessionDone(resp) {
     }
 }
 
+
+/**
+ * @param {Array} a
+ * @param {Array} b
+ * @returns {boolean}
+ */
 function arrayEqual(a, b) {
     return Array.isArray(a) && Array.isArray(b) &&
-        a.length === b.length &&
-        a.every((val, index) => val === b[index]);
+        a.length === b.length && a.every((val, index) => val === b[index]);
 }
+
 function addHelpFocuses(prompt, results) {
     clearAllLeaderLines()
     middleIdx = Math.floor(results.length / 2)
     for (const step of HELP_STEPS) {
-        //[Check] if prompt is equal to the help prompt.
-
-            if (arrayEqual(prompt, step.prompt) && results[middleIdx] === step.result) {
-                showHelpPopup(step.message, step.transform, step.startSocket, step.endSocket);
-                focusLink(step.result, step.focus);
-                break;
-            }
+        if (arrayEqual(prompt, step.prompt) && results[middleIdx] === step.result) {
+            showHelpPopup(step.message, step.transform, step.startSocket, step.endSocket);
+            focusLink(step.result, step.focus);
+            break;
         }
+    }
 }
 
 // //@Parent: postWord
