@@ -251,6 +251,7 @@ def get_existing_data():
         data['jumps'] = game_state.current_jumps
         data['i'] = game_state.prompt_idx
         data['logged_in'] = user.email
+        data["startTargetIdxs"] = game_state.start_target_idxs
         if game_state.total_jumps:
             data['total_jumps'] = game_state.total_jumps
     return data
@@ -335,7 +336,7 @@ def index_post():
             # data['jumpsArray'] = BASE_JUMPS_ARRAY
             # data['startTargetIdxs'] = BASE_START_TARGET_IDXS
             # data['jumps'] = 0
-            # data['is_help'] = False
+            data['is_help'] = False
             # new_data = get_existing_data()
             # if new_data:
             #     new_data['is_help'] = False
@@ -374,6 +375,8 @@ def index_post():
         print(f"[/ word] {session['data']}")
         new_data = json.loads(session['data'])
         new_data['word'] = current_word
+        print("here is new data is_help: ", new_data['is_help'])
+        print(new_data['is_help'] == False)
         if new_data['is_help'] == False:
             update_game_state(new_data)
 
@@ -382,10 +385,24 @@ def index_post():
         session_data = json.loads(session["data"])
         print("[index_post redirect] Here is session data: ", session_data)
         if session_data["prompts"] == HELP_PROMPTS or session_data["results"] == []: 
-            data = shift_to(0)
-            data['jumpsArray'] = BASE_JUMPS_ARRAY
-            data['startTargetIdxs'] = BASE_START_TARGET_IDXS
-            session['data'] = json.dumps(data)
+            data_or_none = get_existing_data()
+            if data_or_none:
+                data = data_or_none
+                # use data_today as base
+                if data["results"] == []:
+                    i = data.get('i', 0)
+                    data_today = shift_to(i)
+                    data_today['jumpsArray'] = BASE_JUMPS_ARRAY
+                    data_today['startTargetIdxs'] = BASE_START_TARGET_IDXS
+                    data_today['logged_in'] = data["logged_in"]
+                    data = data_today
+                data['is_help'] = False
+                session['data'] = json.dumps(data)
+            else:
+                data = shift_to(0)
+                data['jumpsArray'] = BASE_JUMPS_ARRAY
+                data['startTargetIdxs'] = BASE_START_TARGET_IDXS
+                session['data'] = json.dumps(data)
         return make_response(json.loads(session['data']))
     else:
         print("[/] ERROR (None of the Above...) ", request.form)

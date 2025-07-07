@@ -280,7 +280,7 @@ function reportSessionEnded(debug_session_done) {
     
     //If user has completed all prompts
     if (resp.hasOwnProperty('help_session_done')) {
-        alert('rendering prompts')
+        // alert('rendering prompts')
         runAfterBannerDisappears(() => {renderHelpFinish()})
         renderPrompts(resp.jumpsArray, resp.startTargetIdxs, resp.prompts[0], end=true)
     }
