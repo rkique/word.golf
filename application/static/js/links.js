@@ -335,7 +335,6 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
     console.log("[postWord] jumpsArray: ", resp.jumpsArray);
     if (jumps >= 13) { // cap it at 12 current jumps
         resp = sendAndReceiveXML(`end=true`);
-        removeTallyDiv(current_prompt, 5);
         alert("I AM AT 12 jumps -> should skip now!!!");
     }
     console.log("[postWord] jumps: ", jumps);

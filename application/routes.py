@@ -201,9 +201,14 @@ def help_shift(data):
     data['results'] = results
     return data
 
+def check_if_max(jumpsArray_i):
+    if sum(jumpsArray_i) >= 14:
+        jumpsArray_i[5] = 0
+    return jumpsArray_i
 
 def update_jumps_array(new_data):
     for i, row in enumerate(new_data['jumpsArray']):
+        new_data['jumpsArray'][i] = check_if_max(new_data['jumpsArray'][i])
         if row == [0,0,0,0,0,0]:
             new_data['jumpsArray'][i] = [1,0,0,0,0,1]
             new_data['startTargetIdxs'] = [[i,0],[i,5]]

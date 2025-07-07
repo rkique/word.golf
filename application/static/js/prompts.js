@@ -83,13 +83,17 @@ function renderWord(word, row, column, animate=true) {
 
 // Given a promptBox and prompt-tally-container, removes one tally from the correct cell.
 function removeTallyDiv(row, column) {
-    promptBoxes = document.querySelectorAll('#prompts .prompt-box');
-    promptBox = promptBoxes[row];
-    wordTallyContainer = promptBox.children[column];
-    tallies = wordTallyContainer.querySelectorAll('.tally');
-    console.log(`[removeTallyDiv] has ${tallies.length} at ${row} ${column}`)
+    let wordTallyContainers = document.querySelectorAll('#prompts .prompt-box .word-tally-box');
+    let wordTallyContainer = wordTallyContainers[row * 6 + column]
+    const tallies = wordTallyContainer.querySelectorAll('.tally');
+
+    console.log(`[removeTallyDiv] has ${tallies.length} at ${row} ${column}`);
+    console.log("[removeTallyDiv] before removing: ", wordTallyContainer);
     if (tallies.length > 0){
-        wordTallyContainer.removeChild(tallies[tallies.length - 1]);
+        tallies.forEach(tally => {
+            console.log("Removing tally:", tally.outerHTML);
+            tally.remove();
+        });
         console.log("[removeTallyDiv] after removing: ", wordTallyContainer);
         return [row, column];
     }
@@ -100,12 +104,12 @@ function clearAllPromptWords(end) {
     
     const promptWords = document.querySelectorAll('.prompt-word');
     console.log("[clearAllPrompts] Before clearing", promptWords);
-    if (end == false) {
-        promptWords.forEach(word => word.remove());
-    } else {
-        promptWords.forEach(word => word.classList.remove('prompt-word'));
-        promptWords.forEach(word => updateInnerTextSmooth(word, ''));
-    }
+    // if (end == false) {
+    promptWords.forEach(word => word.remove());
+    // } else {
+    //     promptWords.forEach(word => word.classList.remove('prompt-word'));
+    //     promptWords.forEach(word => updateInnerTextSmooth(word, ''));
+    // }
     console.log("[clearAllPrompts] After clearing", promptWords);
 }
 
@@ -170,13 +174,13 @@ function renderPrompts(jumpsArray, idxs, start_target, end = false) {
         'start_target:', start_target, typeof start_target,
         'end', end
     );
-    clearAllPromptWords(end);
+    clearAllPromptWords();
+    renderTallies(jumpsArray);
     if (!end) {
         const [start_idx, target_idx] = idxs
         const [start, target] = start_target
-        renderTallies(jumpsArray);
+        // renderTallies(jumpsArray);
         renderWord(start, ...start_idx)
         renderWord(target, ...target_idx, animate=false)
     }
-    
 }
