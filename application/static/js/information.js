@@ -19,6 +19,8 @@ function daysSinceStartDate(startDateStr = '2025-05-31', storageKey = 'current_d
 }
 
 function renderGrid(counts) {
+    // counts is now a 2d array, sum each inner array to make 1d counts
+    let sums = counts.map(inner => inner.reduce((a, b) => a + b, 0));
     const colorEmojis = {
         1: '🟩', // green
         2: '🟩', // blue
@@ -32,7 +34,7 @@ function renderGrid(counts) {
     const numCols = 6;
     let gridMessage = '';
     for (let row = 0; row < numRows; row++) {
-        let count = Math.ceil(counts[row] / 2);
+        let count = Math.ceil(sums[row] / 2);
         let emoji = colorEmojis[count] || colorEmojis[7];
         let line = emoji.repeat(count) + colorEmojis[7].repeat(numCols - count);
         gridMessage += line + '\n';
@@ -65,7 +67,7 @@ function renderFinish(resp) {
     clearAllPromptWords();
     const daily_idx = daysSinceStartDate();
     is_logged_in = Boolean(localStorage.getItem('logged_in'))
-    let jumpsGridMessage = resp.jumpsA ? renderGrid(resp.jumpsA) : '';
+    let jumpsGridMessage = resp.jumpsArray ? renderGrid(resp.jumpsArray) : '';
     runAfterBannerDisappears(() => {displayFinishModal(daily_idx, resp.total_jumps, resp.streak, jumpsGridMessage, is_logged_in)})
 }
 
@@ -99,7 +101,7 @@ function startGame() {
     // total_jumps is only passed after game end.
     const is_end = 'total_jumps' in data ? data.total_jumps : 0;
     start_target = prompts[prompt_idx];
-    if(!setPrompts()){renderPrompts(jumpsArray, startTargetIdxs, start_target=start_target)}
+    renderPrompts(jumpsArray, startTargetIdxs, start_target=start_target)
     renderLinks(start_target, results, prompt_idx, is_end); 
     activateLinks();
 }

@@ -50,6 +50,7 @@
         width: 100vw;
         min-height: 30vh;
         max-height: 32vh;
+        max-width: none;
         justify-content: flex-start;
         display: flex;
         flex-direction: column;
@@ -71,10 +72,13 @@
         font-size: 1.2rem;
     }
     .tally {
-        max-width: 0.25rem !important;
-        min-width: 0.25rem !important;
+        max-width: 0.25rem;
+        min-width: 0.25rem;
     }
-
+    .prompt-box .prompt-word {
+        max-width: none;
+        min-width: 6rem;
+    }
     .prompt-box {
         /* outline: 1px solid var(--border-color); */
         display: flex;

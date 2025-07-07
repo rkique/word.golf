@@ -27,7 +27,6 @@ function updateInnerTextSmooth(elem, newText, animate) {
                 const newWidth = elem.scrollWidth;
                 // Apply new max-width with transition
                 elem.style.maxWidth = newWidth + 'px';
-                savePrompts();
             });
         });
     } else {
@@ -94,12 +93,12 @@ function renderWord(word, row, column, animate=true) {
 
 function clearAllPromptWords(end) {
     const promptWords = document.querySelectorAll('.prompt-word');
-    if (end == false) {
+    // if (end == false) {
     promptWords.forEach(word => word.remove());
-    } else {
-        promptWords.forEach(word => word.classList.remove('prompt-word'));
-        promptWords.forEach(word => updateInnerTextSmooth(word, ''));
-    }
+    // } else {
+    //     promptWords.forEach(word => word.classList.remove('prompt-word'));
+    //     promptWords.forEach(word => updateInnerTextSmooth(word, ''));
+    // }
 }
 
 function tallyPrompts(prompts, jumpsArray, current_jumps) {
