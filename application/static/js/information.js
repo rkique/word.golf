@@ -32,7 +32,6 @@ function renderGrid(counts) {
     };
     const numRows = 5;
     const numCols = 6;
-    const numCols = 6;
     let gridMessage = '';
     let tiers = [1, 3, 5, 7, 9, 12];
     for (let row = 0; row < numRows; row++) {
