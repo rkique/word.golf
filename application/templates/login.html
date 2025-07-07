@@ -44,7 +44,7 @@
               <script src="https://accounts.google.com/gsi/client" async></script>
               <div id="g_id_onload"
                   data-client_id="490339325235-2colln65cgm89aue0mihetv8upkmr5bl.apps.googleusercontent.com"
-                  data-login_uri="https://routes.word.golf/login/google"
+                  data-login_uri="http://localhost:8080/login/google"  
                   data-auto_prompt="false">
                   <!-- change this to the deployed backend URL -->
                    <!-- data-login_uri="http://127.0.0.1:7000/login/google" -->
@@ -65,37 +65,7 @@
       <!-- <button onclick="window.location.href = window.location.href.replace(/\/login$/, '')" style="display: none;" class="switch switch--outlined" id="backGame">Back to Game</button>    </div> -->
 
     </form>
-    <!-- <div class="createUserContainer">
-      <h2>Create User</h2>
-      <form id="createUserForm">
-        <div class="form-rows">
-          <div class="form-row">
-            <label>Email </label>
-            <input type="text" id="createEmail" required />
-          </div>
-          <div class="form-row">
-            <label>Password</label>
-            <input type="password" id="createPassword" required />
-          </div>
-          <div>
-            <button type="submit" class="switch switch--outlined">Create User</button>
-          </div>
-        </div>
-      </form>
-    </div> -->
-
-    <!-- <button id="getDataBtn" class="switch switch--outlined">Get User Data</button>
-    <pre id="userDataOutput"></pre>
-    <div id="responseMessage" style="color: red; margin-top: 20px;"></div>
-    <button id="getUserHistoryBtn" class="switch switch--outlined">Get User History</button>
-    <pre id="userHistoryOutput"></pre>
-    <pre id="LogoutOutput"></pre>
-     -->
-
 </div>
-<script>
-  const current_date = "{{ date }}";
-</script>
 
 <script>
 
@@ -130,7 +100,7 @@ document.getElementById("SubmitBtn").addEventListener("click", async (e) => {
     if (submitBtn) submitBtn.style.display = "none";
     // in a real application, make the POST request to the backend to check if the user exists
     try {
-      const res = await fetch(window.backendURL + "/user_exist", {
+      const res = await fetch("/user_exist", {
           method: "POST",
           credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
           headers: {
@@ -170,11 +140,6 @@ document.getElementById("SubmitBtn").addEventListener("click", async (e) => {
     document.getElementById("responseMessage").textContent = "Please enter a valid email address";
   }
 
-  // const loginBtn = document.getElementById("LoginBtn");
-  // if (loginBtn) loginBtn.style.display = "block";
-  // const forgotPasswordBtn = document.getElementById("ForgotPasswordBtn");
-  // if (forgotPasswordBtn) forgotPasswordBtn.style.display = "block";
-
 });
 
 
@@ -191,13 +156,13 @@ document.getElementById("LoginBtn").addEventListener("click", async (e) => {
 
     // Uncomment during production, this is just for testing purposes
     try {
-      const res = await fetch(window.backendURL + "/login", {
+      const res = await fetch("/authlogin", {
           method: "POST",
           credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
           headers: {
               "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, password, date: current_date}),
+          body: JSON.stringify({ email, password}),
       });
       const data = await res.json();
       if (res.ok) {
@@ -240,13 +205,13 @@ document.getElementById("CreateAccountBtn").addEventListener("click", async (e) 
 
     // Uncomment during production, this is just for testing purposes
     try {
-      const res = await fetch(window.backendURL + "/create_user", {
+      const res = await fetch("/authcreate", {
         method: "POST",
         credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password , date: current_date}),
+        body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -275,89 +240,6 @@ document.getElementById("CreateAccountBtn").addEventListener("click", async (e) 
     document.getElementById("responseMessage").textContent = "Please enter a valid email address";
   }
 });
-
-// document.getElementById("getDataBtn").addEventListener("click", async () => {
-//   try {
-//     const res = await fetch(window.backendURL + "/data", {
-//       method: "GET",
-//       credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
-//     });
-
-//     const data = await res.json();
-//     const output = document.getElementById("userDataOutput");
-
-//     if (res.ok) {
-//       output.style.color = "black";
-//       output.textContent = JSON.stringify(data, null, 2);
-//     } else {
-//       output.style.color = "red";
-//       output.textContent = data.error || "Failed to fetch data";
-//     }
-//   } catch (err) {
-//     const output = document.getElementById("userDataOutput");
-//     output.style.color = "red";
-//     output.textContent = "Network error";
-//   }
-// });
-
-// document.getElementById("getUserHistoryBtn").addEventListener("click", async () => {
-//   try {
-//     const res = await fetch(window.backendURL + "/game_history", {
-//       method: "GET",
-//       credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
-//     });
-
-//     const data = await res.json();
-//     const output = document.getElementById("userHistoryOutput");
-
-//     if (res.ok) {
-//       output.style.color = "black";
-//       output.textContent = JSON.stringify(data, null, 2);
-//     } else {
-//       output.style.color = "red";
-//       output.textContent = data.error || "Failed to fetch user history";
-//     }
-//   } catch (err) {
-//     const output = document.getElementById("userHistoryOutput");
-//     output.style.color = "red";
-//     output.textContent = "Network error";
-//   }
-// });
-
-// document.getElementById("googleLoginBtn").addEventListener("click", async () => {
-
-//   // This is the google login button. When I tested it, I realized that when I logged in with Google, 
-//   // it cleared the session storage in the routes backend (so when printing the value out it is null/empty list), so that is why whenever 
-//   // I log in with Google, I redirect to the home page. 
-//   window.location.href = winodw.backendURL + "/login/google";
-// });
-
-// document.getElementById("logoutBtn").addEventListener("click", async () => {
-//   try {
-//     const res = await fetch(window.backendURL + "/logout", {
-//       method: "POST",
-//       credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
-//     });
-
-//     const data = await res.json();
-//     const output = document.getElementById("LogoutOutput");
-
-//     if (res.ok) {
-//       output.style.color = "green";
-//       output.textContent = data.message || "Logout successful!";
-      
-//       window.location.href = '/'; // Change this but this just redirects to the main page
-//     } else {
-//       output.style.color = "red";
-//       output.textContent = data.error || "Logout failed";
-//     }
-//   } catch (err) {
-//     const output = document.getElementById("LogoutOutput");
-//     output.style.color = "red";
-//     output.textContent = "Network error";
-//   }
-// });
-
 
 </script>
 

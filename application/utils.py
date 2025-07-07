@@ -6,7 +6,7 @@ import ast
 LAZY_EXCLUDE = ["fuckable", "shitshow", "jegging", "daddy", "brat",
                 "dominatrix"," hotness"," sexiness"," perky"," kissable"," fatale"," seductive", "aybe",
                   "orgasmed", "sodomized", "sodomize", "kinkier", "ravish", "ravage",
-                  "mindfuck","perv","foreplay","makeout","polyamorous"
+                  "mindfuck","perv","foreplay","makeout","polyamorous", "sexting"
                 ]
 
 def txt_to_set(path):

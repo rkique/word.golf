@@ -1,9 +1,9 @@
 HELP_FINISH_DELAY_MS = 500
 START_GAME_DELAY_MS = 1500
 
-function displayModal(innerHTML){
+function displayModal(displayHTML){
     const modalEl = document.getElementById('modal');
-    modalEl.innerHTML = innerHTML;
+    modalEl.innerHTML = displayHTML;
     modalEl.style.display = 'flex';
 }
 
@@ -18,28 +18,35 @@ function daysSinceStartDate(startDateStr = '2025-05-31', storageKey = 'current_d
     return Math.floor(diffMs / (1000 * 60 * 60 * 24));
 }
 
+/* Sums a 2D count array to produce a message */
 function renderGrid(counts) {
+    let sums = counts.map(inner => Math.max(0, inner.reduce((a, b) => a + b, 0) - 1));
     const colorEmojis = {
-        1: '🟩', // green
-        2: '🟩', // blue
-        3: '🟦', // yellow
-        4: '🟨', // red
-        5: '🟥', // white
-        6: '⬜', // white
+        1: '🟩',
+        2: '🟩',
+        3: '🟦', 
+        4: '🟨',
+        5: '🟥', 
+        6: '⬜',
         7: '⬛',
     };
     const numRows = 5;
     const numCols = 6;
     let gridMessage = '';
+    let tiers = [1, 3, 5, 7, 9, 12];
     for (let row = 0; row < numRows; row++) {
-        let count = Math.ceil(counts[row] / 2);
-        let emoji = colorEmojis[count] || colorEmojis[7];
+        let count = Math.max(0, Math.ceil(sums[row] / 2));
+        // Find the lowest tier that count fits in
+        let tierIdx = tiers.findIndex(tier => count <= tier);
+        let emojiKey = tierIdx !== -1 ? tierIdx + 1 : 6;
+        let emoji = colorEmojis[emojiKey] || colorEmojis[7];
         let line = emoji.repeat(count) + colorEmojis[7].repeat(numCols - count);
         gridMessage += line + '\n';
     }
     return gridMessage;
 }
 
+/* Waits for the banner to disappear before executing a fn. */
 function runAfterBannerDisappears(callback) {
   const banner = document.querySelector('.promptEndBanner');
   if (!banner) {
@@ -58,109 +65,43 @@ function runAfterBannerDisappears(callback) {
   });
 }
 
-function renderFinish(jumpsArray) {
-    totalJumps = jumpsArray.reduce((acc, val) => acc + val, 0);
-    const currentDate = new Date(localStorage.getItem('current_date'));
-    const data = {
-        last_complete: currentDate, // should be "YYYY-MM-DD"
-    };
 
-    fetch(window.backendURL + '/update_finish', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        credentials: 'include', 
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(finish_data => {
-        const daily_idx = daysSinceStartDate();
-        is_logged_in = Boolean(localStorage.getItem('logged_in'))
-        let jumpsGridMessage = finish_data.jumpsA ? renderGrid(finish_data.jumpsA) : '';
-        runAfterBannerDisappears(() => {displayFinishModal(daily_idx, totalJumps, finish_data.newStreak, jumpsGridMessage, is_logged_in)})
-    })
-    .catch((error) => {
-        console.error('Error updating database:', error);
-    });
-    // localStorage.setItem('streak', newStreak);
-    // update_database_with_finish(totalJumps, currentDate);
+function renderFinish(resp) {
+    clearAllPromptWords();
+    const daily_idx = daysSinceStartDate();
+    is_logged_in = Boolean(localStorage.getItem('logged_in'))
+    let jumpsGridMessage = resp.jumpsArray ? renderGrid(resp.jumpsArray) : '';
+    runAfterBannerDisappears(() => {displayFinishModal(daily_idx, resp.total_jumps, resp.streak, jumpsGridMessage, is_logged_in)})
 }
 
 /* Clears the modal, localStorage, and renders links with XML redirect=true*/
+/* Called at the end of tutorial */
 function startGame() {
     clearInfoBox()
-    document.getElementById("information").innerHTML =
-            ``;
+    document.getElementById("information").innerHTML = ``;
     document.getElementById('modal').style.display = 'none';
     localStorage.setItem('is_help', 'false');
-    localStorage.removeItem('jumps');
-    localStorage.removeItem('jumpsArray');
-    localStorage.removeItem('prompts');
-    localStorage.removeItem('results');
-    resp = sendAndReceiveXML('redirect=true');
-    // _ = send_game_data_to_backend(resp, 'redirect=true');
+    let toDelete = ['jumps', 'jumpsArray', 'startTargetIdxs', 'prompts', 'results']
+    toDelete.forEach(key => localStorage.removeItem(key));
+    let resp = sendAndReceiveXML('redirect=true');
     clearBoxes()
-    // should be doing the same thing as index.html!
-    // renderLinks(resp.prompt, resp.results)
-    // start_target = resp.prompts[resp.i]
-    // renderPrompts(resp.prompts, resp.jumpsArray, resp.jumps, start_target=start_target, serialize=false)
-    // activateLinks()
-    const data = resp;
-    fetch(`${window.backendURL}/user_and_game_state`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            date: data["date"]
-        })
-    })
-    .then(response => response.json())
-    .then(game_data => {
-            console.log("backend response: ", game_data);
-            if ("logged_in" in game_data) {
-                if (game_data.email) {
-                    renderLogin(game_data)
-                }
-            }
-            let loaded;
-            let prompt_idx;
-            let jumpsArray;
-            if ("selected_words" in game_data && game_data["selected_words"] && game_data["selected_words"].length != 0) {
-                loaded = game_data;
-                prompt_idx = game_data.prompt_idx;
-                localStorage.setItem('previous_words', JSON.stringify(game_data.selected_words));
-                jumpsArray = loaded.jumpsA;
-            } else { //this only happens on first load.
-                loaded = data;
-                prompt_idx = data['i'];
-                jumpsArray = loaded.jumpsArray;
-            }
-            
-            // if (jumpsArray.length > 5) {
-            //     jumpsArray = jumpsArray.slice(0, 5);
-            // }
-            let jumps = loaded.jumps;
-            let results = loaded.results || data['results'];
-            let prompts = loaded.prompts;
-            let start_target = prompts[prompt_idx];
-            // check if prompt_idx is 5 
-            const isPromptIdxFive = (prompt_idx >= 5);
-            if (isPromptIdxFive) {
-                prompt_idx = 4;
-            }
-            _ = editSession(jumpsArray, jumps, results, prompt_idx, start_target);
-            start_target = prompts[prompt_idx];
-            if(!setPrompts()){renderPrompts(prompts, jumpsArray, jumps, start_target=start_target)}
-            // if (isPromptIdxFive) {
-            //     renderLinks(start_target, results, prompt_idx, isPromptIdxFive); 
-            // }
-            renderLinks(start_target, results, prompt_idx, isPromptIdxFive); 
-            activateLinks();
-        });
-    }
+    if ("logged_in" in resp && resp.logged_in) {
+        renderLogin(resp.logged_in);
+    } 
+    let prompt_idx = resp['i'];
+    let jumpsArray = resp.jumpsArray;
+    let results = resp.results;
+    let prompts = resp.prompts;
+    let start_target = prompts[prompt_idx];
+    let startTargetIdxs = resp.startTargetIdxs
+    // total_jumps is only passed after game end.
+    const is_end = 'total_jumps' in resp ? resp.total_jumps : 0;
+    start_target = prompts[prompt_idx];
+    start_target[0] = results[10];
+    renderPrompts(jumpsArray, startTargetIdxs, start_target=start_target, is_end)
+    renderLinks(start_target, results, prompt_idx, is_end); 
+    activateLinks();
+}
 
 function generateLineGraph(scores) {
     localStorage.setItem('jumpsArray', JSON.stringify(scores));
@@ -288,13 +229,13 @@ function startHelpSession() {
     localStorage.setItem('is_help', 'true');
     help = document.getElementById('help');
     help.style.display = 'none'
-    data = sendAndReceiveXML(`help=true`)
-    renderLinks(data.prompt, data.results, data.i)
-    let start_target = data.prompt
+    resp = sendAndReceiveXML(`help=true`)
+    renderLinks(resp.prompt, resp.results, resp.i)
+    let start_target = resp.prompt
     clearBoxes()
-    renderPrompts(data.prompts, data.jumpsArray, 0, start_target=start_target)
+    renderPrompts(resp.jumpsArray, resp.startTargetIdxs, start_target)
     activateLinks()
-    addHelpFocuses(data.prompt, data.results)
+    addHelpFocuses(resp.prompt, resp.results)
     start_text = `<p id="modalText"> Welcome to word.golf, a sport played with the meanings of words!</p>
     <button class="switch switch--outlined" onclick="startHelpSteps()"> OK </button>`
     displayModal(start_text)
@@ -303,7 +244,20 @@ function startHelpSession() {
 function clearInfoBox() {
     let info = document.getElementById("info-box")
     info.innerHTML = '';
-    info.style.display = 'none'; //hide container.
+    info.style.display = 'none'; 
+}
+
+function renderTransientModal(duration){
+    let modal = document.getElementById('modal');
+    modal.style.zIndex = 200;
+    document.body.style.pointerEvents = 'none';
+    let overlay = document.createElement('div');
+    overlay.classList.add('tint-background')
+    document.body.appendChild(overlay);
+    setTimeout(() => {
+        overlay.parentNode.removeChild(overlay);
+        document.body.style.pointerEvents = 'auto';
+    }, duration);
 }
 
 function renderHelpFinish(){
@@ -319,6 +273,7 @@ function renderHelpFinish(){
 
     setTimeout(() => {
         displayModal(help_finish_text);
+        renderTransientModal(START_GAME_DELAY_MS + HELP_FINISH_DELAY_MS)
         setTimeout(startGame, START_GAME_DELAY_MS);
     }, HELP_FINISH_DELAY_MS);
 }

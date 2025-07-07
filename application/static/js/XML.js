@@ -20,52 +20,28 @@ function editSession(jumpsAValue, jumpsValue, result_value, i, prompt_text) {
 }
 
 
-function send_game_data_to_backend(response_text, message) {
-    jumps = response_text["jumps"]; 
-    jumpsArray = response_text["jumpsArray"]; 
-    results = response_text["results"]; 
-    prompts = response_text["prompts"]; 
-    current_prompt = response_text["i"]; 
-    date = response_text["date"];
+function simToIndex(score){
+    const thresholds = [0.2, 0.27, 0.35, 0.42];
+    let idx = thresholds.findIndex(t => score < t);
+    idx = idx === -1 ? thresholds.length : idx;
+    return idx;
+}
 
-    let word = null;
-
-    if (message.includes("word")) {
-        word = message.split("=")[1];
+function lastNonzeroRow(jumpsArray) {
+    for (let i = jumpsArray.length - 1; i >= 0; i--) {
+        // console.log("[last")
+        if (jumpsArray[i].some(val => val !== 0)) {
+            return i; 
+        }
     }
-
-    // console.log("here is the word");
-    // console.log("here is the message");
-    // console.log(message);
-    // console.log(word);
-    // console.log("before backend fetch");
-
-    fetch(`${window.backendURL}/update_game_state`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            ...(word ? { word: word } : {}),
-            current_jumps: jumps,
-            jumpsA: jumpsArray,
-            results: results,
-            prompts: prompts,
-            prompt_idx: current_prompt,
-            date: date
-        })
-    })
-        .then(response => response.json())
-        .then(update_state => {
-            return update_state;
-        });
+    return -1 //last valid index.
 }
 
 function sendAndReceiveXML(message) {
     // alert(`[sendAndReceiveXML] Sending message: ${message}`);
     let xhttp = new XMLHttpRequest();
     xhttp.open("POST", '/', false);
+    xhttp.withCredentials = true;
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.send(message);
     resp = {}
@@ -85,20 +61,21 @@ function sendAndReceiveXML(message) {
     else {
         try {
             response_text = JSON.parse(xhttp.responseText);
-            jumps = response_text["jumps"]; 
             jumpsArray = response_text["jumpsArray"]; 
             results = response_text["results"]; 
             prompts = response_text["prompts"]; 
-            current_prompt = response_text["i"]; 
-            // console.log(`[Send and Receive XML] results: ${results} jumpsArray : ${jumpsArray} prompts ${prompts}`);
-            if (jumps >= 12 ) { // cap it at 12 current jumps
-                let resp = sendAndReceiveXML(`end=true`);
-                _ = send_game_data_to_backend(resp, `end=true`);
-                clearLastTallyContainer(resp.jumpsArray.length);
-                return resp;
-            } else {
+            current_prompt = lastNonzeroRow(jumpsArray)
+            let jumps = jumpsArray[current_prompt].reduce((a, b) => a + b, 0);
+            // if (jumps >= 14) { // cap it at 12 current jumps
+            //     let resp = sendAndReceiveXML(`end=true`);
+            //     alert("I AM AT 12 jumps -> should skip now!!!");
+            //     // resp.jumpsA = updateJumpsA(resp.jumpsA, resp.previous_words[-1], resp.score)
+            //     // _ = send_game_data_to_backend(resp, `end=true`);
+            //     // clearLastTallyContainer(resp.jumpsArray.length);
+            //     return resp;
+            // } else {
                 return response_text;
-            }     
+            // }     
         } catch (e) {
             alert('Error in backend. Please check logs.')
             console.log(e)

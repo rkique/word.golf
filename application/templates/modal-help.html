@@ -1,40 +1,35 @@
 <script>
     function beginTutorial() {
+        //clear help finish modal if necessary.
+        document.getElementById('modal-finish-guest').style.display = 'none';
+        document.getElementById('modal-finish-user').style.display = 'none';
         localStorage.setItem('is_help', 'true');
         data = sendAndReceiveXML(`help=true`);
         if (localStorage.getItem('prompts')) {
             _prompts = localStorage.getItem('prompts');
             localStorage.setItem('_prompts', _prompts)
         }
-        // _ = send_game_data_to_backend(data, `help=true`);
         renderLinks(data.prompt, data.results)
-        // alert('[beginTutorial] rendering prompts')
         clearBoxes()
-        renderPrompts(data.prompts, data.jumpsArray, data.jumps, start_target=data.prompt)
+        renderPrompts(data.jumpsArray, data.startTargetIdxs, data.prompt)
         activateLinks()
         addHelpFocuses(data.prompt, data.results)
     }
 
-    function renderLogin(text) {
-            localStorage.setItem('logged_in', text.email);
-            document.getElementById('logged_in-username').textContent = text.email;
-            // const loginWelcome = document.getElementById('login-welcome');
-            // loginWelcome.style.display = 'flex';
-            // loginWelcome.querySelector('.welcome-email').textContent = text.email;
-            document.getElementById('guest-buttons').style.display = 'none';
-            document.getElementById('logged_in-buttons').style.display = 'flex';
-        }
+    function renderLogin(email) {
+        localStorage.setItem('logged_in', email);
+        localStorage.setItem('is_help', false);
+        document.getElementById('logged_in-username').textContent = email;
+        // const loginWelcome = document.getElementById('login-welcome');
+        // loginWelcome.style.display = 'flex';
+        // loginWelcome.querySelector('.welcome-email').textContent = text.email;
+        document.getElementById('guest-buttons').style.display = 'none';
+        document.getElementById('logged_in-buttons').style.display = 'flex';
+    }
 
     async function renderLogout(){
-        // let data = JSON.parse('{{data|tojson|safe}}');
-        // if ((data.jumps == 0 && data.jumpsA.length === 0) || (data.jumpsA.length === 5)) {
-        console.log("should not be called!!!");
         try {
-            // let data2 = JSON.parse('{{data|tojson|safe}}');
-            // console.log("here is data2");
-            // console.log(data2);
-            // pass in the date here 
-            const res = await fetch(window.backendURL + "/logout", {
+            const res = await fetch("/logout", {
                 method: "POST",
                 credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
                 headers: {
@@ -44,9 +39,7 @@
                     date: new Date().toISOString().split('T')[0]
                 })
             });
-
             const data = await res.json();
-
             if (res.ok) {
                 localStorage.removeItem('logged_in');
                 const loginWelcome = document.getElementById('login-welcome');
@@ -55,6 +48,7 @@
                 logged_in_buttons.style.display = 'none';
                 const logoutButton = document.getElementById('guest-buttons');
                 logoutButton.style.display = 'flex';
+                window.location.href = '/';
             } else {
                 console.log("Logout failed:", data);
             }
@@ -73,8 +67,8 @@
             <p>Link two words by clicking their neighbors.</p>
             <p class='--grayed-out'>outside ⟶ beneath ⟶ surface ⟶ layer</p>
             <p>Choose carefully! You only need two jumps.</p>
-            <p class='--grayed-out'>mercury ⟶ toothpaste ⟶ razor</p>
-            <p>5 prompts daily. The best (lowest) score is 10.</p>
+            <p class='--grayed-out'>cellphone ⟶ airtime ⟶ fluff</p>
+            <p>5 prompts daily. The best score is 10.</p>
         </div>
         <div class="logged_in-buttons" id="logged_in-buttons">
             <p>Logged in as <span id="logged_in-username"></span></p>
@@ -86,7 +80,7 @@
         <script src="https://accounts.google.com/gsi/client" async></script>
         <div id="g_id_onload"
             data-client_id="490339325235-2colln65cgm89aue0mihetv8upkmr5bl.apps.googleusercontent.com"
-            data-login_uri="https://routes.word.golf/login/google"
+            data-login_uri="http://localhost:8080/login/google"  
             data-auto_prompt="false"> 
             <!-- change this to the deployed backend URL --> 
             <!-- data-login_uri="http://127.0.0.1:7000/login/google"  -->
