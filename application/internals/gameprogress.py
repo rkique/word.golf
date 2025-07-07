@@ -77,11 +77,12 @@ def update_game_state(data):
         assert key in data, f"Missing required key: {key}"
 
     game_state.jumpsA = data['jumpsArray'] 
-    # game_state.startTargetIdxs = data['startTargetIdxs']
-    game_state.results = data['results']
+    # game_state.startTargetIdxs = data['startTargetIdxs'] 
+    game_state.results = data['results'] 
     game_state.prompt_idx = data['i'] 
     game_state.current_jumps = data['jumps'] 
-    game_state.prompts = data['prompts']
+    game_state.prompts = data['prompts'] 
+    game_state.start_target_idxs = data["startTargetIdxs"] 
 
     word = data.get('word', None)
     # print("here is word in update_game_state")
@@ -96,7 +97,7 @@ def update_game_state(data):
     return jsonify({"message": "Game state updated successfully."}), 200
 
 
-def finished_game(finish_request):
+def finished_game(finish_request): 
     user = get_user_from_cookie(finish_request)
     if not user:
         return jsonify({"error": "Not authenticated"}), 401

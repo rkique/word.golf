@@ -101,7 +101,8 @@ function startGame() {
     // total_jumps is only passed after game end.
     const is_end = 'total_jumps' in data ? data.total_jumps : 0;
     start_target = prompts[prompt_idx];
-    renderPrompts(jumpsArray, startTargetIdxs, start_target=start_target)
+    start_target[0] = results[10];
+    renderPrompts(jumpsArray, startTargetIdxs, start_target=start_target, is_end)
     renderLinks(start_target, results, prompt_idx, is_end); 
     activateLinks();
 }

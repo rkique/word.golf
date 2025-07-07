@@ -105,12 +105,15 @@ data = JSON.parse('{{data|tojson|safe}}');
         let results = data.results;
         let prompts = data.prompts;
         let start_target = prompts[prompt_idx];
+        console.log("[index]: here is start target: ", start_target);
+        start_target[0] = results[10];
         let startTargetIdxs = data.startTargetIdxs
         // check if prompt_idx is 5 
         const is_end = 'total_jumps' in data ? data.total_jumps : 0;
         // _ = editSession(jumpsArray, jumps, results, prompt_idx, start_target);
-        start_target = prompts[prompt_idx];
-        renderPrompts(jumpsArray, startTargetIdxs, start_target);
+        // 
+        renderPrompts(jumpsArray, startTargetIdxs, start_target, is_end);
+        // start_target = prompts[prompt_idx];
         renderLinks(start_target, results, prompt_idx, is_end); 
         activateLinks();
     }

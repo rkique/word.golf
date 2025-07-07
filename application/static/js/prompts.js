@@ -127,9 +127,12 @@ function renderPrompts(jumpsArray, idxs, start_target, end = false) {
     clearAllPromptWords();
     renderTallies(jumpsArray);
     if (!end) {
-        const [start_idx, target_idx] = idxs
-        const [start, target] = start_target
-        renderWord(start, ...start_idx)
-        renderWord(target, ...target_idx, animate=false)
+        console.log("End is false here adding these start targets");
+        console.log(start_target);
+        console.trace('[renderPrompts] Stack trace');
+        const [start_idx, target_idx] = idxs;
+        const [start, target] = start_target;
+        renderWord(start, ...start_idx);
+        renderWord(target, ...target_idx, animate=false);
     }
 }
