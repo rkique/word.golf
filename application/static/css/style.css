@@ -346,13 +346,13 @@ button span {
 }
 
 .link--starting{
-    color: var(--grayed-out-color);
+    color: var(--grayed-out-color)!important;
 }
 
 .link--disabled{
     pointer-events: none;
-    animation: none !important;
-    color: var(--grayed-out-color) !important;
+    /* animation: none !important; */
+    color: var(--grayed-out-color);
 }
 
 .link--unfocused{
@@ -535,7 +535,7 @@ button span {
 
 #prompts {
     padding: 1em 0.5em;
-    gap: 0.5rem;
+    gap: 1rem;
     width: 32vw;
     max-width: 32vw;
     display: flex;
@@ -557,7 +557,7 @@ button span {
     position: relative;
     z-index: -1;
     flex-direction: row;
-    pointer-events: none;
+    /* pointer-events: none; */
     /* border-left: 1px solid var(--grayed-out-color); */
 }
 
@@ -587,13 +587,33 @@ button span {
     /* transition: max-width 0.2s ease, padding 0.2s ease-out, background 0.2s ease; */
  }
 
+.prompt-start-word {
+    border-color: var(--grayed-out-color) !important;
+    color: var(--grayed-out-color) !important;
+    transition: transform 0.2s ease;
+}
+
 .prompt-word {
   max-width: 0;
   overflow: hidden;
   white-space: nowrap;
   display: inline-block;
-  transition: max-width 0.2s ease, padding 0.2s ease, background 0.2s ease;
+  transition: max-width 0.2s ease, padding 0.2s ease, background 0.2s ease, transform 0.2s ease;
   padding: 0rem 0.5rem;
+}
+
+.hover-start {
+    transition: transform 0.2s ease;
+}
+
+.hover-start.link--starting {
+    transform: scaleY(1.14) scaleX(1.10);
+    z-index: 999;
+}
+
+.hover-start {
+    transform: scaleY(1.08) scaleX(1.04);
+    z-index: 999;
 }
 
 .prompt-box .prompt-word, .tally {
@@ -615,12 +635,12 @@ button span {
 }
 
 .prompt-box .prompt:hover {
-  z-index: 10; /* bring hovered .prompt-word to front within its box */
+  /* z-index: 10; bring hovered .prompt-word to front within its box */
 }
 
 .prompt-box .prompt-word:hover {
     z-index: 999;
-    border: 1px solid var(--text-color); /* or whatever visual feedback you want */
+    /* border: 1px solid var(--text-color);*/
 }
 
 
