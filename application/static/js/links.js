@@ -360,7 +360,7 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
             else if (jumps <= 3) showBanner("superb!", "banner-impressive");
             else if (jumps <= 5) showBanner("great", "banner-great");
             else if (jumps <= 7) showBanner("good...", "banner-good");
-            else if (jumps <= 9) showBanner("close call", "banner-closecall");
+            else if (jumps <= 12) showBanner("close call", "banner-closecall");
         }
         activateLinks()
     }

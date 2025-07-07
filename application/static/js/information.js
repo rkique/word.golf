@@ -33,9 +33,13 @@ function renderGrid(counts) {
     const numRows = 5;
     const numCols = 6;
     let gridMessage = '';
+    let tiers = [1, 3, 5, 7, 9, 12];
     for (let row = 0; row < numRows; row++) {
         let count = Math.max(0, Math.ceil(sums[row] / 2));
-        let emoji = colorEmojis[count] || colorEmojis[7];
+        // Find the lowest tier that count fits in
+        let tierIdx = tiers.findIndex(tier => count <= tier);
+        let emojiKey = tierIdx !== -1 ? tierIdx + 1 : 6;
+        let emoji = colorEmojis[emojiKey] || colorEmojis[7];
         let line = emoji.repeat(count) + colorEmojis[7].repeat(numCols - count);
         gridMessage += line + '\n';
     }

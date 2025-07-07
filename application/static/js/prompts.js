@@ -270,7 +270,6 @@ function addTallyContainers(promptBox){
     }
 }
 
-//this should query select 
 function cueStartWordOnHover(){
     /* Visual continuity cue: scale prompt-start-word and link--starting when hovering prompt-start-word */
     const link = document.body.querySelector('.link--starting');
