@@ -49,21 +49,19 @@ function updateInnerTextSmooth(elem, newText, animate) {
 
 //given a promptBox and prompt-tally-container, updates the correct one with tallyDiv.
 function renderTallies(jumpsArray) {
-    change_idx = null
     //adding tallyDivs.
     let wordTallyContainers = document.querySelectorAll('#prompts .prompt-box .word-tally-box');
     jumpsArray.forEach((row, row_idx) => {
         row.forEach((tally_count, col_idx) => {
             let wordTallyContainer = wordTallyContainers[row_idx * 6 + col_idx]
-            while (wordTallyContainer.querySelectorAll('.tally').length != tally_count){
+            while (wordTallyContainer.querySelectorAll('.tally').length < tally_count){
+                // alert('adding tally')
                 let tallyDiv = document.createElement("div");
                 tallyDiv.className = 'tally';
                 wordTallyContainer.appendChild(tallyDiv);
-                change_idx = [row_idx, col_idx]
             }
         });
     });
-    return change_idx;
 }
 
 function renderWord(word, row, column, animate=true) {
@@ -82,66 +80,26 @@ function renderWord(word, row, column, animate=true) {
 
 
 // Given a promptBox and prompt-tally-container, removes one tally from the correct cell.
-function removeTallyDiv(row, column) {
-    let wordTallyContainers = document.querySelectorAll('#prompts .prompt-box .word-tally-box');
-    let wordTallyContainer = wordTallyContainers[row * 6 + column]
-    const tallies = wordTallyContainer.querySelectorAll('.tally');
-
-    console.log(`[removeTallyDiv] has ${tallies.length} at ${row} ${column}`);
-    console.log("[removeTallyDiv] before removing: ", wordTallyContainer);
-    if (tallies.length > 0){
-        tallies.forEach(tally => {
-            console.log("Removing tally:", tally.outerHTML);
-            tally.remove();
-        });
-        console.log("[removeTallyDiv] after removing: ", wordTallyContainer);
-        return [row, column];
-    }
-}
-
+// function removeTallyDiv(row, column) {
+//     let wordTallyContainers = document.querySelectorAll('#prompts .prompt-box .word-tally-box');
+//     let wordTallyContainer = wordTallyContainers[row * 6 + column]
+//     const tallies = wordTallyContainer.querySelectorAll('.tally');
+//     if (tallies.length > 0){
+//         tallies.forEach(tally => {
+//             tally.remove();
+//         });
+//         return [row, column];
+//     }
+// }
 
 function clearAllPromptWords(end) {
-    
     const promptWords = document.querySelectorAll('.prompt-word');
-    console.log("[clearAllPrompts] Before clearing", promptWords);
-    // if (end == false) {
+    if (end == false) {
     promptWords.forEach(word => word.remove());
-    // } else {
-    //     promptWords.forEach(word => word.classList.remove('prompt-word'));
-    //     promptWords.forEach(word => updateInnerTextSmooth(word, ''));
-    // }
-    console.log("[clearAllPrompts] After clearing", promptWords);
-}
-
-function savePrompts() {
-    // if (localStorage.getItem('is_help') === 'true') { return; }
-    // const prompts = document.getElementById('prompts');
-    // if (prompts) {
-    //     console.log('[savePrompts] saving prompts')
-    //     localStorage.setItem('prompts', prompts.outerHTML);
-    // }
-}
-
-function setPrompts() {
-    // if (localStorage.getItem('is_help') === 'true') { return false; }
-    // if (localStorage.getItem('_prompts')) {
-    //     console.log('[setPrompts] setting prompts from _prompts backup.');
-    //     const container = document.getElementById('prompts');
-    //     _prompts = localStorage.getItem('_prompts');
-    //     container.outerHTML = _prompts
-    //     localStorage.setItem('prompts', _prompts)
-    //     localStorage.removeItem('_prompts')
-    //     return true;
-    // }
-    // const savedPrompts = localStorage.getItem('prompts');
-    // if (savedPrompts) {
-    //     console.log('[setPrompts] setting prompts from last save.')
-    //     const container = document.getElementById('prompts');
-    //     container.outerHTML = savedPrompts;
-    //     return true
-    // } else {
-    //     return false
-    // }
+    } else {
+        promptWords.forEach(word => word.classList.remove('prompt-word'));
+        promptWords.forEach(word => updateInnerTextSmooth(word, ''));
+    }
 }
 
 function tallyPrompts(prompts, jumpsArray, current_jumps) {
@@ -150,8 +108,6 @@ function tallyPrompts(prompts, jumpsArray, current_jumps) {
     tallyStarts(targets);
     tallyAllPrompts(ct, current_jumps)
 }
-
-
 
 function addTallyContainers(promptBox){
     if (promptBox.children.length === 0){
@@ -168,18 +124,12 @@ function addTallyContainers(promptBox){
  * @param {[string, string]} start_target
  */
 function renderPrompts(jumpsArray, idxs, start_target, end = false) {
-    console.log(
-        '[renderPrompts] jumpsArray:', jumpsArray, typeof jumpsArray,
-        'idxs:', idxs, typeof idxs,
-        'start_target:', start_target, typeof start_target,
-        'end', end
-    );
+    console.log('[renderPrompts] jumpsArray:', jumpsArray);
     clearAllPromptWords();
     renderTallies(jumpsArray);
     if (!end) {
         const [start_idx, target_idx] = idxs
         const [start, target] = start_target
-        // renderTallies(jumpsArray);
         renderWord(start, ...start_idx)
         renderWord(target, ...target_idx, animate=false)
     }

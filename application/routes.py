@@ -27,6 +27,12 @@ BASE_JUMPS_ARRAY = [[1,0,0,0,0,1],
                     [0,0,0,0,0,0],
                     [0,0,0,0,0,0]]
 
+HELP_END_JUMPS_ARRAY = [[1,0,1,0,1,1],
+                        [1,1,0,0,0,1],
+                        [0,0,0,0,0,0],
+                        [0,0,0,0,0,0],
+                        [0,0,0,0,0,0]]
+
 BASE_START_TARGET_IDXS = [[0,0], [0,5]]
 PCOUNT = 5
 DAYS = 0
@@ -201,14 +207,16 @@ def help_shift(data):
     data['results'] = results
     return data
 
-def check_if_max(jumpsArray_i):
-    if sum(jumpsArray_i) >= 14:
-        jumpsArray_i[5] = 0
-    return jumpsArray_i
+def check_if_max(row):
+    if sum(row) >= 14:
+        row[5] = 0
+    return row
 
 def update_jumps_array(new_data):
     for i, row in enumerate(new_data['jumpsArray']):
+        #close old row
         new_data['jumpsArray'][i] = check_if_max(new_data['jumpsArray'][i])
+        #open new row.
         if row == [0,0,0,0,0,0]:
             new_data['jumpsArray'][i] = [1,0,0,0,0,1]
             new_data['startTargetIdxs'] = [[i,0],[i,5]]
@@ -322,18 +330,18 @@ def index_post():
         num_prompts = len(HELP_PROMPTS)
         if data['i'] == num_prompts - 1:
             print('[/] Finished Help')
-            data['i'] = 0
-            data['jumpsArray'] = BASE_JUMPS_ARRAY
-            data['startTargetIdxs'] = BASE_START_TARGET_IDXS
-            data['jumps'] = 0
-            data['is_help'] = False
-            new_data = get_existing_data()
-            print("[index_post help_end] here is new_data: ", new_data)
-            if new_data:
-                new_data['is_help'] = False
-                session['data'] = json.dumps(new_data)
-            else:
-                session['data'] = json.dumps(data)
+            data['jumpsArray'] = HELP_END_JUMPS_ARRAY
+            # data['i'] = 0
+            # data['jumpsArray'] = BASE_JUMPS_ARRAY
+            # data['startTargetIdxs'] = BASE_START_TARGET_IDXS
+            # data['jumps'] = 0
+            # data['is_help'] = False
+            # new_data = get_existing_data()
+            # if new_data:
+            #     new_data['is_help'] = False
+            #     session['data'] = json.dumps(new_data)
+            # else:
+            session['data'] = json.dumps(data)
             return make_response("help_session_done" + session.get('data'))
         else:
             data = help_shift(data)

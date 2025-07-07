@@ -93,7 +93,7 @@ function renderLinks(prompt, results, i, debug_session_done = false) {
     addHelpFocuses(prompt, results)
     if (sessionEnded(prompt) || debug_session_done) {
         disableLinks()
-
+        console.log(`[renderLinks] sessionEnded: ${sessionEnded(prompt)}`)
         reportSessionEnded(debug_session_done)
     }
 }
@@ -280,6 +280,7 @@ function reportSessionEnded(debug_session_done) {
     
     //If user has completed all prompts
     if (resp.hasOwnProperty('help_session_done')) {
+        alert('rendering prompts')
         runAfterBannerDisappears(() => {renderHelpFinish()})
         renderPrompts(resp.jumpsArray, resp.startTargetIdxs, resp.prompts[0], end=true)
     }
@@ -330,18 +331,14 @@ function showBanner(text, color) {
 
 function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
     let resp = sendAndReceiveXML("word=" + word);
-    let current_prompt = lastNonzeroRow(resp.jumpsArray)
-    let jumps = resp.jumpsArray[current_prompt].reduce((a, b) => a + b, 0) - 1;
-    console.log("[postWord] jumpsArray: ", resp.jumpsArray);
+    let promptIdx = lastNonzeroRow(resp.jumpsArray)
+    let jumps = resp.jumpsArray[promptIdx].reduce((a, b) => a + b, 0) - 1;
     if (jumps >= 13) { // cap it at 12 current jumps
         resp = sendAndReceiveXML(`end=true`);
-        alert("I AM AT 12 jumps -> should skip now!!!");
     }
-    console.log("[postWord] jumps: ", jumps);
-    console.log("[postWord] current_prompt: ", current_prompt);
     if (!use_animations) {
         // check if we are at the ending page now (for when we have 12 jumps):
-        if (jumps >= 13 && current_prompt === 4) {
+        if (jumps >= 13 && promptIdx === 4) {
             renderLinks(resp.prompt, resp.results, resp.i, true);
             return;
         } else {

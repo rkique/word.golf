@@ -27,18 +27,9 @@ function simToIndex(score){
     return idx;
 }
 
-// //updates jumpsA with most recent score. 
-// function updateJumpsA(jumpsA, score){
-//     const lastWordIdx = simToIndex(score)
-//     let zeroRowIdx = jumpsA.findIndex(row => row.every(val => val === 0));
-//     let insertIdx = Math.max(0, zeroRowIdx === -1 ? jumpsA.length : zeroRowIdx - 1);
-//     jumpsA[insertIdx][lastWordIdx] += 1
-//     return jumpsA
-// }
-
 function lastNonzeroRow(jumpsArray) {
     for (let i = jumpsArray.length - 1; i >= 0; i--) {
-        console.log("[last")
+        // console.log("[last")
         if (jumpsArray[i].some(val => val !== 0)) {
             return i; 
         }
