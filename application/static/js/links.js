@@ -42,10 +42,12 @@ let HELP_STEPS = [
     },
     {
         id: 5,
+<<<<<<< HEAD:application/static/js/links.js
         prompt: ['cellphone', 'fluff'],
         result: 'airtime',
         message: "<p>Five prompts per day, the best score is 10. </p>",
         focus: 'fluff',
+>>>>>>> origin/main:application/static/js/links.v1.js
         transform: [10, 20],
         startSocket: 'bottom',
         endSocket: 'top',

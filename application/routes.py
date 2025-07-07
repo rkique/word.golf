@@ -1,6 +1,7 @@
 from flask import current_app as app
 from flask import render_template, request, session, make_response, send_from_directory
 from .utils import get_curve, similarity
+from zoneinfo import ZoneInfo
 import json
 import datetime
 import pandas as pd
@@ -47,7 +48,7 @@ PRECOMPUTED = None
 @app.context_processor
 def inject_backend_url():
     backend_url = (
-        "http://127.0.0.1:7000"
+        "http://localhost:7000"
         if os.getenv("DEV", "false").lower() == "true"
         else "https://routes.word.golf"
     )

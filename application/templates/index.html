@@ -10,19 +10,19 @@
 
 <script>
 
-// window.addEventListener('load', function() {
-//     // Check if the browser is Safari
-//     if (isSafari()) {
-//         if (window.location.search.indexOf('v=') === -1) {
+window.addEventListener('load', function() {
+    // Check if the browser is Safari
+    // if (isSafari()) {
+    //     if (window.location.search.indexOf('v=') === -1) {
 
-//             var uniqueParam = 'v=' + new Date().getTime(); 
+    //         var uniqueParam = 'v=' + new Date().getTime(); 
 
-//             var newUrl = 'https://www.word.golf?' + uniqueParam;
+    //         var newUrl = 'https://www.word.golf?' + uniqueParam;
 
-//             window.location.replace(newUrl);
-//         }
-//     }
-// });
+    //         window.location.replace(newUrl);
+    //     }
+    // }
+});
 
 // function isSafari() {
 //     var userAgent = navigator.userAgent;
@@ -118,4 +118,19 @@ data = JSON.parse('{{data|tojson|safe}}');
         activateLinks();
     }
 
+
 </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const idxSpan = document.getElementById('footer-daily-idx');
+        if (idxSpan) {
+            idxSpan.textContent = daysSinceStartDate();
+        }
+    });
+</script>
+<div class="footer-div">
+    <p>#<span id="footer-daily-idx"></span></p>
+    <p><a href="https://form.typeform.com/to/qPErQqVs" target="_blank" rel="noopener">leave feedback</a></p>
+</div>
+

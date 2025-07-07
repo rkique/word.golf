@@ -48,14 +48,14 @@ function sendAndReceiveXML(message) {
     if (xhttp.responseText.startsWith("help_session_done")) {
         j = JSON.parse(xhttp.responseText.substring(17));
         j['help_session_done'] = 1
-        console.log("[help_session_done] Session is done, returning jumps and results")
+        // console.log("[help_session_done] Session is done, returning jumps and results")
         return j
     }
     if (xhttp.responseText.startsWith("session_done"))
     {
         j = JSON.parse(xhttp.responseText.substring(12));
         j['session_done'] = 1
-        console.log("[session_done] Session is done, returning jumps and results")
+        // console.log("[session_done] Session is done, returning jumps and results")
         return j
     }
     else {
