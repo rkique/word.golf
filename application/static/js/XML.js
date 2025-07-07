@@ -38,6 +38,7 @@ function simToIndex(score){
 
 function lastNonzeroRow(jumpsArray) {
     for (let i = jumpsArray.length - 1; i >= 0; i--) {
+        console.log("[last")
         if (jumpsArray[i].some(val => val !== 0)) {
             return i; 
         }
@@ -74,15 +75,16 @@ function sendAndReceiveXML(message) {
             prompts = response_text["prompts"]; 
             current_prompt = lastNonzeroRow(jumpsArray)
             let jumps = jumpsArray[current_prompt].reduce((a, b) => a + b, 0);
-            if (jumps >= 14) { // cap it at 12 current jumps
-                let resp = sendAndReceiveXML(`end=true`);
-                // resp.jumpsA = updateJumpsA(resp.jumpsA, resp.previous_words[-1], resp.score)
-                // _ = send_game_data_to_backend(resp, `end=true`);
-                // clearLastTallyContainer(resp.jumpsArray.length);
-                return resp;
-            } else {
+            // if (jumps >= 14) { // cap it at 12 current jumps
+            //     let resp = sendAndReceiveXML(`end=true`);
+            //     alert("I AM AT 12 jumps -> should skip now!!!");
+            //     // resp.jumpsA = updateJumpsA(resp.jumpsA, resp.previous_words[-1], resp.score)
+            //     // _ = send_game_data_to_backend(resp, `end=true`);
+            //     // clearLastTallyContainer(resp.jumpsArray.length);
+            //     return resp;
+            // } else {
                 return response_text;
-            }     
+            // }     
         } catch (e) {
             alert('Error in backend. Please check logs.')
             console.log(e)

@@ -14,7 +14,6 @@ oauth = OAuth()
 migrate = Migrate()
 cookie_signer = None  # Will be set in create_app
 
-
 def create_app(): 
     app = Flask(__name__, instance_relative_config=False)
     app.config['SECRET_KEY'] = os.urandom(32) 
@@ -68,4 +67,3 @@ def create_app():
         log.setLevel(logging.ERROR)
 
     return app
-

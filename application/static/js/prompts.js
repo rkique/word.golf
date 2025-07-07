@@ -89,22 +89,24 @@ function removeTallyDiv(row, column) {
     tallies = wordTallyContainer.querySelectorAll('.tally');
     console.log(`[removeTallyDiv] has ${tallies.length} at ${row} ${column}`)
     if (tallies.length > 0){
-    wordTallyContainer.removeChild(tallies[tallies.length - 1]);
-    console.log("[removeTallyDiv] after removing: ", wordTallyContainer);
-    return [row, column];
+        wordTallyContainer.removeChild(tallies[tallies.length - 1]);
+        console.log("[removeTallyDiv] after removing: ", wordTallyContainer);
+        return [row, column];
     }
 }
 
 
-
 function clearAllPromptWords(end) {
+    
     const promptWords = document.querySelectorAll('.prompt-word');
+    console.log("[clearAllPrompts] Before clearing", promptWords);
     if (end == false) {
         promptWords.forEach(word => word.remove());
     } else {
         promptWords.forEach(word => word.classList.remove('prompt-word'));
         promptWords.forEach(word => updateInnerTextSmooth(word, ''));
     }
+    console.log("[clearAllPrompts] After clearing", promptWords);
 }
 
 function savePrompts() {
@@ -149,12 +151,12 @@ function tallyPrompts(prompts, jumpsArray, current_jumps) {
 
 function addTallyContainers(promptBox){
     if (promptBox.children.length === 0){
-    for (let i = 0; i < 6; i++) {
-        let div = document.createElement("div");
-        div.className = 'word-tally-container'
-        promptBox.appendChild(div);
+        for (let i = 0; i < 6; i++) {
+            let div = document.createElement("div");
+            div.className = 'word-tally-container'
+            promptBox.appendChild(div);
+        }
     }
-}
 }
 /**
  * @param {Array} jumpsArray
@@ -162,12 +164,12 @@ function addTallyContainers(promptBox){
  * @param {[string, string]} start_target
  */
 function renderPrompts(jumpsArray, idxs, start_target, end = false) {
-    // console.log(
-    //     '[renderPrompts] jumpsArray:', jumpsArray, typeof jumpsArray,
-    //     'idxs:', idxs, typeof idxs,
-    //     'start_target:', start_target, typeof start_target,
-    //     'end', end
-    // );
+    console.log(
+        '[renderPrompts] jumpsArray:', jumpsArray, typeof jumpsArray,
+        'idxs:', idxs, typeof idxs,
+        'start_target:', start_target, typeof start_target,
+        'end', end
+    );
     clearAllPromptWords(end);
     if (!end) {
         const [start_idx, target_idx] = idxs

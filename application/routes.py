@@ -238,6 +238,8 @@ def get_existing_data():
         data['jumps'] = game_state.current_jumps
         data['i'] = game_state.prompt_idx
         data['logged_in'] = user.email
+        if game_state.total_jumps:
+            data['total_jumps'] = game_state.total_jumps
     return data
 
 @app.route('/')
@@ -250,6 +252,7 @@ def index():
     if data_or_none:
         data = data_or_none
         # use data_today as base
+
         if data["results"] == []:
             i = data.get('i', 0)
             data_today = shift_to(i)
