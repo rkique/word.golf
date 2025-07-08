@@ -10,19 +10,16 @@
 
 <script>
 
-// window.addEventListener('load', function() {
-//     // Check if the browser is Safari
-//     if (isSafari()) {
-//         if (window.location.search.indexOf('v=') === -1) {
-
-//             var uniqueParam = 'v=' + new Date().getTime(); 
-
-//             var newUrl = 'https://www.word.golf?' + uniqueParam;
-
-//             window.location.replace(newUrl);
-//         }
-//     }
-// });
+window.addEventListener('load', function() {
+    // Check if the browser is Safari
+    if (isSafari()) {
+        if (window.location.search.indexOf('v=') === -1) {
+            var uniqueParam = 'v=' + new Date().getTime(); 
+            var newUrl = 'https://www.word.golf?' + uniqueParam;
+            window.location.replace(newUrl);
+        }
+    }
+});
 
 function isSafari() {
     var userAgent = navigator.userAgent;
@@ -130,7 +127,7 @@ data = JSON.parse('{{data|tojson|safe}}');
     });
 </script>
 <div class="footer-div">
-    <p>word.golf #<span id="footer-daily-idx"></span></p>
+    <p>www.word.golf #<span id="footer-daily-idx"></span></p>
     <p><a href="https://tally.so/r/mV7Yay" target="_blank" rel="noopener">contact us</a></p>
 </div>
 
