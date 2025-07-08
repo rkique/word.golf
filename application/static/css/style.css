@@ -740,7 +740,7 @@ button span {
     max-height: 90vh;
     background-color: var(--background-color);
     outline: 1px solid var(--grayed-out-color);
-    z-index: 2;
+    z-index: 4;
     justify-content: center;
     align-items: center;
     top: 50%;
