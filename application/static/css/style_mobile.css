@@ -144,9 +144,9 @@
     
     #wordspace button:hover, 
     #wordspace span:hover {
-        transform: none;    
+        /* transform: none;     */
         background-color: inherit; 
-        color: inherit;      
+        /* color: inherit;       */
     }
 
     /* Prevent tap highlight on iOS */
@@ -177,7 +177,7 @@
     }
     #info-box {
         background-color: var(--background-color);
-        padding: 0.4rem;
+        padding: 0.7rem;
         border: none;
         position: absolute;
         min-width: 60vw;

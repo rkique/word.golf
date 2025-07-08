@@ -52,11 +52,13 @@ function renderGrid(counts) {
 function runAfterBannerDisappears(callback) {
   const banner = document.querySelector('.promptEndBanner');
   if (!banner) {
+    // console.log('No banner found, executing callback immediately.');
     callback();
     return;
   }
   const observer = new MutationObserver(() => {
     if (!document.body.contains(banner)) {
+        // console.log('Banner has disappeared, executing callback.');
       observer.disconnect();
       callback();
     }

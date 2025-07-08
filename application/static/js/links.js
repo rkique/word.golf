@@ -187,9 +187,9 @@ function switchToLoggedIn() {
 }
 
 function renderSessionDone(resp) {
-    renderFinish(resp)
+    runAfterBannerDisappears(() => renderFinish(resp));
     prompts = resp.prompts
-    jumpsArray = resp.jumpsArray
+    jumpsArray = resp.jumpsArraycr
     start_target = prompts[4]
     renderPrompts(jumpsArray, resp.startTargetIdxs, start_target, true)
     let is_logged_in = Boolean(localStorage.getItem('logged_in'));
@@ -321,8 +321,8 @@ function showBanner(text, color) {
   setTimeout(() => {
     banner.style.transition = 'opacity 0.8s ease';
     banner.style.opacity = '0';
-    setTimeout(() => banner.remove(), 800);
-  }, 600);
+    setTimeout(() => banner.remove(), 900);
+  }, 700);
 }
 
 function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {

@@ -94,6 +94,10 @@ html {
   #information {
       flex: 1;
   }
+
+  #information p {
+    font-size: 1.5rem;
+  }
   
 .tally:not(.prompt-word){
     flex: 0 0 auto;
@@ -618,6 +622,8 @@ button span {
     /* transition: max-width 0.2s ease, padding 0.2s ease-out, background 0.2s ease; */
  }
 
+
+
 .prompt-start-word {
     border-color: var(--grayed-out-color) !important;
     color: var(--grayed-out-color) !important;
@@ -634,13 +640,15 @@ button span {
 }
 
 .hover-start {
-    transition: transform 0.2s ease;
+    display: inline-block;
+    transition: transform 0.4s ease;
     font-style: italic;
+    transform: scaleY(1.04);
 }
 
-.hover-start.link--starting {
+/* .hover-start.link--starting {
     transform: scale(1.06);
-}
+} */
 
 
 .prompt-box .prompt-word, .tally {
