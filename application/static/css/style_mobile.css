@@ -209,6 +209,7 @@
     .finish-container {
         padding: 0;
         gap: 0.5rem;
+        margin: 2rem 0rem;
     }
     #finish-container {
         font-size: 1.2rem;
@@ -244,7 +245,7 @@
     }
     
     .finish-text-end, .finish-text-end a{
-        color: var(--grayed-out-color);
+        color: var(--grayed-out-color) !important;
     }
 
     .finish-container .solutions{
