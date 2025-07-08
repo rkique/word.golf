@@ -1,12 +1,28 @@
+  
+
   a {
       color: var(--text-color)
     }
-  .wg-banner {
-      text-align: center;
-      margin: 0 auto;
-      min-width: 320px;
-      border-bottom: 1px solid var(--border-color);
-    }
+ 
+    /* Add this CSS to your style.css or inside a <style> tag */
+
+.banner-bg {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Gradient overlay from black at top to transparent at bottom */
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.6)), 
+                    url('/static/images/eye_spy.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+#loginForm .nsm7Bb-HzV7m-LgbsSe {
+  background-color: rgba(0, 0, 0, 0.75) !important;
+  border: 1px rgba(255, 255,255, 0.2) solid !important;
+}
+  
     .wg-banner-logo {
       width: 3rem;
       height: 3rem;
@@ -18,8 +34,10 @@
     }
     .wg-banner-title {
       font-family: 'Schibsted Grotesk', sans-serif;
-      font-size: 2.5rem;
-      font-weight: 500;
+      color: var(--text-color);
+      font-size: 4rem;
+      text-decoration: none;
+      z-index: 2;
       letter-spacing: 1px;
       text-align: center;
       user-select: none;
@@ -78,7 +96,8 @@
   #login-global{
     justify-content: center;
     gap: 5vw;
-    min-height: 80vh;
+    height: 100vh;
+    min-height: 100vh;
     align-items: center;
   }
 
@@ -101,10 +120,10 @@
 
   .loginContainer, .createUserContainer {
     padding: 2rem;
-    border-radius: 0;
-    border: 1px solid var(--border-color);
+    background: var(--background-color);
     min-width: 40vw;
-    max-height: 80vh;
+    max-height: 100vh;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -213,9 +232,22 @@ button:hover {
       transition: color 0.2s, background 0.2s, transform 0.2s;
       position: relative;
       left: 0.3rem; 
+      background-color: rgba(0, 0, 0, 0.75) !important;
+      border: 1px rgba(255, 255,255, 0.2) solid !important;
+      outline: none;
     }
     #SubmitBtn:hover {
       color: var(--hover-color);
       transform: scale(1.03);
     }
 
+  @media only screen and (max-width: 992px) {
+    .loginContainer {
+    background: transparent;
+    }
+    .banner-bg {
+      flex-direction: column;
+      background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.94), rgba(0, 0, 0, 0.75)), 
+                    url('/static/images/eye_spy.jpg');
+    }
+  }

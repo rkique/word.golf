@@ -4,14 +4,18 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/login_pw.css') }}">
 
 <head>
-{% include 'head.html' %}
-<title>Login / Create User</title>
+  {% include 'head.html' %}
+  <title>Login / Create User</title>
 </head>
 
-{% include 'banner-heading.html' %}
 
-<div id="login-global" class="flex">
+<div id="login-global" class="flex banner-bg">
+
   <body>
+    <div class="wg-banner">
+      <a href="/" class="wg-banner-title">word.golf</a>
+    </div>
+
     <div class="loginContainer">
       <form id="loginForm">
         <div class="form-rows">
@@ -19,20 +23,22 @@
             <label> Email</label>
             <input type="email" id="loginEmail" required />
           </div>
-            <div class="form-row" id="passwordRow" style="display: none;">
-              <label>Password </label>
-              <div class="input-box">
-                <input type="password" id="loginPassword" required />
-                <img src="../static/images/pass_open_eye.png" alt="Toggle Password Visibility" id="togglePassword">
-              </div>
-              <!-- <input type="password" id="loginPassword" required /> 
-              <img src="../static/images/pass_open_eye.png" alt="Toggle Password Visibility" id="togglePassword"> -->
+          <div class="form-row" id="passwordRow" style="display: none;">
+            <label>Password </label>
+            <div class="input-box">
+              <input type="password" id="loginPassword" required />
+              <img src="../static/images/pass_open_eye.png" alt="Toggle Password Visibility" id="togglePassword">
             </div>
+            <!-- <input type="password" id="loginPassword" required /> 
+              <img src="../static/images/pass_open_eye.png" alt="Toggle Password Visibility" id="togglePassword"> -->
+          </div>
           <div>
             <button type="submit" id="SubmitBtn" class="switch switch--outlined">Continue</button>
-            <button type="submit" id="ForgotPasswordBtn" class="switch switch--outlined" style="display: none;" onclick="window.location.href='/resetpassword'">Forgot Password</button>
+            <button type="submit" id="ForgotPasswordBtn" class="switch switch--outlined" style="display: none;"
+              onclick="window.location.href='/resetpassword'">Forgot Password</button>
             <button type="submit" id="LoginBtn" class="switch switch--outlined" style="display: none;">Login</button>
-            <button type="submit" id="CreateAccountBtn" class="switch switch--outlined" style="display: none;">Create Account</button>
+            <button type="submit" id="CreateAccountBtn" class="switch switch--outlined" style="display: none;">Create
+              Account</button>
             <!-- <button class="switch switch--outlined" id="logoutBtn">Logout</button> -->
 
             <div class="separator">
@@ -40,212 +46,205 @@
               <span class="separator-text">or</span>
               <hr class="separator-line">
             </div>
-            
-              <script src="https://accounts.google.com/gsi/client" async></script>
-              <div id="g_id_onload"
-                  data-client_id="490339325235-2colln65cgm89aue0mihetv8upkmr5bl.apps.googleusercontent.com"
-                  data-login_uri="https://dev.word.golf/login/google"  
-                  data-auto_prompt="false">
-                  <!-- change this to the deployed backend URL -->
-                   <!-- data-login_uri="http://127.0.0.1:7000/login/google" -->
-              </div>
 
-              <div class="g_id_signin"
-                data-type="standard"
-                data-size="large"
-                data-theme="outline"
-                data-text="sign_in_with"
-                data-shape="rectangular"
-                data-logo_alignment="left">
-              </div>
+            <script src="https://accounts.google.com/gsi/client" async></script>
+            <div id="g_id_onload"
+              data-client_id="490339325235-2colln65cgm89aue0mihetv8upkmr5bl.apps.googleusercontent.com"
+              data-login_uri="https://dev.word.golf/login/google" data-auto_prompt="false">
+              <!-- change this to the deployed backend URL -->
+              <!-- data-login_uri="http://127.0.0.1:7000/login/google" -->
+            </div>
+
+            <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline"
+              data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="left">
+            </div>
             <!-- <button onclick="window.location.href='/resetpassword'" class="switch switch--outlined">Reset Password</button> -->
           </div>
         </div>
-      <div id="responseMessage"></div>
-      <!-- <button onclick="window.location.href = window.location.href.replace(/\/login$/, '')" style="display: none;" class="switch switch--outlined" id="backGame">Back to Game</button>    </div> -->
-
-    </form>
+        <div id="responseMessage"></div>
+        <!-- <button onclick="window.location.href = window.location.href.replace(/\/login$/, '')" style="display: none;" class="switch switch--outlined" id="backGame">Back to Game</button>    </div> -->
+      </form>
+    </div>
+  </body>
+</div>
 </div>
 
 <script>
 
-document.getElementById('togglePassword').addEventListener('click', () => {
-  let passwordInput = document.getElementById('loginPassword');
-  if (passwordInput.type === 'password') {
-    passwordInput.type = 'text';
-    document.getElementById('togglePassword').src = '../static/images/pass_close_eye.png'; // Change to closed eye icon
-  } else {
-    passwordInput.type = 'password';
-    document.getElementById('togglePassword').src = '../static/images/pass_open_eye.png'; // Change to open eye icon
-  }
-});
+  document.getElementById('togglePassword').addEventListener('click', () => {
+    let passwordInput = document.getElementById('loginPassword');
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      document.getElementById('togglePassword').src = '../static/images/pass_close_eye.png'; // Change to closed eye icon
+    } else {
+      passwordInput.type = 'password';
+      document.getElementById('togglePassword').src = '../static/images/pass_open_eye.png'; // Change to open eye icon
+    }
+  });
 
-document.getElementById("SubmitBtn").addEventListener("click", async (e) => {
-  e.preventDefault();
-  // I am just mocking this for now, but I will add a password later.
-  const email_val = document.getElementById("loginEmail");
-  
-  if (email_val.checkValidity()) {
+  document.getElementById("SubmitBtn").addEventListener("click", async (e) => {
+    e.preventDefault();
+    // I am just mocking this for now, but I will add a password later.
+    const email_val = document.getElementById("loginEmail");
 
-    let email = email_val.value;
+    if (email_val.checkValidity()) {
 
-    document.getElementById("passwordRow").style.display = "flex";
-    const separator = document.querySelector(".separator");
-    if (separator) separator.style.display = "none";
-    const googleSignin = document.querySelector(".g_id_signin");
-    if (googleSignin) googleSignin.style.display = "none";
-    const googleOnload = document.getElementById("g_id_onload");
-    if (googleOnload) googleOnload.style.display = "none";
-    const submitBtn = document.getElementById("SubmitBtn");
-    if (submitBtn) submitBtn.style.display = "none";
-    // in a real application, make the POST request to the backend to check if the user exists
-    try {
-      const res = await fetch("/user_exist", {
+      let email = email_val.value;
+
+      document.getElementById("passwordRow").style.display = "flex";
+      const separator = document.querySelector(".separator");
+      if (separator) separator.style.display = "none";
+      const googleSignin = document.querySelector(".g_id_signin");
+      if (googleSignin) googleSignin.style.display = "none";
+      const googleOnload = document.getElementById("g_id_onload");
+      if (googleOnload) googleOnload.style.display = "none";
+      const submitBtn = document.getElementById("SubmitBtn");
+      if (submitBtn) submitBtn.style.display = "none";
+      // in a real application, make the POST request to the backend to check if the user exists
+      try {
+        const res = await fetch("/user_exist", {
           method: "POST",
           credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
           headers: {
-              "Content-Type": "application/json",
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({ email }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        if (data.exists) {
-          // person exists, show password input and login button
-          document.getElementById("responseMessage").style.display = "none";
-          document.getElementById("loginPassword").style.display = "block";
-          document.getElementById("LoginBtn").style.display = "block";
-          document.getElementById("ForgotPasswordBtn").style.display = "block";
-          document.getElementById("CreateAccountBtn").style.display = "none";
+        });
+        const data = await res.json();
+        if (res.ok) {
+          if (data.exists) {
+            // person exists, show password input and login button
+            document.getElementById("responseMessage").style.display = "none";
+            document.getElementById("loginPassword").style.display = "block";
+            document.getElementById("LoginBtn").style.display = "block";
+            document.getElementById("ForgotPasswordBtn").style.display = "block";
+            document.getElementById("CreateAccountBtn").style.display = "none";
+          } else {
+            // person does not exist, show create account button
+            document.getElementById("responseMessage").style.display = "none";
+            document.getElementById("loginPassword").style.display = "block";
+            document.getElementById("LoginBtn").style.display = "none";
+            document.getElementById("ForgotPasswordBtn").style.display = "none";
+            document.getElementById("CreateAccountBtn").style.display = "block";
+          }
         } else {
-          // person does not exist, show create account button
-          document.getElementById("responseMessage").style.display = "none";
-          document.getElementById("loginPassword").style.display = "block";
-          document.getElementById("LoginBtn").style.display = "none";
-          document.getElementById("ForgotPasswordBtn").style.display = "none";
-          document.getElementById("CreateAccountBtn").style.display = "block";
+          document.getElementById("responseMessage").style.display = "block";
+          document.getElementById("responseMessage").textContent = data.error || "Check failed please use another email";
         }
-      } else {
+      } catch (err) {
         document.getElementById("responseMessage").style.display = "block";
-        document.getElementById("responseMessage").textContent = data.error || "Check failed please use another email";
+        document.getElementById("responseMessage").textContent = "Network error!";
       }
-    } catch (err) {
-      document.getElementById("responseMessage").style.display = "block";
-      document.getElementById("responseMessage").textContent = "Network error!";
     }
-  } 
-  else {
-    console.log("invalid email");
-    document.getElementById("responseMessage").style.display = "block";
-    document.getElementById("responseMessage").textContent = "Please enter a valid email address";
-  }
+    else {
+      console.log("invalid email");
+      document.getElementById("responseMessage").style.display = "block";
+      document.getElementById("responseMessage").textContent = "Please enter a valid email address";
+    }
 
-});
+  });
 
 
-document.getElementById("LoginBtn").addEventListener("click", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
+  document.getElementById("LoginBtn").addEventListener("click", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
 
-  const email_val = document.getElementById("loginEmail");
-  
-  if (email_val.checkValidity()) {
+    const email_val = document.getElementById("loginEmail");
 
-    let email = email_val.value;
+    if (email_val.checkValidity()) {
 
-    // Uncomment during production, this is just for testing purposes
-    try {
-      const res = await fetch("/authlogin", {
+      let email = email_val.value;
+
+      // Uncomment during production, this is just for testing purposes
+      try {
+        const res = await fetch("/authlogin", {
           method: "POST",
           credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
           headers: {
-              "Content-Type": "application/json",
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, password}),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        document.getElementById("responseMessage").style.color = "green";
-        document.getElementById("responseMessage").textContent = data.message || "Login successful!";
-        document.getElementById("responseMessage").style.display = "block";
-        localStorage.setItem('is_help', false);
-        localStorage.setItem('logged_in', true);
-        window.location.href = '/'; // Redirect to the main page after successful login (comment out for testing)
-        // TODO: Redirect or do something on successful login
-        // do a redirection to the normal word golf page -> show success message
-      } else {
-        document.getElementById("responseMessage").style.display = "block";
-        document.getElementById("responseMessage").style.color = "red";
-        document.getElementById("responseMessage").textContent = data.error || "Login failed";
-      }
-    } catch (err) {
-      document.getElementById("responseMessage").style.display = "block";
-      document.getElementById("responseMessage").style.color = "red";
-      document.getElementById("responseMessage").textContent = "Network error";
-    }
-  }
-  else {
-    console.log("invalid email");
-    document.getElementById("responseMessage").style.display = "block";
-    document.getElementById("responseMessage").style.color = "red";
-    document.getElementById("responseMessage").textContent = "Please enter a valid email address";
-  }
-});
-
-document.getElementById("CreateAccountBtn").addEventListener("click", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
-  const email_val = document.getElementById("loginEmail");
-  
-  if (email_val.checkValidity()) {
-
-    let email = email_val.value;
-
-    // Uncomment during production, this is just for testing purposes
-    try {
-      const res = await fetch("/authcreate", {
-        method: "POST",
-        credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        document.getElementById("responseMessage").style.color = "green";
-        document.getElementById("responseMessage").textContent = data.message || "User created successfully!";
-        document.getElementById("responseMessage").style.display = "block";
-        localStorage.setItem('is_help', false);
-        localStorage.setItem('logged_in', true);
-        window.location.href = '/'; // Redirect to the main page after successful login commend out for testing
-        // do something here 
-        // do a redirection to the normal word golf page -> show success message
-      } else {
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          document.getElementById("responseMessage").style.color = "green";
+          document.getElementById("responseMessage").textContent = data.message || "Login successful!";
+          document.getElementById("responseMessage").style.display = "block";
+          localStorage.setItem('is_help', false);
+          localStorage.setItem('logged_in', true);
+          window.location.href = '/'; // Redirect to the main page after successful login (comment out for testing)
+          // TODO: Redirect or do something on successful login
+          // do a redirection to the normal word golf page -> show success message
+        } else {
+          document.getElementById("responseMessage").style.display = "block";
+          document.getElementById("responseMessage").style.color = "red";
+          document.getElementById("responseMessage").textContent = data.error || "Login failed";
+        }
+      } catch (err) {
         document.getElementById("responseMessage").style.display = "block";
         document.getElementById("responseMessage").style.color = "red";
-        document.getElementById("responseMessage").textContent = data.error || "User creation failed";
+        document.getElementById("responseMessage").textContent = "Network error";
       }
-    } catch (err) {
+    }
+    else {
+      console.log("invalid email");
       document.getElementById("responseMessage").style.display = "block";
       document.getElementById("responseMessage").style.color = "red";
-      document.getElementById("responseMessage").textContent = "Network error";
+      document.getElementById("responseMessage").textContent = "Please enter a valid email address";
     }
-  } else {
-    console.log("invalid email");
-    document.getElementById("responseMessage").style.display = "block";
-    document.getElementById("responseMessage").style.color = "red";
-    document.getElementById("responseMessage").textContent = "Please enter a valid email address";
-  }
-});
+  });
+
+  document.getElementById("CreateAccountBtn").addEventListener("click", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+    const email_val = document.getElementById("loginEmail");
+
+    if (email_val.checkValidity()) {
+
+      let email = email_val.value;
+
+      // Uncomment during production, this is just for testing purposes
+      try {
+        const res = await fetch("/authcreate", {
+          method: "POST",
+          credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          document.getElementById("responseMessage").style.color = "green";
+          document.getElementById("responseMessage").textContent = data.message || "User created successfully!";
+          document.getElementById("responseMessage").style.display = "block";
+          localStorage.setItem('is_help', false);
+          localStorage.setItem('logged_in', true);
+          window.location.href = '/'; // Redirect to the main page after successful login commend out for testing
+          // do something here 
+          // do a redirection to the normal word golf page -> show success message
+        } else {
+          document.getElementById("responseMessage").style.display = "block";
+          document.getElementById("responseMessage").style.color = "red";
+          document.getElementById("responseMessage").textContent = data.error || "User creation failed";
+        }
+      } catch (err) {
+        document.getElementById("responseMessage").style.display = "block";
+        document.getElementById("responseMessage").style.color = "red";
+        document.getElementById("responseMessage").textContent = "Network error";
+      }
+    } else {
+      console.log("invalid email");
+      document.getElementById("responseMessage").style.display = "block";
+      document.getElementById("responseMessage").style.color = "red";
+      document.getElementById("responseMessage").textContent = "Please enter a valid email address";
+    }
+  });
 
 </script>
 
 </body>
+
 </html>
-
-
-
-

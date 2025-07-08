@@ -129,13 +129,13 @@ function addTallyContainers(promptBox){
  * @param {[string, string]} start_target
  */
 function renderPrompts(jumpsArray, idxs, start_target, end = false) {
-    console.log('[renderPrompts] jumpsArray:', jumpsArray);
+    // console.log('[renderPrompts] jumpsArray:', jumpsArray);
     clearAllPromptWords();
     renderTallies(jumpsArray);
     if (!end) {
-        console.log("End is false here adding these start targets");
-        console.log(start_target);
-        console.trace('[renderPrompts] Stack trace');
+        // console.log("End is false here adding these start targets");
+        // console.log(start_target);
+        // console.trace('[renderPrompts] Stack trace');
         const [start_idx, target_idx] = idxs;
         const [start, target] = start_target;
         renderWord(start, ...start_idx, {style: ["prompt-start-word"]});
@@ -270,22 +270,30 @@ function addTallyContainers(promptBox){
     }
 }
 
-function cueStartWordOnHover(){
-    /* Visual continuity cue: scale prompt-start-word and link--starting when hovering prompt-start-word */
+function cueStartWordOnHover() {
     const link = document.body.querySelector('.link--starting');
-    if (!link) return;
-    document.querySelectorAll('.prompt-start-word').forEach(el => {
-        el.addEventListener('mouseenter', () => {
-            el.classList.add('hover-start');
-            link.classList.add('hover-start');
-        });
+    const prompt = document.body.querySelector('.prompt-start-word');
+    if (!link || !prompt) {
+        console.warn('Link or prompt element not found for hover cue.');
+        return;
+    }
+    const addHover = () => {
+        link.classList.add('hover-start');
+        prompt.classList.add('hover-start');
+    };
 
-        el.addEventListener('mouseleave', () => {
-            el.classList.remove('hover-start');
-            link.classList.remove('hover-start');
-        });
-    });
+    const removeHover = () => {
+        link.classList.remove('hover-start');
+        prompt.classList.remove('hover-start');
+    };
+
+    // Add event listeners to both elements
+    link.addEventListener('mouseenter', addHover);
+    link.addEventListener('mouseleave', removeHover);
+    prompt.addEventListener('mouseenter', addHover);
+    prompt.addEventListener('mouseleave', removeHover);
 }
+
 
 /**
  * @param {Array} jumpsArray
@@ -293,13 +301,13 @@ function cueStartWordOnHover(){
  * @param {[string, string]} start_target
  */
 function renderPrompts(jumpsArray, idxs, start_target, end = false) {
-    console.log('[renderPrompts] jumpsArray:', jumpsArray);
+    // console.log('[renderPrompts] jumpsArray:', jumpsArray);
     clearAllPromptWords();
     renderTallies(jumpsArray);
     if (!end) {
-        console.log("End is false here adding these start targets");
-        console.log(start_target);
-        console.trace('[renderPrompts] Stack trace');
+        // console.log("End is false here adding these start targets");
+        // console.log(start_target);
+        // console.trace('[renderPrompts] Stack trace');
         const [start_idx, target_idx] = idxs;
         const [start, target] = start_target;
         renderWord(start, ...start_idx, {style: ["prompt-start-word"]});

@@ -1,4 +1,6 @@
 const USE_ANIMATIONS = false;
+const MIDDLE_IDX = 10;
+
 let HELP_STEPS = [
     {
         id: 1,
@@ -76,9 +78,6 @@ function focusLink(startText, targetText) {
 
 //@Parent: postWord
 function renderLinks(prompt, results, i, debug_session_done = false) {
-    // console.log('[renderLinks] Rendering links for prompt:', prompt, 'with results:', results);
-    // console.log(debug_session_done);
-    // console.log(i);
     let wordspace = document.getElementById("wordspace")
     clearChildren(wordspace)
     let middleIndex = Math.floor(results.length / 2)
@@ -93,7 +92,7 @@ function renderLinks(prompt, results, i, debug_session_done = false) {
     addHelpFocuses(prompt, results)
     if (sessionEnded(prompt) || debug_session_done) {
         disableLinks()
-        console.log(`[renderLinks] sessionEnded: ${sessionEnded(prompt)}`)
+        // console.log(`[renderLinks] sessionEnded: ${sessionEnded(prompt)}`)
         reportSessionEnded(debug_session_done)
     }
 }
@@ -173,7 +172,7 @@ function makeLink(prompt, word) {
 
 function makeStartLink(prompt, word) {
     startLink = makeLink(prompt, word)
-    startLink.className = "link link--disabled link--starting"
+    startLink.className = "link link--starting"
     return startLink
 }
 
@@ -194,8 +193,6 @@ function renderSessionDone(resp) {
     start_target = prompts[4]
     renderPrompts(jumpsArray, resp.startTargetIdxs, start_target, true)
     let is_logged_in = Boolean(localStorage.getItem('logged_in'));
-    console.log("I am in tally screen here is logged in");
-    console.log(is_logged_in);
     if (is_logged_in) {
         switchToLoggedIn();
     }
@@ -214,9 +211,8 @@ function arrayEqual(a, b) {
 
 function addHelpFocuses(prompt, results) {
     clearAllLeaderLines()
-    middleIdx = Math.floor(results.length / 2)
     for (const step of HELP_STEPS) {
-        if (arrayEqual(prompt, step.prompt) && results[middleIdx] === step.result) {
+        if (arrayEqual(prompt, step.prompt) && results[MIDDLE_IDX] === step.result) {
             showHelpPopup(step.message, step.transform, step.startSocket, step.endSocket);
             focusLink(step.result, step.focus);
             break;
@@ -300,8 +296,10 @@ function reportSessionEnded(debug_session_done) {
 function activateLinks() {
     ws_texts = ws_to_text()
     ws_array.map(function (el, i) {
-        el.onclick = function () {
-            postWord(ws_texts[i], el);
+        if (i !== MIDDLE_IDX) {
+            el.onclick = function () {
+                postWord(ws_texts[i], el);
+            }
         }
     })
 }
