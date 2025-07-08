@@ -328,14 +328,11 @@ def resetpassword():
 
 @app.route('/', methods=['POST'])
 def index_post():
-    if request.form.get('redirect') is not None or ('data' not in session):
+    if 'data' not in session:
+        return redirect('/')
+
+    if request.form.get('redirect') is not None:
         print('[/] Redirecting to start...')
-        if ('data' not in session):
-            data = shift_to(0)
-            data['jumpsArray'] = BASE_JUMPS_ARRAY
-            data['startTargetIdxs'] = BASE_START_TARGET_IDXS
-            session['data'] = json.dumps(data)
-            return make_response(json.loads(session['data']))
         #only run this if data in session.
         session_data = json.loads(session["data"])
         print("[index_post redirect] Here is session data: ", session_data)
