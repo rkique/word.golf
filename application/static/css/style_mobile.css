@@ -60,6 +60,7 @@
     }
 
     #prompts {
+        gap: 0.4rem;
         padding: 0.8rem 0.8rem;
         width: 100vw;
         min-height: 30vh;
@@ -85,21 +86,28 @@
     #prompts p {
         font-size: 1.2rem;
     }
-    .tally {
-        max-width: 0.25rem;
-        min-width: 0.25rem;
-    }
+
     .prompt-box .prompt-word {
         min-width: 6rem;
         max-width: 9rem !important;
 
+    }
+
+    .tally:not(.prompt-word) {
+    flex: 0 0 auto;
+    max-width: 0.3rem !important;
+    min-width: 0.3rem !important;
+    padding: 0 !important;
+    min-height: 100% !important;
+    border: 1px solid var(--grayed-out-color) !important;
     }
     .prompt-box {
         /* outline: 1px solid var(--border-color); */
         display: flex;
         align-items: center;
         justify-content: space-between;
-        min-height: 4.5vh;
+        height: 5vh;
+        min-height: 5vh;
         font-size: 1.1rem;
     }
     .switch, .game-icon {
