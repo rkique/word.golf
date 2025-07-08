@@ -60,7 +60,6 @@ def create_app():
         from .internals import crypto
         from .internals import auth
         from .internals import passwordreset
-        from .internals import databasedebug
         from .internals import gameprogress
         import logging
         log = logging.getLogger('werkzeug')
