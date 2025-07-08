@@ -328,7 +328,11 @@ def resetpassword():
 
 @app.route('/', methods=['POST'])
 def index_post():
+    if not session: 
+        return redirect('/')
+    
     if 'data' not in session:
+        print(f'[/ Jul8] session: {session}')
         return redirect('/')
 
     if request.form.get('redirect') is not None:
