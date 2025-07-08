@@ -624,16 +624,15 @@ button span {
 
 .hover-start {
     transition: transform 0.2s ease;
+    font-style: italic;
 }
 
 .hover-start.link--starting {
-    transform: scaleY(1.14) scaleX(1.10);
-    z-index: 999;
+    transform: scale(1.06);
 }
 
 .hover-start {
     transform: scaleY(1.08) scaleX(1.04);
-    z-index: 999;
 }
 
 .prompt-box .prompt-word, .tally {
