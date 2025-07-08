@@ -328,7 +328,39 @@ def resetpassword():
 
 @app.route('/', methods=['POST'])
 def index_post():
-    if request.form.get('help') is not None:
+    if request.form.get('redirect') is not None or ('data' not in session):
+        print('[/] Redirecting to start...')
+        if ('data' not in session):
+            data = shift_to(0)
+            data['jumpsArray'] = BASE_JUMPS_ARRAY
+            data['startTargetIdxs'] = BASE_START_TARGET_IDXS
+            session['data'] = json.dumps(data)
+            return make_response(json.loads(session['data']))
+        #only run this if data in session.
+        session_data = json.loads(session["data"])
+        print("[index_post redirect] Here is session data: ", session_data)
+        if session_data["prompts"] == HELP_PROMPTS or session_data["results"] == []: 
+            data_or_none = get_existing_data()
+            if data_or_none:
+                data = data_or_none
+                # use data_today as base
+                if data["results"] == []:
+                    i = data.get('i', 0)
+                    data_today = shift_to(i)
+                    data_today['jumpsArray'] = BASE_JUMPS_ARRAY
+                    data_today['startTargetIdxs'] = BASE_START_TARGET_IDXS
+                    data_today['logged_in'] = data["logged_in"]
+                    data = data_today
+                data['is_help'] = False
+                session['data'] = json.dumps(data)
+            else:
+                data = shift_to(0)
+                data['jumpsArray'] = BASE_JUMPS_ARRAY
+                data['startTargetIdxs'] = BASE_START_TARGET_IDXS
+                session['data'] = json.dumps(data)
+        return make_response(json.loads(session['data']))
+
+    elif request.form.get('help') is not None:
         session['data'] = make_help_session()
         print('[/] Help Session')
     
@@ -386,30 +418,6 @@ def index_post():
         if new_data['is_help'] == False:
             update_game_state(new_data)
 
-    elif request.form.get('redirect') is not None:
-        print('[/] Redirecting to start...')
-        session_data = json.loads(session["data"])
-        print("[index_post redirect] Here is session data: ", session_data)
-        if session_data["prompts"] == HELP_PROMPTS or session_data["results"] == []: 
-            data_or_none = get_existing_data()
-            if data_or_none:
-                data = data_or_none
-                # use data_today as base
-                if data["results"] == []:
-                    i = data.get('i', 0)
-                    data_today = shift_to(i)
-                    data_today['jumpsArray'] = BASE_JUMPS_ARRAY
-                    data_today['startTargetIdxs'] = BASE_START_TARGET_IDXS
-                    data_today['logged_in'] = data["logged_in"]
-                    data = data_today
-                data['is_help'] = False
-                session['data'] = json.dumps(data)
-            else:
-                data = shift_to(0)
-                data['jumpsArray'] = BASE_JUMPS_ARRAY
-                data['startTargetIdxs'] = BASE_START_TARGET_IDXS
-                session['data'] = json.dumps(data)
-        return make_response(json.loads(session['data']))
     else:
         print("[/] ERROR (None of the Above...) ", request.form)
 
