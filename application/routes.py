@@ -328,13 +328,7 @@ def resetpassword():
 
 @app.route('/', methods=['POST'])
 def index_post():
-    if not session: 
-        return redirect('/')
-    
-    if 'data' not in session:
-        print(f'[/ Jul8] session: {session}')
-        return redirect('/')
-
+    print(f'[/ Jul8] session: {session}')
     if request.form.get('redirect') is not None:
         print('[/] Redirecting to start...')
         #only run this if data in session.
@@ -409,7 +403,10 @@ def index_post():
     elif request.form.get('word') is not None:
         current_word = request.form.get('word') 
         print(f"[/] Jumping: {current_word}")
-        prev_data = json.loads(session['data'])
+        data_or_none = session.get('data')
+        if data_or_none is None:
+            return redirect('/')
+        prev_data = json.loads(data_or_none)
         session['data'] = jump(current_word, current_word != prev_data['prompt'][1])
         print(f"[/ word] {session['data']}")
         new_data = json.loads(session['data'])
