@@ -203,11 +203,17 @@
     #modal-finish-guest, #modal-finish-user {
         width: 92vw;
         max-width: 92vw;
-        padding: 0 0;
+        padding: 2rem;
+
+    }
+    .finish-container {
+        padding: 0;
+        gap: 0.5rem;
     }
     #finish-container {
-        padding: 2rem 2rem;
         font-size: 1.2rem;
+        max-width: 100%;
+        max-height: 100%;
     }
 
     #finish-container .daily-idx{
@@ -222,45 +228,54 @@
         width: 100%
     }
 
+    #share-link, #share-link a{
+        font-size: 1.3rem;
+        padding: 0rem;
+        padding-top: 2rem;
+    }
+
     .finish-container .stat {
-        font-size: 1.8rem;
+        font-size: 3.5rem;
     }
 
     .finish-container p {
         margin: 0 0;
-        font-size: 0.9rem;
+        font-size: 1rem;
     }
     
+    .finish-text-end, .finish-text-end a{
+        color: var(--grayed-out-color);
+    }
+
     .finish-container .solutions{
         margin-top: 1rem;
     }
 
     .finish-container .stat-row {
         display: flex;
-        flex-direction: column;
-        justify-content: space-around;
+        flex-direction: row;
+        justify-content: space-between;
         max-width: 100%;
         padding: 0.5em 1em;
-        gap: 2rem;
-        width: 60vh;
+        width: 60vw;
         align-content: center;
         align-items: center;
     }
 
     #finish-container h1,  #finish-container button{
-        font-size: 1rem;
+        /* font-size: 1rem; */
     }
-    #finish-container h1{
+    /* #finish-container h1{
         font-size: 1.8rem;
         font-weight: 300;
-    }
+    } */
     .modal button {
         font-size: 1.7rem;
         padding: 1rem 7rem;
     }
 
     .modal h1 {
-        font-size: 5rem;
+        font-size: 3.5rem;
     }
     .modal p {
         font-size: 1rem;

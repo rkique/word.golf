@@ -41,7 +41,7 @@
 .footer-div p {
     margin: 0.5rem;
 }
-.footer-div p, a {
+.footer-div p, .footer-div a {
     font-size: 1.1rem;
     color: var(--grayed-out-color);
 }
@@ -50,9 +50,10 @@
 .finish-summary {
     font-size: 3rem;
     font-family: "Inter", sans-serif;
-    font-weight: 700;
-    color: var(--grayed-out-color-help-target);
+    font-weight: 600;
+    color: var(--border-color);
 }
+
 html {
     font-display: optional;
     font-family: "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI",
@@ -171,7 +172,7 @@ html {
     gap: 0em;
     font-size: 1.8rem;
     font-weight: 800;
-    color: var(--grayed-out-color-help-target);
+    color: var(--grayed-out-color);
 }
 
 #finish-container .daily-idx {
@@ -183,39 +184,42 @@ html {
 }
 
 
-#finish-container a {
+.finish-container a {
     color: var(--text-color);
     font-weight: 300;
 }
 .finish-container {
     display: flex;
     flex-direction: column;
-    font-size: 1rem;
+    font-size: 1.4rem;
     align-items: center;
     justify-content: space-around;
-    gap: 2em;
+    gap: 2rem;
     color: var(--text-color);
     padding: 2em 1em;
     border-radius: 16px;
     text-align: center;
-    margin: 2em 2em;
     z-index: 2;
 }
 /* .finish-container > :first-child {
     margin-top: 2em;
 } */
-.finish-container > :last-child {
+/* .finish-container > :last-child {
     margin-bottom: 1em;
-}
+} */
 
+.share-link {
+    font-size: 1.8rem;
+}
 .finish-container .stat-row {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
     max-width: 100%;
-    padding: 0.5em 1em;
-    gap: 2rem;
-    align-items: flex-end;
+    min-width: 60%;
+    padding: 0.5rem 1rem;
+    padding-top: 2rem;
+    gap: 6rem;
 }
 
 .finish-container .stat {
@@ -416,6 +420,12 @@ button span {
     line-height: 0.92;
     position: fixed;
 }
+
+#share-link {
+    padding: 0rem;
+    padding-top: 1.5rem;
+}
+
 
 .banner-perfect {
     color: #22ffed;
@@ -718,8 +728,8 @@ button span {
     position: absolute;
     margin-left: auto;
     margin-right: auto;
-    min-width: 40vw;
-    min-height: 40vh;
+    min-width: 50vw;
+    min-height: 50vh;
     max-width: 80vw;
     max-height: 90vh;
     background-color: var(--background-color);
