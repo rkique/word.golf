@@ -125,25 +125,26 @@ function addTallyContainers(promptBox){
         }
     }
 }
-/**
- * @param {Array} jumpsArray
- * @param {[[number, number], [number, number]]} idxs 
- * @param {[string, string]} start_target
- */
-function renderPrompts(jumpsArray, idxs, start_target, end = false) {
-    // console.log('[renderPrompts] jumpsArray:', jumpsArray);
-    clearAllPromptWords();
-    renderTallies(jumpsArray);
-    if (!end) {
-        // console.log("End is false here adding these start targets");
-        // console.log(start_target);
-        // console.trace('[renderPrompts] Stack trace');
-        const [start_idx, target_idx] = idxs;
-        const [start, target] = start_target;
-        renderWord(start, ...start_idx, {style: ["prompt-start-word"]});
-        renderWord(target, ...target_idx, {animate: false});
-    }
-}
+
+// /**
+//  * @param {Array} jumpsArray
+//  * @param {[[number, number], [number, number]]} idxs 
+//  * @param {[string, string]} start_target
+//  */
+// function renderPrompts(jumpsArray, idxs, start_target, end = false) {
+//     // console.log('[renderPrompts] jumpsArray:', jumpsArray);
+//     clearAllPromptWords();
+//     renderTallies(jumpsArray);
+//     if (!end) {
+//         // console.log("End is false here adding these start targets");
+//         // console.log(start_target);
+//         // console.trace('[renderPrompts] Stack trace');
+//         const [start_idx, target_idx] = idxs;
+//         const [start, target] = start_target;
+//         renderWord(start, ...start_idx, {style: ["prompt-start-word"]});
+//         renderWord(target, ...target_idx, {animate: false});
+//     }
+// }
 
 
 function clearBoxes() {

@@ -189,7 +189,7 @@ function switchToLoggedIn() {
 function renderSessionDone(resp) {
     runAfterBannerDisappears(() => renderFinish(resp));
     prompts = resp.prompts
-    jumpsArray = resp.jumpsArraycr
+    jumpsArray = resp.jumpsArray
     start_target = prompts[4]
     renderPrompts(jumpsArray, resp.startTargetIdxs, start_target, true)
     let is_logged_in = Boolean(localStorage.getItem('logged_in'));
