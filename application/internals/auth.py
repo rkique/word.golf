@@ -110,7 +110,8 @@ def authlogin():
                 path='/',
                 httponly=True,
                 secure=True,
-                samesite="Lax",
+                samesite="None",
+                domain=".word.golf",
                 max_age=60 * 60 * 24 * 365
             )
         return response
@@ -173,7 +174,8 @@ def create_user():
             path='/',
             httponly=True,
             secure=True,
-            samesite="Lax",
+            samesite="None",
+            domain=".word.golf",
             max_age=60 * 60 * 24 * 365
         )
     
@@ -263,7 +265,8 @@ def logout():
             path='/',
             httponly=True,
             secure=True,
-            samesite="Lax",
+            samesite="None",
+            domain=".word.golf",
             max_age=60 * 60 * 24 * 365
         )
     return response
@@ -370,7 +373,8 @@ def authorize_google():
             path='/',
             httponly=True,
             secure=True,
-            samesite="Lax",
+            samesite="None",
+            domain=".word.golf",
             max_age=60 * 60 * 24 * 365
         )
     return response
@@ -415,7 +419,8 @@ def set_response_cookie(response, token, secure=True):
             path='/',
             httponly=True,
             secure=True,
-            samesite="Lax",
+            samesite="None",
+            domain=".word.golf",
             max_age=60 * 60 * 24 * 365
         )
     return response

@@ -138,7 +138,8 @@ def reset_password():
             path='/',
             httponly=True,
             secure=True,
-            samesite="Lax",
+            samesite="None",
+            domain=".word.golf",
             max_age=60 * 60 * 24 * 365
         )
 
