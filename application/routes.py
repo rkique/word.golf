@@ -14,7 +14,7 @@ import uuid
 from .internals.auth import get_user_from_cookie, create_guest_user, user_session_exists, set_response_cookie
 from .internals.gameprogress import update_game_state, finished_game
 from .models import GameState
-from . import cookie_signer
+from . import cookie_signer, db
 from .internals import today
 
 # store logged_in in routes.py
@@ -148,6 +148,65 @@ def jump(start : str, update = True) -> str:
     _data['startTargetIdxs'] = [startIdx, targetIdx]
     session['data'] = json.dumps(_data)
     return json.dumps(_data)
+
+def get_last_nonzero_row(jumpsArray):
+    non_zero_row = -1
+
+    for i in range(len(jumpsArray)):
+        if jumpsArray[i] == [0,0,0,0,0,0]:
+            non_zero_row = i - 1
+            break
+
+    if(non_zero_row == -1):
+        non_zero_row = len(jumpsArray) - 1 #4
+
+    return non_zero_row
+
+@app.route('/back', methods=["POST"])
+def update_results():
+    user = get_user_from_cookie()
+    if not user:
+        return "failed"
+    game_state = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
+    if not game_state:
+        return "failed"
+    print("Here is game_state previous words", game_state.selected_words)
+    _data = json.loads(session.get('data'))
+    # check for end of game/end of round 
+    target = _data['prompt'][1]
+    if target == _data['results'][10]:
+        return "failed"
+    # check if the selected words and check if we are at a starting word
+    if _data['prompt'][0] == _data['results'][10]:
+        return "failed"
+    # see if the length is ok and then 
+    if len(game_state.selected_words) < 2:
+        return "failed"
+    get_last_row = get_last_nonzero_row(game_state.jumpsA)
+    # see if we just switched prompts
+    if sum(game_state.jumpsA[get_last_row]) - 2 < 2:
+        return "failed"
+    # check current jumpsArray and see if it is in the beginning of it 
+    start = game_state.selected_words[-2] 
+    # rearrange the order of selected words 
+    
+    returned_object = {}
+    score = similarity(start, target, WV)
+    startIdx, targetIdx = _data["startTargetIdxs"]
+    row = startIdx[0]
+    index = sim_to_index(score)
+    startIdx = [row, index]
+    returned_object["results"] = get_curve(start, target, PRECOMPUTED, WV)
+    returned_object["startTargetIdxs"] = [startIdx, targetIdx]
+    returned_object["jumpsArray"] = _data["jumpsArray"]
+    returned_object["start_target"] = [returned_object["results"][10], target]
+    returned_object["prompt"] = _data['prompt']
+    game_state.selected_words[-2], game_state.selected_words[-1] = game_state.selected_words[-1], game_state.selected_words[-2]
+    db.session.commit()
+
+    print("Here is new game_state previous words", game_state.selected_words)
+    # Try to get the start target idxs 
+    return make_response(json.loads(json.dumps(returned_object)))
 
 def make_help_session():
     """

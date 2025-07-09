@@ -96,7 +96,6 @@ def update_game_state(data):
 
     return jsonify({"message": "Game state updated successfully."}), 200
 
-
 def finished_game(finish_request): 
     user = get_user_from_cookie(finish_request)
     if not user:

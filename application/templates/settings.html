@@ -4,6 +4,39 @@
         const el = document.getElementById(id); 
         el.style.display = (el.style.display === 'flex') ? 'none' : 'flex';
     }
+
+    async function renderBack() {
+        try {
+            const res = await fetch("/back", {
+                method: "POST",
+                credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
+                headers: {
+                    'Content-Type': 'application/json'  // Ensure this matches what the server expects
+                },
+            });
+            const data = await res.json();
+            if (res.ok) {
+                // Can only go back once -> you can't continuously go backwards 
+                console.log("Clicked back button");
+                console.log("Here is data: ", data);
+                let is_help = localStorage.getItem('is_help');
+                // otherwise do nothing 
+                if ("results" in data && is_help === 'false') {
+                    renderPrompts(data.jumpsArray, data.startTargetIdxs, data.start_target);
+                    renderLinks(data.prompt, data.results)
+                    activateLinks()
+                } else {
+                    console.log("Bad back button -> failed or is not allowed")
+                }
+                
+            } else {
+                console.log("Back failed:", data);
+            }
+        } catch (err) {
+            console.log("Error during back: ", err);
+        }
+    }
+
 </script>
 <div id="login-welcome">
     <div class="welcome-email"></div>
@@ -12,6 +45,10 @@
     <div id="information">
     </div>
     <div class="switchContainer">
+    <button onclick="renderBack()" class="switch switch--outlined"
+        style="position: relative; top: -10px; left: -10px;">
+        Back
+    </button>
     <button onclick='changeColorMode()' class="switch">◐</button>
     </div>
     <div class="switchContainer">

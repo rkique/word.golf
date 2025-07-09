@@ -222,8 +222,6 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, jumpsGridMessa
     }
 }
 
-
-
 function startHelpSteps(){
     toggleElement('modal');
 }
