@@ -38,8 +38,8 @@ BASE_START_TARGET_IDXS = [[0,0], [0,5]]
 PCOUNT = 5
 DAYS = 0
 
-HELP_PROMPTS = [["outside", "layer"],["cellphone", "fluff"]]
-HELP_NEIGHBORS = ["underneath", "airtime"]
+HELP_PROMPTS = [["fruit", "porch"],["whisper", "scuffle"]]
+HELP_NEIGHBORS = ["tree", "shouting"]
 
 WV = None
 PRECOMPUTED = None
