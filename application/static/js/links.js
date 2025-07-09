@@ -39,7 +39,7 @@ let HELP_STEPS = [
         message: "<p>Choose carefully, two jumps is all you need.</p>",
         focus: 'shouting',
         transform: [30, 42],
-        startSocket: 'left',
+        startSocket: 'top',
         endSocket: 'auto',
     },
     {

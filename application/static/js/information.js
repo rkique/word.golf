@@ -85,6 +85,7 @@ function startGame() {
     document.getElementById("information").innerHTML = ``;
     document.getElementById('modal').style.display = 'none';
     localStorage.setItem('is_help', 'false');
+    document.getElementById('prompts-title').innerHTML = 'Prompts'
     let toDelete = ['jumps', 'jumpsArray', 'startTargetIdxs', 'prompts', 'results']
     toDelete.forEach(key => localStorage.removeItem(key));
     let resp = sendAndReceiveXML('redirect=true');
@@ -239,15 +240,37 @@ function startHelpSession() {
     renderPrompts(resp.jumpsArray, resp.startTargetIdxs, start_target)
     activateLinks()
     addHelpFocuses(resp.prompt, resp.results)
+    document.getElementById('prompts-title').innerHTML = 'Tutorial'
     start_text = `<p id="modalText"> Welcome to word.golf, a sport played with the meanings of words!</p>
-    <button class="switch switch--outlined" onclick="startHelpSteps()"> OK </button>`
-    displayModal(start_text)
+    <button class="switch switch--outlined" id='startHelpButton'> OK </button>`
+    removeTintedModal = renderTintedModal(start_text)
+    const btn = document.getElementById('startHelpButton');
+    if (btn) {
+        btn.onclick = function() {
+            startHelpSteps();
+            removeTintedModal();
+        };
+    } else {alert('not found')}
 }
 
 function clearInfoBox() {
     let info = document.getElementById("info-box")
     info.innerHTML = '';
     info.style.display = 'none'; 
+}
+
+function renderTintedModal(displayHTML){
+    let modalEl = document.getElementById('modal');
+    modalEl.innerHTML = displayHTML;
+    modalEl.style.display = 'flex';
+    modal.style.zIndex = 200;
+    let overlay = document.createElement('div');
+    overlay.classList.add('tint-background')
+    document.body.appendChild(overlay);
+    return () => {
+        overlay.parentNode.removeChild(overlay);
+        document.body.style.pointerEvents = 'auto';
+    }
 }
 
 function renderTransientModal(duration){
