@@ -619,7 +619,7 @@ button span {
 }
 
  .tally {
-    /* transition: max-width 0.2s ease, padding 0.2s ease-out, background 0.2s ease; */
+    transition: max-width 0.2s ease, padding 0.2s ease-out, background 0.2s ease;
  }
 
 

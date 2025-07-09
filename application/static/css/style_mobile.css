@@ -94,12 +94,8 @@
     }
 
     .tally:not(.prompt-word) {
-    flex: 0 0 auto;
     max-width: 0.3rem !important;
     min-width: 0.3rem !important;
-    padding: 0 !important;
-    min-height: 100% !important;
-    border: 1px solid var(--grayed-out-color) !important;
     }
     .prompt-box {
         /* outline: 1px solid var(--border-color); */
@@ -173,6 +169,7 @@
         width: 90vw;
         height: 80vh;
         max-width: 90vw;
+        
         padding: 0 0;
     }
     #info-box {
@@ -236,7 +233,7 @@
     }
 
     .finish-container .stat {
-        font-size: 3.5rem;
+        font-size: 2.8rem;
     }
 
     .finish-container p {
@@ -254,15 +251,18 @@
 
     .finish-container .stat-row {
         display: flex;
-        flex-direction: row;
-        justify-content: space-between;
+        flex-direction: column;
         max-width: 100%;
         padding: 0.5em 1em;
-        width: 60vw;
-        align-content: center;
+        gap: 0.5rem !important;
+        width: 100vw;
+        align-content: flex-start;
         align-items: center;
     }
-
+    #finish-container h1 {
+        font-size: 2.2rem;
+        margin: 0 0;
+    }
     #finish-container h1,  #finish-container button{
         /* font-size: 1rem; */
     }

@@ -30,6 +30,7 @@ function updateInnerTextSmooth(elem, newText, animate) {
             });
         });
     } else {
+        console.log('[updateInnerTextSmooth] not animating text change');
         elem.innerText = newText;
     }
 }
@@ -76,6 +77,7 @@ function renderWord(word, row, column, {animate=true, style=[]} = {}) {
             style.forEach(cls => promptWord.classList.add(cls));
         }
         // promptWord.innerText = word;
+        console.log('calling updateInnerTextSmooth');
         updateInnerTextSmooth(promptWord, word, animate)
         wordTallyContainer.appendChild(promptWord);
     } else { 
