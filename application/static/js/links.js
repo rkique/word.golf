@@ -16,7 +16,7 @@ let HELP_STEPS = [
         id: 2,
         prompt: ['fruit', 'porch'],
         result: 'orchard',
-        message: "<p>We want to get to <span class='link--help-target'>porch</span>, so choose a related word.</p>",
+        message: "<p>We want to get to <span class=''>porch</span>, so choose a related word.</p>",
         focus: 'house',
         transform: [27, 42],
         startSocket: 'top',
@@ -26,7 +26,7 @@ let HELP_STEPS = [
         id: 3,
         prompt: ['fruit', 'porch'],
         result: 'house',
-        message: "<p>Good job! Click <span class='link--help-target'>porch</span> to <br> complete the prompt.</p>",
+        message: "<p>Good job! Click <span class=''>porch</span> to complete the prompt.</p>",
         focus: 'porch',
         transform: [8, 20],
         startSocket: 'top',
@@ -46,7 +46,7 @@ let HELP_STEPS = [
         id: 5,
         prompt: ['whisper', 'scuffle'],
         result: 'shouting',
-        message: "<p>Five prompts per day, <br> the best score is ten. </p>",
+        message: "<p>Five prompts per day, the best score is ten. </p>",
         focus: 'scuffle',
         transform: [10, 20],
         startSocket: 'bottom',
@@ -56,8 +56,6 @@ let HELP_STEPS = [
 
 function focusLink(startText, targetText) {
     const links = Array.from(document.getElementsByClassName("link"));
-    // let middleWords = [...new Set(HELP_STEPS.map(step => step.result))];
-    // console.log(middleWords)
     links.forEach(link => {
         const text = link.innerText.trim();
         if (text == startText) {
@@ -65,7 +63,6 @@ function focusLink(startText, targetText) {
         }
         if (text === targetText) {
             // link.style.outlineOffset = "2px";
-            link.id = "link--target";
             link.classList.add("link--target")
             link.classList.remove("link--unfocused");
         } else if (links.indexOf(link) !== 10) {
@@ -351,6 +348,9 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
                 showBanner("skipped :(", "banner");
             }
             renderPrompts(resp.jumpsArray, resp.startTargetIdxs, start_target);
+            if (jumps >= 13){
+                clearLastTallyContainer(resp.i)
+            }
         }
         else {
             // console.log(`[showBanner] ${jumps}`)

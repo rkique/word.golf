@@ -26,6 +26,9 @@ function syncColorMode() {
     document.documentElement.style.setProperty('--grayed-out-background', '#f3f3f3');
     document.documentElement.style.setProperty('--grayed-out-color', '#a0a0a0');
     document.documentElement.style.setProperty('--grayed-out-color-2', '#888');
+    document.documentElement.style.setProperty('--grayed-out-color-help-target', '#ccc');
+    document.documentElement.style.setProperty('--grayed-out-color-unfocused', '#ccc');
+
   }
   else {
     document.documentElement.style.setProperty('--hover-color', 'white');

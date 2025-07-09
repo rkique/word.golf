@@ -12,6 +12,7 @@
     font-style: italic;
 }
 
+
 .tint-background {
     position: fixed;
     top: 0;
@@ -105,7 +106,7 @@ html {
     min-width: 0.5rem !important;
     padding: 0 !important;
     min-height: 100% !important;
-    border: 1px solid var(--grayed-out-color) !important;
+    border: 1px solid var(--grayed-out-color);
 }
 
   .switchContainer {
@@ -389,7 +390,7 @@ button span {
 }
 
 .link--target {
-    animation: pulse 0.7s infinite;
+    animation: pulse 0.75s infinite;
 }
 
 @keyframes pulse {
@@ -397,7 +398,7 @@ button span {
         transform: scale(1);
     }
     50% {
-        transform: scale(1.08);
+        transform: scale(1.05);
     }
     100% {
         transform: scale(1);
@@ -619,15 +620,33 @@ button span {
 }
 
  .tally {
-    transition: max-width 0.2s ease, padding 0.2s ease-out, background 0.2s ease;
+    transition: max-width 0.25s ease, padding 0.25s ease-out, background 0.25s ease;
  }
-
 
 
 .prompt-start-word {
     border-color: var(--grayed-out-color) !important;
     color: var(--grayed-out-color) !important;
-    transition: transform 0.2s ease;
+    transition: transform 0.25s ease;
+    cursor: default;
+}
+
+.prompt-box .last-target-tally {
+    border-color: var(--emphasis-color);
+    animation: emphFade 0.15s ease forwards;
+}
+
+@keyframes emphFade {
+    from {
+        border-color: var(--emphasis-color);
+    }
+    to {
+        border-color: var(--grayed-out-color);
+    }
+}
+
+.prompt-word:not(.prompt-start-word){
+    border-color: var(--text-color) !important;
 }
 
 .prompt-word {
@@ -637,11 +656,12 @@ button span {
   display: inline-block;
   transition: max-width 0.2s ease, padding 0.2s ease, background 0.2s ease, transform 0.2s ease;
   padding: 0rem 0.5rem;
+  border-color: var(--border-color);
 }
 
 .hover-start {
     display: inline-block;
-    transition: transform 0.4s ease;
+    transition: transform 0.6s ease;
     font-style: italic;
     transform: scaleY(1.04);
 }

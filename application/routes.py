@@ -36,7 +36,7 @@ HELP_END_JUMPS_ARRAY = [[1,0,1,0,1,1],
 
 BASE_START_TARGET_IDXS = [[0,0], [0,5]]
 PCOUNT = 5
-DAYS = 0
+DAYS = 1
 
 HELP_PROMPTS = [["fruit", "porch"],["whisper", "scuffle"]]
 HELP_NEIGHBORS = ["tree", "shouting"]
@@ -389,7 +389,7 @@ def index_post():
             data = update_jumps_array(data)
             update_game_state(data)
             streak, total_jumps = finished_game(request)
-            print(f'streak: [{streak}]')
+            print(f'streak: {streak}')
             data['streak'] = streak
             data['total_jumps'] = total_jumps
             session['data'] = json.dumps(data)
