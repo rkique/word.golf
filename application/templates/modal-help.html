@@ -5,7 +5,7 @@
         document.getElementById('modal-finish-user').style.display = 'none';
         localStorage.setItem('is_help', 'true');
         data = sendAndReceiveXML(`help=true`);
-        let promptsTitle = document.getElementsByClassName('prompts-title')[0];
+        let promptsTitle = document.getElementById('prompts-title');
         if (promptsTitle) {
             promptsTitle.innerText = 'Tutorial';
         }

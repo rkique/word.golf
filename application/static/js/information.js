@@ -240,7 +240,7 @@ function startHelpSession() {
     renderPrompts(resp.jumpsArray, resp.startTargetIdxs, start_target)
     activateLinks()
     addHelpFocuses(resp.prompt, resp.results)
-    document.getElementById('prompts-title').innerHTML = 'Tutorial'
+    document.getElementById('prompts-title').innerHTML = 'Prompts'
     start_text = `<p id="modalText"> Welcome to word.golf, a sport played with the meanings of words!</p>
     <button class="switch switch--outlined" id='startHelpButton'> OK </button>`
     removeTintedModal = renderTintedModal(start_text)
