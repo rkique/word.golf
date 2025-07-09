@@ -5,9 +5,9 @@
         document.getElementById('modal-finish-user').style.display = 'none';
         localStorage.setItem('is_help', 'true');
         data = sendAndReceiveXML(`help=true`);
-        if (localStorage.getItem('prompts')) {
-            _prompts = localStorage.getItem('prompts');
-            localStorage.setItem('_prompts', _prompts)
+        let promptsTitle = document.getElementById('prompts-title');
+        if (promptsTitle) {
+            promptsTitle.innerText = 'Tutorial';
         }
         renderLinks(data.prompt, data.results)
         clearBoxes()
@@ -76,6 +76,7 @@
 
         </div>
         <div class="guest-buttons" id="guest-buttons">
+        <button onclick="toggleElement('help'); beginTutorial()" class=" switch switch--outlined ">tutorial</button>
         <button onclick="window.location.href='/login'" class="switch switch--outlined">login / signup</button>
         <script src="https://accounts.google.com/gsi/client" async></script>
         <div id="g_id_onload"
@@ -94,7 +95,6 @@
             data-shape="rectangular"
             data-logo_alignment="left">
         </div>
-        <button onclick="toggleElement('help'); beginTutorial()" class=" switch switch--outlined ">tutorial</button>
         </div>
     </div>
 </div>

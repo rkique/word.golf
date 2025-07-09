@@ -28,17 +28,6 @@ def txt_to_dict(path):
     pre = [rawlist.split(",") for rawlist in pre]
     return {wordlist[0]: wordlist[1:] for wordlist in pre}
 
-
-def vector_for_word(word: str, df = pd.DataFrame) -> np.array:
-    """
-    Retrieve the vector for a given word from the DataFrame.
-    """
-    row = df[df['word'] == word]
-    if not row.empty:
-        return row.iloc[0]['vector']
-    else:
-        return None
-
 #finds subset of min length and appends min word to subset.
 def partition(words):
     assert len(words) == 21
