@@ -137,12 +137,12 @@
         box-shadow: none;  
     }
 
-    
+
     #wordspace button:hover, 
     #wordspace span:hover {
-        /* transform: none;     */
+        transform: none;    
         background-color: inherit; 
-        /* color: inherit;       */
+        color: inherit;      
     }
 
     /* Prevent tap highlight on iOS */
