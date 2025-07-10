@@ -23,14 +23,15 @@ function updateInnerTextSmooth(elem, newText, animate) {
         elem.style.maxWidth = currentWidth + 'px';
         requestAnimationFrame(() => {
             elem.innerText = newText;
+            elem.offsetWidth;
             requestAnimationFrame(() => {
                 const newWidth = elem.scrollWidth;
+                // console.log('going from current %d to new %d', currentWidth, newWidth)
                 // Apply new max-width with transition
                 elem.style.maxWidth = newWidth + 'px';
             });
         });
     } else {
-        console.log('[updateInnerTextSmooth] not animating text change');
         elem.innerText = newText;
     }
 }
@@ -64,26 +65,6 @@ function renderTallies(jumpsArray) {
     });
 }
 
-function renderWord(word, row, column, {animate=true, style=[]} = {}) {
-   
-    let wordTallyContainers = document.querySelectorAll('#prompts .prompt-box .word-tally-box');
-    const wordTallyContainer = wordTallyContainers[row * 6 + column]
-    // Get the last .tally child of wordTallyContainer and modify it
-    let tallies = wordTallyContainer.querySelectorAll('.tally');
-    if (tallies.length > 0) {
-        promptWord = tallies[tallies.length - 1];
-        promptWord.classList.add('prompt-word');
-        if (style.length > 0) {
-            style.forEach(cls => promptWord.classList.add(cls));
-        }
-        // promptWord.innerText = word;
-        console.log('calling updateInnerTextSmooth');
-        updateInnerTextSmooth(promptWord, word, animate)
-        wordTallyContainer.appendChild(promptWord);
-    } else { 
-        console.warn(`[renderWord] no tallies at ${row} ${column}`)
-}
-}
 
 
 // Given a promptBox and prompt-tally-container, removes one tally from the correct cell.
@@ -163,26 +144,6 @@ function clearLastTallyContainer(ct) {
     }
 }
 
-function updateInnerTextSmooth(elem, newText, animate) {
-    if (animate) {
-        const container = elem.closest('.word-tally-box');
-        if (!container) return;
-        elem.style.maxWidth = 'none';
-        const currentWidth = elem.scrollWidth;
-        elem.style.maxWidth = currentWidth + 'px';
-        requestAnimationFrame(() => {
-            elem.innerText = newText;
-            requestAnimationFrame(() => {
-                const newWidth = elem.scrollWidth;
-                // Apply new max-width with transition
-                elem.style.maxWidth = newWidth + 'px';
-            });
-        });
-    } else {
-        elem.innerText = newText;
-    }
-}
-
 //add a .prompt-word to a tally contaner.
 //the tally containers themselves are always reprsenting the jumpsArray
 //the .prompt-word class overrides the tally container class.
@@ -212,8 +173,7 @@ function renderTallies(jumpsArray) {
     });
 }
 
-function renderWord(word, row, column, {animate=true, style=[]} = {}) {
-   
+function renderWord(word, row, column, { animate = true, style = [] } = {}) {
     let wordTallyContainers = document.querySelectorAll('#prompts .prompt-box .word-tally-box');
     const wordTallyContainer = wordTallyContainers[row * 6 + column]
     // Get the last .tally child of wordTallyContainer and modify it
@@ -227,10 +187,11 @@ function renderWord(word, row, column, {animate=true, style=[]} = {}) {
         // promptWord.innerText = word;
         updateInnerTextSmooth(promptWord, word, animate)
         wordTallyContainer.appendChild(promptWord);
-    } else { 
+    } else {
         console.warn(`[renderWord] no tallies at ${row} ${column}`)
+    }
 }
-}
+
 
 
 // Given a promptBox and prompt-tally-container, removes one tally from the correct cell.
@@ -304,12 +265,9 @@ function cueStartWordOnHover() {
  * @param {[string, string]} start_target
  */
 function renderPrompts(jumpsArray, idxs, start_target, end = false) {
-    // console.log('[renderPrompts] jumpsArray:', jumpsArray);
     clearAllPromptWords();
     renderTallies(jumpsArray);
     if (!end) {
-        // console.log("End is false here adding these start targets");
-        // console.log(start_target);
         // console.trace('[renderPrompts] Stack trace');
         const [start_idx, target_idx] = idxs;
         const [start, target] = start_target;

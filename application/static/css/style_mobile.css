@@ -89,13 +89,13 @@
 
     .prompt-box .prompt-word {
         min-width: 6rem;
-        max-width: 9rem !important;
-
+        /* max-width: 9rem; */
     }
 
     .tally:not(.prompt-word) {
     max-width: 0.3rem !important;
     min-width: 0.3rem !important;
+    padding: 0 !important;
     }
     .prompt-box {
         /* outline: 1px solid var(--border-color); */
@@ -144,12 +144,11 @@
     #worspace button:focus{
         transform: none;    
         background-color: inherit; 
-        color: var(--text-color);      
+        color: var(--text-color);  
     }
 
-    /* Prevent tap highlight on iOS */
     * {
-        -webkit-tap-highlight-color: transparent; /* Removes iOS tap highlight color */
+        -webkit-tap-highlight-color: transparent;
     }
 
     #modal #modalText {

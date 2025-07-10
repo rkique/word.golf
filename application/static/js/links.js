@@ -327,6 +327,7 @@ function showBanner(text, color) {
 
 function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
     let resp = sendAndReceiveXML("word=" + word);
+    // console.log('[postWord] resp:', resp);
     let promptIdx = lastNonzeroRow(resp.jumpsArray)
     let jumps = resp.jumpsArray[promptIdx].reduce((a, b) => a + b, 0) - 1;
     if (jumps >= 13) { // cap it at 12 current jumps

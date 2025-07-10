@@ -103,7 +103,7 @@ html {
     flex: 0 0 auto;
     max-width: 0.5rem !important;
     min-width: 0.5rem !important;
-    padding: 0 !important;
+    padding: 0;
     min-height: 100% !important;
     border: 1px solid var(--grayed-out-color) !important;
 }
