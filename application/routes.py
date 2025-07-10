@@ -38,6 +38,8 @@ BASE_START_TARGET_IDXS = [[0,0], [0,5]]
 PCOUNT = 5
 DAYS = 0
 
+SKIPPED_TOKEN = "<SKIPPED>"
+
 HELP_PROMPTS = [["fruit", "porch"],["whisper", "scuffle"]]
 HELP_NEIGHBORS = ["tree", "shouting"]
 
@@ -162,8 +164,12 @@ def get_last_nonzero_row(jumpsArray):
 
     return non_zero_row
 
-@app.route('/back', methods=["POST"])
-def update_results():
+@app.route('/skip', methods=["POST"])
+def skip():
+    game_data = json.loads(session.get('data'))
+    is_help = game_data.get('is_help', False)
+    if is_help:
+        return "failed"
     user = get_user_from_cookie()
     if not user:
         return "failed"
@@ -171,7 +177,87 @@ def update_results():
     if not game_state:
         return "failed"
     print("Here is game_state previous words", game_state.selected_words)
+    
+    current_prompt = get_last_nonzero_row(game_state.jumpsA)
+    
+    # update the backend game state object 
+    current_prompt_score = sum(game_state.jumpsA[current_prompt]) - 2
+    while current_prompt_score < 12:
+        game_state.selected_words.append(SKIPPED_TOKEN)
+        game_data['jumpsArray'][current_prompt][0] +=1
+        current_prompt_score += 1
+    
+    # game_data['jumpsArray'] = game_state.jumpsA
+    # shift to the next prompt
+    print("data jumpsArray before update: ", game_data['jumpsArray'])
+
+    returned_object = {}
+
+    if current_prompt == 4: # if we are at the last prompt, we need to end the game 
+        prompt = prompts_today[current_prompt]
+
+        returned_object["startTargetIdxs"] = game_state.start_target_idxs
+
+        returned_object["done"] = True
+
+        game_data['jumpsArray'][current_prompt][5] = 0 # we did not reach the end
+
+        game_state.jumpsA = game_data['jumpsArray']
+    else:
+        game_data = update_jumps_array(game_data)
+
+        game_state.jumpsA = game_data['jumpsArray']
+
+        print("data jumpsArray after update: ", game_data['jumpsArray'])
+
+        current_prompt = current_prompt + 1
+
+        prompt = prompts_today[current_prompt]
+        
+        results = get_curve(prompt[0], prompt[1], PRECOMPUTED, WV)
+
+        game_state.results = results
+
+        returned_object["startTargetIdxs"] = [[current_prompt, 0], [current_prompt, 5]]
+
+        returned_object["done"] = False
+
+    db.session.commit()
+
+    # now shift the jumpsArray
+    # now construct the response object
+    
+    returned_object["results"] = game_state.results
+    
+    returned_object["jumpsArray"] = game_state.jumpsA
+    returned_object["start_target"] = [prompt[0], prompt[1]]
+    returned_object["prompt"] = prompt
+    returned_object["current_prompt"] = current_prompt
+
+    game_data['i'] += 1
+    game_data['jumps'] = 0
+    game_data['jumpsArray'] = game_state.jumpsA
+    game_data['results'] = game_state.results
+    game_data['startTargetIdxs'] = returned_object["startTargetIdxs"]
+    game_data['prompt'] = prompt
+
+    session['data'] = json.dumps(game_data)
+
+    return make_response(json.loads(json.dumps(returned_object)))
+
+@app.route('/back', methods=["POST"])
+def back():
     _data = json.loads(session.get('data'))
+    is_help = _data.get('is_help', False)
+    if is_help:
+        return "failed"
+    user = get_user_from_cookie()
+    if not user:
+        return "failed"
+    game_state = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
+    if not game_state:
+        return "failed"
+    print("Here is game_state previous words", game_state.selected_words)
     # check for end of game/end of round 
     target = _data['prompt'][1]
     if target == _data['results'][10]:
@@ -202,6 +288,7 @@ def update_results():
     returned_object["start_target"] = [returned_object["results"][10], target]
     returned_object["prompt"] = _data['prompt']
     game_state.selected_words[-2], game_state.selected_words[-1] = game_state.selected_words[-1], game_state.selected_words[-2]
+    game_state.results = returned_object["results"]
     db.session.commit()
 
     print("Here is new game_state previous words", game_state.selected_words)
@@ -277,8 +364,12 @@ def update_jumps_array(new_data):
         #close old row
         new_data['jumpsArray'][i] = check_if_max(new_data['jumpsArray'][i])
         #open new row.
+        print("[update_jumps_array] row: ", row, "equals [0,0,0,0,0,0]: ", row == [0,0,0,0,0,0])
         if row == [0,0,0,0,0,0]:
+            print("[update_jumps_array] Found empty row at index: ", i)
+            print("[update_jumps_array] Before : ", [1,0,0,0,0,1])
             new_data['jumpsArray'][i] = [1,0,0,0,0,1]
+            print("[update_jumps_array] Setting new row to: ", new_data['jumpsArray'][i])
             new_data['startTargetIdxs'] = [[i,0],[i,5]]
             break
     print("[update_jumps_array] jumpsArray: ", new_data)

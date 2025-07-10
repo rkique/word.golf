@@ -6,12 +6,13 @@
     }
 
     async function renderBack() {
+
         try {
             const res = await fetch("/back", {
                 method: "POST",
                 credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
                 headers: {
-                    'Content-Type': 'application/json'  // Ensure this matches what the server expects
+                    'Content-Type': 'application/json' 
                 },
             });
             const data = await res.json();
@@ -20,6 +21,7 @@
                 console.log("Clicked back button");
                 console.log("Here is data: ", data);
                 let is_help = localStorage.getItem('is_help');
+                
                 // otherwise do nothing 
                 if ("results" in data && is_help === 'false') {
                     renderPrompts(data.jumpsArray, data.startTargetIdxs, data.start_target);
@@ -37,6 +39,38 @@
         }
     }
 
+    async function renderSkip() {
+        try {
+            const res = await fetch("/skip", {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+            const data = await res.json();
+            if (res.ok) {
+                console.log("Clicked skip button");
+                console.log("Here is data: ", data);
+                let is_help = localStorage.getItem('is_help');
+                // otherwise do nothing 
+                if ("results" in data && is_help === 'false') {
+                    renderPrompts(data.jumpsArray, data.startTargetIdxs, data.start_target, data.done);
+                    renderLinks(data.prompt, data.results, data.current_prompt, data.done);
+                    activateLinks();
+                } else {
+                    console.log("Bad skip button -> failed or is not allowed")
+                }
+                
+            } else {
+                console.log("Skip failed:", data);
+            }
+        } catch (err) {
+            console.log("Error during skip: ", err);
+        }
+    }
+
+
 </script>
 <div id="login-welcome">
     <div class="welcome-email"></div>
@@ -48,6 +82,10 @@
     <button onclick="renderBack()" class="switch switch--outlined"
         style="position: relative; top: -10px; left: -10px;">
         Back
+    </button>
+    <button onclick="renderSkip()" class="switch switch--outlined"
+        style="position: relative; top: -10px; left: -5px;">
+        Skip
     </button>
     <button onclick='changeColorMode()' class="switch">◐</button>
     </div>
