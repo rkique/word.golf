@@ -139,10 +139,12 @@
 
 
     #wordspace button:hover, 
-    #wordspace span:hover {
+    #wordspace span:hover, 
+    #wordspace span:focus, 
+    #worspace button:focus{
         transform: none;    
         background-color: inherit; 
-        color: inherit;      
+        color: var(--text-color);      
     }
 
     /* Prevent tap highlight on iOS */
