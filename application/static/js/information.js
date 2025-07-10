@@ -85,11 +85,11 @@ function startGame() {
     document.getElementById("information").innerHTML = ``;
     document.getElementById('modal').style.display = 'none';
     localStorage.setItem('is_help', 'false');
-    document.getElementById('prompts-title').innerHTML = 'Prompts'
     let toDelete = ['jumps', 'jumpsArray', 'startTargetIdxs', 'prompts', 'results']
     toDelete.forEach(key => localStorage.removeItem(key));
     let resp = sendAndReceiveXML('redirect=true');
     clearBoxes()
+    document.getElementById('prompts-title').innerHTML = 'Prompts'
     if ("logged_in" in resp && resp.logged_in) {
         renderLogin(resp.logged_in);
     } 
@@ -240,7 +240,7 @@ function startHelpSession() {
     renderPrompts(resp.jumpsArray, resp.startTargetIdxs, start_target)
     activateLinks()
     addHelpFocuses(resp.prompt, resp.results)
-    document.getElementById('prompts-title').innerHTML = 'Prompts'
+    document.getElementById('prompts-title').innerText = 'Tutorial'
     start_text = `<p id="modalText"> Welcome to word.golf, a sport played with the meanings of words!</p>
     <button class="switch switch--outlined" id='startHelpButton'> OK </button>
     <a id="startGameLink">Skip tutorial</a>`
