@@ -143,6 +143,17 @@ html {
   gap: 2em;
 }
 
+#startHelpButton {
+    margin: 2rem 0.8rem;
+}
+
+#startGameLink{
+    font-size: 1.2rem;
+    color: var(--text-color);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 .help-close, .finish-close {
    position: absolute; 
    top: 0.5em;
@@ -330,8 +341,8 @@ button {
     transition: background 0.2s, color 0.2s, transform 0.2s
 }
 
-button:not(.grayed-out):hover {
-    transform: scale(1.06);
+button:not(.grayed-out):active {
+    transform: scale(0.96);
     /* box-shadow: 0 4px 16px rgba(0,0,0,0.15); */
 }
 
@@ -802,7 +813,7 @@ button span {
 
   .dot {
       animation: blink 1s infinite;
-      animation-delay: calc(var(--i) * 0.2s);
+      animation-delay: calc(var(--i) * 0.5s);
       margin: 0 8px;
   }
 

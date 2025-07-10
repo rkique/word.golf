@@ -1,5 +1,5 @@
-HELP_FINISH_DELAY_MS = 500
-START_GAME_DELAY_MS = 1500
+HELP_FINISH_DELAY_MS = 300
+START_GAME_DELAY_MS = 800
 
 function displayModal(displayHTML){
     const modalEl = document.getElementById('modal');
@@ -242,8 +242,12 @@ function startHelpSession() {
     addHelpFocuses(resp.prompt, resp.results)
     document.getElementById('prompts-title').innerHTML = 'Prompts'
     start_text = `<p id="modalText"> Welcome to word.golf, a sport played with the meanings of words!</p>
-    <button class="switch switch--outlined" id='startHelpButton'> OK </button>`
+    <button class="switch switch--outlined" id='startHelpButton'> OK </button>
+    <a id="startGameLink">Skip tutorial</a>`
     removeTintedModal = renderTintedModal(start_text)
+    document.getElementById('startGameLink').onclick = function(e) {
+    startGame(); removeTintedModal();
+    }
     const btn = document.getElementById('startHelpButton');
     if (btn) {
         btn.onclick = function() {
