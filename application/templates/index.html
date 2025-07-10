@@ -12,7 +12,7 @@
 
 window.addEventListener('load', function() {
     // Check if the browser is Safari and not running on localhost
-    if (isSafari() && window.location.origin !== 'http://127.0.0.1:8080') {
+    if (isSafari() && !window.location.origin.endsWith(':8080')) {
         if (window.location.search.indexOf('v=') === -1) {
             var uniqueParam = 'v=' + new Date().getTime(); 
             var newUrl = 'https://www.word.golf?' + uniqueParam;
