@@ -44,10 +44,6 @@ data = JSON.parse('{{data|tojson|safe}}');
 {% include 'modal-finish-user.html' %}
 {% include 'modal-finish-guest.html' %}
 
-<div class="footer-div">
-    <p>word.golf #<span id="footer-daily-idx"></span>  <a href="https://tally.so/r/mV7Yay" target="_blank" rel="noopener">leave feedback</a></p>
-</div>
-
 <div id="global">
     <div id="info-box"></div>
     <div id="wordspace-container">
@@ -68,7 +64,9 @@ data = JSON.parse('{{data|tojson|safe}}');
             <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
         </div>
     </div>
-
+    <div class="footer-div">
+        <p>word.golf #<span id="footer-daily-idx"></span>  <a href="https://tally.so/r/mV7Yay" target="_blank" rel="noopener">leave feedback</a></p>
+    </div>
 </div>
 <!-- <script>
     let BACKEND_OK = true
