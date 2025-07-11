@@ -32,10 +32,9 @@
 .footer-div {
     position: fixed;
     left: 0;
-    bottom: 0;
-    padding: 1rem;
+    top: 0;
+    padding: 0.5rem;
     text-align: left;
-    width: 100vw;
 }
 
 .footer-div p {
@@ -43,7 +42,12 @@
 }
 .footer-div p, .footer-div a {
     font-size: 1.1rem;
+    color: var(--4);
+}
+
+.footer-div a:hover{
     color: var(--grayed-out-color);
+    text-decoration-color: var(--grayed-out-color);
 }
 
 
@@ -112,7 +116,7 @@ html {
     min-width: 0.5rem !important;
     padding: 0;
     min-height: 100% !important;
-    border: 1px solid var(--grayed-out-color) !important;
+    border: 1px solid var(--2) !important;
 }
 
   .switchContainer {
@@ -135,7 +139,7 @@ html {
     min-width: 60vw;
     max-width: 70vw;
     max-height: 80vh;
-    outline: 1px solid var(--grayed-out-color);
+    outline: 1px solid var(--4);
     display: none;
     justify-content: center;
     z-index: 3;
@@ -535,23 +539,50 @@ button span {
     margin: 0 auto;
 }
 
-.prompts-title {
+#prompts-title {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    width:100%;
+    padding: 0.5rem;
+    border: 1px solid var(--2);
+}
+
+#prompts-title p{
+    display: inline-block;
+    vertical-align: middle;
+}
+
+#prompts-count {
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 1.8rem;
+}
+
+#prompts-count-remainder {
+    display: flex;
+    color: var(--4);
+    display: inline-block;
+    vertical-align: top;
+    font-size: 1.8rem;
+    margin-left: auto;
+}
+
+
+#prompts-title-heading {
+    margin: 0 0;
     font-family: "Inter";
-    /* text-transform: uppercase; */
     font-size: 1.8rem;
     font-weight: 600;
-    margin: 0.5em 0;
     text-align: center;
-    width: 100%;
-    padding: 0.5rem;
-    color: var(--grayed-out-color-help-target);
-    border: 1px solid var(--grayed-out-color-help-target);
+    color: var(--grayed-out-color);
 }
 
 #information span {
     /* margin: 0 0.2em; */
     /* font-size: 1.3em; */
 }
+
 
 #prompts-container {
     justify-content: flex-start;
@@ -774,7 +805,7 @@ button span {
     max-width: 80vw;
     max-height: 90vh;
     background-color: var(--background-color);
-    outline: 1px solid var(--grayed-out-color);
+    outline: 1px solid var(--4);
     z-index: 4;
     justify-content: center;
     align-items: center;

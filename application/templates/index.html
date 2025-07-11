@@ -44,13 +44,22 @@ data = JSON.parse('{{data|tojson|safe}}');
 {% include 'modal-finish-user.html' %}
 {% include 'modal-finish-guest.html' %}
 
+<div class="footer-div">
+    <p>word.golf #<span id="footer-daily-idx"></span>  <a href="https://tally.so/r/mV7Yay" target="_blank" rel="noopener">leave feedback</a></p>
+</div>
+
 <div id="global">
     <div id="info-box"></div>
     <div id="wordspace-container">
         <div id="wordspace"></div>
     </div>
     <div id="prompts-container">
-        <p class="prompts-title" id="prompts-title">Prompts</p>
+        <div id="prompts-title">
+        <div id="prompts-title-heading">Prompts</div> 
+        <div id="prompts-count-container">
+        <div id="prompts-count">1</div> <div id="prompts-count-remainder">/5</div>
+        </div>
+        </div>
         <div id="prompts">
             <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
             <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
@@ -124,8 +133,4 @@ data = JSON.parse('{{data|tojson|safe}}');
         }
     });
 </script>
-<div class="footer-div">
-    <p>word.golf #<span id="footer-daily-idx"></span></p>
-    <p><a href="https://tally.so/r/mV7Yay" target="_blank" rel="noopener">contact us</a></p>
-</div>
 

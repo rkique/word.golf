@@ -5,7 +5,9 @@
         document.getElementById('modal-finish-user').style.display = 'none';
         localStorage.setItem('is_help', 'true');
         data = sendAndReceiveXML(`help=true`);
-        document.getElementById('prompts-title').innerText = 'Tutorial';
+        document.getElementById('prompts-title-heading').innerText = 'Tutorial';
+        document.getElementById('prompts-count-remainder').innerText = '/2'
+
         renderLinks(data.prompt, data.results)
         clearBoxes()
         renderPrompts(data.jumpsArray, data.startTargetIdxs, data.prompt)
