@@ -10,6 +10,7 @@
     #wordspace {
         width: 100vw;
         height: 48vh;
+        max-width: none;
         /*       top  left   bottom    right */
         justify-items: center;
         justify-content: center; 
@@ -187,7 +188,7 @@
     }
     .help-container {
         max-width: 100%;
-        background-color: var(--background-color);
+        /* background-color: var(--background-color); */
         display: flex;
         flex-wrap: nowrap;
         padding: 1em 2em;

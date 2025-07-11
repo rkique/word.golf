@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/login_pw.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
 <head>
   {% include 'head.html' %}
@@ -168,17 +168,15 @@
         });
         const data = await res.json();
         if (res.ok) {
-          document.getElementById("responseMessage").style.color = "green";
+          document.getElementById("responseMessage").style.color ='var(--success)';
           document.getElementById("responseMessage").textContent = data.message || "Login successful!";
           document.getElementById("responseMessage").style.display = "block";
           localStorage.setItem('is_help', false);
           localStorage.setItem('logged_in', true);
-          window.location.href = '/'; // Redirect to the main page after successful login (comment out for testing)
-          // TODO: Redirect or do something on successful login
-          // do a redirection to the normal word golf page -> show success message
+          window.location.href = '/'; 
         } else {
           document.getElementById("responseMessage").style.display = "block";
-          document.getElementById("responseMessage").style.color = "red";
+          document.getElementById("responseMessage").style.color ='var(--failure)';
           document.getElementById("responseMessage").textContent = data.error || "Login failed";
         }
       } catch (err) {

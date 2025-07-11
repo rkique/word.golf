@@ -26,13 +26,13 @@
     display: flex;
     min-height: 100%;
     max-width: 100%;
-    gap: 0.25rem;
+    gap: 2px;
 }
 
 .footer-div {
     position: fixed;
     left: 0;
-    bottom: 0;
+    top: 0;
     padding: 1rem;
     text-align: left;
     width: 100vw;
@@ -70,7 +70,7 @@ html {
     outline: none;
     border: none;
     font-size: 3rem;
-    transition: transform 0.2s;
+    /* transition: transform 0.2s; */
     }
 
 .switchContainer:active{
@@ -79,7 +79,6 @@ html {
 }
 
 .switch--outlined {
-    margin-top: 1.5em;
     font-size: 2em;
     padding: 2em 2em;
     outline: 1px solid var(--grayed-out-color);
@@ -108,11 +107,11 @@ html {
   
 .tally:not(.prompt-word){
     flex: 0 0 auto;
+    border: 1px solid var(--2);
     max-width: 0.5rem !important;
     min-width: 0.5rem !important;
     padding: 0;
     min-height: 100% !important;
-    border: 1px solid var(--grayed-out-color) !important;
 }
 
   .switchContainer {
@@ -175,6 +174,7 @@ html {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+    z-index: 10;
 }
 
 .help-close {
@@ -294,7 +294,6 @@ html {
     background-color: transparent !important;
     border: 1px solid var(--border-color) !important;
     color: var(--text-color) !important;
-    height: 3.5rem !important;
 }
 
 .logged_in-buttons {
@@ -319,10 +318,10 @@ html {
 
 .guest-buttons, .logged_in-buttons {
     flex-direction: row;
-    padding: 0em 0em 2em 0em;
+    padding: 2rem 0em 2rem 0em;
     justify-content: space-around;
     align-items: baseline;
-    gap: 2.5rem;
+    gap: 1rem;
 }
 
 .help button {
@@ -335,7 +334,6 @@ html {
     cursor: pointer;
     transition: background 0.2s;
     outline: 1px solid var(--border-color);
-    margin-top: 1.5em;
 }
 
 .--grayed-out {
@@ -358,11 +356,11 @@ button {
  }
 
 button {
-    transition: background 0.2s, color 0.2s, transform 0.2s
+    /* transition: background 0.2s, color 0.2s, transform 0.2s */
 }
 
 button:not(.grayed-out):active {
-    transform: scale(0.96);
+    /* transform: scale(0.96); */
     /* box-shadow: 0 4px 16px rgba(0,0,0,0.15); */
 }
 
@@ -375,26 +373,40 @@ button span {
     display: inline-block;
 }
   
-
- .link:hover {
-    color:  var(--hover-color);
- }
   
-
  .link:focus {
     outline: none;
  }
 
  .link {
-    height: 8vh;
-    min-width: 15vw;
+    min-width: 20vw;
     text-align: center;
     border:none;
     outline:none;
     background-color: transparent;
     color: var(--text-color);
-    transition: color 0.2s;
  }
+
+ .link:not(.link--starting):not(.link--target){
+  position: relative;
+  display: inline-block;
+  color: var(--c);
+  background: linear-gradient(to left, var(--text-color) 50%, var(--c) 50%);
+  background-size: 200% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: background-position 0.4s ease-out;
+  text-decoration: none;
+}
+
+.link:hover {
+  background-position: 0 0;
+}
+
+ /* .link:not(.link--starting):hover span{
+        background: var(--0);
+ } */
 
 .link--transition--disabled{
   color: var(--grayed-out-color);
@@ -402,7 +414,11 @@ button span {
 
 .link--starting{
     color: var(--grayed-out-color)!important;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
 }
+
 
 .link--disabled{
     pointer-events: none;
@@ -412,14 +428,14 @@ button span {
 .link--unfocused{
     pointer-events: none;
     color: var(--grayed-out-color-unfocused);
-    transition: transform 0ms ease-out, color 0ms ease-out;
+    /* transition: transform 0ms ease-out, color 0ms ease-out; */
 }
 
 .link--help-target {
     color: var(--grayed-out-color-help-target);
 }
 
-.link--target {
+.link--target span{
     animation: pulse 0.7s infinite;
 }
 
@@ -535,17 +551,33 @@ button span {
     margin: 0 auto;
 }
 
+#prompts-title {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    width:100%;
+    padding: 0.5rem;
+    border: 1px solid var(--2);
+}
+
+#prompts-title p{
+    display: inline-block;
+    vertical-align: middle;
+}
+
+#prompts-count {
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 1.8rem;
+}
+
 .prompts-title {
+    margin: 0 0;
     font-family: "Inter";
-    /* text-transform: uppercase; */
     font-size: 1.8rem;
     font-weight: 600;
-    margin: 0.5em 0;
     text-align: center;
-    width: 100%;
-    padding: 0.5rem;
     color: var(--grayed-out-color-help-target);
-    border: 1px solid var(--grayed-out-color-help-target);
 }
 
 #information span {
@@ -567,35 +599,63 @@ button span {
 }
     /*       top  left   bottom    right */
 #wordspace {
-    width: 60vw;
-    height: 80vh;
-    padding: 3rem 6rem 3rem 6rem;
-    display: grid;
-    grid-template-columns: 1fr 1.5fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr 1.3fr 1fr 1fr 1fr;
-    gap: 4px 6px; /* 4px vertical, 6px horizontal */
-    margin-left: auto;
-    margin-right: 0;
-    justify-items: center;
-    align-items: center;
-    justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr 1.3fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1.4fr 1fr 1fr 1fr;
+  width: max-content;
+  height: auto;
+  max-height: 80vh;
+  max-width: 60vw;
+  overflow: hidden;
+  margin-left: auto;
+  margin-right: 0;
 }
 
+#wordspace > * {
+  border: 1px solid var(--2);
+  box-sizing: border-box;
+}
+#wordspace > .link--starting {
+  border: 1px solid #555;
+}
+
+#wordspace > :nth-child(1),
+#wordspace > :nth-child(2),
+#wordspace > :nth-child(3) {
+  border-top: 1px solid var(--2);
+}
+
+#wordspace > :nth-child(19),
+#wordspace > :nth-child(20),
+#wordspace > :nth-child(21) {
+  border-bottom: 1px solid var(--2);
+}
+
+#wordspace > :nth-child(3n + 1) {
+  border-left: 1px solid black;
+}
+
+#wordspace > :nth-child(3n) {
+  border-right: 1px solid black;
+}
+
+
 #wordspace button { 
-    display: flex;
     align-items: center;
     justify-content: center;
+    background-color: var(--background-color);
+    display: inline-flex; /* <== change from flex to inline-flex to size by content */
     font-size: 2.1em;
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-    transition: transform 400ms ease, color 400ms ease ;
+    min-height: 4.5rem;
+    max-height: 7rem;
+    /* transition: transform 400ms ease, color 400ms ease ; */
     /* border: 1px solid var(--border-color); */
 }
 
-#wordspace button:active{
-    transform: scale(0.92);
+#wordspace button:hover{
+    color: var(--c);
 }
+
 
 #info-box {
     display: none;
@@ -605,7 +665,6 @@ button span {
 
 #prompts {
     padding: 1em 0.5em;
-    gap: 1rem;
     width: 32vw;
     max-width: 32vw;
     display: flex;
@@ -620,10 +679,11 @@ button span {
     border: none;
     display: flex;
     align-items: center;
-    min-height: 6rem;
-    max-height: 8rem;
+    min-height: 5.5rem;
+    height: 6rem;
+    max-height: 7rem;
     justify-content: space-between;
-    font-size: 1.6rem;
+    font-size: 2.1rem;
     position: relative;
     z-index: -1;
     flex-direction: row;
@@ -660,7 +720,6 @@ button span {
 
 
 .prompt-start-word {
-    border-color: var(--grayed-out-color) !important;
     color: var(--grayed-out-color) !important;
     transition: transform 0.2s ease;
 }
@@ -696,12 +755,11 @@ button span {
     position: relative; /* necessary for z-index to apply */
     z-index: 1;
     padding: 0rem 2.5rem;
-    color: var(--text-color);
-    border: 1px solid var(--text-color);
+    border: 1px solid var(--2);
+    /* border: 1px solid var(--text-color); */
     display: flex;
-    align-items: center;
-    text-align: center;
     justify-content: center;
+    align-items: center;
 }
 
 .prompt-box .prompt:hover {
@@ -876,8 +934,7 @@ button span {
     }
   }
   
-#rainbow_text_animated:hover {
-    opacity: 1;
+#rainbow_text_animated:hover span{
     animation: pulse-2 0.7s infinite;
 }
 
@@ -911,7 +968,7 @@ background-size: 800% 100%;
 } */
 
 #rainbow_text_animated {
-    color: var(--emphasis-color);
+    color: var(--emphasis-color) !important;
 }
 
 

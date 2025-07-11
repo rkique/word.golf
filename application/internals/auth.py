@@ -157,7 +157,7 @@ def create_user():
     db.session.commit()
 
     token = cookie_signer.dumps({"user_id": user.id})
-    response = jsonify({"message": "User created and logged in successfully"})
+    response = jsonify({"message": "User created!"})
     if app.debug:
         response.set_cookie(
             "auth_token",

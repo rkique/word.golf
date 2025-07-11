@@ -149,11 +149,6 @@
     margin-bottom: 1.5em;
 }
 
-button:hover {
-    color: var(--hover-color) !important;
-    outline: 1px solid var(--text-color) !important;
-    transform: scale(1.02) !important;
-}
 
   .loginpassword {
     font-size: 2.2rem;
