@@ -13,7 +13,7 @@ import os
 import uuid
 from .internals.auth import get_user_from_cookie, create_guest_user, user_session_exists, set_response_cookie
 from .internals.gameprogress import update_game_state, finished_game
-from .models import GameState
+from .models import GameState, User
 from . import cookie_signer, db
 from .internals import today
 
@@ -475,6 +475,88 @@ def resetpassword():
     # this returns the password reset page stored at /templates/resetpassword.html
     date = today.today.strftime('%Y-%m-%d') if today.today else datetime.datetime.today().strftime('%Y-%m-%d')
     return render_template('resetpassword.html', date=date)
+
+@app.route('/user-statistics', methods=['GET'])
+def user_statistics():
+    user = get_user_from_cookie()
+    if not user:
+        return redirect('/login')
+    
+    game_state = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
+    if not game_state:
+        return redirect('/')
+
+    # look for best score through all game states
+    best_score = GameState.query.filter_by(user_id=user.id).order_by(GameState.total_jumps.asc()).first()
+    if best_score:
+        best_score = best_score.total_jumps
+    else:
+        best_score = game_state.total_jumps
+    
+    # get the total games played by user
+    total_games = GameState.query.filter_by(user_id=user.id).count()
+
+    # get the average jumps per game
+    if total_games > 0:
+        average_total_jumps = GameState.query.filter_by(user_id=user.id).with_entities(db.func.avg(GameState.total_jumps)).scalar()
+    else:
+        average_total_jumps = game_state.total_jumps
+
+    # get the average jumps per prompt for all time
+    total_jumps = GameState.query.filter_by(user_id=user.id).with_entities(db.func.sum(GameState.total_jumps)).scalar()
+    if total_jumps is None:
+        total_jumps = 0 
+    average_jumps_per_prompt = total_jumps / (total_games * PCOUNT) if total_games > 0 else 0
+
+    # of the LOGGED IN users (user.email is not None), get my 'leaderboard' position
+    all_game_states = GameState.query.filter_by(current_date=today.today).order_by(GameState.total_jumps.asc()).all()
+    current_user = user
+    leaderboard = []
+    for gs in all_game_states:
+        if gs.total_jumps > 0:
+            leaderboard.append(gs)
+
+    my_jumps_position = leaderboard.index(game_state) if game_state in leaderboard else None
+
+    # create a new list of just gamestate_ids and total_jumps
+    real_leaderboard = []
+    user_string = "user"
+    for i in range(len(leaderboard)):
+        game = leaderboard[i]
+        new_obj = {
+            'name': user_string,
+            'total_jumps': game.total_jumps,
+        }
+        if i == my_jumps_position:
+            new_obj['name'] = "You"
+
+        real_leaderboard.append(new_obj)
+    
+    my_jumps_position = my_jumps_position + 1 if my_jumps_position is not None else None
+
+    # of the LOGGED IN users (user.email is not None), get my leaderboard position for streaks
+    users = User.query.all()
+    streak_leaderboard = []
+    for user in users:
+        if user.email is None:
+            continue
+        streak_leaderboard.append(user)
+    # sort by streak
+    streak_leaderboard.sort(key=lambda u: u.streak, reverse=True)
+    # print("Streak leaderboard: ", streak_leaderboard)
+    
+    my_streak_position = streak_leaderboard.index(current_user) if current_user in streak_leaderboard else None
+
+    my_streak_position = my_streak_position + 1 if my_streak_position is not None else None
+
+
+    return render_template('user-statistics.html', email=current_user.email, total_games=total_games,
+                           average_total_jumps=average_total_jumps, 
+                           average_prompt_jumps=average_jumps_per_prompt, 
+                           total_jumps=game_state.total_jumps, best_score=best_score,
+                           total_jumps_leaderboard=my_jumps_position,
+                           total_streaks_leaderboard=my_streak_position,
+                           real_leaderboard=real_leaderboard)
 
 @app.route('/', methods=['POST'])
 def index_post():

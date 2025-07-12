@@ -1,0 +1,122 @@
+.wg-banner {
+    text-align: center;
+    margin: 0 auto;
+    min-width: 340px;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--background-color);
+    padding: 1rem;
+}
+
+.wg-banner-logo {
+    width: 3rem;
+    height: 3rem;
+    transform: translate(1rem, 0);
+    margin: 0.5rem auto;
+    display: inline-block;
+    user-select: none;
+    pointer-events: none;
+}
+
+.wg-banner-title {
+    font-family: 'Schibsted Grotesk', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-align: center;
+    user-select: none;
+    text-decoration: none;
+    color: var(--grayed-out-color);
+}
+
+/* Center the content and make it a flex container */
+#statistics-global {
+    display: flex;
+    /* flex-direction: column; */
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Ensure it takes full screen height */
+}
+
+/* Additional styling for the statistics box */
+#statistics-box, #leaderboard-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* padding: 1rem; */
+    background-color: var(--background-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%; 
+    overflow-y: auto;
+    /* height: 60%; */
+    height: 400px;
+}
+
+/* Heading Styles */
+h2 {
+    font-size: 2.2rem;
+    font-weight: 400; 
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+    text-align: center; /* This centers the headings */
+}
+
+/* Style the paragraphs */
+p {
+    font-size: 1.2rem;
+    margin: 0.3rem;
+    color: var(--text-color); /* Use the appropriate color */
+}
+
+.jumps-graph {
+    width: 50%;
+    height: 200px; 
+    /* padding-right: 2rem !important; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+img {
+    max-width: 50% !important;
+}
+
+/* Style the paragraph entries */
+p.leaderboard-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--text-color);
+    border-radius: 5px;
+    padding: 10px 50px;
+    margin: 5px 0;
+    background-color: var(--background-color);
+    font-size: 1.2rem;
+    color: var(--text-color);
+    width: 70%;
+}
+
+/* Optional: highlight the "You" entry */
+p.leaderboard-entry.highlight {
+    font-weight: bold;
+    background-color: var(--background-color);
+    border: 3px solid var(--text-color);
+}
+
+/* Individual spans inside each entry */
+p.leaderboard-entry .rank {
+    flex: 1;
+    text-align: left;
+}
+
+p.leaderboard-entry .name {
+    flex: 2;
+    text-align: center;
+}
+
+p.leaderboard-entry .jumps {
+    flex: 1;
+    text-align: right;
+}

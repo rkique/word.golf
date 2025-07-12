@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="static/css/style.css">
+<link rel="stylesheet" href="static/css/style_mobile.css">
+<link rel="stylesheet" href="static/css/statistics_pw.css">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <title>User Statistics</title>
+    {% include 'head.html' %}
+</head> 
+
+<body>
+    <div class="wg-banner">
+        <a href="/" class="wg-banner-title">word.golf</a>
+    </div>
+    <div id="statistics-global" class="flex banner-bg">
+        <div id="statistics-box" class="flex">
+            <h2>Total Jumps Leaderboard</h2>
+            <div id="leaderboard-box" class="flex"></div> 
+        </div>
+        <!-- <img id="jumps-graph" src="/total_jumps_statistics" alt="Jump Stats Graph"> -->
+        <canvas id="jumps-graph" width="600" height="400"></canvas>
+    </div>
+</body>
+
+<script>
+
+    function render_leaderboard(leaderboard) {
+        const leaderboardContainer = document.getElementById('leaderboard-box');
+        leaderboardContainer.innerHTML = ''; 
+        leaderboard.forEach((entry, index) => {
+            const entryElement = document.createElement('p');
+            entryElement.classList.add('leaderboard-entry');
+
+            entryElement.innerHTML = `
+                <span class="rank">#${index + 1}</span>
+                <span class="name">${entry.name}</span>
+                <span class="jumps">${entry.total_jumps} jumps</span>
+            `;
+
+            if (entry.name === "You") {
+                entryElement.classList.add('highlight');
+            }
+
+            leaderboardContainer.appendChild(entryElement);
+        });
+    }
+
+    const leaderboard = JSON.parse('{{ real_leaderboard|tojson|safe }}');
+
+    console.log("Leaderboard data:", leaderboard);
+
+    render_leaderboard(leaderboard);
+
+    function render_graph() {
+        fetch('/total_jumps_statistics')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error(data.error);
+                    return;
+                }
+
+                let jumpsValues = data.jumps_values; 
+                let userCounts = data.user_counts; 
+
+                const sortedIndices = jumpsValues.map((value, index) => index)
+                .sort((a, b) => jumpsValues[a] - jumpsValues[b]);
+
+                jumpsValues = sortedIndices.map(i => jumpsValues[i]);
+                userCounts = sortedIndices.map(i => userCounts[i]);
+
+                
+                const ctx = document.getElementById('jumps-graph').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar', 
+                    data: {
+                        labels: jumpsValues,  
+                        datasets: [{
+                            label: 'Number of Users',
+                            data: userCounts,  
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)', // Bar color
+                            borderColor: 'rgba(75, 192, 192, 1)',     // Border color
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: false,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Total Jumps'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Number of Users'
+                                },
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Total Jumps Distribution', 
+                                padding: {
+                                    top: 20,
+                                    bottom: 10 
+                                },
+                                font: {
+                                    size: 25, 
+                                    weight: 'bold' 
+                                }
+                            },
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(tooltipItem) {
+                                        return `Total Jumps: ${tooltipItem.label}, Users: ${tooltipItem.raw}`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }).catch(error => console.error('Error fetching data:', error));
+    }
+    render_graph();
+
+</script>
+
+<!-- <p>Email: {{ email }}</p> -->
+<!-- <p>Total Games Played: {{ total_games }}</p> -->
+<!-- <p>Average Total Jumps per Game: {{ average_total_jumps }}</p> -->
+<!-- <p>Average Total Jumps per Prompt: {{ average_prompt_jumps }}</p> -->
+<!-- <p>Total Jumps for Today: {{total_jumps}} </p> -->
+<!-- <p>Best Score: {{ best_score }}</p> -->
+<!-- <p>Total Jumps Leaderboard Position: #{{ total_jumps_leaderboard }}</p> -->
+<!-- <p>Total Streaks Leaderboard Position: #{{ total_streaks_leaderboard }}</p> -->
