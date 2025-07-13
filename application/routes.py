@@ -36,7 +36,7 @@ HELP_END_JUMPS_ARRAY = [[1,0,1,0,1,1],
 
 BASE_START_TARGET_IDXS = [[0,0], [0,5]]
 PCOUNT = 5
-DAYS = 2
+DAYS = 0
 
 HELP_PROMPTS = [["fruit", "porch"],["whisper", "scuffle"]]
 HELP_NEIGHBORS = ["tree", "shouting"]
@@ -71,7 +71,6 @@ def load_data():
 elapsed = None
 prompts_today = None
 neighbors_today = None
-date_time = None
 
 def add_days(days: int) -> datetime.timedelta:
     return datetime.timedelta(days=days)
