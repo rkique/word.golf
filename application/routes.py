@@ -36,7 +36,7 @@ HELP_END_JUMPS_ARRAY = [[1,0,1,0,1,1],
 
 BASE_START_TARGET_IDXS = [[0,0], [0,5]]
 PCOUNT = 5
-DAYS = 0
+DAYS = 2
 
 HELP_PROMPTS = [["fruit", "porch"],["whisper", "scuffle"]]
 HELP_NEIGHBORS = ["tree", "shouting"]
@@ -68,17 +68,17 @@ def load_data():
     WV = dict(zip(WV['word'], WV['vector']))
     PRECOMPUTED = txt_to_dict("application/data/top_100_w2v.csv")
 
-elpased = None
+elapsed = None
 prompts_today = None
 neighbors_today = None
+date_time = None
 
 def add_days(days: int) -> datetime.timedelta:
     return datetime.timedelta(days=days)
 
 def elapsed_days(date : datetime.datetime) -> int:
     start_date = datetime.datetime.strptime("05-30-2025", '%m-%d-%Y').date()
-    today.today = date
-    return (today.today - start_date).days
+    return (date - start_date).days
 
 def get_prompts_for_date(date : datetime.datetime) -> list:
     '''
@@ -88,13 +88,12 @@ def get_prompts_for_date(date : datetime.datetime) -> list:
     prompt_range = range(elapsed * PCOUNT, (elapsed + 1) * PCOUNT)
     return elapsed, [PROMPTS[i] for i in prompt_range], [NEIGHBORS[i] for i in prompt_range]
 
+#this tries to calculate an elapsed from a different variable.
 def load_time():
     global elapsed, prompts_today, neighbors_today
-    eastern = datetime.timezone(datetime.timedelta(hours=-5))
-    now_utc = datetime.datetime.utcnow()
-    now_et = now_utc.replace(tzinfo=datetime.timezone.utc).astimezone(eastern)
-    today.today = now_et.replace(tzinfo=None).date() + add_days(DAYS)
-    elapsed, prompts_today, neighbors_today = get_prompts_for_date(today.today)
+    if elapsed == None:
+        today.today = today.today + add_days(DAYS)
+        elapsed, prompts_today, neighbors_today = get_prompts_for_date(today.today)
 
 def sim_to_index(score):
     thresholds = [0.2, 0.27, 0.35, 0.42]
@@ -257,7 +256,6 @@ def index():
     print('/ Starting Fresh..')
     load_data()
     load_time()
-    print('[index.html] Current Date: ', today.today)
     data_or_none = get_existing_data()
     if data_or_none:
         data = data_or_none
