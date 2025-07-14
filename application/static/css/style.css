@@ -42,7 +42,7 @@
 }
 .footer-div p, .footer-div a {
     font-size: 1.1rem;
-    color: var(--4);
+    color: var(--grayed-out-color);
 }
 
 .footer-div a:hover{
@@ -469,23 +469,23 @@ button span {
 }
 
 .banner-perfect {
-    color: #22ffed;
+    color: var(--banner-perfect);
 }
 .banner-impressive {
-    color: #00d92f;
+    color: var(--banner-impressive);
 }
 .banner-great {
-    color: #2889ff;
+    color: var(--banner-great);
 }
 .banner-good {
-    color: rgb(192, 202, 52)
+    color: var(--banner-good);
 }
 .banner-closecall {
-    color: #d41b11; 
+    color: var(--banner-closecall); 
 }
 
 .prompt--done {
-    color: var(--grayed-out-color);
+    color: var(--grayed-out);
 }
 
 .prompt-num-large{
