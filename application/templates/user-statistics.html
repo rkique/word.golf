@@ -16,12 +16,11 @@
     <div class="wg-banner">
         <a href="/" class="wg-banner-title">word.golf</a>
     </div>
-    <div id="statistics-global" class="flex banner-bg">
+    <div id="statistics-global" class="flex">
         <div id="statistics-box" class="flex">
             <h2>Total Jumps Leaderboard</h2>
             <div id="leaderboard-box" class="flex"></div> 
         </div>
-        <!-- <img id="jumps-graph" src="/total_jumps_statistics" alt="Jump Stats Graph"> -->
         <canvas id="jumps-graph" width="600" height="400"></canvas>
     </div>
 </body>
@@ -134,6 +133,10 @@
             }).catch(error => console.error('Error fetching data:', error));
     }
     render_graph();
+
+    function render_prompt_jump_statistics() {
+        // Fetch the prompt jump statistics 
+    }
 
 </script>
 

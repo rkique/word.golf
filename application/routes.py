@@ -36,7 +36,7 @@ HELP_END_JUMPS_ARRAY = [[1,0,1,0,1,1],
 
 BASE_START_TARGET_IDXS = [[0,0], [0,5]]
 PCOUNT = 5
-DAYS = 0
+DAYS = 2
 
 SKIPPED_TOKEN = "<SKIPPED>"
 
@@ -364,15 +364,15 @@ def update_jumps_array(new_data):
         #close old row
         new_data['jumpsArray'][i] = check_if_max(new_data['jumpsArray'][i])
         #open new row.
-        print("[update_jumps_array] row: ", row, "equals [0,0,0,0,0,0]: ", row == [0,0,0,0,0,0])
+        # print("[update_jumps_array] row: ", row, "equals [0,0,0,0,0,0]: ", row == [0,0,0,0,0,0])
         if row == [0,0,0,0,0,0]:
-            print("[update_jumps_array] Found empty row at index: ", i)
-            print("[update_jumps_array] Before : ", [1,0,0,0,0,1])
+            # print("[update_jumps_array] Found empty row at index: ", i)
+            # print("[update_jumps_array] Before : ", [1,0,0,0,0,1])
             new_data['jumpsArray'][i] = [1,0,0,0,0,1]
-            print("[update_jumps_array] Setting new row to: ", new_data['jumpsArray'][i])
+            # print("[update_jumps_array] Setting new row to: ", new_data['jumpsArray'][i])
             new_data['startTargetIdxs'] = [[i,0],[i,5]]
             break
-    print("[update_jumps_array] jumpsArray: ", new_data)
+    # print("[update_jumps_array] jumpsArray: ", new_data)
     return new_data
 
 #if user exists and game state for user exists, return it. Else, None.
@@ -475,6 +475,41 @@ def resetpassword():
     # this returns the password reset page stored at /templates/resetpassword.html
     date = today.today.strftime('%Y-%m-%d') if today.today else datetime.datetime.today().strftime('%Y-%m-%d')
     return render_template('resetpassword.html', date=date)
+
+
+@app.route('/per-jump-statistics', methods=['GET'])
+def per_jump_statistics():
+    game_date = today.today
+    gamestates = GameState.query.filter_by(current_date=game_date).order_by(GameState.current_date.desc()).all()
+    today_prompts = gamestates[0].prompts
+    starting_words = []
+    ending_words = []
+    for prompt in today_prompts:
+        starting_words.append(prompt[0])
+        ending_words.append(prompt[1])
+    counts = {}
+    for i in range(5):
+        counts[i] = {}
+        for index in range(1, 13):
+            counts[i][index] = {}
+            for gamestate in gamestates:
+                previous_jumps = 0
+                i_cpy = i - 1
+                while i_cpy >= 0:
+                    previous_jumps += sum(gamestate.jumpsA[i_cpy]) - 1
+                    i_cpy = i_cpy - 1
+                current_jumps = sum(gamestate.jumpsA[i]) - 1 
+                list_replacing_prompts = gamestate.selected_words
+                if list_replacing_prompts:
+                    if index > current_jumps or previous_jumps + index - 1 >= len(list_replacing_prompts):
+                        continue
+                    else:
+                        if list_replacing_prompts[previous_jumps + index - 1]:
+                            if list_replacing_prompts[previous_jumps + index - 1] in counts[i][index]:
+                                counts[i][index][list_replacing_prompts[previous_jumps + index - 1]] += 1
+                            else:
+                                counts[i][index][list_replacing_prompts[previous_jumps + index - 1]] = 1
+    return make_response(counts) 
 
 @app.route('/user-statistics', methods=['GET'])
 def user_statistics():
@@ -618,7 +653,9 @@ def index_post():
         print(f"[/] Shifting to Prompt {data.get('i', 0)+1}")
         if (data.get('i', 0) + 1 >= PCOUNT):
             data['i'] = 4
+            print("Previous data: ", data)
             data = update_jumps_array(data)
+            print("Updated data: ", data)
             update_game_state(data)
             streak, total_jumps = finished_game(request)
             print(f'streak: [{streak}]')
