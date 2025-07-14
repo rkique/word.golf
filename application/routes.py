@@ -262,7 +262,7 @@ def index():
 
         if data["results"] == []:
             i = data.get('i', 0)
-            data_today = shift_to(i)
+            data_today = shift_to(0)
             data_today['jumpsArray'] = BASE_JUMPS_ARRAY
             data_today['startTargetIdxs'] = BASE_START_TARGET_IDXS
             data_today['logged_in'] = data["logged_in"]
