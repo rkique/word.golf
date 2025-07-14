@@ -19,7 +19,7 @@ function syncColorMode() {
   document.documentElement.style.setProperty('--success', 'rgb(0, 70, 0)');
   document.documentElement.style.setProperty('--0', '#000');
   document.documentElement.style.setProperty('--2', '#2c2c2c');
-  document.documentElement.style.setProperty('--4', '#444');
+  document.documentElement.style.setProperty('--4', '#515151');
   document.documentElement.style.setProperty('--c', '#d2d2d2');
 
   currentMode = localStorage.getItem('darkMode')
