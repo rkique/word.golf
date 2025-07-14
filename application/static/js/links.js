@@ -191,6 +191,7 @@ function renderSessionDone(resp) {
     prompts = resp.prompts
     jumpsArray = resp.jumpsArray
     start_target = prompts[4]
+    previous_words = resp.previous_words
     renderPrompts(jumpsArray, resp.startTargetIdxs, start_target, true)
     let is_logged_in = Boolean(localStorage.getItem('logged_in'));
     if (is_logged_in) {

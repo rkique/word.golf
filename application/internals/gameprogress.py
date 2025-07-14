@@ -130,4 +130,4 @@ def finished_game(finish_request):
         # db.session.add(game)
         db.session.commit()
 
-    return user.streak, game.total_jumps
+    return user.streak, game.total_jumps, game.selected_words

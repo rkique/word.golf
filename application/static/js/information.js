@@ -75,7 +75,7 @@ function renderFinish(resp) {
     const daily_idx = daysSinceStartDate();
     is_logged_in = Boolean(localStorage.getItem('logged_in'))
     let jumpsGridMessage = resp.jumpsArray ? renderGrid(resp.jumpsArray) : '';
-    runAfterBannerDisappears(() => {displayFinishModal(daily_idx, resp.total_jumps, resp.streak, jumpsGridMessage, is_logged_in)})
+    runAfterBannerDisappears(() => {displayFinishModal(daily_idx, resp.totalJumps, resp.streak, resp.wordsArray, jumpsGridMessage, is_logged_in)})
 }
 
 /* Clears the modal, localStorage, and renders links with XML redirect=true*/
@@ -100,7 +100,7 @@ function startGame() {
     let start_target = prompts[prompt_idx];
     let startTargetIdxs = resp.startTargetIdxs
     // total_jumps is only passed after game end.
-    const is_end = 'total_jumps' in resp ? resp.total_jumps : 0;
+    const is_end = 'totalJumps' in resp ? resp.totalJumps : 0;
     start_target = prompts[prompt_idx];
     start_target[0] = results[10];
     renderPrompts(jumpsArray, startTargetIdxs, start_target=start_target, is_end)
@@ -176,11 +176,15 @@ function generateLineGraph(scores) {
     Plotly.newPlot(graphContainer, [trace], layout, config);
 }
 
-function displayFinishModal(daily_idx, totalJumps, currentStreak, jumpsGridMessage, is_user=false) {
+function displayFinishModal(daily_idx, totalJumps, currentStreak, selectedWords, jumpsGridMessage, is_user=false) {
     const modalFinish = document.getElementById(is_user ? 'modal-finish-user' : 'modal-finish-guest');
     modalFinish.querySelector('.daily-idx').innerHTML = daily_idx;
     modalFinish.querySelector('.totalJumps').innerHTML = totalJumps;
     modalFinish.querySelector('.streak').innerHTML = currentStreak;
+    // Map selectedWords to an array of words each in a .prompt-word class
+    modalFinish.querySelector('.selectedWords').innerHTML = selectedWords
+        .map(arr => arr.map(word => `<span class="finish-word">${word}</span>`).join(' '))
+        .join('<br><br>');
     modalFinish.style.display = "flex";
     let tweetMessage;
     if(is_user){

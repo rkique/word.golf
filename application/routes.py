@@ -735,10 +735,12 @@ def index_post():
             data = update_jumps_array(data)
             print("Updated data: ", data)
             update_game_state(data)
-            streak, total_jumps = finished_game(request)
-            print(f'streak: [{streak}]')
+            #update data object with game information from database
+            streak, total_jumps, selected_words = finished_game(request)
             data['streak'] = streak
-            data['total_jumps'] = total_jumps
+            data['totalJumps'] = total_jumps
+            starts = [prompt[0] for prompt in prompts_today]
+            data['wordsArray'] = words_array_from_data(starts, selected_words, data['jumpsArray'])
             session['data'] = json.dumps(data)
             update_game_state(json.loads(session['data']))
             return make_response("session_done" + session.get('data'))
