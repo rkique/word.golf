@@ -90,7 +90,7 @@ function startGame() {
     let resp = sendAndReceiveXML('redirect=true');
     clearBoxes()
     document.getElementById('prompts-title-heading').innerText = 'Prompts'
-    document.getElementById('prompts-count-remainder').innerText = '/5'
+    document.getElementById('prompts-count-remainder').innerText = '/ 5'
 
     if ("logged_in" in resp && resp.logged_in) {
         renderLogin(resp.logged_in);
