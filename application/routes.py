@@ -482,7 +482,7 @@ def resetpassword():
 @app.route('/profile', methods=['GET'])
 def profile():
     user = get_user_from_cookie()
-    if not user:
+    if not user or not user.email:
         return redirect('/login')
     
     game_state = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
