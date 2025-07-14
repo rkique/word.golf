@@ -671,6 +671,16 @@ def user_statistics():
                            total_streaks_leaderboard=my_streak_position,
                            real_leaderboard=real_leaderboard)
 
+def words_array_from_data(starts, selected_words, jumps_array):
+    result = []
+    l_idx = 0
+    for i, row in enumerate(jumps_array):
+        r_idx = l_idx + sum(row) - 1
+        subarray = [starts[i]] + selected_words[l_idx:r_idx]
+        result.append(subarray)
+        l_idx = r_idx
+    return result
+
 @app.route('/', methods=['POST'])
 def index_post():
     print(f'[/ Jul8] session: {session}')

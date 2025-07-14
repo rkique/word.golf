@@ -51,9 +51,41 @@ p {
     align-items: center;
 }
 
-#calendar {
-  max-width: 400px;    /* Reduce width */
-  font-size: 12px;     /* Smaller text */
+.profile-title {
+    display: inline;
+    font-size: 1.8rem;
+}
+.profile-email {
+    font-weight: 300;
+    font-size: 1.4rem;
+}
+
+#statistics, #calendar {
+  gap: 2rem;
+  flex: 1;
+  font-size: 1rem;
   margin: 0 auto;      /* Center it */
-  transform-origin: top;
+  padding: 2rem;
+
+}
+
+.back-arrow {
+    color: var(--text-color);
+    transition: color 0.2s;
+}
+
+.back-arrow:hover {
+    color: var(--emphasis-color);
+}
+
+.fc-day-disabled {
+  background-color: transparent !important;
+  opacity: 1;
+}
+
+.fc-theme-standard .fc-scrollgrid {
+      border: 1px solid var(--transparent) !important;
+}
+.fc td, .fc th {
+  border: 1px solid var(--transparent) !important;
 }

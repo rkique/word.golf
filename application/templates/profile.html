@@ -3,15 +3,12 @@
 <link rel="stylesheet" href="static/css/style.css">
 <link rel="stylesheet" href="static/css/style_mobile.css">
 <!-- <link rel="stylesheet" href="static/css/statistics_pw.css"> -->
-<link rel="stylesheet" href="static/css/profile_pw.css">
+<link rel="stylesheet" href="static/css/profile.css">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
-    <!-- <script src="https://unpkg.com/js-year-calendar@latest/dist/js-year-calendar.min.js"></script> -->
-    <!-- <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/index.global.min.css" rel="stylesheet"> -->
-    <!-- <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/index.global.min.css" rel="stylesheet"> -->
     <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/index.global.min.js"></script>
     <title>User Statistics</title>
@@ -19,23 +16,28 @@
 </head> 
 
 <body>
-    <div class="wg-banner">
-        <a href="/" class="wg-banner-title">word.golf</a>
-    </div>
-    <div id="statistics-global" class="flex">
-        <h2>User Profile</h2>
-        <p>Email: {{ email }}</p>
-        <p>Total Games Played: {{ total_games }}</p>
-        <p>Average Total Jumps per Game: {{ average_total_jumps }}</p>
-        <p>Average Total Jumps per Prompt: {{ average_prompt_jumps }}</p>
-        <p>Total Jumps Today: {{ total_jumps }} </p>
-        <p>Best Score: {{ best_score }}</p>
+    <div class="flex flex-row">
+    <div id="statistics" class="flex flex-column">
+        <div>
+        <a href="/" class="back-arrow" style="text-decoration: none; margin-right: 12px; font-size: 2rem; vertical-align: middle;">&#8592;</a>
+        <h2 class="profile-title">Profile <span 
+            class="profile-email"> {{ email }}</span></h2>
+        </div>
         <canvas id="jumps-graph" width="600" height="400"></canvas>
+        <div class="profile-stats">
+        <p>Games Played: {{ total_games }}</p>
+        <p>Average Jumps / Game: {{ average_total_jumps }}</p>
+        <p>Average Jumps / Prompt: {{ average_prompt_jumps }}</p>
+        <!-- <p>Total Jumps Today: {{ total_jumps }} </p>
+        <p>Best Score: {{ best_score }}</p> -->
+        </div>
     </div>
     <div id="calendar"></div>
+    </div>
 </body>
 
 <script>
+    
     // import { Calendar } from '@fullcalendar/core';
     // import dayGridPlugin from '@fullcalendar/daygrid';
     // now make the jumps graph for total_jumps over time (where total_jumps is non-zero)
@@ -49,7 +51,11 @@
         const totalJumps = data.map(entry => entry.total_jumps);
 
         const averageJumps = averageData.map(entry => entry.average_jumps);
-
+        const failure = getCSSVariable('--failure');
+        const softFailure = getCSSVariable('--soft-failure');
+        const grayedOutBackground = getCSSVariable('--grayed-out-background');
+        const grayedOutColor = getCSSVariable('--grayed-out-color');
+        const backgroundColor = getCSSVariable('--grayed-out-background');
         new Chart(ctx, {
             type: 'line',
             data: {
@@ -57,18 +63,22 @@
                 datasets: [{
                     label: 'Total Jumps',
                     data: totalJumps,
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    fill: true,
+                    borderColor: grayedOutBackground,
+                    pointBackgroundColor: grayedOutColor, 
+                    backgroundColor: backgroundColor,
+                    fill: false,
+                    showLine: true,
                 },
                 {
                     label: 'Average Jumps',
                     data: averageJumps,
-                    borderColor: 'rgba(255, 0, 0, 1)',  // Red line
-                    backgroundColor: 'rgba(255, 0, 0, 0)', // No fill
+                    borderColor: softFailure,
+                    pointBackgroundColor: failure, 
+                    backgroundColor: 'rgba(255, 0, 0, 0)',
                     fill: false,
                     borderWidth: 2,
-                    tension: 0.1
+                    tension: 0.1,
+                    showLine: true,
                 }]
             },
             options: {
@@ -84,7 +94,7 @@
                     y: {
                         title: {
                             display: true,
-                            text: 'Total Jumps'
+                            text: 'Total'
                         }
                     }
                 }
@@ -93,40 +103,9 @@
     }
 
     renderGraph();
-
-    // function renderCalendar() {
-
-    //     const calendarData = JSON.parse('{{ month_stats|tojson|safe }}');
-    //     const calendarEl = document.getElementById('calendar');
-
-    //     const calendar = new Calendar(calendarEl, {
-    //         plugins: [dayGridPlugin],
-    //         initialView: 'dayGridMonth',
-    //         initialDate: '2025-07-01',
-    //         validRange: {
-    //             start: '2025-07-01',
-    //             end: '2025-07-31'
-    //         },
-    //         headerToolbar: {
-    //             left: '',
-    //             center: 'title',
-    //             right: ''
-    //         },
-    //         events: calendarData
-    //     });
-
-    //     calendar.render();
-
-    // }
-
-    // renderCalendar();
-
 </script>
 
 <script type="module">
-    // import { Calendar } from 'https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/index.global.min.js';
-    // import dayGridPlugin from 'https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/index.global.min.js';
-
     document.addEventListener('DOMContentLoaded', function () {
         const calendarData = JSON.parse('{{ month_stats|tojson|safe }}');
 
@@ -135,9 +114,9 @@
                 return new Date(event.date).toISOString().split('T')[0];
             })
         );
-
+        const borderColor = getCSSVariable('--grayed-out-background');
+        const softCheck = getCSSVariable('--soft-check');
         const calendarEl = document.getElementById('calendar');
-
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             initialDate: '2025-07-01',
@@ -154,9 +133,10 @@
                 const date = info.date;
                 const dateString = date.toISOString().split('T')[0]; 
                 console.log(dateString);
+                info.el.style.border = `1px solid ${borderColor}`;
                 if (eventDates.has(dateString)) {
-                    info.el.style.backgroundColor = 'green';
-                }
+                    info.el.style.backgroundColor = softCheck;
+                } 
             }
         });
 
