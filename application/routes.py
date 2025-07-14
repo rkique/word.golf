@@ -16,6 +16,7 @@ from .internals.gameprogress import update_game_state, finished_game
 from .models import GameState
 from . import cookie_signer
 from .internals import today
+from datetime import date
 
 # store logged_in in routes.py
 prompt_neighbor_dict = get_prompts(txt_to_list("application/data/neighbors.txt"))
@@ -87,12 +88,11 @@ def get_prompts_for_date(date : datetime.datetime) -> list:
     prompt_range = range(elapsed * PCOUNT, (elapsed + 1) * PCOUNT)
     return elapsed, [PROMPTS[i] for i in prompt_range], [NEIGHBORS[i] for i in prompt_range]
 
-#this tries to calculate an elapsed from a different variable.
 def load_time():
     global elapsed, prompts_today, neighbors_today
-    if elapsed == None:
-        today.today = today.today + add_days(DAYS)
-        elapsed, prompts_today, neighbors_today = get_prompts_for_date(today.today)
+    today.today = date.today()
+    today.today = today.today + add_days(DAYS)
+    elapsed, prompts_today, neighbors_today = get_prompts_for_date(today.today)
 
 def sim_to_index(score):
     thresholds = [0.2, 0.27, 0.35, 0.42]
