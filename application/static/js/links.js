@@ -330,6 +330,10 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
     let resp = sendAndReceiveXML("word=" + word);
     let promptIdx = lastNonzeroRow(resp.jumpsArray)
     let jumps = resp.jumpsArray[promptIdx].reduce((a, b) => a + b, 0) - 1;
+    if (jumps > 5) {
+        // show the skip button if we have more than 5 jumps
+        document.getElementById("skip-button").style.display = "block";
+    }
     if (jumps >= 13) { // cap it at 12 current jumps
         resp = sendAndReceiveXML(`end=true`);
     }

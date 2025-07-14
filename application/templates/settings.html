@@ -60,6 +60,8 @@
                 } else {
                     console.log("Bad skip button -> failed or is not allowed")
                 }
+                // Hide the skip button after skipping
+                document.getElementById("skip-button").style.display = "none";
                 
             } else {
                 console.log("Skip failed:", data);
@@ -87,8 +89,8 @@
         style="position: relative; top: -10px; left: -10px;">
         Back
     </button>
-    <button onclick="renderSkip()" class="switch switch--outlined"
-        style="position: relative; top: -10px; left: -5px;">
+    <button id="skip-button" onclick="renderSkip()" class="switch switch--outlined"
+        style="position: relative; top: -10px; left: -5px; display: none;">
         Skip
     </button>
     <button onclick="renderProfile()" class="switch switch--outlined"

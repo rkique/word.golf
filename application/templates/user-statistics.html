@@ -23,9 +23,30 @@
         </div>
         <canvas id="jumps-graph" width="600" height="400"></canvas>
     </div>
+    <div style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+        <label for="prompt-selector">Select Prompt:</label>
+        <select id="prompt-selector">
+            <option value="0">Prompt 1</option>
+            <option value="1">Prompt 2</option>
+            <option value="2">Prompt 3</option>
+            <option value="3">Prompt 4</option>
+            <option value="4">Prompt 5</option>
+        </select>
+    </div>
+
+    <div style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
+        <button id="jump-left">&lt;</button>
+        <span id="jump-label">Jump 1</span>
+        <button id="jump-right">&gt;</button>
+    </div>
+    <canvas id="selected-graph" width="600" height="400"></canvas>
 </body>
 
 <script>
+    let promptIndex = 0;
+    let jumpNumber = 1;
+    let chartInstance = null;
+    let fullData = null;
 
     function render_leaderboard(leaderboard) {
         const leaderboardContainer = document.getElementById('leaderboard-box');
@@ -133,10 +154,161 @@
             }).catch(error => console.error('Error fetching data:', error));
     }
     render_graph();
+    
 
     function render_prompt_jump_statistics() {
-        // Fetch the prompt jump statistics 
+        console.log("Fetching prompt jump statistics...");
+        fetch('/per-jump-statistics').then(response => response.json()).then(data => {
+                if (data.error) {
+                    console.error(data.error);
+                    return;
+                }
+                console.log("Here is the data from the backend: ", data);
+                // prompts -> 0 - 4
+                // jumps -> 1 - 12
+                const correct_data = data[0][1];
+                console.log("Correct data for prompt 1 jump 1: ", correct_data);
+                const labels = Object.keys(correct_data);
+                const userJumps = Object.values(correct_data);
+                
+                const ctx = document.getElementById('selected-graph').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Number of Users',
+                            data: userJumps,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            fill: true,
+                        }]
+                    },
+                    options: {
+                        responsive: false,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Selected Words'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Number of Users'
+                                }
+                            }
+                        }
+                    }
+                });
+                
+            })
+            .catch(error => console.error('Error fetching data:', error));
+        
     }
+
+    // render_prompt_jump_statistics();
+    function updateGraph() {
+        const correct_data = fullData[promptIndex][jumpNumber];
+        const labels = Object.keys(correct_data);
+        const userJumps = Object.values(correct_data);
+
+        const ctx = document.getElementById('selected-graph').getContext('2d');
+
+        
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+
+        chartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: `Users`,
+                    data: userJumps,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true,
+                }]
+            },
+            options: {
+                responsive: false,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: `Prompt ${promptIndex + 1} | Jump ${jumpNumber}`, 
+                        padding: {
+                            top: 20,
+                            bottom: 10 
+                        },
+                        font: {
+                            size: 25, 
+                            weight: 'bold' 
+                        }
+                    },
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Selected Words'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Number of Users'
+                        }
+                    }
+                }
+            }
+        });
+
+        
+        document.getElementById('jump-label').innerText = `Jump ${jumpNumber}`;
+    }
+
+    function renderPromptJumpStatistics() {
+        fetch('/per-jump-statistics')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error(data.error);
+                    return;
+                }
+
+                fullData = data; 
+                updateGraph(); 
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    }
+
+    
+    document.getElementById('prompt-selector').addEventListener('change', (e) => {
+        promptIndex = parseInt(e.target.value);
+        updateGraph();
+    });
+
+    
+    document.getElementById('jump-left').addEventListener('click', () => {
+        if (jumpNumber > 1) {
+            jumpNumber--;
+            updateGraph();
+        }
+    });
+
+    document.getElementById('jump-right').addEventListener('click', () => {
+        if (jumpNumber < 12) {
+            jumpNumber++;
+            updateGraph();
+        }
+    });
+
+    renderPromptJumpStatistics();
 
 </script>
 

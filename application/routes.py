@@ -220,6 +220,8 @@ def skip():
 
         returned_object["startTargetIdxs"] = [[current_prompt, 0], [current_prompt, 5]]
 
+        game_state.start_target_idxs = returned_object["startTargetIdxs"]
+
         returned_object["done"] = False
 
     db.session.commit()
@@ -242,6 +244,7 @@ def skip():
     game_data['prompt'] = prompt
 
     session['data'] = json.dumps(game_data)
+    # send data to backend
 
     return make_response(json.loads(json.dumps(returned_object)))
 
@@ -588,7 +591,8 @@ def per_jump_statistics():
                                 counts[i][index][list_replacing_prompts[previous_jumps + index - 1]] += 1
                             else:
                                 counts[i][index][list_replacing_prompts[previous_jumps + index - 1]] = 1
-    return make_response(counts) 
+    print("Counts: ", counts)
+    return make_response(counts)
 
 @app.route('/user-statistics', methods=['GET'])
 def user_statistics():
