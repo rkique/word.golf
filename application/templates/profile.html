@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="static/css/style.css">
+<link rel="stylesheet" href="static/css/style_mobile.css">
+<!-- <link rel="stylesheet" href="static/css/statistics_pw.css"> -->
+<link rel="stylesheet" href="static/css/profile_pw.css">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <!-- <script src="https://unpkg.com/js-year-calendar@latest/dist/js-year-calendar.min.js"></script> -->
+    <!-- <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/index.global.min.css" rel="stylesheet"> -->
+    <!-- <link href="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/index.global.min.css" rel="stylesheet"> -->
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/index.global.min.js"></script>
+    <title>User Statistics</title>
+    {% include 'head.html' %}
+</head> 
+
+<body>
+    <div class="wg-banner">
+        <a href="/" class="wg-banner-title">word.golf</a>
+    </div>
+    <div id="statistics-global" class="flex">
+        <h2>User Profile</h2>
+        <p>Email: {{ email }}</p>
+        <p>Total Games Played: {{ total_games }}</p>
+        <p>Average Total Jumps per Game: {{ average_total_jumps }}</p>
+        <p>Average Total Jumps per Prompt: {{ average_prompt_jumps }}</p>
+        <p>Total Jumps Today: {{ total_jumps }} </p>
+        <p>Best Score: {{ best_score }}</p>
+        <canvas id="jumps-graph" width="600" height="400"></canvas>
+    </div>
+    <div id="calendar"></div>
+</body>
+
+<script>
+    // import { Calendar } from '@fullcalendar/core';
+    // import dayGridPlugin from '@fullcalendar/daygrid';
+    // now make the jumps graph for total_jumps over time (where total_jumps is non-zero)
+    // for the user to show improvement
+    function renderGraph() {
+        const ctx = document.getElementById('jumps-graph').getContext('2d');
+        const data = JSON.parse('{{ jumps_data|tojson|safe }}');
+        const averageData = JSON.parse('{{ jumps_average_data|tojson|safe }}');
+
+        const labels = data.map(entry => entry.date);
+        const totalJumps = data.map(entry => entry.total_jumps);
+
+        const averageJumps = averageData.map(entry => entry.average_jumps);
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Total Jumps',
+                    data: totalJumps,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true,
+                },
+                {
+                    label: 'Average Jumps',
+                    data: averageJumps,
+                    borderColor: 'rgba(255, 0, 0, 1)',  // Red line
+                    backgroundColor: 'rgba(255, 0, 0, 0)', // No fill
+                    fill: false,
+                    borderWidth: 2,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: false,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Total Jumps'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    renderGraph();
+
+    // function renderCalendar() {
+
+    //     const calendarData = JSON.parse('{{ month_stats|tojson|safe }}');
+    //     const calendarEl = document.getElementById('calendar');
+
+    //     const calendar = new Calendar(calendarEl, {
+    //         plugins: [dayGridPlugin],
+    //         initialView: 'dayGridMonth',
+    //         initialDate: '2025-07-01',
+    //         validRange: {
+    //             start: '2025-07-01',
+    //             end: '2025-07-31'
+    //         },
+    //         headerToolbar: {
+    //             left: '',
+    //             center: 'title',
+    //             right: ''
+    //         },
+    //         events: calendarData
+    //     });
+
+    //     calendar.render();
+
+    // }
+
+    // renderCalendar();
+
+</script>
+
+<script type="module">
+    // import { Calendar } from 'https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/index.global.min.js';
+    // import dayGridPlugin from 'https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/index.global.min.js';
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const calendarData = JSON.parse('{{ month_stats|tojson|safe }}');
+
+        const eventDates = new Set(
+            calendarData.map(event => {
+                return new Date(event.date).toISOString().split('T')[0];
+            })
+        );
+
+        const calendarEl = document.getElementById('calendar');
+
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            initialDate: '2025-07-01',
+            validRange: {
+                start: '2025-07-01',
+                end: '2025-08-01'
+            },
+            headerToolbar: {
+                left: '',
+                center: 'title',
+                right: ''
+            },
+            dayCellDidMount: function(info) {
+                const date = info.date;
+                const dateString = date.toISOString().split('T')[0]; 
+                console.log(dateString);
+                if (eventDates.has(dateString)) {
+                    info.el.style.backgroundColor = 'green';
+                }
+            }
+        });
+
+        calendar.render();
+    });
+</script>
+

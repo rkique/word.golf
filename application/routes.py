@@ -36,7 +36,7 @@ HELP_END_JUMPS_ARRAY = [[1,0,1,0,1,1],
 
 BASE_START_TARGET_IDXS = [[0,0], [0,5]]
 PCOUNT = 5
-DAYS = 2
+DAYS = 0
 
 SKIPPED_TOKEN = "<SKIPPED>"
 
@@ -476,6 +476,85 @@ def resetpassword():
     date = today.today.strftime('%Y-%m-%d') if today.today else datetime.datetime.today().strftime('%Y-%m-%d')
     return render_template('resetpassword.html', date=date)
 
+@app.route('/profile', methods=['GET'])
+def profile():
+    user = get_user_from_cookie()
+    if not user:
+        return redirect('/login')
+    
+    game_state = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
+    if not game_state:
+        return redirect('/')
+
+    # look for best score through all game states
+    best_score = GameState.query.filter_by(user_id=user.id).order_by(GameState.total_jumps.asc()).first()
+    if best_score:
+        best_score = best_score.total_jumps
+    else:
+        best_score = game_state.total_jumps
+    
+    total_games = GameState.query.filter_by(user_id=user.id).count()
+
+    # get the average jumps per game
+    if total_games > 0:
+        average_total_jumps = GameState.query.filter_by(user_id=user.id).with_entities(db.func.avg(GameState.total_jumps)).scalar()
+    else:
+        average_total_jumps = game_state.total_jumps
+    
+    total_jumps = GameState.query.filter_by(user_id=user.id).with_entities(db.func.sum(GameState.total_jumps)).scalar()
+    if total_jumps is None:
+        total_jumps = 0 
+    average_jumps_per_prompt = total_jumps / (total_games * PCOUNT) if total_games > 0 else 0
+
+    # make an array of the total jumps over time (filtering from furthest date to today)
+    game_states = GameState.query.filter_by(user_id=user.id).order_by(GameState.current_date.desc()).all()
+    total_jumps_over_time = []
+    total_jumps_average_per_date = []
+    for gs in game_states:
+        if gs.total_jumps == 0:
+            continue
+        else:
+            # now calculate the average jumps per date for all users!
+            relavent_game_states = GameState.query.filter_by(current_date=gs.current_date).all()
+            total_jumps_for_date = 0
+            number_of_game_states = 0
+            if relavent_game_states:
+                for g in relavent_game_states:
+                    if g.total_jumps > 0:
+                        number_of_game_states += 1
+                    total_jumps_for_date += g.total_jumps
+            total_jumps_average_per_date.append({
+                'date': gs.current_date.strftime('%Y-%m-%d'),
+                'average_jumps': total_jumps_for_date / number_of_game_states if number_of_game_states else 0
+            })
+            total_jumps_over_time.append({
+                'date': gs.current_date.strftime('%Y-%m-%d'),
+                'total_jumps': gs.total_jumps
+            })
+    total_jumps_over_time.reverse()
+    total_jumps_average_per_date.reverse()
+
+    # get the amount of games played this month
+    games_and_dates_played_this_month = []
+    games_this_month = GameState.query.filter(
+        db.extract('year', GameState.current_date) == today.today.year,
+        db.extract('month', GameState.current_date) == today.today.month,
+        GameState.user_id == user.id
+    )
+    for game in games_this_month:
+        games_and_dates_played_this_month.append({
+            'date': game.current_date.strftime('%Y-%m-%d')
+        })
+
+    return render_template('profile.html', email=user.email, 
+                           total_games=total_games, 
+                           average_total_jumps=average_total_jumps, 
+                           average_prompt_jumps=average_jumps_per_prompt, 
+                           total_jumps=game_state.total_jumps, 
+                           best_score=best_score, 
+                           jumps_data=total_jumps_over_time, 
+                           jumps_average_data=total_jumps_average_per_date, 
+                           month_stats=games_and_dates_played_this_month)
 
 @app.route('/per-jump-statistics', methods=['GET'])
 def per_jump_statistics():
@@ -579,7 +658,6 @@ def user_statistics():
     # sort by streak
     streak_leaderboard.sort(key=lambda u: u.streak, reverse=True)
     # print("Streak leaderboard: ", streak_leaderboard)
-    
     my_streak_position = streak_leaderboard.index(current_user) if current_user in streak_leaderboard else None
 
     my_streak_position = my_streak_position + 1 if my_streak_position is not None else None

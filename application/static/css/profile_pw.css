@@ -1,0 +1,59 @@
+.wg-banner {
+    text-align: center;
+    margin: 0 auto;
+    min-width: 340px;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--background-color);
+    padding: 1rem;
+}
+
+.wg-banner-logo {
+    width: 3rem;
+    height: 3rem;
+    transform: translate(1rem, 0);
+    margin: 0.5rem auto;
+    display: inline-block;
+    user-select: none;
+    pointer-events: none;
+}
+
+.wg-banner-title {
+    font-family: 'Schibsted Grotesk', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-align: center;
+    user-select: none;
+    text-decoration: none;
+    color: var(--grayed-out-color);
+}
+
+/* Center the content and make it a flex container */
+#statistics-global {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; 
+}
+
+p {
+    font-size: 1.2rem;
+    margin: 0.3rem;
+    color: var(--text-color); 
+}
+
+.jumps-graph {
+    width: 50%;
+    height: 200px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#calendar {
+  max-width: 400px;    /* Reduce width */
+  font-size: 12px;     /* Smaller text */
+  margin: 0 auto;      /* Center it */
+  transform-origin: top;
+}

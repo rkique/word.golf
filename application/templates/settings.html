@@ -69,6 +69,11 @@
         }
     }
 
+    function renderProfile() {
+        // Redirect to profile page
+        window.location.href = '/profile';
+    }
+
 
 </script>
 <div id="login-welcome">
@@ -85,6 +90,10 @@
     <button onclick="renderSkip()" class="switch switch--outlined"
         style="position: relative; top: -10px; left: -5px;">
         Skip
+    </button>
+    <button onclick="renderProfile()" class="switch switch--outlined"
+        style="position: relative; top: -10px; left: -15px;">
+        Profile
     </button>
     <button onclick='changeColorMode()' class="switch">◐</button>
     </div>
