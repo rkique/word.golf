@@ -210,7 +210,7 @@ def update_jumps_array(new_data):
             new_data['jumpsArray'][i] = [1,0,0,0,0,1]
             new_data['startTargetIdxs'] = [[i,0],[i,5]]
             break
-    print("[update_jumps_array] jumpsArray: ", new_data)
+    # print("[update_jumps_array] jumpsArray: ", new_data)
     return new_data
 
 #if user exists and game state for user exists, return it. Else, None.
@@ -230,6 +230,7 @@ def get_existing_data():
         'prompts': [],
         'prompt': [],
         'logged_in': user.email if user.email else None,
+        'total_jumps': 0,
     }
 
     if game_state:
@@ -266,6 +267,7 @@ def index():
             data_today['jumpsArray'] = BASE_JUMPS_ARRAY
             data_today['startTargetIdxs'] = BASE_START_TARGET_IDXS
             data_today['logged_in'] = data["logged_in"]
+            data_today['total_jumps'] = 0
             data = data_today
         data['is_help'] = False
         session['data'] = json.dumps(data)
@@ -328,10 +330,11 @@ def index_post():
                 # use data_today as base
                 if data["results"] == []:
                     i = data.get('i', 0)
-                    data_today = shift_to(i)
+                    data_today = shift_to(0)
                     data_today['jumpsArray'] = BASE_JUMPS_ARRAY
                     data_today['startTargetIdxs'] = BASE_START_TARGET_IDXS
                     data_today['logged_in'] = data["logged_in"]
+                    data_today['total_jumps'] = 0
                     data = data_today
                 data['is_help'] = False
                 session['data'] = json.dumps(data)

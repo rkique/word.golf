@@ -270,7 +270,6 @@ function reportSessionEnded(debug_session_done) {
         resp = sendAndReceiveXML(`end=true`)
         // _ = send_game_data_to_backend(resp, `end=true`);
     }
-    // console.log('[reportSessionEnded] Response:', resp);
     
     //If user has completed all prompts
     if (resp.hasOwnProperty('help_session_done')) {
