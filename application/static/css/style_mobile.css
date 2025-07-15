@@ -137,6 +137,9 @@
         box-shadow: none;  
     }
 
+    switch:active, switch:hover, svg:hover, svg:active {
+        transform: none !important;
+    }
     
     #wordspace button:hover, 
     #wordspace span:hover {
@@ -153,11 +156,14 @@
     #modal #modalText {
         font-size: 1.4rem;
     }
+    .profile-icon {
+        transform: none !important;
+    }
 
     #modal {
         max-width: 90vw;
         min-height: 50vh;
-        min-width: 70vw;
+        min-width: 85vw;
     }
     #modal button {
         font-size: 1.4rem;
@@ -212,9 +218,7 @@
         max-width: 100%;
         max-height: 100%;
     }
-    .profile-icon{
-        transform: scale(0.75);
-    }
+
     #finish-container .daily-idx{
         font-size: 2.2rem;
     }

@@ -53,11 +53,21 @@ p {
 
 .profile-title {
     display: inline;
+    margin: 0;
     font-size: 1.8rem;
 }
 .profile-email {
     font-weight: 300;
     font-size: 1.4rem;
+    margin: 0;
+}
+
+#profile-logout {
+    margin: 0;
+    display: inline;
+    font-size: 1.2rem;
+    margin-left: 1rem;
+    padding: 0.5rem;
 }
 
 #statistics, #calendar {

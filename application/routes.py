@@ -690,12 +690,10 @@ def words_array_from_data(starts, selected_words, jumps_array):
 
 @app.route('/', methods=['POST'])
 def index_post():
-    print(f'[/ Jul8] session: {session}')
     if request.form.get('redirect') is not None:
         print('[/] Redirecting to start...')
         #only run this if data in session.
         session_data = json.loads(session["data"])
-        print("[index_post redirect] Here is session data: ", session_data)
         if session_data["prompts"] == HELP_PROMPTS or session_data["results"] == []: 
             data_or_none = get_existing_data()
             if data_or_none:

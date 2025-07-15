@@ -18,10 +18,11 @@
 <body>
     <div class="flex flex-row">
     <div id="statistics" class="flex flex-column">
-        <div>
+        <div class="flex">
         <a href="/" class="back-arrow" style="text-decoration: none; margin-right: 12px; font-size: 2rem; vertical-align: middle;">&#8592;</a>
         <h2 class="profile-title">Profile <span 
             class="profile-email"> {{ email }}</span></h2>
+        <button onclick="renderLogout()" class="switch switch--outlined" id="profile-logout">logout</button>
         </div>
         <canvas id="jumps-graph" width="600" height="400"></canvas>
         <div class="profile-stats">
@@ -30,7 +31,6 @@
         <p>Average Jumps / Prompt: {{ average_prompt_jumps }}</p>
         <!-- <p>Total Jumps Today: {{ total_jumps }} </p>
         <p>Best Score: {{ best_score }}</p> -->
-        <button onclick="renderLogout()" class="switch switch--outlined">logout</button>
         </div>
     </div>
     <div id="calendar"></div>

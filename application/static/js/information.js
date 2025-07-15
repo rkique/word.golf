@@ -1,8 +1,16 @@
 HELP_FINISH_DELAY_MS = 500
 START_GAME_DELAY_MS = 1500
 
-function displayModal(displayHTML){
-    const modalEl = document.getElementById('modal');
+function displayModal(displayHTML, accent){
+    let modalEl;
+    if (accent == "exclaim") {
+        modalEl = document.getElementById('exclaim-modal');
+        modalEl.style.display = 'flex';
+    }
+    else {
+    modalEl = document.getElementById('modal');
+    }
+    
     modalEl.innerHTML = displayHTML;
     modalEl.style.display = 'flex';
 }
@@ -74,6 +82,7 @@ function renderFinish(resp) {
     clearAllPromptWords();
     const daily_idx = daysSinceStartDate();
     is_logged_in = Boolean(localStorage.getItem('logged_in'))
+    localStorage.removeItem('in_progress');
     let jumpsGridMessage = resp.jumpsArray ? renderGrid(resp.jumpsArray) : '';
     runAfterBannerDisappears(() => {displayFinishModal(daily_idx, resp.totalJumps, resp.streak, resp.wordsArray, jumpsGridMessage, is_logged_in)})
 }
@@ -177,7 +186,7 @@ function generateLineGraph(scores) {
 }
 
 function formatFinishWords(wordsArray){
-    return wordsArray.map(row => row.map(word => `<span class="finish-word">${word}</span>`).join(' ')).join('<br><br>');
+    return wordsArray.map(row => row.map(word => `<span class="finish-word">${word}</span>`).join(' ')).join('<br>');
 }
 function displayFinishModal(daily_idx, totalJumps, currentStreak, selectedWords, jumpsGridMessage, is_user=false) {
     const modalFinish = document.getElementById(is_user ? 'modal-finish-user' : 'modal-finish-guest');
@@ -219,6 +228,10 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, selectedWords,
             .then(response => response.json())
             .then(json => {
                 localStorage.setItem('solutions', JSON.stringify(json));
+                json.forEach(row => {
+                    if (row.length > 0) row[0] = `<span class="finish-word-start">${row[0]}</span>`;
+                    if (row.length > 1) row[row.length - 1] = `<span class="finish-word-end">${row[row.length - 1]}</span>`; 
+                });
                 const modalFinish = document.querySelector('.modal-finish');
                 modalFinish.querySelector('.solutionWords').innerHTML =
                     `<p> ${formatFinishWords(json)}</p>`;
@@ -282,6 +295,7 @@ function renderTransientModal(duration){
     overlay.classList.add('tint-background')
     document.body.appendChild(overlay);
     setTimeout(() => {
+        modal.style.display = 'none';
         overlay.parentNode.removeChild(overlay);
         document.body.style.pointerEvents = 'auto';
     }, duration);
@@ -299,6 +313,7 @@ function renderHelpFinish(){
   </div>`;
 
     setTimeout(() => {
+        localStorage.removeItem('in_progress')
         displayModal(help_finish_text);
         renderTransientModal(START_GAME_DELAY_MS + HELP_FINISH_DELAY_MS)
         setTimeout(startGame, START_GAME_DELAY_MS);

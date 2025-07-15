@@ -53,7 +53,8 @@ data = JSON.parse('{{data|tojson|safe}}');
         <div id="wordspace"></div>
     </div>
     <div id="prompts-container">
-        <p class="prompts-title" id="prompts-title">Prompts</p>
+        <!--Put me below: <button id="skip-button" onclick="renderSkip()">skip</button> -->
+        <p class="prompts-title"><span id="prompts-title">Prompts</span> </p>
         <div id="prompts">
             <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
             <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
@@ -93,6 +94,7 @@ data = JSON.parse('{{data|tojson|safe}}');
     // start help session
     if (is_help !== 'false' && !data.logged_in) { 
         startHelpSession()
+        localStorage.setItem('in_progress', 'true')
     } 
     else {
         console.log("here is the data from the backend");
