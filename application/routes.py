@@ -223,6 +223,8 @@ def skip():
         game_state.start_target_idxs = returned_object["startTargetIdxs"]
 
         returned_object["done"] = False
+    
+    game_state.prompt_idx = current_prompt
 
     db.session.commit()
 
@@ -235,6 +237,8 @@ def skip():
     returned_object["start_target"] = [prompt[0], prompt[1]]
     returned_object["prompt"] = prompt
     returned_object["current_prompt"] = current_prompt
+
+    
 
     game_data['i'] += 1
     game_data['jumps'] = 0
@@ -649,7 +653,7 @@ def user_statistics():
             new_obj['name'] = "You"
 
         real_leaderboard.append(new_obj)
-    
+
     my_jumps_position = my_jumps_position + 1 if my_jumps_position is not None else None
 
     # of the LOGGED IN users (user.email is not None), get my leaderboard position for streaks
@@ -665,7 +669,6 @@ def user_statistics():
     my_streak_position = streak_leaderboard.index(current_user) if current_user in streak_leaderboard else None
 
     my_streak_position = my_streak_position + 1 if my_streak_position is not None else None
-
 
     return render_template('user-statistics.html', email=current_user.email, total_games=total_games,
                            average_total_jumps=average_total_jumps, 

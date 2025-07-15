@@ -182,9 +182,9 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, selectedWords,
     modalFinish.querySelector('.totalJumps').innerHTML = totalJumps;
     modalFinish.querySelector('.streak').innerHTML = currentStreak;
     // Map selectedWords to an array of words each in a .prompt-word class
-    modalFinish.querySelector('.selectedWords').innerHTML = selectedWords
-        .map(arr => arr.map(word => `<span class="finish-word">${word}</span>`).join(' '))
-        .join('<br><br>');
+    // modalFinish.querySelector('.selectedWords').innerHTML = selectedWords
+    //     .map(arr => arr.map(word => `<span class="finish-word">${word}</span>`).join(' '))
+    //     .join('<br><br>');
     modalFinish.style.display = "flex";
     let tweetMessage;
     if(is_user){

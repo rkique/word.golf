@@ -154,61 +154,6 @@
             }).catch(error => console.error('Error fetching data:', error));
     }
     render_graph();
-    
-
-    function render_prompt_jump_statistics() {
-        console.log("Fetching prompt jump statistics...");
-        fetch('/per-jump-statistics').then(response => response.json()).then(data => {
-                if (data.error) {
-                    console.error(data.error);
-                    return;
-                }
-                console.log("Here is the data from the backend: ", data);
-                // prompts -> 0 - 4
-                // jumps -> 1 - 12
-                const correct_data = data[0][1];
-                console.log("Correct data for prompt 1 jump 1: ", correct_data);
-                const labels = Object.keys(correct_data);
-                const userJumps = Object.values(correct_data);
-                
-                const ctx = document.getElementById('selected-graph').getContext('2d');
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Number of Users',
-                            data: userJumps,
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            fill: true,
-                        }]
-                    },
-                    options: {
-                        responsive: false,
-                        maintainAspectRatio: false,
-                        scales: {
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'Selected Words'
-                                }
-                            },
-                            y: {
-                                title: {
-                                    display: true,
-                                    text: 'Number of Users'
-                                }
-                            }
-                        }
-                    }
-                });
-                
-            })
-            .catch(error => console.error('Error fetching data:', error));
-        
-    }
-
     // render_prompt_jump_statistics();
     function updateGraph() {
         const correct_data = fullData[promptIndex][jumpNumber];
