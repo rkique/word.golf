@@ -120,3 +120,31 @@ p.leaderboard-entry .jumps {
     flex: 1;
     text-align: right;
 }
+
+/* Style for the prompt container */
+#prompt-container {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Style for each prompt option */
+.prompt-option {
+    padding: 10px 20px;
+    background-color: var(--background-color);
+    border-bottom: none; /* No bottom border */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 5px 5px 0 0; /* Rounded top corners */
+}
+
+/* Style for selected prompt */
+.prompt-option.selected {
+    border-color: #007bff; /* Blue border for selected prompt */
+    border-bottom: 2px solid transparent; /* Keep the bottom border transparent */
+    background-color: var(--background-color); /* Slight background color for selection */
+}
+
+/* Style when hovering over a prompt */
+.prompt-option:hover {
+    background-color: #f0f0f0;
+}

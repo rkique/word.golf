@@ -23,7 +23,8 @@
         </div>
         <canvas id="jumps-graph" width="600" height="400"></canvas>
     </div>
-    <div style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+    <!-- <div style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+        <p class="prompts-title"><span id="prompts-title">Prompts</span> </p>
         <label for="prompt-selector">Select Prompt:</label>
         <select id="prompt-selector">
             <option value="0">Prompt 1</option>
@@ -32,14 +33,25 @@
             <option value="3">Prompt 4</option>
             <option value="4">Prompt 5</option>
         </select>
+    </div> -->
+    <div style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+        <p class="prompts-title"><span id="prompts-title">Prompts</span></p>
+    </div>
+    <div id="prompt-container" style="display: flex; justify-content: space-evenly; width: 100%; margin: 0 auto;">
+        <div class="prompt-option" data-value="0">Prompt 1</div>
+        <div class="prompt-option" data-value="1">Prompt 2</div>
+        <div class="prompt-option" data-value="2">Prompt 3</div>
+        <div class="prompt-option" data-value="3">Prompt 4</div>
+        <div class="prompt-option" data-value="4">Prompt 5</div>
     </div>
 
     <div style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
         <button id="jump-left">&lt;</button>
-        <span id="jump-label">Jump 1</span>
+        <!-- <span id="jump-label">Jump 1</span> -->
+        <canvas id="selected-graph" width="600" height="400"></canvas>
         <button id="jump-right">&gt;</button>
     </div>
-    <canvas id="selected-graph" width="600" height="400"></canvas>
+    
 </body>
 
 <script>
@@ -214,7 +226,7 @@
         });
 
         
-        document.getElementById('jump-label').innerText = `Jump ${jumpNumber}`;
+        // document.getElementById('jump-label').innerText = `Jump ${jumpNumber}`;
     }
 
     function renderPromptJumpStatistics() {
@@ -233,9 +245,23 @@
     }
 
     
-    document.getElementById('prompt-selector').addEventListener('change', (e) => {
-        promptIndex = parseInt(e.target.value);
-        updateGraph();
+    const promptOptions = document.querySelectorAll('.prompt-option');
+
+    // Loop through each prompt option and add a click event listener
+    promptOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            // Remove selected class from all prompts
+            promptOptions.forEach(opt => opt.classList.remove('selected'));
+
+            // Add selected class to the clicked prompt
+            option.classList.add('selected');
+
+            // Update the prompt index based on the clicked option
+            promptIndex = parseInt(option.getAttribute('data-value'));
+
+            // Update the graph with the new prompt index
+            updateGraph();
+        });
     });
 
     
