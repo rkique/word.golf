@@ -176,15 +176,19 @@ function generateLineGraph(scores) {
     Plotly.newPlot(graphContainer, [trace], layout, config);
 }
 
+function formatFinishWords(wordsArray){
+    return wordsArray.map(row => row.map(word => `<span class="finish-word">${word}</span>`).join(' ')).join('<br><br>');
+}
 function displayFinishModal(daily_idx, totalJumps, currentStreak, selectedWords, jumpsGridMessage, is_user=false) {
     const modalFinish = document.getElementById(is_user ? 'modal-finish-user' : 'modal-finish-guest');
     modalFinish.querySelector('.daily-idx').innerHTML = daily_idx;
     modalFinish.querySelector('.totalJumps').innerHTML = totalJumps;
     modalFinish.querySelector('.streak').innerHTML = currentStreak;
-    // Map selectedWords to an array of words each in a .prompt-word class
-    // modalFinish.querySelector('.selectedWords').innerHTML = selectedWords
-    //     .map(arr => arr.map(word => `<span class="finish-word">${word}</span>`).join(' '))
-    //     .join('<br><br>');
+    // Map selectedWords to an array of words each in a finish-word class
+    const selectedWordsEl = modalFinish.querySelector('.selectedWords');
+    if (selectedWordsEl && Array.isArray(selectedWords)) {
+        selectedWordsEl.innerHTML = formatFinishWords(selectedWords);
+    }
     modalFinish.style.display = "flex";
     let tweetMessage;
     if(is_user){
@@ -199,7 +203,7 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, selectedWords,
                 shareLink.textContent = 'Copied to clipboard!';
                 setTimeout(() => shareLink.innerHTML = 
                 `
-                Share <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-copy">
+                Share your results <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-copy">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> 
                 `, 2000);
@@ -215,14 +219,9 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, selectedWords,
             .then(response => response.json())
             .then(json => {
                 localStorage.setItem('solutions', JSON.stringify(json));
-                function formatSequences(sequences) {
-                    return sequences.map(seq =>
-                        `<div><p>${seq.join(' ⟶ ')}</p></div>`
-                    ).join('\n');
-                }
-                const modalFinish = document.querySelector('.modal-finish'); // adjust if needed
-                modalFinish.querySelector('.solutions').innerHTML =
-                    `<p class="solutions-text">${formatSequences(json)}</p>`;
+                const modalFinish = document.querySelector('.modal-finish');
+                modalFinish.querySelector('.solutionWords').innerHTML =
+                    `<p> ${formatFinishWords(json)}</p>`;
             });
     }
 }

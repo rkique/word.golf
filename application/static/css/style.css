@@ -48,10 +48,11 @@
 
 
 .finish-summary {
+    margin: 0;
     font-size: 3rem;
     font-family: "Inter", sans-serif;
     font-weight: 700;
-    color: var(--grayed-out-color-help-target);
+    color: var(--grayed-out-color);
 }
 html {
     font-display: optional;
@@ -137,10 +138,11 @@ html {
 #finish-container p {
     margin: 0.25rem 0;
 }
+
 #finish-container .inline-title {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 2em;
+    font-family: "Inter", sans-serif;
+    position: absolute;
+    top: 1rem; 
 }
 
 .help-close, .finish-close {
@@ -186,15 +188,23 @@ html {
     font-size: 2.8rem;
 }
 
-#finish-container .selectedWords {
+.selectedWords, .solutionWords {
+    font-size: 1.4rem;
+    /* color: var(--hover-color); */
+}
+#finish-container .selectedWords, .solutionWords {
   text-align: left;
-  font-size: 0.7rem;
-  margin-bottom: 1rem;
-  max-width: 90vw;
+  /* font-size: 0.7rem; */
+  margin-bottom: 1.5rem;
+  /* max-width: 90vw; */
 }
 
 .selectedWords p {
     display: inline;
+}
+
+.profile-icon {
+    color: var(--text-color);
 }
 
 #shareLink {
@@ -212,29 +222,38 @@ html {
     font-size: 1rem;
     align-items: center;
     justify-content: space-around;
-    gap: 2em;
+    gap: 3.5rem;
     color: var(--text-color);
     padding: 2em 1em;
     border-radius: 16px;
     text-align: center;
-    margin: 2em 2em;
+    margin: 5em 1em 1em 2em;
     z-index: 2;
 }
-/* .finish-container > :first-child {
-    margin-top: 2em;
-} */
-.finish-container > :last-child {
-    margin-bottom: 1em;
+
+.solution-title {
+    /* font-size: 1.8rem; */
+    margin-bottom: 1rem !important
 }
 
-.finish-container .stat-row {
+.finish-container > :last-child {
+}
+
+.finish-container .stat-column {
+  flex: 1;         
+  height: 100%;   
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.stat-column {
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
-    max-width: 100%;
-    padding: 0.5em 1em;
-    gap: 4rem;
-    align-items: flex-end;
+    gap: 2rem;
+}
+.stat-row {
+    width: 100%;
+    text-align: center;
 }
 
 .finish-container .stat {
@@ -590,6 +609,9 @@ button span {
     height: 72vh;
 }
 
+.solutions {
+    text-align: left;
+}
 .prompt-box {
     position: absolute;
     padding: 0 0;
@@ -724,7 +746,9 @@ button span {
         line-height: 1.2;
         text-align: center;
 }
-
+#modal-finish-user {
+    padding-bottom: 2rem;
+}
 #modal-finish-user #scoresGraph{
     max-width: 60vw; 
     max-height: 40vh;
@@ -744,6 +768,7 @@ button span {
 #modal-finish-guest .finish-word,
  #modal-finish-user .finish-word {
     border: 1px solid var(--grayed-out-color);
+    color: var(--text-color);
 }
 
 #modal-finish-guest a, #modal-finish-user a{

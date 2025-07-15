@@ -30,6 +30,7 @@
         <p>Average Jumps / Prompt: {{ average_prompt_jumps }}</p>
         <!-- <p>Total Jumps Today: {{ total_jumps }} </p>
         <p>Best Score: {{ best_score }}</p> -->
+        <button onclick="renderLogout()" class="switch switch--outlined">logout</button>
         </div>
     </div>
     <div id="calendar"></div>
@@ -49,12 +50,16 @@
 
         const labels = data.map(entry => entry.date);
         const totalJumps = data.map(entry => entry.total_jumps);
-
         const averageJumps = averageData.map(entry => entry.average_jumps);
+
+        const allYValues = totalJumps.concat(averageJumps);
+        const computedMaxY = Math.max(...allYValues);
+        const yMax = Math.max(computedMaxY, 25); 
+        const yMin = 9;
         const failure = getCSSVariable('--failure');
         const softFailure = getCSSVariable('--soft-failure');
         const grayedOutBackground = getCSSVariable('--grayed-out-background');
-        const grayedOutColor = getCSSVariable('--grayed-out-color');
+        const textColor = getCSSVariable('--text-color');
         const backgroundColor = getCSSVariable('--grayed-out-background');
         new Chart(ctx, {
             type: 'line',
@@ -64,7 +69,7 @@
                     label: 'Total Jumps',
                     data: totalJumps,
                     borderColor: grayedOutBackground,
-                    pointBackgroundColor: grayedOutColor, 
+                    pointBackgroundColor: textColor, 
                     backgroundColor: backgroundColor,
                     fill: false,
                     showLine: true,
@@ -82,27 +87,77 @@
                 }]
             },
             options: {
-                responsive: false,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Date'
-                        }
-                    },
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Total'
-                        }
-                    }
+    plugins: {
+      legend: {
+        labels: {
+          color: textColor // <-- legend text color
+        }
+      },
+        title: {
+            display: false,
+            color: textColor
+            },
+            },
+            scales: {
+            x: {
+                grid: {
+                color: grayedOutBackground,
+                },
+                ticks: {
+                color: textColor // <-- x-axis labels
+                },
+                title: {
+                display: true,
+                text: 'Date played',
+                color: textColor
+                }
+            },
+            y: {
+                grid: {
+                color: grayedOutBackground,
+                },
+                ticks: {
+                color: textColor // <-- y-axis labels
+                },
+                title: {
+                display: true,
+                text: 'Total Jumps',
+                color: textColor
                 }
             }
+            }
+        }
         });
     }
 
     renderGraph();
+</script>
+
+<script>
+    async function renderLogout(){
+        try {
+            const res = await fetch("/logout", {
+                method: "POST",
+                credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
+                headers: {
+                    'Content-Type': 'application/json'  // Ensure this matches what the server expects
+                },
+                body: JSON.stringify({
+                    date: new Date().toISOString().split('T')[0]
+                })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                localStorage.removeItem('logged_in');
+                window.location.href = '/';
+            } else {
+                console.log("Logout failed:", data);
+            }
+        } catch (err) {
+            console.log("Error during logout:", err);
+        }
+        // }
+    }
 </script>
 
 <script type="module">

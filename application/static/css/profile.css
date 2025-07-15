@@ -69,6 +69,11 @@ p {
 
 }
 
+.fc-scroller-liquid-absolute {
+    overflow: hidden !important;
+}
+
+
 .back-arrow {
     color: var(--text-color);
     transition: color 0.2s;
