@@ -87,46 +87,46 @@
                 }]
             },
             options: {
-    plugins: {
-      legend: {
-        labels: {
-          color: textColor // <-- legend text color
-        }
-      },
-        title: {
-            display: false,
-            color: textColor
-            },
-            },
-            scales: {
-            x: {
-                grid: {
-                color: grayedOutBackground,
+                plugins: {
+                    legend: {
+                        labels: {
+                        color: textColor // <-- legend text color
+                        }
+                    },
+                    title: {
+                        display: false,
+                        color: textColor
+                    },
                 },
-                ticks: {
-                color: textColor // <-- x-axis labels
-                },
-                title: {
-                display: true,
-                text: 'Date played',
-                color: textColor
-                }
-            },
-            y: {
-                grid: {
-                color: grayedOutBackground,
-                },
-                ticks: {
-                color: textColor // <-- y-axis labels
-                },
-                title: {
-                display: true,
-                text: 'Total Jumps',
-                color: textColor
+                scales: {
+                    x: {
+                        grid: {
+                            color: grayedOutBackground,
+                        },
+                        ticks: {
+                            color: textColor // <-- x-axis labels
+                        },
+                        title: {
+                            display: true,
+                            text: 'Date played',
+                            color: textColor
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: grayedOutBackground,
+                        },
+                        ticks: {
+                            color: textColor // <-- y-axis labels
+                        },
+                        title: {
+                            display: true,
+                            text: 'Total Jumps',
+                            color: textColor
+                        }
+                    }
                 }
             }
-            }
-        }
         });
     }
 
