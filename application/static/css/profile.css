@@ -28,6 +28,9 @@
     color: var(--grayed-out-color);
 }
 
+.global {
+    flex-direction: row;
+}
 /* Center the content and make it a flex container */
 #statistics-global {
     display: flex;
