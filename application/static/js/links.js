@@ -176,6 +176,38 @@ function makeStartLink(prompt, word) {
     return startLink
 }
 
+async function renderLogout(){
+    try {
+        const res = await fetch("/logout", {
+            method: "POST",
+            credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
+            headers: {
+                'Content-Type': 'application/json'  // Ensure this matches what the server expects
+            },
+            body: JSON.stringify({
+                date: new Date().toISOString().split('T')[0]
+            })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            localStorage.removeItem('logged_in');
+            const loginWelcome = document.getElementById('login-welcome');
+            const logged_in_buttons = document.getElementById('logged_in-buttons');
+            loginWelcome.style.display = 'none';
+            logged_in_buttons.style.display = 'none';
+            const logoutButton = document.getElementById('guest-buttons');
+            logoutButton.style.display = 'flex';
+            window.location.href = '/';
+        } else {
+            alert("Logout failed:", data);
+        }
+    } catch (err) {
+        console.log("Error during logout:", err);
+    }
+    // }
+}
+
+
 function switchToLoggedIn() {
     document.getElementById('guest-buttons').style.display = 'none';
     document.getElementById('logged_in-buttons').style.display = 'flex';
@@ -333,7 +365,6 @@ function showBanner(text, color) {
 function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
     let resp = sendAndReceiveXML("word=" + word);
     if (localStorage.getItem('is_help') !== "true") {
-        console.log('resp.logged_in', resp);
         localStorage.setItem('in_progress', 'true');
         }
     let promptIdx = lastNonzeroRow(resp.jumpsArray)

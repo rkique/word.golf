@@ -12,6 +12,32 @@
     <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/index.global.min.js"></script>
     <title>User Statistics</title>
     {% include 'head.html' %}
+    <script>
+    async function renderLogout(){
+        try {
+            const res = await fetch("/logout", {
+                method: "POST",
+                credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
+                headers: {
+                    'Content-Type': 'application/json'  // Ensure this matches what the server expects
+                },
+                body: JSON.stringify({
+                    date: new Date().toISOString().split('T')[0]
+                })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                localStorage.removeItem('logged_in');
+                window.location.href = '/';
+            } else {
+                console.log("Logout failed:", data);
+            }
+        } catch (err) {
+            console.log("Error during logout:", err);
+        }
+        // }
+    }
+</script>
 </head> 
 
 <body>
@@ -37,23 +63,19 @@
 </body>
 
 <script>
-    
-    // import { Calendar } from '@fullcalendar/core';
-    // import dayGridPlugin from '@fullcalendar/daygrid';
-    // now make the jumps graph for total_jumps over time (where total_jumps is non-zero)
-    // for the user to show improvement
+    const labels = JSON.parse('{{ jumps_data|tojson|safe }}').map(entry => entry.date);
+
     function renderGraph() {
         const ctx = document.getElementById('jumps-graph').getContext('2d');
         const data = JSON.parse('{{ jumps_data|tojson|safe }}');
         const averageData = JSON.parse('{{ jumps_average_data|tojson|safe }}');
 
-        const labels = data.map(entry => entry.date);
         const totalJumps = data.map(entry => entry.total_jumps);
         const averageJumps = averageData.map(entry => entry.average_jumps);
 
         const allYValues = totalJumps.concat(averageJumps);
         const computedMaxY = Math.max(...allYValues);
-        const yMax = Math.max(computedMaxY, 25); 
+        const yMax = Math.max(computedMaxY, 25) + 1;
         const yMin = 9;
         const failure = getCSSVariable('--failure');
         const softFailure = getCSSVariable('--soft-failure');
@@ -101,9 +123,14 @@
                     x: {
                         grid: {
                             color: grayedOutBackground,
+                            drawOnChartArea: false // <-- removes vertical grid lines
                         },
                         ticks: {
-                            color: textColor // <-- x-axis labels
+                            color: textColor, // <-- x-axis labels
+                            callback: function(value, index, values) {
+                                const date = new Date(labels[index]);
+                                return `${date.getMonth() + 1}/${date.getDate() + 1}`;
+                            }
                         },
                         title: {
                             display: true,
@@ -112,6 +139,8 @@
                         }
                     },
                     y: {
+                        min: yMin,
+                        max: yMax,
                         grid: {
                             color: grayedOutBackground,
                         },
@@ -130,33 +159,6 @@
     }
 
     renderGraph();
-</script>
-
-<script>
-    async function renderLogout(){
-        try {
-            const res = await fetch("/logout", {
-                method: "POST",
-                credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
-                headers: {
-                    'Content-Type': 'application/json'  // Ensure this matches what the server expects
-                },
-                body: JSON.stringify({
-                    date: new Date().toISOString().split('T')[0]
-                })
-            });
-            const data = await res.json();
-            if (res.ok) {
-                localStorage.removeItem('logged_in');
-                window.location.href = '/';
-            } else {
-                console.log("Logout failed:", data);
-            }
-        } catch (err) {
-            console.log("Error during logout:", err);
-        }
-        // }
-    }
 </script>
 
 <script type="module">
@@ -198,3 +200,4 @@
     });
 </script>
 
+</html>

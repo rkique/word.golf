@@ -22,6 +22,7 @@ from datetime import date
 prompt_neighbor_dict = get_prompts(txt_to_list("application/data/neighbors.txt"))
 PROMPTS = list(prompt_neighbor_dict.keys())
 NEIGHBORS = list(prompt_neighbor_dict.values())
+PRECISION = 1
 
 BASE_JUMPS_ARRAY = [[1,0,0,0,0,1],
                     [0,0,0,0,0,0],
@@ -494,14 +495,14 @@ def profile():
 
     # get the average jumps per game
     if total_games > 0:
-        average_total_jumps = round(GameState.query.filter_by(user_id=user.id).with_entities(db.func.avg(GameState.total_jumps)).scalar(), 3)
+        average_total_jumps = round(GameState.query.filter_by(user_id=user.id).with_entities(db.func.avg(GameState.total_jumps)).scalar(), PRECISION)
     else:
         average_total_jumps = game_state.total_jumps
     
     total_jumps = GameState.query.filter_by(user_id=user.id).with_entities(db.func.sum(GameState.total_jumps)).scalar()
     if total_jumps is None:
         total_jumps = 0 
-    average_jumps_per_prompt = round(total_jumps / (total_games * PCOUNT), 3) if total_games > 0 else 0
+    average_jumps_per_prompt = round(total_jumps / (total_games * PCOUNT), PRECISION) if total_games > 0 else 0
 
     # make an array of the total jumps over time (filtering from furthest date to today)
     game_states = GameState.query.filter_by(user_id=user.id).order_by(GameState.current_date.desc()).all()
