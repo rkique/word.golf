@@ -490,7 +490,7 @@ def profile():
         best_score = game_state.total_jumps
     
     total_games = GameState.query.filter_by(user_id=user.id).filter(GameState.total_jumps > 0).count()
-     streak = user.streak if user.streak else 0
+    streak = user.streak if user.streak else 0
 
     # get the average jumps per game
     if total_games > 0:
