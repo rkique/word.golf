@@ -535,7 +535,8 @@ def profile():
     games_this_month = GameState.query.filter(
         db.extract('year', GameState.current_date) == today.today.year,
         db.extract('month', GameState.current_date) == today.today.month,
-        GameState.user_id == user.id
+        GameState.user_id == user.id,
+        GameState.total_jumps > 0
     )
     for game in games_this_month:
         games_and_dates_played_this_month.append({
