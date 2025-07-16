@@ -1,10 +1,7 @@
 FROM python:3.9
 EXPOSE 5050
 
-# Install system dependencies
 RUN apt-get update && apt-get install -y git git-lfs curl
-
-# Git LFS setup is idempotent and safe to cache
 RUN git lfs install
 
 # Add requirements file early to leverage cache
@@ -19,7 +16,7 @@ ARG GITHUB_TOKEN
 # Clone the repo with Git LFS (last step to avoid cache busting early)
 RUN test -n "$GITHUB_TOKEN" || (echo "GITHUB_TOKEN not set!" && exit 1) && \
     git clone https://${GITHUB_TOKEN}@github.com/rkique/word.golf.git /golf-app && \
-    cd /golf-app && git lfs pull
+    cd /golf-app && git lfs pull && git reset --hard HEAD
 
 # Set working directory
 WORKDIR /golf-app
