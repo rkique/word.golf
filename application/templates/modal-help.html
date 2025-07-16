@@ -5,10 +5,9 @@
         document.getElementById('modal-finish-user').style.display = 'none';
         localStorage.setItem('is_help', 'true');
         data = sendAndReceiveXML(`help=true`);
-        let promptsTitle = document.getElementById('prompts-title');
-        if (promptsTitle) {
-            promptsTitle.innerText = 'Tutorial';
-        }
+        document.getElementById('prompts-title-heading').innerText = 'Tutorial';
+        document.getElementById('prompts-count-remainder').innerText = '/2'
+
         renderLinks(data.prompt, data.results)
         clearBoxes()
         renderPrompts(data.jumpsArray, data.startTargetIdxs, data.prompt)
@@ -60,7 +59,7 @@
 
 </script>
 <div id="help" class="help">
-    <div class="help-close" onclick="toggleElement('help')">✕</div>
+    <div class="help-close" onclick="closeModal('help')">✕</div>
     <div class="help-container">
             <h1>How to play</h1>
         <div class='help-text'>
@@ -74,7 +73,7 @@
             <p>Logged in as <span id="logged_in-username"></span></p>
         </div>
         <div class="guest-buttons" id="guest-buttons">
-        <button onclick="toggleElement('help'); beginTutorial()" class=" switch switch--outlined ">tutorial</button>
+        <button onclick="closeModal('help'); beginTutorial()" class=" switch switch--outlined ">tutorial</button>
         <button onclick="window.location.href='/login'" class="switch switch--outlined">login / signup</button>
         <script src="https://accounts.google.com/gsi/client" async></script>
         <div id="g_id_onload"

@@ -16,6 +16,7 @@ from .internals.gameprogress import update_game_state, finished_game
 from .models import GameState, User
 from . import cookie_signer, db
 from .internals import today
+from datetime import date
 
 # store logged_in in routes.py
 prompt_neighbor_dict = get_prompts(txt_to_list("application/data/neighbors.txt"))
@@ -70,7 +71,7 @@ def load_data():
     WV = dict(zip(WV['word'], WV['vector']))
     PRECOMPUTED = txt_to_dict("application/data/top_100_w2v.csv")
 
-elpased = None
+elapsed = None
 prompts_today = None
 neighbors_today = None
 
@@ -79,8 +80,7 @@ def add_days(days: int) -> datetime.timedelta:
 
 def elapsed_days(date : datetime.datetime) -> int:
     start_date = datetime.datetime.strptime("05-30-2025", '%m-%d-%Y').date()
-    today.today = date
-    return (today.today - start_date).days
+    return (date - start_date).days
 
 def get_prompts_for_date(date : datetime.datetime) -> list:
     '''
@@ -92,10 +92,8 @@ def get_prompts_for_date(date : datetime.datetime) -> list:
 
 def load_time():
     global elapsed, prompts_today, neighbors_today
-    eastern = datetime.timezone(datetime.timedelta(hours=-5))
-    now_utc = datetime.datetime.utcnow()
-    now_et = now_utc.replace(tzinfo=datetime.timezone.utc).astimezone(eastern)
-    today.today = now_et.replace(tzinfo=None).date() + add_days(DAYS)
+    today.today = date.today()
+    today.today = today.today + add_days(DAYS)
     elapsed, prompts_today, neighbors_today = get_prompts_for_date(today.today)
 
 def sim_to_index(score):
@@ -389,6 +387,7 @@ def get_existing_data():
         'prompts': [],
         'prompt': [],
         'logged_in': user.email if user.email else None,
+        'total_jumps': 0,
     }
 
     if game_state:
@@ -414,7 +413,6 @@ def index():
     print('/ Starting Fresh..')
     load_data()
     load_time()
-    print('[index.html] Current Date: ', today.today)
     data_or_none = get_existing_data()
     if data_or_none:
         data = data_or_none
@@ -422,10 +420,11 @@ def index():
 
         if data["results"] == []:
             i = data.get('i', 0)
-            data_today = shift_to(i)
+            data_today = shift_to(0)
             data_today['jumpsArray'] = BASE_JUMPS_ARRAY
             data_today['startTargetIdxs'] = BASE_START_TARGET_IDXS
             data_today['logged_in'] = data["logged_in"]
+            data_today['total_jumps'] = 0
             data = data_today
         data['is_help'] = False
         session['data'] = json.dumps(data)
@@ -691,10 +690,11 @@ def index_post():
                 # use data_today as base
                 if data["results"] == []:
                     i = data.get('i', 0)
-                    data_today = shift_to(i)
+                    data_today = shift_to(0)
                     data_today['jumpsArray'] = BASE_JUMPS_ARRAY
                     data_today['startTargetIdxs'] = BASE_START_TARGET_IDXS
                     data_today['logged_in'] = data["logged_in"]
+                    data_today['total_jumps'] = 0
                     data = data_today
                 data['is_help'] = False
                 session['data'] = json.dumps(data)

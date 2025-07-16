@@ -12,7 +12,8 @@
 
 window.addEventListener('load', function() {
     // Check if the browser is Safari and not running on localhost
-    if (isSafari() && window.location.origin !== 'http://127.0.0.1:8080') {
+    if (isSafari() && !window.location.origin.endsWith(':8080') && 
+    !window.location.hostname.startsWith('dev')) {
         if (window.location.search.indexOf('v=') === -1) {
             var uniqueParam = 'v=' + new Date().getTime(); 
             var newUrl = 'https://www.word.golf?' + uniqueParam;
@@ -60,7 +61,9 @@ data = JSON.parse('{{data|tojson|safe}}');
             <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
         </div>
     </div>
-
+    <div class="footer-div">
+        <p>word.golf #<span id="footer-daily-idx"></span>  <a href="https://tally.so/r/mV7Yay" target="_blank" rel="noopener">leave feedback</a></p>
+    </div>
 </div>
 <!-- <script>
     let BACKEND_OK = true
@@ -126,8 +129,4 @@ data = JSON.parse('{{data|tojson|safe}}');
         }
     });
 </script>
-<div class="footer-div">
-    <p>word.golf #<span id="footer-daily-idx"></span></p>
-    <p><a href="https://tally.so/r/mV7Yay" target="_blank" rel="noopener">contact us</a></p>
-</div>
 
