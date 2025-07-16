@@ -189,8 +189,13 @@ function cueStartWordOnHover() {
 function renderPrompts(jumpsArray, idxs, start_target, end = false) {
     clearAllPromptWords();
     renderTallies(jumpsArray);
-    let i = lastNonzeroRow(jumpsArray) + 1;
-    if(end == true){i = 5};
+    let i = lastNonzeroRow(jumpsArray);
+    if (i == -1) {
+        i = 5
+    } else {
+        i = i + 1
+    }
+    // if(end == true){i = 5};
     document.getElementById('prompts-count').innerText = i;
     if (!end) {
         // console.trace('[renderPrompts] Stack trace');
