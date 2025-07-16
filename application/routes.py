@@ -46,16 +46,6 @@ HELP_NEIGHBORS = ["tree", "shouting"]
 WV = None
 PRECOMPUTED = None
 
-#DEV: set backend route correctly.
-@app.context_processor
-def inject_backend_url():
-    backend_url = (
-        "http://localhost:7000"
-        if os.getenv("DEV", "false").lower() == "true"
-        else "https://routes.word.golf"
-    )
-    return {"backend_url": backend_url}
-
 #max-age=0: forces the browser to revalidate on first load
 @app.after_request
 def no_cache_index(response):

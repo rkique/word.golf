@@ -38,9 +38,6 @@ data = JSON.parse('{{data|tojson|safe}}');
 <script src="{{ url_for('static', filename='js/information.js') }}?{{ version }}"></script>
 <script src="{{ url_for('static', filename='js/prompts.js') }}?{{ version }}"></script>
 
-{% if backend_url != "https://routes.word.golf" %}
-  <p style="position: absolute; top: 0; left: 0; font-size: 0.6rem;">Dev: {{ backend_url }}</p>
-{% endif %}
 {% include 'settings.html' %}
 {% include 'modal-help.html' %}
 {% include 'modal.html' %}
