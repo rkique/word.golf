@@ -263,8 +263,6 @@ function startHelpSession() {
 <div class="tutorial-images" style="">
   <img src="static/images/start_0.png" alt="Tutorial step 0" style="max-width: 10vw;">
   <img src="static/images/start_1.png" alt="Tutorial step 1" style="max-width: 10vw;">
-  <img src="static/images/start_2.png" alt="Tutorial step 2" style="max-width: 10vw;">
-  <img src="static/images/start_3.png" alt="Tutorial step 3" style="max-width: 10vw;">
 </div>
     <button class="switch switch--outlined" id='startHelpButton'> OK </button>
     <a id="startGameLink">Skip tutorial</a>`

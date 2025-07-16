@@ -150,6 +150,10 @@ html {
     z-index: 3;
 }
 
+.help .credits {
+    font-size: 1.3rem;
+    color: var(--grayed-out-color)
+}
 #finish-container p {
     margin: 0.25rem 0;
 }
