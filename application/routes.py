@@ -489,8 +489,9 @@ def profile():
     else:
         best_score = game_state.total_jumps
     
-    total_games = GameState.query.filter_by(user_id=user.id).count()
-    streak = user.streak if user.streak else 0
+    total_games = GameState.query.filter_by(user_id=user.id).filter(GameState.total_jumps > 0).count()
+     streak = user.streak if user.streak else 0
+
     # get the average jumps per game
     if total_games > 0:
         average_total_jumps = round(GameState.query.filter_by(user_id=user.id).filter(GameState.total_jumps > 0).with_entities(db.func.avg(GameState.total_jumps)).scalar(), PRECISION)
@@ -535,7 +536,8 @@ def profile():
     games_this_month = GameState.query.filter(
         db.extract('year', GameState.current_date) == today.today.year,
         db.extract('month', GameState.current_date) == today.today.month,
-        GameState.user_id == user.id
+        GameState.user_id == user.id,
+        GameState.total_jumps > 0
     )
     for game in games_this_month:
         games_and_dates_played_this_month.append({

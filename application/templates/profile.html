@@ -71,6 +71,11 @@
         const data = JSON.parse('{{ jumps_data|tojson|safe }}');
         const averageData = JSON.parse('{{ jumps_average_data|tojson|safe }}');
 
+        console.log("here is average data");
+        console.log(averageData);
+        console.log("here is jumps data");
+        console.log(data);
+
         const totalJumps = data.map(entry => entry.total_jumps);
         const averageJumps = averageData.map(entry => entry.average_jumps);
 
@@ -176,6 +181,9 @@
 <script type="module">
     document.addEventListener('DOMContentLoaded', function () {
         const calendarData = JSON.parse('{{ month_stats|tojson|safe }}');
+
+        console.log("here is calendar data");
+        console.log(calendarData);
 
         const eventDates = new Set(
             calendarData.map(event => {
