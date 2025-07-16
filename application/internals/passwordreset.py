@@ -135,7 +135,7 @@ def reset_password():
         response.set_cookie(
             "auth_token",
             token,
-            path='/',
+            # path='/',
             httponly=True,
             secure=True,
             samesite="None",
