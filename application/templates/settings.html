@@ -68,16 +68,16 @@
     }
 
     function renderProfile(jumpsArray) {
-        gameInProgress = localStorage.getItem('in_progress')
-        is_logged_in = localStorage.getItem('logged_in')
-        //if the game is not in progress or we are logged in, visit profile.
-        if (!gameInProgress || is_logged_in){
-            window.location.href = '/profile';
-        }
-        else {
-            displayModal('Game in progress, finish it first!');
-            renderTransientModal(1000)
-        }
+        // gameInProgress = localStorage.getItem('in_progress')
+        // is_logged_in = localStorage.getItem('logged_in')
+        // //if the game is not in progress or we are logged in, visit profile.
+        // if (!gameInProgress || is_logged_in){
+        window.location.href = '/profile';
+        // }
+        // else {
+        //     displayModal('Game in progress, finish it first!');
+        //     renderTransientModal(1000)
+        // }
     }
 
 
