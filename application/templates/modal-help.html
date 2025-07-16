@@ -49,7 +49,7 @@
                 logoutButton.style.display = 'flex';
                 window.location.href = '/';
             } else {
-                console.log("Logout failed:", data);
+                alert("Logout failed:", data);
             }
         } catch (err) {
             console.log("Error during logout:", err);
@@ -74,15 +74,12 @@
         </div>
         <div class="guest-buttons" id="guest-buttons">
         <button onclick="closeModal('help'); beginTutorial()" class=" switch switch--outlined ">tutorial</button>
-        <button onclick="window.location.href='/login'" class="switch switch--outlined">login / signup</button>
         <script src="https://accounts.google.com/gsi/client" async></script>
-        <div id="g_id_onload"
+        <!-- <div id="g_id_onload"
             data-client_id="490339325235-2colln65cgm89aue0mihetv8upkmr5bl.apps.googleusercontent.com"
             data-login_uri="https://word.golf/login/google"  
             data-auto_prompt="false"> 
-            <!-- change this to the deployed backend URL --> 
-            <!-- data-login_uri="http://127.0.0.1:7000/login/google"  -->
-        </div>
+        </div> -->
 
         <div class="g_id_signin"
             data-type="standard"

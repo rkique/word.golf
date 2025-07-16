@@ -6,10 +6,12 @@
     }
  function toggleModal(id){
         const el = document.getElementById(id);
-        if (el.style.display === 'none') {
-            openModal(id);
-        } else {
+        if (el.style.display === 'flex') {
+            console.log("closing modal with id:", id);
             closeModal(id);
+        } else {
+            console.log("opening modal with id:", id);
+            openModal(id);
         }
     }
     function closeModal(id){
@@ -67,8 +69,9 @@
 
     function renderProfile(jumpsArray) {
         gameInProgress = localStorage.getItem('in_progress')
-        //if the game is not in progress and we are not in help, visit profile.
-        if (!gameInProgress){
+        is_logged_in = localStorage.getItem('logged_in')
+        //if the game is not in progress or we are logged in, visit profile.
+        if (!gameInProgress || is_logged_in){
             window.location.href = '/profile';
         }
         else {

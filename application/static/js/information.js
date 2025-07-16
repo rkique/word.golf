@@ -119,73 +119,73 @@ function startGame() {
     activateLinks();
 }
 
-function generateLineGraph(scores) {
-    localStorage.setItem('jumpsArray', JSON.stringify(scores));
-    const graphContainer = document.getElementById("scoresGraph");
-    if (!graphContainer) return;
-    const rootStyles = getComputedStyle(document.documentElement);
-    const axisLineColor = rootStyles.getPropertyValue('--border-color') || '#cccccc';
+// function generateLineGraph(scores) {
+//     localStorage.setItem('jumpsArray', JSON.stringify(scores));
+//     const graphContainer = document.getElementById("scoresGraph");
+//     if (!graphContainer) return;
+//     const rootStyles = getComputedStyle(document.documentElement);
+//     const axisLineColor = rootStyles.getPropertyValue('--border-color') || '#cccccc';
 
-    const trace = {
-        x: scores.map((_, i) => i + 1),
-        y: scores,
-        type: 'scatter',
-        mode: 'lines+markers',
-        hoverinfo: 'y',
-        hoverlabel: {
-            bgcolor: rootStyles.getPropertyValue('--background-color'),
-            font: {
-                color: rootStyles.getPropertyValue('--text-color'),
-                size: 14
-            },
-            bordercolor: rootStyles.getPropertyValue('--grayed-out-color')
-        },
-        line: {
-            color: rootStyles.getPropertyValue('--border-color'),
-            width: 3
-        },
-        marker: {
-            color: rootStyles.getPropertyValue('--hover-color'),
-            size: 10,
-            opacity: 0.6
-        }
-    };
+//     const trace = {
+//         x: scores.map((_, i) => i + 1),
+//         y: scores,
+//         type: 'scatter',
+//         mode: 'lines+markers',
+//         hoverinfo: 'y',
+//         hoverlabel: {
+//             bgcolor: rootStyles.getPropertyValue('--background-color'),
+//             font: {
+//                 color: rootStyles.getPropertyValue('--text-color'),
+//                 size: 14
+//             },
+//             bordercolor: rootStyles.getPropertyValue('--grayed-out-color')
+//         },
+//         line: {
+//             color: rootStyles.getPropertyValue('--border-color'),
+//             width: 3
+//         },
+//         marker: {
+//             color: rootStyles.getPropertyValue('--hover-color'),
+//             size: 10,
+//             opacity: 0.6
+//         }
+//     };
 
-    const layout = {
-        height: window.innerHeight * 0.4,
-        width: window.innerWidth * 0.4,
-        dragmode: false,
-        xaxis: {
-            visible: true,
-            autorange: true,
-            showline: true,
-            linecolor: axisLineColor,
-            linewidth: 1,
-            mirror: true
-        },
-        yaxis: {
-            visible: true,
-            range: [0,6],
-            showline: true,
-            linecolor: axisLineColor,
-            linewidth: 1,
-            mirror: true
-        },
-        plot_bgcolor: rootStyles.getPropertyValue('--background-color') || '#ffffff',
-        paper_bgcolor: rootStyles.getPropertyValue('--background-color') || '#ffffff',
-    };
+//     const layout = {
+//         height: window.innerHeight * 0.4,
+//         width: window.innerWidth * 0.4,
+//         dragmode: false,
+//         xaxis: {
+//             visible: true,
+//             autorange: true,
+//             showline: true,
+//             linecolor: axisLineColor,
+//             linewidth: 1,
+//             mirror: true
+//         },
+//         yaxis: {
+//             visible: true,
+//             range: [0,6],
+//             showline: true,
+//             linecolor: axisLineColor,
+//             linewidth: 1,
+//             mirror: true
+//         },
+//         plot_bgcolor: rootStyles.getPropertyValue('--background-color') || '#ffffff',
+//         paper_bgcolor: rootStyles.getPropertyValue('--background-color') || '#ffffff',
+//     };
 
-    const config = {
-        displayModeBar: false,
-        displaylogo: false,
-        responsive: true,
-        scrollZoom: false,
-        doubleClick: false,
-        staticPlot: false
-    };
+//     const config = {
+//         displayModeBar: false,
+//         displaylogo: false,
+//         responsive: true,
+//         scrollZoom: false,
+//         doubleClick: false,
+//         staticPlot: false
+//     };
 
-    Plotly.newPlot(graphContainer, [trace], layout, config);
-}
+//     Plotly.newPlot(graphContainer, [trace], layout, config);
+// }
 
 function formatFinishWords(wordsArray){
     return wordsArray.map(row => row.map(word => `<span class="finish-word">${word}</span>`).join(' ')).join('<br>');
@@ -260,6 +260,12 @@ function startHelpSession() {
     document.getElementById('prompts-count-remainder').innerText = '/2'
 
     start_text = `<p id="modalText"> Welcome to word.golf, a sport played with the meanings of words!</p>
+<div class="tutorial-images" style="">
+  <img src="static/images/start_0.png" alt="Tutorial step 0" style="max-width: 10vw;">
+  <img src="static/images/start_1.png" alt="Tutorial step 1" style="max-width: 10vw;">
+  <img src="static/images/start_2.png" alt="Tutorial step 2" style="max-width: 10vw;">
+  <img src="static/images/start_3.png" alt="Tutorial step 3" style="max-width: 10vw;">
+</div>
     <button class="switch switch--outlined" id='startHelpButton'> OK </button>
     <a id="startGameLink">Skip tutorial</a>`
     removeTintedModal = renderTintedModal(start_text)
@@ -319,11 +325,10 @@ function renderHelpFinish(){
       <span class="dot">.</span>
     </div>
   </div>`;
-
+    removeTintedModal = renderTintedModal(help_finish_text);
     setTimeout(() => {
         localStorage.removeItem('in_progress')
-        displayModal(help_finish_text);
-        renderTransientModal(START_GAME_DELAY_MS + HELP_FINISH_DELAY_MS)
-        setTimeout(startGame, START_GAME_DELAY_MS);
-    }, HELP_FINISH_DELAY_MS);
+        removeTintedModal()
+        startGame()
+    }, HELP_FINISH_DELAY_MS + START_GAME_DELAY_MS);
 }

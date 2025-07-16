@@ -333,8 +333,9 @@ function showBanner(text, color) {
 function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
     let resp = sendAndReceiveXML("word=" + word);
     if (localStorage.getItem('is_help') !== "true") {
+        console.log('resp.logged_in', resp);
         localStorage.setItem('in_progress', 'true');
-    }
+        }
     let promptIdx = lastNonzeroRow(resp.jumpsArray)
     let jumps = resp.jumpsArray[promptIdx].reduce((a, b) => a + b, 0) - 1;
     if (jumps > 5) {
