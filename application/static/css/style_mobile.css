@@ -142,7 +142,10 @@
         box-shadow: none;  
     }
 
-
+    switch:active, switch:hover, svg:hover, svg:active {
+        transform: none !important;
+    }
+    
     #wordspace button:hover, 
     #wordspace span:hover, 
     #wordspace span:focus, 
@@ -159,11 +162,14 @@
     #modal #modalText {
         font-size: 1.4rem;
     }
+    .profile-icon {
+        transform: none !important;
+    }
 
     #modal {
         max-width: 90vw;
         min-height: 50vh;
-        min-width: 70vw;
+        min-width: 85vw;
     }
     #modal button {
         font-size: 1.4rem;
@@ -206,14 +212,13 @@
     #modal-finish-guest, #modal-finish-user {
         width: 92vw;
         max-width: 92vw;
-        padding: 2rem;
-
+        /* padding: 2rem; */
     }
     .finish-container {
-        padding: 0;
+        padding: 0; 
         gap: 0.5rem;
-        margin: 2rem 0rem;
     }
+
     #finish-container {
         font-size: 1.2rem;
         max-width: 100%;
@@ -228,9 +233,6 @@
         font-size: 1.6rem;
     }
 
-    .finish_container {
-        width: 100%
-    }
 
     #share-link, #share-link a{
         font-size: 1.3rem;
@@ -254,7 +256,10 @@
     .finish-container .solutions{
         margin-top: 1rem;
     }
-
+    .stat-column {
+        gap: 3rem !important;
+        flex-direction: row;
+    }
     .finish-container .stat-row {
         display: flex;
         flex-direction: column;

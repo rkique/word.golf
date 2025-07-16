@@ -191,6 +191,7 @@ function renderSessionDone(resp) {
     prompts = resp.prompts
     jumpsArray = resp.jumpsArray
     start_target = prompts[4]
+    previous_words = resp.previous_words
     renderPrompts(jumpsArray, resp.startTargetIdxs, start_target, true)
     let is_logged_in = Boolean(localStorage.getItem('logged_in'));
     if (is_logged_in) {
@@ -204,9 +205,14 @@ function renderSessionDone(resp) {
  * @param {Array} b
  * @returns {boolean}
  */
-function arrayEqual(a, b) {
-    return Array.isArray(a) && Array.isArray(b) &&
-        a.length === b.length && a.every((val, index) => val === b[index]);
+function arrayEqual(a, b){
+    if (!Array.isArray(a) || !Array.isArray(b)) return a === b;
+    if (a.length !== b.length) return false;
+
+    for (let i = 0; i < a.length; i++){
+        if (!arrayEqual(a[i], b[i])) return false;
+    }
+    return true;
 }
 
 function addHelpFocuses(prompt, results) {
@@ -265,10 +271,10 @@ function clearPrompts() {
 function reportSessionEnded(debug_session_done) {
     if (localStorage.getItem('is_help') == "true") {
         resp = sendAndReceiveXML(`help_end=true`)
-        // _ = send_game_data_to_backend(resp, `help_end=true`);
+        // _ = send_game_resp_to_backend(resp, `help_end=true`);
     } else {
         resp = sendAndReceiveXML(`end=true`)
-        // _ = send_game_data_to_backend(resp, `end=true`);
+        // _ = send_game_resp_to_backend(resp, `end=true`);
     }
     
     //If user has completed all prompts
@@ -280,7 +286,7 @@ function reportSessionEnded(debug_session_done) {
     else if (resp.hasOwnProperty('session_done') || debug_session_done) {
         // alert('received session_done')
         renderSessionDone(resp)
-        localStorage.setItem("lastComplete", data["date"])
+        localStorage.setItem("lastComplete", resp["date"])
     }
     else {
         renderLinks(resp.prompt, resp.results)
@@ -326,9 +332,15 @@ function showBanner(text, color) {
 
 function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
     let resp = sendAndReceiveXML("word=" + word);
-    // console.log('[postWord] resp:', resp);
+    if (localStorage.getItem('is_help') !== "true") {
+        localStorage.setItem('in_progress', 'true');
+    }
     let promptIdx = lastNonzeroRow(resp.jumpsArray)
     let jumps = resp.jumpsArray[promptIdx].reduce((a, b) => a + b, 0) - 1;
+    if (jumps > 5) {
+        // show the skip button if we have more than 5 jumps
+        // document.getElementById("skip-button").style.display = "block";
+    }
     if (jumps >= 13) { // cap it at 12 current jumps
         resp = sendAndReceiveXML(`end=true`);
     }

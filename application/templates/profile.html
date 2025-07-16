@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style_mobile.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile_mobile.css') }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/index.global.min.js"></script>
+    <title>User Statistics</title>
+    {% include 'head.html' %}
+</head> 
+
+<body>
+    <div class="flex global">
+    <div id="statistics" class="flex flex-column">
+        <div class="flex profile-container">
+        <a href="/" class="back-arrow" style="text-decoration: none; margin-right: 12px; font-size: 2rem; vertical-align: middle;">&#8592;</a>
+        <h2 class="profile-title">Profile <span 
+            class="profile-email"> {{ email }}</span></h2>
+        <button onclick="renderLogout()" class="switch switch--outlined" id="profile-logout">logout</button>
+        </div>
+        <canvas id="jumps-graph" width="600" height="400"></canvas>
+        <div class="profile-stats">
+        <p>Games Played: {{ total_games }}</p>
+        <p>Average Jumps / Game: {{ average_total_jumps }}</p>
+        <p>Average Jumps / Prompt: {{ average_prompt_jumps }}</p>
+        <!-- <p>Total Jumps Today: {{ total_jumps }} </p>
+        <p>Best Score: {{ best_score }}</p> -->
+        </div>
+    </div>
+    <div id="calendar"></div>
+    </div>
+</body>
+
+<script>
+    
+    // import { Calendar } from '@fullcalendar/core';
+    // import dayGridPlugin from '@fullcalendar/daygrid';
+    // now make the jumps graph for total_jumps over time (where total_jumps is non-zero)
+    // for the user to show improvement
+    function renderGraph() {
+        const ctx = document.getElementById('jumps-graph').getContext('2d');
+        const data = JSON.parse('{{ jumps_data|tojson|safe }}');
+        const averageData = JSON.parse('{{ jumps_average_data|tojson|safe }}');
+
+        const labels = data.map(entry => entry.date);
+        const totalJumps = data.map(entry => entry.total_jumps);
+        const averageJumps = averageData.map(entry => entry.average_jumps);
+
+        const allYValues = totalJumps.concat(averageJumps);
+        const computedMaxY = Math.max(...allYValues);
+        const yMax = Math.max(computedMaxY, 25); 
+        const yMin = 9;
+        const failure = getCSSVariable('--failure');
+        const softFailure = getCSSVariable('--soft-failure');
+        const grayedOutBackground = getCSSVariable('--grayed-out-background');
+        const textColor = getCSSVariable('--text-color');
+        const backgroundColor = getCSSVariable('--grayed-out-background');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Total Jumps',
+                    data: totalJumps,
+                    borderColor: grayedOutBackground,
+                    pointBackgroundColor: textColor, 
+                    backgroundColor: backgroundColor,
+                    fill: false,
+                    showLine: true,
+                },
+                {
+                    label: 'Average Jumps',
+                    data: averageJumps,
+                    borderColor: softFailure,
+                    pointBackgroundColor: failure, 
+                    backgroundColor: 'rgba(255, 0, 0, 0)',
+                    fill: false,
+                    borderWidth: 2,
+                    tension: 0.1,
+                    showLine: true,
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        labels: {
+                        color: textColor // <-- legend text color
+                        }
+                    },
+                    title: {
+                        display: false,
+                        color: textColor
+                    },
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: grayedOutBackground,
+                        },
+                        ticks: {
+                            color: textColor // <-- x-axis labels
+                        },
+                        title: {
+                            display: true,
+                            text: 'Date played',
+                            color: textColor
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: grayedOutBackground,
+                        },
+                        ticks: {
+                            color: textColor // <-- y-axis labels
+                        },
+                        title: {
+                            display: true,
+                            text: 'Total Jumps',
+                            color: textColor
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    renderGraph();
+</script>
+
+<script>
+    async function renderLogout(){
+        try {
+            const res = await fetch("/logout", {
+                method: "POST",
+                credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
+                headers: {
+                    'Content-Type': 'application/json'  // Ensure this matches what the server expects
+                },
+                body: JSON.stringify({
+                    date: new Date().toISOString().split('T')[0]
+                })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                localStorage.removeItem('logged_in');
+                window.location.href = '/';
+            } else {
+                console.log("Logout failed:", data);
+            }
+        } catch (err) {
+            console.log("Error during logout:", err);
+        }
+        // }
+    }
+</script>
+
+<script type="module">
+    document.addEventListener('DOMContentLoaded', function () {
+        const calendarData = JSON.parse('{{ month_stats|tojson|safe }}');
+
+        const eventDates = new Set(
+            calendarData.map(event => {
+                return new Date(event.date).toISOString().split('T')[0];
+            })
+        );
+        const borderColor = getCSSVariable('--grayed-out-background');
+        const softCheck = getCSSVariable('--soft-check');
+        const calendarEl = document.getElementById('calendar');
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            initialDate: '2025-07-01',
+            validRange: {
+                start: '2025-07-01',
+                end: '2025-08-01'
+            },
+            headerToolbar: {
+                left: '',
+                center: 'title',
+                right: ''
+            },
+            dayCellDidMount: function(info) {
+                const date = info.date;
+                const dateString = date.toISOString().split('T')[0]; 
+                console.log(dateString);
+                info.el.style.border = `1px solid ${borderColor}`;
+                if (eventDates.has(dateString)) {
+                    info.el.style.backgroundColor = softCheck;
+                } 
+            }
+        });
+
+        calendar.render();
+    });
+</script>
+

@@ -61,6 +61,7 @@ def create_app():
         from .internals import auth
         from .internals import passwordreset
         from .internals import gameprogress
+        from .internals import statistics
         import logging
         log = logging.getLogger('werkzeug')
         log.setLevel(logging.ERROR)

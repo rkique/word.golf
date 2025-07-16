@@ -1,0 +1,18 @@
+@media only screen and (max-width: 992px) {
+    .global {
+        flex-direction: column;
+    }
+    .profile-container {
+        max-width: 100vw;
+    }
+    #statistics {
+        max-width: 100vw;
+    }
+    #jumps-graph {
+        max-width: 80vw;
+    }
+    #calendar {
+        margin: 0;
+        padding: 1rem;
+    }
+}

@@ -25,3 +25,4 @@ Authlib
 python-dotenv
 Flask-Mail
 flask_migrate
+matplotlib

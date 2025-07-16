@@ -1,0 +1,109 @@
+.wg-banner {
+    text-align: center;
+    margin: 0 auto;
+    min-width: 340px;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--background-color);
+    padding: 1rem;
+}
+
+.wg-banner-logo {
+    width: 3rem;
+    height: 3rem;
+    transform: translate(1rem, 0);
+    margin: 0.5rem auto;
+    display: inline-block;
+    user-select: none;
+    pointer-events: none;
+}
+
+.wg-banner-title {
+    font-family: 'Schibsted Grotesk', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-align: center;
+    user-select: none;
+    text-decoration: none;
+    color: var(--grayed-out-color);
+}
+
+.global {
+    flex-direction: row;
+}
+/* Center the content and make it a flex container */
+#statistics-global {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; 
+}
+
+p {
+    font-size: 1.2rem;
+    margin: 0.3rem;
+    color: var(--text-color); 
+}
+
+.jumps-graph {
+    width: 50%;
+    height: 200px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-title {
+    display: inline;
+    margin: 0;
+    font-size: 1.8rem;
+}
+.profile-email {
+    font-weight: 300;
+    font-size: 1.4rem;
+    margin: 0;
+}
+
+#profile-logout {
+    margin: 0;
+    display: inline;
+    font-size: 1.2rem;
+    margin-left: 1rem;
+    padding: 0.5rem;
+}
+
+#statistics, #calendar {
+  gap: 2rem;
+  flex: 1;
+  font-size: 1rem;
+  margin: 0 auto;      /* Center it */
+  padding: 2rem;
+
+}
+
+.fc-scroller-liquid-absolute {
+    overflow: hidden !important;
+}
+
+
+.back-arrow {
+    color: var(--text-color);
+    transition: color 0.2s;
+}
+
+.back-arrow:hover {
+    color: var(--emphasis-color);
+}
+
+.fc-day-disabled {
+  background-color: transparent !important;
+  opacity: 1;
+}
+
+.fc-theme-standard .fc-scrollgrid {
+      border: 1px solid var(--transparent) !important;
+}
+.fc td, .fc th {
+  border: 1px solid var(--transparent) !important;
+}

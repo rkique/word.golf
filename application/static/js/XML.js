@@ -74,7 +74,7 @@ function sendAndReceiveXML(message) {
             //     // clearLastTallyContainer(resp.jumpsArray.length);
             //     return resp;
             // } else {
-                return response_text;
+            return response_text;
             // }     
         } catch (e) {
             alert('Error in backend. Please check logs.')

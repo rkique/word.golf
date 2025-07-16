@@ -188,15 +188,6 @@ function renderWord(word, row, column, { animate = true, style = [] } = {}) {
 //     }
 // }
 
-function clearAllPromptWords(end) {
-    const promptWords = document.querySelectorAll('.prompt-word');
-    // if (end == false) {
-    promptWords.forEach(word => word.remove());
-    // } else {
-    //     promptWords.forEach(word => word.classList.remove('prompt-word'));
-    //     promptWords.forEach(word => updateInnerTextSmooth(word, ''));
-    // }
-}
 
 function tallyPrompts(prompts, jumpsArray, current_jumps) {
     let targets = prompts.map(arr => arr[1]);

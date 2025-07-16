@@ -23,6 +23,7 @@ window.addEventListener('load', function() {
 });
 
 function isSafari() {
+    return false;
     var userAgent = navigator.userAgent;
     return /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
 }
@@ -50,12 +51,8 @@ data = JSON.parse('{{data|tojson|safe}}');
         <div id="wordspace"></div>
     </div>
     <div id="prompts-container">
-        <div id="prompts-title">
-        <div id="prompts-title-heading">Prompts</div> 
-        <div id="prompts-count-container">
-        <div id="prompts-count">1</div> <div id="prompts-count-remainder">/ 5</div>
-        </div>
-        </div>
+        <!--Put me below: <button id="skip-button" onclick="renderSkip()">skip</button> -->
+        <p class="prompts-title"><span id="prompts-title">Prompts</span> </p>
         <div id="prompts">
             <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
             <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
@@ -97,6 +94,7 @@ data = JSON.parse('{{data|tojson|safe}}');
     // start help session
     if (is_help !== 'false' && !data.logged_in) { 
         startHelpSession()
+        localStorage.setItem('in_progress', 'true')
     } 
     else {
         console.log("here is the data from the backend");

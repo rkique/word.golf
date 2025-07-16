@@ -1,8 +1,16 @@
 HELP_FINISH_DELAY_MS = 300
 START_GAME_DELAY_MS = 800
 
-function displayModal(displayHTML){
-    const modalEl = document.getElementById('modal');
+function displayModal(displayHTML, accent){
+    let modalEl;
+    if (accent == "exclaim") {
+        modalEl = document.getElementById('exclaim-modal');
+        modalEl.style.display = 'flex';
+    }
+    else {
+    modalEl = document.getElementById('modal');
+    }
+    
     modalEl.innerHTML = displayHTML;
     modalEl.style.display = 'flex';
 }
@@ -74,8 +82,9 @@ function renderFinish(resp) {
     clearAllPromptWords();
     const daily_idx = daysSinceStartDate();
     is_logged_in = Boolean(localStorage.getItem('logged_in'))
+    localStorage.removeItem('in_progress');
     let jumpsGridMessage = resp.jumpsArray ? renderGrid(resp.jumpsArray) : '';
-    runAfterBannerDisappears(() => {displayFinishModal(daily_idx, resp.total_jumps, resp.streak, jumpsGridMessage, is_logged_in)})
+    runAfterBannerDisappears(() => {displayFinishModal(daily_idx, resp.totalJumps, resp.streak, resp.wordsArray, jumpsGridMessage, is_logged_in)})
 }
 
 /* Clears the modal, localStorage, and renders links with XML redirect=true*/
@@ -102,7 +111,7 @@ function startGame() {
     let start_target = prompts[prompt_idx];
     let startTargetIdxs = resp.startTargetIdxs
     // total_jumps is only passed after game end.
-    const is_end = 'total_jumps' in resp ? resp.total_jumps : 0;
+    const is_end = 'totalJumps' in resp ? resp.totalJumps : 0;
     start_target = prompts[prompt_idx];
     start_target[0] = results[10];
     renderPrompts(jumpsArray, startTargetIdxs, start_target=start_target, is_end)
@@ -178,11 +187,19 @@ function generateLineGraph(scores) {
     Plotly.newPlot(graphContainer, [trace], layout, config);
 }
 
-function displayFinishModal(daily_idx, totalJumps, currentStreak, jumpsGridMessage, is_user=false) {
+function formatFinishWords(wordsArray){
+    return wordsArray.map(row => row.map(word => `<span class="finish-word">${word}</span>`).join(' ')).join('<br>');
+}
+function displayFinishModal(daily_idx, totalJumps, currentStreak, selectedWords, jumpsGridMessage, is_user=false) {
     const modalFinish = document.getElementById(is_user ? 'modal-finish-user' : 'modal-finish-guest');
     modalFinish.querySelector('.daily-idx').innerHTML = daily_idx;
     modalFinish.querySelector('.totalJumps').innerHTML = totalJumps;
     modalFinish.querySelector('.streak').innerHTML = currentStreak;
+    // Map selectedWords to an array of words each in a finish-word class
+    const selectedWordsEl = modalFinish.querySelector('.selectedWords');
+    if (selectedWordsEl && Array.isArray(selectedWords)) {
+        selectedWordsEl.innerHTML = formatFinishWords(selectedWords);
+    }
     modalFinish.style.display = "flex";
     let tweetMessage;
     if(is_user){
@@ -197,7 +214,7 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, jumpsGridMessa
                 shareLink.textContent = 'Copied to clipboard!';
                 setTimeout(() => shareLink.innerHTML = 
                 `
-                Share <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-copy">
+                Share your results <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-copy">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> 
                 `, 2000);
@@ -213,19 +230,16 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, jumpsGridMessa
             .then(response => response.json())
             .then(json => {
                 localStorage.setItem('solutions', JSON.stringify(json));
-                function formatSequences(sequences) {
-                    return sequences.map(seq =>
-                        `<div><p>${seq.join(' ⟶ ')}</p></div>`
-                    ).join('\n');
-                }
-                const modalFinish = document.querySelector('.modal-finish'); // adjust if needed
-                modalFinish.querySelector('.solutions').innerHTML =
-                    `<p class="solutions-text">${formatSequences(json)}</p>`;
+                json.forEach(row => {
+                    if (row.length > 0) row[0] = `<span class="finish-word-start">${row[0]}</span>`;
+                    if (row.length > 1) row[row.length - 1] = `<span class="finish-word-end">${row[row.length - 1]}</span>`; 
+                });
+                const modalFinish = document.querySelector('.modal-finish');
+                modalFinish.querySelector('.solutionWords').innerHTML =
+                    `<p> ${formatFinishWords(json)}</p>`;
             });
     }
 }
-
-
 
 function startHelpSteps(){
     closeModal('modal');
@@ -289,6 +303,7 @@ function renderTransientModal(duration){
     overlay.classList.add('tint-background')
     document.body.appendChild(overlay);
     setTimeout(() => {
+        modal.style.display = 'none';
         overlay.parentNode.removeChild(overlay);
         document.body.style.pointerEvents = 'auto';
     }, duration);
@@ -306,6 +321,7 @@ function renderHelpFinish(){
   </div>`;
 
     setTimeout(() => {
+        localStorage.removeItem('in_progress')
         displayModal(help_finish_text);
         renderTransientModal(START_GAME_DELAY_MS + HELP_FINISH_DELAY_MS)
         setTimeout(startGame, START_GAME_DELAY_MS);
