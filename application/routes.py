@@ -493,7 +493,7 @@ def profile():
 
     # get the average jumps per game
     if total_games > 0:
-        average_total_jumps = average_total_jumps = round(GameState.query.filter_by(user_id=user.id).filter(GameState.total_jumps > 0).with_entities(db.func.avg(GameState.total_jumps)).scalar(), PRECISION)
+        average_total_jumps = round(GameState.query.filter_by(user_id=user.id).filter(GameState.total_jumps > 0).with_entities(db.func.avg(GameState.total_jumps)).scalar(), PRECISION)
     else:
         average_total_jumps = game_state.total_jumps
     
