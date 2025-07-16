@@ -19,7 +19,7 @@ document.addEventListener('keydown', function (event) {
     } else if (isHelp) {
       resp = sendAndReceiveXML('help_end=true')
       runAfterBannerDisappears(() => {renderHelpFinish()})
-      tallyPrompts(resp.prompts, [3,2], resp.jumps)
+      // tallyPrompts(resp.prompts, [3,2], resp.jumps)
       startGame(); 
     }
   }

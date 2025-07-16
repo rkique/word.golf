@@ -139,12 +139,12 @@ function renderWord(word, row, column, {animate=true, style=[]} = {}) {
 // }
 
 
-function tallyPrompts(prompts, jumpsArray, current_jumps) {
-    let targets = prompts.map(arr => arr[1]);
-    ct = jumpsArray.length;
-    tallyStarts(targets);
-    tallyAllPrompts(ct, current_jumps)
-}
+// function tallyPrompts(prompts, jumpsArray, current_jumps) {
+//     let targets = prompts.map(arr => arr[1]);
+//     ct = jumpsArray.length;
+//     // tallyStarts(targets);
+//     tallyAllPrompts(ct, current_jumps)
+// }
 
 function addTallyContainers(promptBox){
     if (promptBox.children.length === 0){
@@ -187,12 +187,12 @@ function cueStartWordOnHover() {
  * @param {[string, string]} start_target
  */
 function renderPrompts(jumpsArray, idxs, start_target, end = false) {
-    // console.log('[renderPrompts] jumpsArray:', jumpsArray);
     clearAllPromptWords();
     renderTallies(jumpsArray);
+    let i = lastNonzeroRow(jumpsArray) + 1;
+    if(end == true){i = 5};
+    document.getElementById('prompts-count').innerText = i;
     if (!end) {
-        // console.log("End is false here adding these start targets");
-        // console.log(start_target);
         // console.trace('[renderPrompts] Stack trace');
         const [start_idx, target_idx] = idxs;
         const [start, target] = start_target;
