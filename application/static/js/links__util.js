@@ -1,7 +1,15 @@
 function disableLinks(){
     links = document.getElementsByClassName("link")
     links = Array.from(links)
-    links.map(link => link.classList.add("link--disabled"))
+    links.map(link => {
+        link.classList.add("link--disabled");
+        if (link.classList.contains("link--target")) {
+            link.classList.remove("link--target");
+            if (link.id === "rainbow_text_animated") {
+                link.removeAttribute("id");
+            }
+        }
+    });
 }
 
 function clearChildren(element){
