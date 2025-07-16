@@ -5,26 +5,23 @@
 
 <head>
   {% include 'head.html' %}
-  <title>Login / Create User</title>
+  <title>word.golf</title>
   <script>
-  localStorage.setItem('darkMode', 'false')
-  syncColorMode()
+    localStorage.setItem('darkMode', 'false')
+    syncColorMode()
   </script>
 </head>
 
+<body>
+  <div id="login-global" class="flex banner-bg">
 
-<div id="login-global" class="flex banner-bg">
-
-  <body>
-    <div class="wg-banner">
-      <a href="/" class="wg-banner-title">word.golf</a>
-    </div>
 
     <div class="loginContainer">
+      <a class="wg-banner-title">sign up</a>
+      <p class="wg-subtext"> see solutions and create a profile.</p>
       <form id="loginForm">
         <div class="form-rows">
           <div class="form-row">
-            <label> Email</label>
             <input type="email" id="loginEmail" required />
           </div>
           <div class="form-row" id="passwordRow" style="display: none;">
@@ -37,7 +34,7 @@
               <img src="../static/images/pass_open_eye.png" alt="Toggle Password Visibility" id="togglePassword"> -->
           </div>
           <div>
-            <button type="submit" id="SubmitBtn" class="switch switch--outlined">Continue</button>
+            <button type="submit" id="SubmitBtn" class="switch switch--outlined">continue with email</button>
             <button type="submit" id="ForgotPasswordBtn" class="switch switch--outlined" style="display: none;"
               onclick="window.location.href='/resetpassword'">Forgot Password</button>
             <button type="submit" id="LoginBtn" class="switch switch--outlined" style="display: none;">Login</button>
@@ -55,24 +52,22 @@
             <div id="g_id_onload"
               data-client_id="490339325235-2colln65cgm89aue0mihetv8upkmr5bl.apps.googleusercontent.com"
               data-login_uri="https://word.golf/login/google" data-auto_prompt="false">
-              <!-- change this to the deployed backend URL -->
-              <!-- data-login_uri="http://127.0.0.1:7000/login/google" -->
             </div>
 
             <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline"
               data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="left">
             </div>
-            <!-- <button onclick="window.location.href='/resetpassword'" class="switch switch--outlined">Reset Password</button> -->
           </div>
         </div>
         <div id="responseMessage"></div>
-        <!-- <button onclick="window.location.href = window.location.href.replace(/\/login$/, '')" style="display: none;" class="switch switch--outlined" id="backGame">Back to Game</button>    </div> -->
       </form>
     </div>
-  </body>
-</div>
-</div>
+    <div class="wg-banner">
+    </div>
 
+  </div>
+  </div>
+</body>
 <script>
 
   document.getElementById('togglePassword').addEventListener('click', () => {
@@ -88,7 +83,6 @@
 
   document.getElementById("SubmitBtn").addEventListener("click", async (e) => {
     e.preventDefault();
-    // I am just mocking this for now, but I will add a password later.
     const email_val = document.getElementById("loginEmail");
 
     if (email_val.checkValidity()) {
@@ -104,7 +98,6 @@
       if (googleOnload) googleOnload.style.display = "none";
       const submitBtn = document.getElementById("SubmitBtn");
       if (submitBtn) submitBtn.style.display = "none";
-      // in a real application, make the POST request to the backend to check if the user exists
       try {
         const res = await fetch("/user_exist", {
           method: "POST",

@@ -19,10 +19,14 @@
 }
 
 #loginForm .nsm7Bb-HzV7m-LgbsSe {
-  background-color: rgba(0, 0, 0, 0.75) !important;
+  /* background-color: rgba(0, 0, 0, 0.75) !important; */
   border: 1px rgba(255, 255,255, 0.2) solid !important;
 }
-  
+.wg-banner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
     .wg-banner-logo {
       width: 3rem;
       height: 3rem;
@@ -39,11 +43,14 @@
       text-decoration: none;
       z-index: 2;
       letter-spacing: 1px;
-      text-align: center;
+      text-align: right;
       user-select: none;
       text-decoration: none;
-      color: #b1b1b1 !important;
       text-decoration: none;
+    }
+    .wg-subtext {
+      font-size: 1.5rem;
+      color: var(--grayed-out-color);
     }
 
   #loginForm, #createUserForm {
@@ -90,7 +97,7 @@
     width: 20rem;
     color: var(--text-color);
     background: transparent;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--grayed-out-color);
     border-radius: 0.6rem;
   }
   #login-global{
@@ -100,7 +107,15 @@
     min-height: 100vh;
     align-items: center;
   }
-
+  #loginEmail {
+    background-color: var(--0);
+    border: 1px solid var(--grayed-out-color);
+  }
+    input:-webkit-autofill {
+      background-color: var(--c) !important;
+      -webkit-text-fill-color: var(--text-color) !important;
+      transition: background-color 5000s ease-in-out 0s;
+  }
   #responseMessage {
     color: var(--text-color);
     margin-top: 20px;
@@ -120,7 +135,7 @@
 
   .loginContainer, .createUserContainer {
     padding: 2rem;
-    background: var(--background-color);
+    background: var(--0);
     min-width: 40vw;
     max-height: 100vh;
     height: 100vh;
@@ -150,11 +165,13 @@
 }
 
 button:hover {
-    color: var(--hover-color) !important;
-    outline: 1px solid var(--text-color) !important;
-    transform: scale(1.02) !important;
+    transform: scale(1) !important;
 }
 
+  .loginContainer {
+      flex: 1;
+      width: 100%;
+  }
   .loginpassword {
     font-size: 2.2rem;
     width: 20rem;
@@ -173,7 +190,9 @@ button:hover {
   .g_id_signin {
     margin-top: 1rem !important; 
   }
-
+  label{
+    color: var(--grayed-out-color);
+  }
   .separator {
     display: flex;
     align-items: center;
@@ -212,8 +231,7 @@ button:hover {
   .separator-text {
     padding: 0 1rem;
     color: var(--text-color, #444);
-    font-size: 1.1rem;
-    font-weight: 500;
+    font-size: 1rem;
     white-space: nowrap;
     opacity: 0.8;
   }
@@ -231,14 +249,15 @@ button:hover {
     #SubmitBtn {
       transition: color 0.2s, background 0.2s, transform 0.2s;
       position: relative;
+      font-size: 1rem !important;
       left: 0.3rem; 
-      background-color: rgba(0, 0, 0, 0.75) !important;
-      border: 1px rgba(255, 255,255, 0.2) solid !important;
+      color: var(--grayed-out-color);
+      background-color: transparent;
+      border: 1px solid var(--4);
       outline: none;
     }
     #SubmitBtn:hover {
       color: var(--hover-color);
-      transform: scale(1.03);
     }
 
   @media only screen and (max-width: 992px) {
