@@ -451,7 +451,8 @@ def index():
         token = cookie_signer.dumps({"user_id": guest_user.id})
 
         if os.getenv("DEV", "false").lower() == "true":
-            set_response_cookie(response, token)
+            print("This Dev should NEVER BE TRUE!!!!!")
+            set_response_cookie(response, token, secure=False)
         else:
             set_response_cookie(response, token, secure=True)
 

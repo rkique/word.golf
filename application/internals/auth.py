@@ -403,8 +403,10 @@ def user_session_exists():
         return False
     
 
-def set_response_cookie(response, token, secure=True):
-    response.set_cookie(
+def set_response_cookie(response, token, secure):
+    # if not secure:
+    if not secure:
+        response.set_cookie(
             "auth_token",
             token,
             path='/',
@@ -412,7 +414,7 @@ def set_response_cookie(response, token, secure=True):
             samesite="Lax",
             max_age=60 * 60 * 24 * 365
         )
-    if secure:
+    else:
         response.set_cookie(
             "auth_token",
             token,
