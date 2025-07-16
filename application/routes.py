@@ -481,8 +481,6 @@ def profile():
         return redirect('/login')
     
     game_state = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
-    if not game_state:
-        return redirect('/')
 
     # look for best score through all game states
     best_score = GameState.query.filter_by(user_id=user.id).order_by(GameState.total_jumps.asc()).first()
