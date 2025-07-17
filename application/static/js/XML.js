@@ -61,6 +61,7 @@ function sendAndReceiveXML(message) {
     else {
         try {
             response_text = JSON.parse(xhttp.responseText);
+            console.log("[sendAndReceiveXML] Response text:", response_text);
             jumpsArray = response_text["jumpsArray"]; 
             results = response_text["results"]; 
             prompts = response_text["prompts"]; 

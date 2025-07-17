@@ -136,8 +136,8 @@ html {
   
 .tally:not(.prompt-word){
     flex: 0 0 auto;
-    max-width: 0.5rem !important;
-    min-width: 0.5rem !important;
+    max-width: 0.75rem !important;
+    min-width: 0.75rem !important;
     padding: 0;
     min-height: 100% !important;
     border: 1px solid var(--4);
@@ -617,6 +617,22 @@ button span {
     margin: 0 auto;
 }
 
+#prompts-bar-container {
+  position: relative;
+  width: 100%;
+  height: 1rem;
+  padding: 0.5rem;
+  background-color: transparent; /* or a light bg */
+}
+
+#prompts-bar {
+  height: 1rem;
+  width: 0%; /* will be dynamically updated */
+  background-color: transparent;
+  border: 1px solid var(--4);
+  transition: width 0.3s ease;
+}
+
 #prompts-title {
     display: flex;
     justify-content: center;
@@ -733,7 +749,7 @@ button span {
     display: flex;
     align-items: center;
     min-height: 6rem;
-    max-height: 8rem;
+    max-height: 7rem;
     justify-content: space-between;
     font-size: 1.6rem;
     position: relative;
@@ -1010,11 +1026,15 @@ button span {
     }
   }
   
-#rainbow_text_animated:hover {
+#rainbow_text_animated:hover{
     opacity: 1;
     animation: pulse-2 0.7s infinite;
+    color: var(--emphasis-color);
 }
 
+#rainbow_text_animated:hover span {
+    color: var(--emphasis-color) !important;
+}
 #modalText {
     font-size: 1.8rem;
     color: var(--text-color);

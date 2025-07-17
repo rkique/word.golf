@@ -7,7 +7,6 @@ function clearBoxes() {
 }
 
 function renderWord(word, row, column, { animate = true, style = [] } = {}) {
-
     let wordTallyContainers = document.querySelectorAll('#prompts .prompt-box .word-tally-box');
     const wordTallyContainer = wordTallyContainers[row * 6 + column]
     // Get the last .tally child of wordTallyContainer and modify it
@@ -28,26 +27,26 @@ function renderWord(word, row, column, { animate = true, style = [] } = {}) {
 }
 
 // Given a promptBox and prompt-tally-container, removes tallies from the correct cell.
-function removeTallyDiv(row, column) {
-    let wordTallyContainers = document.querySelectorAll('#prompts .prompt-box .word-tally-box');
-    let wordTallyContainer = wordTallyContainers[row * 6 + column]
-    const tallies = wordTallyContainer.querySelectorAll('.tally');
-    if (tallies.length > 0){
-        tallies.forEach(tally => {
-            tally.remove();
-        });
-        return [row, column];
-    }
-}
+// function removeTallyDiv(row, column) {
+//     let wordTallyContainers = document.querySelectorAll('#prompts .prompt-box .word-tally-box');
+//     let wordTallyContainer = wordTallyContainers[row * 6 + column]
+//     const tallies = wordTallyContainer.querySelectorAll('.tally');
+//     if (tallies.length > 0){
+//         tallies.forEach(tally => {
+//             tally.remove();
+//         });
+//         return [row, column];
+//     }
+// }
 
 function clearAllPromptWords(end) {
     const promptWords = document.querySelectorAll('.prompt-word');
-    // if (end == false) {
+    if (end == false) {
     promptWords.forEach(word => word.remove());
-    // } else {
-    //     promptWords.forEach(word => word.classList.remove('prompt-word'));
-    //     promptWords.forEach(word => updateInnerTextSmooth(word, ''));
-    // }
+    } else {
+        promptWords.forEach(word => word.classList.remove('prompt-word'));
+        promptWords.forEach(word => updateInnerTextSmooth(word, ''));
+    }
 }
 
 
@@ -59,15 +58,27 @@ function clearBoxes() {
     }
 }
 
-function clearLastTallyContainer(ct) {
-    promptBoxes = document.querySelectorAll('#prompts .prompt-box');
-    const box = promptBoxes[ct - 1];
-    if (box.children[5].classList.contains('word-tally-container')) {
-        clearChildren(box.children[5]);
-    }
+function clearLastPromptBox() {
+    requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+        let promptBoxes = document.querySelectorAll('#prompts .prompt-box');
+        lastPromptBox = promptBoxes[4];
+        if (lastPromptBox) {
+            Array.from(lastPromptBox.children).forEach(child => {
+                Array.from(child.children).forEach(grandchild => {
+                    if (grandchild.innerText !== '') {
+                        grandchild.innerText = '';
+                        grandchild.classList.remove('prompt-word');
+                        grandchild.classList.remove('prompt-start-word')
+                    }
+                });
+            });
+        }
+    });
+});
 }
 
-function updateInnerTextSmooth(elem, newText, animate) {
+function updateInnerTextSmooth(elem, newText, animate, isLastUpdate=false) {
     if (animate) {
         const container = elem.closest('.word-tally-box');
         if (!container) return;
@@ -88,7 +99,7 @@ function updateInnerTextSmooth(elem, newText, animate) {
 }
 
 //given a promptBox and prompt-tally-container, updates the correct one with tallyDiv.
-function renderTallies(jumpsArray, i, reverse= false) {
+function renderTallies(jumpsArray, wordsArray, i, reverse= false) {
     //adding tallyDivs.
     let wordTallyContainers = document.querySelectorAll('#prompts .prompt-box .word-tally-box');
     if(reverse){
@@ -102,12 +113,12 @@ function renderTallies(jumpsArray, i, reverse= false) {
     jumpsArray.forEach((row, row_idx) => {
         row.forEach((tally_count, col_idx) => {
             let wordTallyContainer = wordTallyContainers[row_idx * 6 + col_idx]
-            while (wordTallyContainer.querySelectorAll('.tally').length > tally_count){
-                let lastTally = wordTallyContainer.querySelector('.tally:last-child');
-                if (lastTally) {
-                    lastTally.remove();
-                }
-            }
+            // while (wordTallyContainer.querySelectorAll('.tally').length > tally_count){
+            //     let lastTally = wordTallyContainer.querySelector('.tally:last-child');
+            //     if (lastTally) {
+            //         lastTally.remove();
+            //     }
+            // }
             while (wordTallyContainer.querySelectorAll('.tally').length < tally_count) {
                 let tallyDiv = document.createElement("div");
                 tallyDiv.className = 'tally';
@@ -117,8 +128,28 @@ function renderTallies(jumpsArray, i, reverse= false) {
     });
 }
 
-function renderWord(word, row, column, { animate = true, style = [] } = {}) {
+// Renders tallies at the first position equal to the total number of tallies 
+function renderTalliesLinear(jumpsArray) {
+    let wordTallyContainers = document.querySelectorAll('#prompts .prompt-box .word-tally-box');
+    
+    jumpsArray.forEach((row, row_idx) => {
+        rowSum = row.reduce((sum, val) => sum + val, 0)
+        let wordTallyContainer = wordTallyContainers[row_idx * 6]
+        let lastWordTallyContainer = wordTallyContainers[row_idx * 6 + 5]
+        while (wordTallyContainer.querySelectorAll('.tally').length < rowSum) {
+            let tallyDiv = document.createElement("div");
+            tallyDiv.className = 'tally';
+            wordTallyContainer.appendChild(tallyDiv);
+            // if (lastWordTallyContainer.querySelectorAll('.tally').length < 1){
+            //     let tallyDiv = document.createElement("div");
+            //     tallyDiv.className = 'tally';
+            //     lastWordTallyContainer.appendChild(tallyDiv);
+            // }
+        }
+    });
+}
 
+function renderWord(word, row, column, { animate = true, style = [] } = {}) {
     let wordTallyContainers = document.querySelectorAll('#prompts .prompt-box .word-tally-box');
     const wordTallyContainer = wordTallyContainers[row * 6 + column]
     // Get the last .tally child of wordTallyContainer and modify it
@@ -172,15 +203,23 @@ function cueLinkPromptOnHover(linkClass, promptClass) {
     prompt.addEventListener('mouseleave', removeHover);
 }
 
-
+function renderScore(score){
+    score = Math.min(score / 0.005, 100);
+    const promptsBar = document.getElementById('prompts-bar')
+    promptsBar.style.width = `${score}%`;
+}
 /**
  * @param {Array} jumpsArray
  * @param {[[number, number], [number, number]]} idxs 
  * @param {[string, string]} start_target
  */
-function renderPrompts(jumpsArray, idxs, start_target, end = false) {
+function renderPrompts(jumpsArray, idxs, start_target, score, end = false) {
+    if (score ==  undefined) {
+        score = 0;
+    }
+    renderScore(score)
     reverseDisplay = false
-    clearAllPromptWords();
+    clearAllPromptWords(end);
     let i = lastNonzeroRow(jumpsArray);
     if (i == -1) {
         i = 5
@@ -188,17 +227,17 @@ function renderPrompts(jumpsArray, idxs, start_target, end = false) {
         i = i + 1
     }
     document.getElementById('prompts-count').innerText = i;
-    i = i - 1; //true 0-index
-    renderTallies(jumpsArray, i, reverse=reverseDisplay)
+    i = i - 1; // 0-index
+    renderTalliesLinear(jumpsArray, i, reverse=reverseDisplay)
     if (!end) {
         const [start_idx, target_idx] = idxs;
-        console.log(start_idx, target_idx)
         const [start, target] = start_target;
         if (reverseDisplay) {
             start_idx[0] = i - start_idx[0]
             target_idx[0] = i - target_idx[0]
         }
-        console.log('start_idx row, target_idx row,', start_idx[0], target_idx[0])
+        //adjust to be linear.
+        start_idx[1] = 0
         renderWord(start, ...start_idx, { style: ["prompt-start-word"] });
         renderWord(target, ...target_idx, { animate: false , style: ["prompt-target-word"]});
         

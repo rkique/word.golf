@@ -79,12 +79,11 @@ function runAfterBannerDisappears(callback) {
 
 
 function renderFinish(resp) {
-    clearAllPromptWords();
     const daily_idx = daysSinceStartDate();
     is_logged_in = Boolean(localStorage.getItem('logged_in'))
     localStorage.removeItem('in_progress');
     let jumpsGridMessage = resp.jumpsArray ? renderGrid(resp.jumpsArray) : '';
-    runAfterBannerDisappears(() => {displayFinishModal(daily_idx, resp.totalJumps, resp.streak, resp.wordsArray, jumpsGridMessage, is_logged_in)})
+    runAfterBannerDisappears(() => {displayFinishModal(daily_idx, resp.totalJumps, resp.streak, resp.wordsArray, jumpsGridMessage, is_logged_in);})
 }
 
 /* Clears the modal, localStorage, and renders links with XML redirect=true*/
@@ -114,7 +113,7 @@ function startGame() {
     const is_end = 'totalJumps' in resp ? resp.totalJumps : 0;
     start_target = prompts[prompt_idx];
     start_target[0] = results[10];
-    renderPrompts(jumpsArray, startTargetIdxs, start_target=start_target, is_end)
+    renderPrompts(jumpsArray, startTargetIdxs, start_target=start_target, end=is_end)
     renderLinks(start_target, results, prompt_idx, is_end); 
     activateLinks();
 }

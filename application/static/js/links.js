@@ -221,12 +221,13 @@ function switchToLoggedIn() {
 }
 
 function renderSessionDone(resp) {
+    clearLastPromptBox()
     runAfterBannerDisappears(() => renderFinish(resp));
     prompts = resp.prompts
     jumpsArray = resp.jumpsArray
     start_target = prompts[4]
     previous_words = resp.previous_words
-    renderPrompts(jumpsArray, resp.startTargetIdxs, start_target, true)
+    renderPrompts(jumpsArray, resp.startTargetIdxs, start_target, end=true)
     let is_logged_in = Boolean(localStorage.getItem('logged_in'));
     if (is_logged_in) {
         switchToLoggedIn();
@@ -259,27 +260,6 @@ function addHelpFocuses(prompt, results) {
         }
     }
 }
-
-// //@Parent: postWord
-// function renderLinks(prompt, results, i, debug_session_done = false) {
-//     // console.log('[renderLinks] Rendering links for prompt:', prompt, 'with results:', results);
-//     let wordspace = document.getElementById("wordspace")
-//     clearChildren(wordspace)
-//     let middleIndex = Math.floor(results.length / 2)
-//     results.forEach((result, idx) => {
-//         if (idx === middleIndex) {
-//             wordspace.append(makeStartLink(prompt, result))
-//         } else {
-//             wordspace.append(makeLink(prompt, result))
-//         }
-//     })
-//     addDoneFocus(prompt, results, i)
-//     addHelpFocuses(prompt, results)
-//     if(sessionEnded(prompt) || debug_session_done){
-//     disableLinks()
-//     reportSessionEnded(debug_session_done)
-//     }
-// }
 
 function saveWordspace() {
     const wordspace = document.getElementById("wordspace");
@@ -396,7 +376,8 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
                 score = 0;
                 showBanner("skipped :(", "banner");
             }
-            renderPrompts(resp.jumpsArray, resp.startTargetIdxs, start_target);
+            console.log('renderPrompt score: ', resp.score)
+            renderPrompts(resp.jumpsArray, resp.startTargetIdxs, start_target, resp.score);
         }
         else {
             // console.log(`[showBanner] ${jumps}`)

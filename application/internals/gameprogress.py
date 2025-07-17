@@ -113,6 +113,8 @@ def finished_game(finish_request):
     
 
     if today.today != user.last_date_completed: # if it is the same do nothing 
+        if not game.prompts or not game.prompts[-1]:
+            return jsonify({"error": "User has not played non-tutorial"}), 401, None
         last_prompt = game.prompts[-1][-1]
         game.selected_words.append(last_prompt)
         # game.jumpsA = data["jumpsA"]

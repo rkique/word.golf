@@ -12,7 +12,7 @@ from flask import redirect
 import os
 import uuid
 from .internals.auth import get_user_from_cookie, create_guest_user, user_session_exists, set_response_cookie
-from .internals.gameprogress import update_game_state, finished_game, get_current_game_state
+from .internals.gameprogress import update_game_state, finished_game, sum_jumpsA, get_current_game_state
 from .models import GameState, User
 from . import cookie_signer, db
 from .internals import today
@@ -511,7 +511,6 @@ def profile():
         if gs.total_jumps == 0:
             continue
         else:
-            # now calculate the average jumps per date for all users!
             relevant_game_states = GameState.query.filter_by(current_date=gs.current_date).all()
             total_jumps_for_date = 0
             number_of_game_states = 0
@@ -669,14 +668,17 @@ def user_statistics():
                            total_streaks_leaderboard=my_streak_position,
                            real_leaderboard=real_leaderboard)
 
-def words_array_from_data(starts, selected_words, jumps_array):
+#Given start words, selected words from the database, and jumps array, return the actual word history for the user.
+def words_array_from_data(starts, selected_words, jumps_array,is_help=False):
+    if is_help:
+        return ['fruit', 'orchard', 'porch', 'house', 'whisper', 'shouting', 'scuffle']
     result = []
     l_idx = 0
     for i, row in enumerate(jumps_array):
         r_idx = l_idx + sum(row) - 1
         subarray = [starts[i]] + selected_words[l_idx:r_idx]
         result.append(subarray)
-        l_idx = r_idx
+        l_idx = r_idx + 1
     return result
 
 @app.route('/', methods=['POST'])
@@ -773,14 +775,11 @@ def index_post():
             return redirect('/')
         prev_data = json.loads(data_or_none)
         session['data'] = jump(current_word, current_word != prev_data['prompt'][1])
-        print(f"[/ word] {session['data']}")
         new_data = json.loads(session['data'])
+        print(f"[/ word] {new_data}")
         new_data['word'] = current_word
-        print("here is new data is_help: ", new_data['is_help'])
-        print(new_data['is_help'] == False)
         if new_data['is_help'] == False:
             update_game_state(new_data)
-
     else:
         print("[/] ERROR (None of the Above...) ", request.form)
 
