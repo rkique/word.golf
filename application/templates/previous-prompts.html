@@ -11,9 +11,13 @@
     <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.8/index.global.min.js"></script>
+    {% include 'head.html' %}
 </head> 
 
 <body>
+    <div class="wg-banner">
+        <a href="/" class="wg-banner-title">word.golf</a>
+    </div>
     <div class="flex global">
     <div id="calendar"></div>
     </div>
@@ -21,6 +25,24 @@
 
 <script>
     const calendarEl = document.getElementById('calendar');
+
+    const completed_games = JSON.parse('{{ completed_games|tojson|safe }}');
+
+    const incomplete_games = JSON.parse('{{ incomplete_games|tojson|safe }}');
+
+    const CompleteDates = new Set(
+        completed_games.map(event => {
+            return new Date(event.date).toISOString().split('T')[0];
+        })
+    );
+
+    const IncompleteDates = new Set(
+        incomplete_games.map(event => {
+            return new Date(event.date).toISOString().split('T')[0];
+        })
+    );
+    const borderColor = getCSSVariable('--grayed-out-background');
+
     const calendar = new FullCalendar.Calendar(calendarEl, {
         // plugins: [interactionPlugin],
         initialView: 'dayGridMonth',
@@ -31,12 +53,38 @@
             start: '2025-06-01',
             end: '2025-08-01'
         },
+        dayCellDidMount: function(info) {
+            const date = info.date;
+            const dateString = date.toISOString().split('T')[0]; 
+            console.log(dateString);
+            info.el.style.border = `1px solid ${borderColor}`;
+            if (CompleteDates.has(dateString)) {
+                info.el.style.backgroundColor = 'red';
+            } 
+            if (IncompleteDates.has(dateString)) {
+                info.el.style.backgroundColor = 'blue'
+            }
+        },
         dateClick: function(info) {
+            const clickedDate = info.dateStr;
             alert('Clicked on: ' + info.dateStr);
-            // alert('Coordinates: ' + info.jsEvent.pageX + ',' + info.jsEvent.pageY);
-            // alert('Current view: ' + info.view.type);
-            // change the day's background color just for fun
-            // info.dayEl.style.backgroundColor = 'red';
+            fetch('/set-previous-day', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ date: clickedDate })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Response:', data);
+                alert('Date updated to: ' + data.updated_date);
+                window.location.href = '/previous_index';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to update date.');
+            });
         }
     });
 

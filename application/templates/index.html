@@ -66,6 +66,13 @@ data = JSON.parse('{{data|tojson|safe}}');
     </div>
 
 </div>
+<script>
+    const previous = JSON.parse('{{previous|tojson|safe}}');
+    if (previous) {
+        document.getElementById('today-button').style.display = 'block';
+        document.getElementById('replay-button').style.display = 'block';
+    }
+</script>
 <!-- <script>
     let BACKEND_OK = true
     //**** FALLBACK: render data as normal without saving ***** //

@@ -3,7 +3,7 @@ from flask import current_app as app, request, jsonify
 from ..models import GameState
 from .auth import get_user_from_cookie
 from dateutil import parser
-from datetime import timedelta
+from datetime import timedelta, date
 from . import today
 
 def sum_jumpsA(jumpsA): 
@@ -115,18 +115,21 @@ def finished_game(finish_request):
         print("[finished_game]: here is new jumpsA: ", game.jumpsA)
         game.total_jumps = sum_jumpsA(game.jumpsA)
 
-        if user.last_date_completed:
-            if user.last_date_completed == today.today - timedelta(days=1):
-                user.streak += 1  # Increment streak if the last date was yesterday
-            elif user.last_date_completed < today.today - timedelta(days=1):
-                user.streak = 1  # Reset streak if the last date was more than a day ago
-        else:
-            # if the user has never completed a game, set streak to 1
-            user.streak = 1
-        # If the last date is the same as the game date, do nothing (explicitly handled)
+        # now we check for the 'today date' case if the real date today is greater than today.today it means
+        # we are in the past and we should not update last complete or any other variables here
+        if date.today() <= today.today:
+            if user.last_date_completed:
+                if user.last_date_completed == today.today - timedelta(days=1):
+                    user.streak += 1  # Increment streak if the last date was yesterday
+                elif user.last_date_completed < today.today - timedelta(days=1):
+                    user.streak = 1  # Reset streak if the last date was more than a day ago
+            else:
+                # if the user has never completed a game, set streak to 1
+                user.streak = 1
+            # If the last date is the same as the game date, do nothing (explicitly handled)
 
-        # Update user's streak and last date
-        user.last_date_completed = today.today
+            # Update user's streak and last date
+            user.last_date_completed = today.today
         # db.session.add(game)
         db.session.commit()
 
