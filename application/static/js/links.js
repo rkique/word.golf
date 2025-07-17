@@ -65,8 +65,8 @@ function focusLink(startText, targetText) {
         }
         if (text === targetText) {
             // link.style.outlineOffset = "2px";
-            link.id = "link--target";
-            link.classList.add("link--target")
+            // link.id = "link--target";
+            // link.classList.add("link--target")
             link.classList.remove("link--unfocused");
         } else if (links.indexOf(link) !== 10) {
             link.style.outline = "";
@@ -88,6 +88,8 @@ function renderLinks(prompt, results, i, debug_session_done = false) {
             wordspace.append(makeLink(prompt, result))
         }
     })
+    cueLinkPromptOnHover('.link--starting', '.prompt-start-word');
+    cueLinkPromptOnHover('.link--target', '.prompt-target-word');
     addDoneFocus(prompt, results, i)
     addHelpFocuses(prompt, results)
     if (sessionEnded(prompt) || debug_session_done) {
