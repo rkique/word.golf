@@ -27,18 +27,18 @@ function renderWord(word, row, column, { animate = true, style = [] } = {}) {
     }
 }
 
-// Given a promptBox and prompt-tally-container, removes one tally from the correct cell.
-// function removeTallyDiv(row, column) {
-//     let wordTallyContainers = document.querySelectorAll('#prompts .prompt-box .word-tally-box');
-//     let wordTallyContainer = wordTallyContainers[row * 6 + column]
-//     const tallies = wordTallyContainer.querySelectorAll('.tally');
-//     if (tallies.length > 0){
-//         tallies.forEach(tally => {
-//             tally.remove();
-//         });
-//         return [row, column];
-//     }
-// }
+// Given a promptBox and prompt-tally-container, removes tallies from the correct cell.
+function removeTallyDiv(row, column) {
+    let wordTallyContainers = document.querySelectorAll('#prompts .prompt-box .word-tally-box');
+    let wordTallyContainer = wordTallyContainers[row * 6 + column]
+    const tallies = wordTallyContainer.querySelectorAll('.tally');
+    if (tallies.length > 0){
+        tallies.forEach(tally => {
+            tally.remove();
+        });
+        return [row, column];
+    }
+}
 
 function clearAllPromptWords(end) {
     const promptWords = document.querySelectorAll('.prompt-word');
@@ -88,14 +88,27 @@ function updateInnerTextSmooth(elem, newText, animate) {
 }
 
 //given a promptBox and prompt-tally-container, updates the correct one with tallyDiv.
-function renderTallies(jumpsArray) {
+function renderTallies(jumpsArray, i, reverse= false) {
     //adding tallyDivs.
     let wordTallyContainers = document.querySelectorAll('#prompts .prompt-box .word-tally-box');
+    if(reverse){
+        if (i >= 0) {
+            jumpsArray = [
+                ...jumpsArray.slice(0, i + 1).reverse(),
+                ...jumpsArray.slice(i + 1)
+            ];
+        }
+    }
     jumpsArray.forEach((row, row_idx) => {
         row.forEach((tally_count, col_idx) => {
             let wordTallyContainer = wordTallyContainers[row_idx * 6 + col_idx]
+            while (wordTallyContainer.querySelectorAll('.tally').length > tally_count){
+                let lastTally = wordTallyContainer.querySelector('.tally:last-child');
+                if (lastTally) {
+                    lastTally.remove();
+                }
+            }
             while (wordTallyContainer.querySelectorAll('.tally').length < tally_count) {
-                // alert('adding tally')
                 let tallyDiv = document.createElement("div");
                 tallyDiv.className = 'tally';
                 wordTallyContainer.appendChild(tallyDiv);
@@ -166,20 +179,26 @@ function cueLinkPromptOnHover(linkClass, promptClass) {
  * @param {[string, string]} start_target
  */
 function renderPrompts(jumpsArray, idxs, start_target, end = false) {
+    reverseDisplay = false
     clearAllPromptWords();
-    renderTallies(jumpsArray);
     let i = lastNonzeroRow(jumpsArray);
     if (i == -1) {
         i = 5
     } else {
         i = i + 1
     }
-    // if(end == true){i = 5};
     document.getElementById('prompts-count').innerText = i;
+    i = i - 1; //true 0-index
+    renderTallies(jumpsArray, i, reverse=reverseDisplay)
     if (!end) {
-        // console.trace('[renderPrompts] Stack trace');
         const [start_idx, target_idx] = idxs;
+        console.log(start_idx, target_idx)
         const [start, target] = start_target;
+        if (reverseDisplay) {
+            start_idx[0] = i - start_idx[0]
+            target_idx[0] = i - target_idx[0]
+        }
+        console.log('start_idx row, target_idx row,', start_idx[0], target_idx[0])
         renderWord(start, ...start_idx, { style: ["prompt-start-word"] });
         renderWord(target, ...target_idx, { animate: false , style: ["prompt-target-word"]});
         

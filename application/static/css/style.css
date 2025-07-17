@@ -32,6 +32,25 @@
     max-width: 100%;
     gap: 0.25rem;
 }
+/* 
+.prompt-box .word-tally-box:nth-child(1) .tally, .prompt-word {
+  border-color: color-mix(in srgb, var(--4) 100%, var(--text-color) 0%);
+}
+.prompt-box .word-tally-box:nth-child(2) .tally, .prompt-word{
+  border-color: color-mix(in srgb, var(--4) 80%, var(--text-color) 20%);
+}
+.prompt-box .word-tally-box:nth-child(3) .tally, .prompt-word {
+  border-color: color-mix(in srgb, var(--4) 60%, var(--text-color) 40%);
+}
+.prompt-box .word-tally-box:nth-child(4) .tally, .prompt-word {
+  border-color: color-mix(in srgb, var(--4) 40%, var(--text-color) 60%);
+}
+.prompt-box .word-tally-box:nth-child(5) .tally, .prompt-word {
+  border-color: color-mix(in srgb, var(--4) 20%, var(--text-color) 80%);
+}
+.prompt-box .word-tally-box:nth-child(6) .tally, .prompt-word {
+  border-color: color-mix(in srgb, var(--4) 0%, var(--text-color) 100%);
+} */
 
 .footer-div {
     position: fixed;
@@ -121,7 +140,7 @@ html {
     min-width: 0.5rem !important;
     padding: 0;
     min-height: 100% !important;
-    border: 1px solid var(--4) !important;
+    border: 1px solid var(--4);
 }
 
   .switchContainer {
