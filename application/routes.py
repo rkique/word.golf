@@ -512,11 +512,11 @@ def profile():
             continue
         else:
             # now calculate the average jumps per date for all users!
-            relavent_game_states = GameState.query.filter_by(current_date=gs.current_date).all()
+            relevant_game_states = GameState.query.filter_by(current_date=gs.current_date).all()
             total_jumps_for_date = 0
             number_of_game_states = 0
-            if relavent_game_states:
-                for g in relavent_game_states:
+            if relevant_game_states:
+                for g in relevant_game_states:
                     if g.total_jumps > 0:
                         number_of_game_states += 1
                     total_jumps_for_date += g.total_jumps
