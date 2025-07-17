@@ -6,8 +6,8 @@ function clearBoxes() {
     }
 }
 
-function renderWord(word, row, column, {animate=true, style=[]} = {}) {
-   
+function renderWord(word, row, column, { animate = true, style = [] } = {}) {
+
     let wordTallyContainers = document.querySelectorAll('#prompts .prompt-box .word-tally-box');
     const wordTallyContainer = wordTallyContainers[row * 6 + column]
     // Get the last .tally child of wordTallyContainer and modify it
@@ -22,9 +22,9 @@ function renderWord(word, row, column, {animate=true, style=[]} = {}) {
         console.log('calling updateInnerTextSmooth');
         updateInnerTextSmooth(promptWord, word, animate)
         wordTallyContainer.appendChild(promptWord);
-    } else { 
+    } else {
         console.warn(`[renderWord] no tallies at ${row} ${column}`)
-}
+    }
 }
 
 // Given a promptBox and prompt-tally-container, removes one tally from the correct cell.
@@ -94,7 +94,7 @@ function renderTallies(jumpsArray) {
     jumpsArray.forEach((row, row_idx) => {
         row.forEach((tally_count, col_idx) => {
             let wordTallyContainer = wordTallyContainers[row_idx * 6 + col_idx]
-            while (wordTallyContainer.querySelectorAll('.tally').length < tally_count){
+            while (wordTallyContainer.querySelectorAll('.tally').length < tally_count) {
                 // alert('adding tally')
                 let tallyDiv = document.createElement("div");
                 tallyDiv.className = 'tally';
@@ -104,8 +104,8 @@ function renderTallies(jumpsArray) {
     });
 }
 
-function renderWord(word, row, column, {animate=true, style=[]} = {}) {
-   
+function renderWord(word, row, column, { animate = true, style = [] } = {}) {
+
     let wordTallyContainers = document.querySelectorAll('#prompts .prompt-box .word-tally-box');
     const wordTallyContainer = wordTallyContainers[row * 6 + column]
     // Get the last .tally child of wordTallyContainer and modify it
@@ -119,35 +119,14 @@ function renderWord(word, row, column, {animate=true, style=[]} = {}) {
         // promptWord.innerText = word;
         updateInnerTextSmooth(promptWord, word, animate)
         wordTallyContainer.appendChild(promptWord);
-    } else { 
+    } else {
         console.warn(`[renderWord] no tallies at ${row} ${column}`)
+    }
 }
-}
 
 
-// Given a promptBox and prompt-tally-container, removes one tally from the correct cell.
-// function removeTallyDiv(row, column) {
-//     let wordTallyContainers = document.querySelectorAll('#prompts .prompt-box .word-tally-box');
-//     let wordTallyContainer = wordTallyContainers[row * 6 + column]
-//     const tallies = wordTallyContainer.querySelectorAll('.tally');
-//     if (tallies.length > 0){
-//         tallies.forEach(tally => {
-//             tally.remove();
-//         });
-//         return [row, column];
-//     }
-// }
-
-
-// function tallyPrompts(prompts, jumpsArray, current_jumps) {
-//     let targets = prompts.map(arr => arr[1]);
-//     ct = jumpsArray.length;
-//     // tallyStarts(targets);
-//     tallyAllPrompts(ct, current_jumps)
-// }
-
-function addTallyContainers(promptBox){
-    if (promptBox.children.length === 0){
+function addTallyContainers(promptBox) {
+    if (promptBox.children.length === 0) {
         for (let i = 0; i < 6; i++) {
             let div = document.createElement("div");
             div.className = 'word-tally-container'
@@ -156,11 +135,11 @@ function addTallyContainers(promptBox){
     }
 }
 
-function cueStartWordOnHover() {
-    const link = document.body.querySelector('.link--starting');
-    const prompt = document.body.querySelector('.prompt-start-word');
+function cueLinkPromptOnHover(linkClass, promptClass) {
+    const link = document.body.querySelector(linkClass);
+    const prompt = document.body.querySelector(promptClass);
     if (!link || !prompt) {
-        console.warn('Link or prompt element not found for hover cue.');
+        console.warn('Link or prompt element not found for hover cue,', linkClass, promptClass);
         return;
     }
     const addHover = () => {
@@ -201,8 +180,10 @@ function renderPrompts(jumpsArray, idxs, start_target, end = false) {
         // console.trace('[renderPrompts] Stack trace');
         const [start_idx, target_idx] = idxs;
         const [start, target] = start_target;
-        renderWord(start, ...start_idx, {style: ["prompt-start-word"]});
-        renderWord(target, ...target_idx, {animate: false});
+        renderWord(start, ...start_idx, { style: ["prompt-start-word"] });
+        renderWord(target, ...target_idx, { animate: false , style: ["prompt-target-word"]});
+        
     }
-    cueStartWordOnHover()
+    cueLinkPromptOnHover('.link--starting', '.prompt-start-word');
+    cueLinkPromptOnHover('.link--target', '.prompt-target-word');
 }
