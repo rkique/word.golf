@@ -588,6 +588,10 @@ def per_jump_statistics():
     print("Counts: ", counts)
     return make_response(counts)
 
+@app.route('/previous-prompts', methods=['GET'])
+def previous_prompts():
+    return render_template('previous-prompts.html')
+
 @app.route('/user-statistics', methods=['GET'])
 def user_statistics():
     user = get_user_from_cookie()

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style_mobile.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile_mobile.css') }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.8/index.global.min.js"></script>
+</head> 
+
+<body>
+    <div class="flex global">
+    <div id="calendar"></div>
+    </div>
+</body>
+
+<script>
+    const calendarEl = document.getElementById('calendar');
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        // plugins: [interactionPlugin],
+        initialView: 'dayGridMonth',
+        initialDate: '2025-07-01',
+        selectable: true,
+        selectHelper: true,
+        validRange: {
+            start: '2025-06-01',
+            end: '2025-08-01'
+        },
+        dateClick: function(info) {
+            alert('Clicked on: ' + info.dateStr);
+            // alert('Coordinates: ' + info.jsEvent.pageX + ',' + info.jsEvent.pageY);
+            // alert('Current view: ' + info.view.type);
+            // change the day's background color just for fun
+            // info.dayEl.style.backgroundColor = 'red';
+        }
+    });
+
+    calendar.render();
+</script>
