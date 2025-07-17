@@ -12,7 +12,7 @@ from flask import redirect
 import os
 import uuid
 from .internals.auth import get_user_from_cookie, create_guest_user, user_session_exists, set_response_cookie
-from .internals.gameprogress import update_game_state, finished_game
+from .internals.gameprogress import update_game_state, finished_game, get_current_game_state
 from .models import GameState, User
 from . import cookie_signer, db
 from .internals import today
@@ -743,7 +743,16 @@ def index_post():
             print("Updated data: ", data)
             update_game_state(data)
             #update data object with game information from database
-            streak, total_jumps, selected_words = finished_game(request)
+            finished_game(request)
+            user = get_user_from_cookie()
+            if not user:
+                redirect('/')
+            streak = user.streak
+            current_game = get_current_game_state()
+            if not current_game:
+                redirect('/')
+            total_jumps = current_game.total_jumps
+            selected_words = current_game.selected_words
             data['streak'] = streak
             data['totalJumps'] = total_jumps
             starts = [prompt[0] for prompt in prompts_today]

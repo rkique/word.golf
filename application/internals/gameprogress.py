@@ -1,5 +1,5 @@
 from .. import db
-from flask import current_app as app, request, jsonify
+from flask import current_app as app, request, jsonify, redirect
 from ..models import GameState
 from .auth import get_user_from_cookie
 from dateutil import parser
@@ -59,6 +59,12 @@ def game_progress():
 
     return jsonify(result)
 
+def get_current_game_state():
+    user = get_user_from_cookie()
+    if user:
+        return GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
+    else:
+        return None
 
 def update_game_state(data): 
     user = get_user_from_cookie()
@@ -99,11 +105,11 @@ def update_game_state(data):
 def finished_game(finish_request): 
     user = get_user_from_cookie(finish_request)
     if not user:
-        return jsonify({"error": "Not authenticated"}), 401
+        return redirect('/')
 
     game = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
     if not game:
-        return jsonify({"error": "Should already have a game state"}), 400
+        return redirect('/')
     
 
     if today.today != user.last_date_completed: # if it is the same do nothing 
@@ -130,4 +136,4 @@ def finished_game(finish_request):
         # db.session.add(game)
         db.session.commit()
 
-    return user.streak, game.total_jumps, game.selected_words
+    return None
