@@ -1,5 +1,5 @@
 from flask import current_app as app
-from flask import render_template, request, session, make_response, send_from_directory
+from flask import render_template, request, session, make_response, send_from_directory, jsonify
 from .utils import get_curve, similarity
 from zoneinfo import ZoneInfo
 import json
@@ -461,6 +461,20 @@ def index():
     print('/ data is set to:', session.get('data'))
     # return render_template('index.html', data=json.loads(session.get('data')))
     return response
+
+@app.route('/create-prompt', methods=['GET'])
+def create_own_prompt():
+    return render_template('create-prompt.html')
+
+@app.route('/check-new-prompts', methods=['POST'])
+def check_new_prompts():
+    data = request.get_json()
+    if not data or not "start_word" in data or not "end_word" in data:
+        return jsonify({"error": "Start and End words are required"}), 400
+    start_word = data["start_word"]
+    end_word = data["end_word"]
+    results = get_curve(start_word, end_word, PRECOMPUTED, WV)
+    return jsonify({"results": results})
 
 @app.route('/login', methods=['GET'])
 def login():
