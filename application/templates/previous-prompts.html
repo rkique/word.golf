@@ -4,6 +4,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style_mobile.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/profile_mobile.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/previous_prompts.css') }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,8 +19,24 @@
     <div class="wg-banner">
         <a href="/" class="wg-banner-title">word.golf</a>
     </div>
+    <h1 style="text-align: center;">Play Past Dates </h1>
+    <h2 style="text-align: center;">Select a Day to Play the Prompts for that Day </h2>
+    <div class="legend">
+        <div class="legend-item">
+            <span class="color-box red"></span>
+            <p>Completed Games</p>
+        </div>
+        <div class="legend-item">
+            <span class="color-box blue"></span>
+            <p>Games in Progress</p>
+        </div>
+        <div class="legend-item">
+            <span class="color-box transparent"></span>
+            <p>New Games</p>
+        </div>
+    </div>
     <div class="flex global">
-    <div id="calendar"></div>
+        <div id="calendar" style="width: 100%; max-width: 900px; height: 800px; margin: 0 auto;"></div>
     </div>
 </body>
 
@@ -43,15 +60,18 @@
     );
     const borderColor = getCSSVariable('--grayed-out-background');
 
+    const today = new Date().toISOString().split('T')[0];
+
     const calendar = new FullCalendar.Calendar(calendarEl, {
         // plugins: [interactionPlugin],
         initialView: 'dayGridMonth',
         initialDate: '2025-07-01',
         selectable: true,
         selectHelper: true,
+        showNonCurrentDates: false,
         validRange: {
             start: '2025-06-01',
-            end: '2025-08-01'
+            end: today
         },
         dayCellDidMount: function(info) {
             const date = info.date;
@@ -89,4 +109,9 @@
     });
 
     calendar.render();
+
+    const todayButton = document.querySelector('.fc-today-button.fc-button.fc-button-primary');
+    if (todayButton) {
+        todayButton.style.display = 'none';
+    }
 </script>

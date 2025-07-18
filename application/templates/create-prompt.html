@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="static/css/style.css">
+<link rel="stylesheet" href="static/css/style_mobile.css">
+<link rel="stylesheet" href="static/css/statistics_pw.css">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <title>Create Your Own Prompts</title>
+    {% include 'head.html' %}
+</head> 
+
+<body>
+    <div class="wg-banner">
+        <a href="/" class="wg-banner-title">word.golf</a>
+    </div>
+    <input type="text" id="start-word" placeholder="Start Word" />
+    <input type="text" id="end-word" placeholder="End Word" />
+    <button onclick="send_start_end_to_backend()"> See backend data</button>
+    <button onclick="generateUrl()"> Generate Unique URL</button>
+    <!-- <div id="wordspace-container"> -->
+    <div id="wordspace"></div>
+    <!-- </div> -->
+</body>
+
+<script>
+
+    function generateUrl() {
+        console.log("called -> finish later")
+    }
+
+    function clearChildren(element){
+        while (element.lastChild) {
+            element.removeChild(element.lastChild);
+        }
+    }
+
+    async function send_start_end_to_backend() {
+        const start_word = document.getElementById('start-word').value.trim();
+        if (!start_word) {
+            alert("Enter a starting word");
+            return;
+        }
+        const end_word = document.getElementById('end-word').value.trim();
+        if (!end_word) {
+            alert("Enter an ending word");
+            return;
+        }
+        try {
+            const res = await fetch("/check-new-prompts", {
+                method: "POST",
+                credentials: "include", 
+                headers: {
+                    'Content-Type': 'application/json' 
+                },
+                body: JSON.stringify({
+                    start_word: start_word, 
+                    end_word: end_word
+                })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                let wordspace = document.getElementById("wordspace");
+                clearChildren(wordspace);
+                const results = data.results;
+                console.log(results);
+                results.forEach((result, idx) => {
+                    wordspace.append(result)
+                })
+            } else {
+                console.log("Logout failed:", data);
+            }
+        } catch (err) {
+            console.log("Error during logout:", err);
+        }
+    }
+
+</script>
