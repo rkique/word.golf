@@ -40,3 +40,13 @@
   margin: 0 auto; 
   padding: 2rem;
 }
+
+.legend-icon-green {
+  width: 30px;
+  height: 30px;
+}
+
+.legend-icon-yellow {
+  width: 25px;
+  height: 25px;
+}
