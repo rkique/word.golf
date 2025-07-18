@@ -28,8 +28,10 @@
 
 .word-tally-box {
     display: flex;
+    /* max-width: 15vw; */
+    overflow: hidden;
     min-height: 100%;
-    max-width: 100%;
+    /* max-width: 100%; */
     gap: 0.25rem;
 }
 /* 
@@ -134,13 +136,21 @@ html {
     font-size: 1.5rem;
   }
   
-.tally:not(.prompt-word){
+.tally:not(.prompt-word) {
+    transition: max-width 0.2s ease, padding 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
     flex: 0 0 auto;
-    max-width: 0.75rem !important;
-    min-width: 0.75rem !important;
+    min-width: 1.25rem;
     padding: 0;
     min-height: 100% !important;
     border: 1px solid var(--4);
+    background-color: var(--background-color);
+    transform: scale(1);
+}
+
+.tally:not(.prompt-word).updateInnerTextSmooth {
+    transform: scale(1.1);
+    background-color: var(--hover-color);
+    transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
   .switchContainer {
@@ -621,15 +631,15 @@ button span {
   position: relative;
   width: 100%;
   height: 1rem;
-  padding: 0.5rem;
-  background-color: transparent; /* or a light bg */
+  margin: 0.5rem;
+  background-color: var(--grayed-out-background);
 }
 
 #prompts-bar {
   height: 1rem;
   width: 0%; /* will be dynamically updated */
-  background-color: transparent;
-  border: 1px solid var(--4);
+  background-color: var(--text-color);
+  /* border: 1px solid var(--4); */
   transition: width 0.3s ease;
 }
 
@@ -649,6 +659,7 @@ button span {
 
 #prompts-count {
     display: inline-block;
+    color: var(--grayed-out-color);
 }
 
 #prompts-container {
@@ -729,7 +740,7 @@ button span {
 }
 
 #prompts {
-    padding: 1em 0.5em;
+    padding: 0rem 0.5rem 0.5rem;
     gap: 0.5rem;
     width: 32vw;
     max-width: 32vw;
@@ -744,6 +755,7 @@ button span {
 }
 .prompt-box {
     position: absolute;
+    overflow: hidden;
     padding: 0 0;
     border: none;
     display: flex;
@@ -758,7 +770,9 @@ button span {
     /* pointer-events: none; */
     /* border-left: 1px solid var(--grayed-out-color); */
 }
-
+.prompt-box .word-tally-box:nth-child(6) .tally:not(.prompt-word) {
+    display: none;
+}
     /* position: absolute;
     display: flex;
     flex: 1;
@@ -781,9 +795,6 @@ button span {
     z-index: 0; /* was -1; remove this line if unnecessary */
 }
 
- .tally {
-    transition: max-width 0.2s ease, padding 0.2s ease-out, background 0.2s ease;
- }
 
 
 
@@ -806,7 +817,7 @@ button span {
     display: inline-block;
     transition: transform 0.4s ease;
     font-style: italic;
-    transform: scaleY(1.04);
+    transform: scaleY(0.98);
 }
 
 /* .hover-start.link--starting {
@@ -831,6 +842,14 @@ button span {
     text-align: center;
     justify-content: center;
 }
+
+ .tally {
+    transition: max-width 0.5s ease, padding 0.2s ease-out, background 0.2s ease;
+    padding: 1rem;
+    color: var(--4);
+    overflow:hidden;
+ }
+
 
 .prompt-box .prompt:hover {
   /* z-index: 10; bring hovered .prompt-word to front within its box */

@@ -60,13 +60,11 @@ function renderGrid(counts) {
 function runAfterBannerDisappears(callback) {
   const banner = document.querySelector('.promptEndBanner');
   if (!banner) {
-    // console.log('No banner found, executing callback immediately.');
     callback();
     return;
   }
   const observer = new MutationObserver(() => {
     if (!document.body.contains(banner)) {
-        // console.log('Banner has disappeared, executing callback.');
       observer.disconnect();
       callback();
     }
@@ -83,6 +81,8 @@ function renderFinish(resp) {
     is_logged_in = Boolean(localStorage.getItem('logged_in'))
     localStorage.removeItem('in_progress');
     let jumpsGridMessage = resp.jumpsArray ? renderGrid(resp.jumpsArray) : '';
+    requestAnimationFrame(() => {requestAnimationFrame(() => {clearAllPromptWords()})});
+    hoverAllTallies(resp.wordsArray);
     runAfterBannerDisappears(() => {displayFinishModal(daily_idx, resp.totalJumps, resp.streak, resp.wordsArray, jumpsGridMessage, is_logged_in);})
 }
 
@@ -113,7 +113,7 @@ function startGame() {
     const is_end = 'totalJumps' in resp ? resp.totalJumps : 0;
     start_target = prompts[prompt_idx];
     start_target[0] = results[10];
-    renderPrompts(jumpsArray, startTargetIdxs, start_target=start_target, end=is_end)
+    renderPrompts(jumpsArray, resp.wordsArray, startTargetIdxs, start_target=start_target, end=is_end)
     renderLinks(start_target, results, prompt_idx, is_end); 
     activateLinks();
 }
@@ -252,7 +252,7 @@ function startHelpSession() {
     renderLinks(resp.prompt, resp.results, resp.i)
     let start_target = resp.prompt
     clearBoxes()
-    renderPrompts(resp.jumpsArray, resp.startTargetIdxs, start_target)
+    renderPrompts(resp.jumpsArray, resp.wordsArray, resp.startTargetIdxs, start_target)
     activateLinks()
     addHelpFocuses(resp.prompt, resp.results)
     document.getElementById('prompts-title-heading').innerText = 'Tutorial'

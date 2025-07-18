@@ -11,6 +11,7 @@
 
 <script>
 
+    data = JSON.parse('{{data|tojson|safe}}');
     window.addEventListener('load', function () {
         // Check if the browser is Safari and not running on localhost
         if (isSafari() && window.location.origin !== 'http://127.0.0.1:8080') {
@@ -28,7 +29,6 @@
         return /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
     }
 
-    data = JSON.parse('{{data|tojson|safe}}');
 
 </script>
 <script src="{{ url_for('static', filename='js/XML.js') }}?{{ version }}"></script>
@@ -127,7 +127,7 @@
 <script>
     localStorage.setItem('current_date', data['date']);
     let is_help = localStorage.getItem('is_help');
-    if ("logged_in" in data) { // figure out this logic a bit later not now
+    if ("logged_in" in data) { 
         if (data.logged_in) {
             renderLogin(data.logged_in)
         }
@@ -152,22 +152,22 @@
         // check if prompt_idx is 5 
         const is_end = 'total_jumps' in data ? data.total_jumps : 0;
         // _ = editSession(jumpsArray, jumps, results, prompt_idx, start_target);
-        // 
-        renderPrompts(jumpsArray, startTargetIdxs, start_target, is_end);
+        renderPrompts(jumpsArray, data.wordsArray, startTargetIdxs, start_target, is_end);
         // start_target = prompts[prompt_idx];
         renderLinks(start_target, results, prompt_idx, is_end);
         activateLinks();
     }
-
-
 </script>
 
+
 <script>
+    //TODO: update this to avoid flash-in. 
     document.addEventListener('DOMContentLoaded', function () {
         const idxSpan = document.getElementById('footer-daily-idx');
         if (idxSpan) {
             idxSpan.textContent = daysSinceStartDate();
         }
+        // addTallyHovers(data.wordsArray)
     });
 </script>
 <div class="footer-div">

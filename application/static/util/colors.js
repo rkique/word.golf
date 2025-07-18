@@ -54,7 +54,7 @@ function syncColorMode() {
     document.documentElement.style.setProperty('--soft-failure', '#3c1d1dff');
     document.documentElement.style.setProperty('--0', '#181818');                  // ~neutral black (less brown than #1d2021)
     document.documentElement.style.setProperty('--2', '#222222');                 // slightly lighter than --0, less earthy
-    document.documentElement.style.setProperty('--4', '#3a3a3a');                 // neutral bg1
+    document.documentElement.style.setProperty('--4', '#413f3a');                 // neutral bg1
     document.documentElement.style.setProperty('--c', '#e0dccc');                 // desaturated light beige
     document.documentElement.style.setProperty('--hover-color', '#f0ece0');       // light hover (pale sand)
     document.documentElement.style.setProperty('--emphasis-color', '#f1cd50');    // toned-down Gruvbox yellow

@@ -323,13 +323,11 @@ def shift_to(i):
     try:
         prompt = prompts_today[i]
         neighbor = neighbors_today[i]
-        # print(f"[shift_to] prompt {i}: {prompt} with neighbor {neighbor}")
         results = get_curve(prompt[0], prompt[1], PRECOMPUTED, WV, neighbor=neighbor)
         data['i'] = i
         data['jumps'] = 0
         data['date'] = today.today.strftime('%Y-%m-%d')
         data['prompt'], data['prompts'] = prompt, prompts_today
-        print(f"[shift_to] prompts_today {prompts_today}")
         data['results'] = results
     except IndexError:
         print(f"Index {i} out of range for prompts_today or neighbors_today, indicating user finish. Returning same data.")
@@ -381,6 +379,7 @@ def get_existing_data():
     data = {
         'jumpsArray': BASE_JUMPS_ARRAY,
         'startTargetIdxs': BASE_START_TARGET_IDXS,
+        'selected_words': [],
         'jumps': 0,
         'i': 0,
         'date': today.today.strftime('%Y-%m-%d'),
@@ -395,7 +394,7 @@ def get_existing_data():
         data['jumpsArray'] = game_state.jumpsA
         data['results'] = game_state.results
         data['prompts'] = game_state.prompts
-        # data['prompt'] = game_state.prompts[game_state.prompt_idx] if game_state.prompts and game_state.prompt_idx else prompts_today[0]
+        data['selected_words'] = game_state.selected_words
         data['jumps'] = game_state.current_jumps
         data['i'] = game_state.prompt_idx
         data['logged_in'] = user.email
@@ -415,10 +414,9 @@ def index():
     load_data()
     load_time()
     data_or_none = get_existing_data()
+    #use the user object with updates from today's data.
     if data_or_none:
         data = data_or_none
-        # use data_today as base
-
         if data["results"] == []:
             i = data.get('i', 0)
             data_today = shift_to(0)
@@ -427,26 +425,21 @@ def index():
             data_today['logged_in'] = data["logged_in"]
             data_today['total_jumps'] = 0
             data = data_today
+        starts = [prompt[0] for prompt in prompts_today]
+        selected_words = data.get('selected_words', [])
+        jumps_array = data['jumpsArray']
+        data['wordsArray'] = words_array_from_data(starts, selected_words, jumps_array)
         data['is_help'] = False
         session['data'] = json.dumps(data)
         response = make_response(render_template('index.html', data=json.loads(session.get('data'))))
     else:
         print('Creating new user')
         guest_user = create_guest_user(today.today, str(uuid.uuid4()))
-        # try:
-        #     #
-        #     session_data = json.loads(session.get("data", "{}"))
-        #     if session_data.get('date') != today.today.strftime('%Y-%m-%d'):
-        #         session_data['i'] = 0
-        # except Exception:
-        #     print('[/] Exception in loading session_data')
-        #     session_data = {}
-        # i = session_data.get('i', 0)
-
         data = shift_to(0)
         data['jumpsArray'] = BASE_JUMPS_ARRAY
         data['startTargetIdxs'] = BASE_START_TARGET_IDXS
         data['is_help'] = False
+        data['wordsArray'] = []
         session['data'] = json.dumps(data)
         response = make_response(render_template('index.html', data=json.loads(session.get('data'))))
         token = cookie_signer.dumps({"user_id": guest_user.id})
@@ -458,7 +451,7 @@ def index():
             set_response_cookie(response, token, secure=True)
 
     assert WV is not None, "Word vectors not loaded"
-    print('/ data is set to:', session.get('data'))
+    # print('/ data is set to:', session.get('data'))
     # return render_template('index.html', data=json.loads(session.get('data')))
     return response
 
@@ -671,7 +664,7 @@ def user_statistics():
 #Given start words, selected words from the database, and jumps array, return the actual word history for the user.
 def words_array_from_data(starts, selected_words, jumps_array,is_help=False):
     if is_help:
-        return ['fruit', 'orchard', 'porch', 'house', 'whisper', 'shouting', 'scuffle']
+        return [['fruit', 'orchard', 'house', 'porch'],['whisper', 'shouting', 'scuffle']]
     result = []
     l_idx = 0
     for i, row in enumerate(jumps_array):
@@ -776,10 +769,16 @@ def index_post():
         prev_data = json.loads(data_or_none)
         session['data'] = jump(current_word, current_word != prev_data['prompt'][1])
         new_data = json.loads(session['data'])
-        print(f"[/ word] {new_data}")
+        # print(f"[/ word] {new_data}")
         new_data['word'] = current_word
         if new_data['is_help'] == False:
             update_game_state(new_data)
+
+        starts = [prompt[0] for prompt in prompts_today]
+        selected_words = get_current_game_state().selected_words
+        new_data['wordsArray'] = words_array_from_data(starts, selected_words, new_data['jumpsArray'], is_help=new_data['is_help'])
+        print(f'[wordsArray] {new_data["wordsArray"]}')
+        session['data'] = json.dumps(new_data)
     else:
         print("[/] ERROR (None of the Above...) ", request.form)
 

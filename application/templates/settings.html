@@ -50,7 +50,7 @@
                 let is_help = localStorage.getItem('is_help');
                 // otherwise do nothing 
                 if ("results" in data && is_help === 'false') {
-                    renderPrompts(data.jumpsArray, data.startTargetIdxs, data.start_target, data.done);
+                    renderPrompts(data.jumpsArray, data.wordsArray, data.startTargetIdxs, data.start_target, data.done);
                     renderLinks(data.prompt, data.results, data.current_prompt, data.done);
                     activateLinks();
                 } else {
