@@ -84,6 +84,7 @@ function renderFinish(resp) {
     is_logged_in = Boolean(localStorage.getItem('logged_in'))
     localStorage.removeItem('in_progress');
     let jumpsGridMessage = resp.jumpsArray ? renderGrid(resp.jumpsArray) : '';
+    document.getElementById('prev-prompts').style.display = 'block';
     runAfterBannerDisappears(() => {displayFinishModal(daily_idx, resp.totalJumps, resp.streak, resp.wordsArray, jumpsGridMessage, is_logged_in)})
 }
 
