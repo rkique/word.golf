@@ -85,6 +85,15 @@ function renderFinish(resp) {
     localStorage.removeItem('in_progress');
     let jumpsGridMessage = resp.jumpsArray ? renderGrid(resp.jumpsArray) : '';
     document.getElementById('prev-prompts').style.display = 'block';
+    if (window.innerWidth <= 992) {
+        // here is window.innerWidth and make the prompts stack on each other 
+        const btn = document.getElementById('today-button');
+        const isVisible = window.getComputedStyle(btn).display !== 'none';
+        if (isVisible) {
+            const prev_btn = document.getElementById('prev-prompts');
+            prev_btn.innerHTML = 'Previous<br>Prompts';
+        }
+    }
     runAfterBannerDisappears(() => {displayFinishModal(daily_idx, resp.totalJumps, resp.streak, resp.wordsArray, jumpsGridMessage, is_logged_in)})
 }
 

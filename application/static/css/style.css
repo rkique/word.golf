@@ -570,6 +570,7 @@ button span {
     align-items: center;
     justify-content: space-between;
     gap: 1em;
+    /* flex-wrap: wrap; */
     /* max-height: 8vh; */
 }
 
@@ -1053,6 +1054,14 @@ background-size: 800% 100%;
 }
 
 #prev-prompts {
+  display: none;   
+  margin: 0 0 0 0;  
+  display: block; 
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+#today-button {
   display: none;   
   margin: 0 0 0 0;  
   display: block; 
