@@ -15,8 +15,8 @@ ARG GITHUB_TOKEN
 
 # Clone the repo with Git LFS (last step to avoid cache busting early)
 RUN test -n "$GITHUB_TOKEN" || (echo "GITHUB_TOKEN not set!" && exit 1) && \
-    git clone https://${GITHUB_TOKEN}@github.com/rkique/word.golf.git /golf-app && \
-    cd /golf-app && git lfs pull && git reset --hard HEAD
+    git clone --branch linear-tallies https://${GITHUB_TOKEN}@github.com/rkique/word.golf.git /golf-app && \
+    cd /golf-app && git lfs pull
 
 # Set working directory
 WORKDIR /golf-app
