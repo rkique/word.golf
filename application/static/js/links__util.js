@@ -25,7 +25,7 @@ function ws_to_text(){
 }
 
 //Checks if the middle element is the target.
-function sessionEnded(prompt){
+function promptEnded(prompt){
     ws_texts = ws_to_text()
     if (ws_texts.length < 21) {
         return false

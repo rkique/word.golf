@@ -17,7 +17,12 @@
     }
 
     #prompts-container {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
+    margin-top: 0vh;
+    }
+
+    #prompts-bar-container {
+        margin: 0 0;
     }
 
     #settings { 
@@ -31,12 +36,10 @@
     }
     #settings span{ font-size: 1.4rem; }
 
-    .footer-div{
-        position: relative !important;
-    }
 
     .footer-div p {
         display: inline-block;
+        font-size: 1rem;
     }
 
     .footer-div {
@@ -75,15 +78,13 @@
         flex-direction: column;
         justify-content: flex-start;
     }
-    #prompts-container {
-        margin-top: 0vh;
-    }
-    .prompts-title {
-        border-top: 1px solid var(--grayed-out-color);
-        border-bottom: 1px solid var(--grayed-out-color);
+
+    #prompts-title {
+        border-top: none;
+        border-bottom: none;
         border-right: none;
         border-left: none;
-        font-size: 1.1rem;
+        font-size: 1.4rem;
         padding: 0.3rem;
         max-height: 6vh;
         margin: 0 0;
@@ -98,9 +99,9 @@
     }
 
     .tally:not(.prompt-word) {
-    max-width: 0.3rem !important;
-    min-width: 0.3rem !important;
-    padding: 0 !important;
+    max-width: 0.3rem;
+    min-width: 0.3rem ;
+    padding: 0;
     }
     .prompt-box {
         /* outline: 1px solid var(--border-color); */

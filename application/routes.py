@@ -727,6 +727,7 @@ def index_post():
         else:
             data = help_shift(data)
             session['data'] = json.dumps(data)
+            return make_response("end" + session.get('data'))
 
     elif request.form.get('end') is not None:
         data = json.loads(session.get('data', '{}'))
@@ -759,7 +760,8 @@ def index_post():
         _data = shift_to(data['i'])
         session['data'] = json.dumps(update_jumps_array(_data))
         update_game_state(json.loads(session['data']))
-        
+        return make_response("end" + session.get('data'))
+
     elif request.form.get('word') is not None:
         current_word = request.form.get('word') 
         print(f"[/] Jumping: {current_word}")

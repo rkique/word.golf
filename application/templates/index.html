@@ -52,14 +52,14 @@
     </div>
     <div id="prompts-container">
         <div id="prompts-title">
+        <div id="prompts-bar-container">
+        <div id="prompts-bar"></div>
+        </div>
             <div id="prompts-title-heading">Prompts</div>
             <div id="prompts-count-container">
                 <div id="prompts-count">1</div>
                 <div id="prompts-count-remainder">/ 5</div>
             </div>
-        </div>
-        <div id="prompts-bar-container">
-        <div id="prompts-bar"></div>
         </div>
         <div id="prompts">
             <div class="prompt-box">
@@ -138,8 +138,6 @@
         localStorage.setItem('in_progress', 'true')
     }
     else {
-        console.log("here is the data from the backend");
-        console.log(data);
         let prompt_idx = data['i'];
         let jumpsArray = data.jumpsArray;
         let jumps = data.jumps;
@@ -159,7 +157,6 @@
     }
 </script>
 
-
 <script>
     //TODO: update this to avoid flash-in. 
     document.addEventListener('DOMContentLoaded', function () {
@@ -171,6 +168,10 @@
     });
 </script>
 <div class="footer-div">
-    <p>word.golf #<span id="footer-daily-idx"></span> <a href="https://tally.so/r/mV7Yay" target="_blank"
-            rel="noopener">leave feedback</a></p>
+    <div>
+    <p>word.golf #<span id="footer-daily-idx"></span></p>
+    </div>
+    <div>
+    <p><a href="https://tally.so/r/mV7Yay" target="_blank" rel="noopener">leave feedback</a></p>    
+    </div>
 </div>

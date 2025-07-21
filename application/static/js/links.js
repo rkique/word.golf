@@ -87,9 +87,8 @@ function renderLinks(prompt, results, i, debug_session_done = false) {
     cueLinkPromptOnHover('.link--target', '.prompt-target-word');
     addDoneFocus(prompt, results, i)
     addHelpFocuses(prompt, results)
-    if (sessionEnded(prompt) || debug_session_done) {
-        disableLinks()
-        reportSessionEnded(debug_session_done)
+    if (promptEnded(prompt)) {
+        reportSessionEnded()
     }
 }
 
@@ -221,7 +220,7 @@ function renderSessionDone(resp) {
     start_target = prompts[4]
     previous_words = resp.previous_words
     disablePrompts() //necessary to enable rerender correct.
-    renderPrompts(jumpsArray, resp.wordsArray, resp.startTargetIdxs, start_target, end=true)
+    renderPrompts(jumpsArray, resp.wordsArray, resp.startTargetIdxs, start_target, 0, end=true)
     let is_logged_in = Boolean(localStorage.getItem('logged_in'));
     if (is_logged_in) {
         switchToLoggedIn();
@@ -279,16 +278,27 @@ function clearPrompts() {
 function reportSessionEnded(debug_session_done) {
     const isHelp = localStorage.getItem('is_help') === "true";
     resp = sendAndReceiveXML(`${isHelp ? 'help_end' : 'end'}=true`);
-    
-    if (resp.hasOwnProperty('help_session_done')) {
+    console.log('reportSessionEnded resp: ', resp)
+    if (resp.hasOwnProperty('end')) {
+        renderLinks(resp.prompt, resp.results)
+        let start_target = resp.prompts[resp.i]
+        renderPrompts(resp.jumpsArray, resp.wordsArray, resp.startTargetIdxs, start_target, 0, end=true)
+    }
+    else if (resp.hasOwnProperty('help_session_done')) {
         runAfterBannerDisappears(() => {renderHelpFinish()})
-        renderPrompts(resp.jumpsArray, resp.wordsArray, resp.startTargetIdxs, resp.prompts[0], end=true)
+        renderPrompts(resp.jumpsArray, resp.wordsArray, resp.startTargetIdxs, resp.prompts[0], 0, end=true)
+        let promptBox = document.querySelectorAll('#prompts .prompt-box')[1]
+        promptBox.children[5].children[0].classList.remove('prompt-target-word');
+        promptBox.children[5].children[0].classList.remove('prompt-word');
+        disableLinks()
     }
     else if (resp.hasOwnProperty('session_done') || debug_session_done) {
         renderSessionDone(resp)
         localStorage.setItem("lastComplete", resp["date"])
+        disableLinks()
     }
     else {
+        console.log('[helpSessionEnd]')
         renderLinks(resp.prompt, resp.results)
         let start_target = resp.prompts[resp.i]
         renderPrompts(resp.jumpsArray, resp.wordsArray, resp.startTargetIdxs, start_target)
