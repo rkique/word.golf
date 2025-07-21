@@ -111,6 +111,7 @@
         height: 5vh;
         min-height: 5vh;
         font-size: 1.1rem;
+        
     }
     .switch, .game-icon {
         padding: 0.5em 0em;
@@ -247,7 +248,7 @@
 
     .finish-container p {
         margin: 0 0;
-        font-size: 1rem;
+        font-size: 1.5rem;
     }
     
     .finish-text-end, .finish-text-end a{

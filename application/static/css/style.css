@@ -28,12 +28,18 @@
 
 .word-tally-box {
     display: flex;
-    /* max-width: 15vw; */
-    overflow: hidden;
+    overflow-x: scroll;
+    scrollbar-width: none; 
+    -ms-overflow-style: none;
     min-height: 100%;
     /* max-width: 100%; */
     gap: 0.25rem;
 }
+
+.word-tally-box::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and Opera */
+}
+
 /* 
 .prompt-box .word-tally-box:nth-child(1) .tally, .prompt-word {
   border-color: color-mix(in srgb, var(--4) 100%, var(--text-color) 0%);
@@ -81,9 +87,9 @@
 
 .finish-summary {
     margin: 0;
-    font-size: 3rem;
+    font-size: 2.2rem;
     font-family: "Inter", sans-serif;
-    font-weight: 700;
+    font-weight: 500;
     color: var(--grayed-out-color);
 }
 html {
@@ -192,8 +198,7 @@ html {
 
 #finish-container .inline-title {
     font-family: "Inter", sans-serif;
-    position: absolute;
-    top: 1rem; 
+    margin-bottom: 2rem;
 }
 
 #startHelpButton {
@@ -271,8 +276,8 @@ html {
 #finish-container .selectedWords, .solutionWords {
   text-align: left;
   margin-bottom: 0rem;
-  padding: 1rem;
-    overflow: hidden hidden;
+  padding: 2rem 0 0 0rem;
+  overflow: hidden hidden;
   line-height: 1.4;
 }
 
@@ -310,7 +315,7 @@ html {
     padding: 2em 1em;
     border-radius: 16px;
     text-align: center;
-    margin: 5em 1em 1em 2em;
+    margin: 1em 1em 1em 2em;
     z-index: 2;
 }
 
@@ -766,6 +771,9 @@ button span {
 .prompt-box {
     position: absolute;
     overflow: hidden;
+    overflow-x: scroll;
+    scrollbar-width: none; /* For Firefox */
+    -ms-overflow-style: none; /* For Internet Explorer and Edge */
     padding: 0 0;
     border: none;
     display: flex;
@@ -781,6 +789,11 @@ button span {
     /* pointer-events: none; */
     /* border-left: 1px solid var(--grayed-out-color); */
 }
+
+.prompt-box::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and Opera */
+}
+
 .prompt-box .word-tally-box:nth-child(6) .tally:not(.prompt-word) {
     display: none;
 }

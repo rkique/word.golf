@@ -106,23 +106,7 @@
     </div>
 
 </div>
-<!-- <script>
-    let BACKEND_OK = true
-    //**** FALLBACK: render data as normal without saving ***** //
-    fetch(`${window.backendURL}/is_logged_in`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' }
-    })
-    .then(response => {
-    if (!response.ok) throw new Error('POST blocked (mostly likely CORS)');
-    })
-    .catch(error => {
-    console.warn(`[word.golf] Hey! The backend is either blocked or offline, not saving -- Eric`, error);
-    BACKEND_OK = false;
-    });
-    startHelpSession();
-</script> -->
+</script> 
 <script src="static/js/is_game_complete.js"> </script>
 <script>
     localStorage.setItem('current_date', data['date']);
@@ -133,9 +117,11 @@
         }
     }
     // start help session
-    if (is_help !== 'false' && !data.logged_in) {
-        startHelpSession()
-        localStorage.setItem('in_progress', 'true')
+    if (is_help !== 'false') {
+        if (!data.logged_in) {
+            startHelpSession()
+            localStorage.setItem('in_progress', 'true');
+        }
     }
     else {
         let prompt_idx = data['i'];
@@ -150,7 +136,7 @@
         // check if prompt_idx is 5 
         const is_end = 'total_jumps' in data ? data.total_jumps : 0;
         // _ = editSession(jumpsArray, jumps, results, prompt_idx, start_target);
-        renderPrompts(jumpsArray, data.wordsArray, startTargetIdxs, start_target, is_end);
+        renderPrompts(jumpsArray, data.wordsArray, startTargetIdxs, start_target, data.score, is_end);
         // start_target = prompts[prompt_idx];
         renderLinks(start_target, results, prompt_idx, is_end);
         activateLinks();

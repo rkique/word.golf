@@ -113,7 +113,9 @@ function startGame() {
     const is_end = 'totalJumps' in resp ? resp.totalJumps : 0;
     start_target = prompts[prompt_idx];
     start_target[0] = results[10];
-    renderPrompts(jumpsArray, resp.wordsArray, startTargetIdxs, start_target=start_target, end=is_end)
+    // debugger;
+    no_clear = resp.wordsArray ? resp.wordsArray.some(inner => inner.includes(start_target[1])) : false;
+    renderPrompts(jumpsArray, resp.wordsArray, startTargetIdxs, start_target=start_target, 0, end=is_end, no_clear)
     renderLinks(start_target, results, prompt_idx, is_end); 
     activateLinks();
 }
@@ -257,7 +259,6 @@ function startHelpSession() {
     addHelpFocuses(resp.prompt, resp.results)
     document.getElementById('prompts-title-heading').innerText = 'Tutorial'
     document.getElementById('prompts-count-remainder').innerText = '/2'
-
     start_text = `<p id="modalText"> Welcome to word.golf, a sport played with the meanings of words!</p>
     <button class="switch switch--outlined" id='startHelpButton'> OK </button>
     <a id="startGameLink">Skip tutorial</a>`

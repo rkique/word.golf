@@ -219,8 +219,9 @@ function renderSessionDone(resp) {
     jumpsArray = resp.jumpsArray
     start_target = prompts[4]
     previous_words = resp.previous_words
-    disablePrompts() //necessary to enable rerender correct.
-    renderPrompts(jumpsArray, resp.wordsArray, resp.startTargetIdxs, start_target, 0, end=true)
+    disablePrompts() //on reload, this does not set anything. so behavior after not right. 
+    localStorage.setItem('finished', 'true')
+    renderPrompts(jumpsArray, resp.wordsArray, resp.startTargetIdxs, start_target, 0, true, true)
     let is_logged_in = Boolean(localStorage.getItem('logged_in'));
     if (is_logged_in) {
         switchToLoggedIn();
@@ -294,7 +295,6 @@ function reportSessionEnded(debug_session_done) {
     }
     else if (resp.hasOwnProperty('session_done') || debug_session_done) {
         renderSessionDone(resp)
-        localStorage.setItem("lastComplete", resp["date"])
         disableLinks()
     }
     else {

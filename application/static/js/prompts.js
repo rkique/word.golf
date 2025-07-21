@@ -2,7 +2,6 @@
 function clearAllPromptWords() {
     const promptWords = Array.from(document.querySelectorAll('.prompt-start-word'))
                         .filter(el => el.dataset.finished !== "true");
-    // debugger;
     promptWords.forEach(word => word.classList.remove('prompt-word'));
     promptWords.forEach(word => word.classList.remove('prompt-start-word'));
     promptWords.forEach(word => updateInnerTextSmooth(word, '', true));
@@ -280,14 +279,18 @@ function renderScore(score) {
  * @param {[[number, number], [number, number]]} idxs 
  * @param {[string, string]} start_target
  */
-function renderPrompts(jumpsArray, wordsArray, idxs, start_target, score, end = false) {
+function renderPrompts(jumpsArray, wordsArray, idxs, start_target, score, end = false, no_clear=false) {
     reverseDisplay = false
     if (score == undefined) {
         score = 0;
     }
-    // debugger;
+    console.log(`[renderPrompts] jumpsArray: ${jumpsArray}, wordsArray: ${wordsArray}, idxs: ${idxs}, start_target: ${start_target}, score: ${score}, end: ${end}`);
     renderScore(score)
-    clearAllPromptWords();
+    // debugger;
+    if (localStorage.getItem('is_help') !== 'true' && no_clear === false){
+    no_clear = wordsArray ? wordsArray.some(inner => inner.includes(start_target[1])) : false;
+    }
+    if(!no_clear){clearAllPromptWords();}
     let i = lastNonzeroRow(jumpsArray);
     if (i == -1) { i = 5}
     else { i = i + 1}
@@ -303,7 +306,11 @@ function renderPrompts(jumpsArray, wordsArray, idxs, start_target, score, end = 
     }
     //adjust to be linear.
     start_idx[1] = 0
-    if(!(localStorage.getItem('lastComplete') === localStorage.getItem('current_date'))){
+    //this is not right. We should be rendering words when, for instance, no dataset finished.
+    const tallies = Array.from(document.querySelectorAll('#prompts .prompt-box .tally'));
+    //if neither the tally mark or the clear mark is on.
+    if(tallies[0].dataset.finished !== "true" && !no_clear){
+    // alert(`rendering ${start} ${target}`)
     renderWord(start, ...start_idx, { style: ["prompt-start-word"] });
     renderWord(target, ...target_idx, { animate: false, style: ["prompt-target-word"] });
     }

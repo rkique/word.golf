@@ -694,6 +694,8 @@ def index_post():
                     data_today['total_jumps'] = 0
                     data = data_today
                 data['is_help'] = False
+                starts = [prompt[0] for prompt in prompts_today]
+                data['wordsArray'] = words_array_from_data(starts, data['selected_words'], data['jumpsArray'], is_help=data['is_help'])
                 session['data'] = json.dumps(data)
             else:
                 data = shift_to(0)
