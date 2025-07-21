@@ -107,26 +107,26 @@ def finished_game(finish_request):
     
 
     if today.today != user.last_date_completed: # if it is the same do nothing 
-        last_prompt = game.prompts[-1][-1]
-        game.selected_words.append(last_prompt)
-        # game.jumpsA = data["jumpsA"]
-        # game.jumpsA.append(game.current_jumps)
+        # last_prompt = game.prompts[-1][-1] 
+        # game.selected_words.append(last_prompt) 
+        # game.jumpsA = data["jumpsA"] 
+        # game.jumpsA.append(game.current_jumps) 
         print("[finished_game]: appending current jumps: ", game.current_jumps)
         print("[finished_game]: here is new jumpsA: ", game.jumpsA)
         game.total_jumps = sum_jumpsA(game.jumpsA)
 
-        # now we check for the 'today date' case if the real date today is greater than today.today it means
-        # we are in the past and we should not update last complete or any other variables here
+        # now we check for the 'today date' case if the real date today is greater than today.today it means 
+        # we are in the past and we should not update last complete or any other variables here 
         if date.today() <= today.today:
             if user.last_date_completed:
                 if user.last_date_completed == today.today - timedelta(days=1):
-                    user.streak += 1  # Increment streak if the last date was yesterday
+                    user.streak += 1  # Increment streak if the last date was yesterday 
                 elif user.last_date_completed < today.today - timedelta(days=1):
-                    user.streak = 1  # Reset streak if the last date was more than a day ago
+                    user.streak = 1  # Reset streak if the last date was more than a day ago 
             else:
-                # if the user has never completed a game, set streak to 1
+                # if the user has never completed a game, set streak to 1 
                 user.streak = 1
-            # If the last date is the same as the game date, do nothing (explicitly handled)
+            # If the last date is the same as the game date, do nothing (explicitly handled) 
 
             # Update user's streak and last date
             user.last_date_completed = today.today

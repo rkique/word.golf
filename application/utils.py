@@ -41,7 +41,6 @@ def partition(words):
         lengths[min_idx] += len(word)
     return subsets
 
-
 def similarity(word1 : str, word2 : str, wv: dict) -> float:
     """
     Calculate the cosine similarity between two words based on their vectors.
@@ -56,7 +55,6 @@ def similarity(word1 : str, word2 : str, wv: dict) -> float:
 def get_prompts(l):
     p = {tuple([start, target]): neighbor for start, neighbor, target in (w.split(',') for w in l)}
     return p
-
 
 def generate_indices(n: int, num: int,indices,seen,linear=False, exp=2) -> list[int]:
     '''
@@ -148,5 +146,4 @@ def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict, linear=Fals
     subsets.insert(3, word_subset)
     results = [item for sublist in subsets for item in sublist]
     return results
-
 

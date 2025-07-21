@@ -20,15 +20,34 @@
     <input type="text" id="end-word" placeholder="End Word" />
     <button onclick="send_start_end_to_backend()"> See backend data</button>
     <button onclick="generateUrl()"> Generate Unique URL</button>
-    <!-- <div id="wordspace-container"> -->
-    <div id="wordspace"></div>
-    <!-- </div> -->
+    <div id="wordspace-container">
+        <div id="wordspace"></div>
+    </div>
 </body>
 
 <script>
 
     function generateUrl() {
         console.log("called -> finish later")
+    }
+
+    function makeLink(prompt, word) {
+        let link = document.createElement("button");
+        let span = document.createElement("span")
+        span.innerText = word;
+        link.appendChild(span)
+        link.className = "link"
+        if (prompt == word) {
+            link.id = 'rainbow_text_animated'
+            link.className = "link link--target"
+        }
+        return link
+    }
+
+    function makeStartLink(prompt, word) {
+        startLink = makeLink(prompt, word)
+        startLink.className = "link link--starting"
+        return startLink
     }
 
     function clearChildren(element){
@@ -67,7 +86,11 @@
                 const results = data.results;
                 console.log(results);
                 results.forEach((result, idx) => {
-                    wordspace.append(result)
+                   if (idx === 10) {
+                        wordspace.append(makeStartLink(end_word, result))
+                    } else {
+                        wordspace.append(makeLink(end_word, result))
+                    }
                 })
             } else {
                 console.log("Logout failed:", data);
