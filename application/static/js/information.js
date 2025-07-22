@@ -110,12 +110,14 @@ function startGame() {
     let start_target = prompts[prompt_idx];
     let startTargetIdxs = resp.startTargetIdxs
     // total_jumps is only passed after game end.
-    const is_end = 'totalJumps' in resp ? resp.totalJumps : 0;
+    const is_end = 'total_jumps' in data ? data.total_jumps : 0;
     start_target = prompts[prompt_idx];
     start_target[0] = results[10];
     // debugger;
+    // console.log("Here is the resp");
+    // console.log(resp);
     no_clear = resp.wordsArray ? resp.wordsArray.some(inner => inner.includes(start_target[1])) : false;
-    renderPrompts(jumpsArray, resp.wordsArray, startTargetIdxs, start_target=start_target, 0, end=is_end, no_clear)
+    renderPrompts(jumpsArray, resp.wordsArray, startTargetIdxs, start_target, resp.score, is_end, no_clear)
     renderLinks(start_target, results, prompt_idx, is_end); 
     activateLinks();
 }
