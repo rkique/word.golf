@@ -392,8 +392,6 @@ def get_existing_data():
     }
 
     if game_state:
-        # print('[get_existing_data] Found existing game state for user:', user.email)
-        # print('[get_existing_data] game_state:', game_state)
         data['jumpsArray'] = game_state.jumpsA
         data['results'] = game_state.results
         data['prompts'] = game_state.prompts
@@ -410,8 +408,11 @@ def get_existing_data():
             data['prompt'] = game_state.prompts[idx]
         else:
             data['prompt'] = prompts_today[0]
+            
         if data['selected_words']:
-            data['score'] = similarity(data['selected_words'][-1], data['prompt'][1], WV)
+                targets = [prompt[1] for prompt in prompts_today]
+                if data['selected_words'][-1] not in targets:
+                    data['score'] = similarity(data['selected_words'][-1], data['prompt'][1], WV)
     return data
 
 @app.route('/')

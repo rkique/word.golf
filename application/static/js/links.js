@@ -88,6 +88,7 @@ function renderLinks(prompt, results, i, session_done = false) {
     addDoneFocus(prompt, results, i)
     addHelpFocuses(prompt, results)
     if (promptEnded(prompt) || session_done) {
+        renderScore(1)
         reportSessionEnded(session_done)
     }
 }

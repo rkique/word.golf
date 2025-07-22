@@ -1,7 +1,9 @@
-//this is some unnecessary overhead to be called every time.
+SCORE_DELAY_MS = 250
+FINISH_UNFOLD_MS = 1500
+
 function clearAllPromptWords() {
     const promptWords = Array.from(document.querySelectorAll('.prompt-start-word'))
-                        .filter(el => el.dataset.finished !== "true");
+        .filter(el => el.dataset.finished !== "true");
     promptWords.forEach(word => word.classList.remove('prompt-word'));
     promptWords.forEach(word => word.classList.remove('prompt-start-word'));
     promptWords.forEach(word => updateInnerTextSmooth(word, '', true));
@@ -35,20 +37,21 @@ function clearLastPromptBox() {
 }
 
 //Updates the innerText smoothly
-function updateInnerTextSmooth(elem, newText, animate) {
+function updateInnerTextSmooth(elem, newText, animate, delay_ms=200) {
+    // debugger;
     elem.style.setProperty('will-change', 'max-width, padding');
     if (!elem) return;
-    if (elem.classList.contains('prompt-word')) { return;}
-    if (!animate) {elem.innerText = newText; return;}
+    if (elem.classList.contains('prompt-word')) { return; }
+    if (!animate) { elem.innerText = newText; return; }
     const oldText = elem.innerText;
     const currentWidth = elem.offsetWidth;
     const currentColor = elem.style.color;
+    const delay_s = delay_ms / 1000; // Convert milliseconds to seconds
     elem.style.transition = 'none';
     elem.style.maxWidth = `${currentWidth}px`;
-    elem.offsetHeight; // force reflow
+    elem.offsetHeight; 
     if (newText === '') {
-        //TODO: set to defaults.
-        elem.style.transition = 'max-width 0.5s ease, padding 0.5s ease';
+        elem.style.transition = `max-width ${delay_s}s ease, padding ${delay_s}s ease`;
         elem.style.setProperty('padding', '0rem');
         requestAnimationFrame(() => {
             elem.style.maxWidth = '0px';
@@ -60,7 +63,7 @@ function updateInnerTextSmooth(elem, newText, animate) {
             elem.style.setProperty('padding', '0rem');
             elem.style.maxWidth = 'none'; // reset after
             elem.style.setProperty('will-change', 'auto');
-        }, 200);
+        }, delay_ms);
     } else {
         //we start with no maxWidth, but measure the display.
         elem.style.maxWidth = 'none';
@@ -74,15 +77,15 @@ function updateInnerTextSmooth(elem, newText, animate) {
         elem.offsetHeight;
 
         // (IP) Animate to new width and update text
-        elem.style.transition = 'max-width 0.5s ease';
+        elem.style.transition = `max-width ${delay_s}s ease`;
         requestAnimationFrame(() => {
             elem.innerText = newText;
             elem.style.maxWidth = `${newWidth + 100}px`;
         });
         setTimeout(() => {
             elem.style.setProperty('color', 'var(--4)')
-             elem.style.setProperty('will-change', 'auto');
-        }, 200);
+            elem.style.setProperty('will-change', 'auto');
+        }, delay_ms);
     }
 }
 
@@ -105,7 +108,7 @@ function hoverTallyRow(wordsArray, i) {
     });
 }
 
-function disablePrompts(){
+function disablePrompts() {
     const tallies = document.querySelectorAll('#prompts .prompt-box .tally');
     tallies.forEach(tally => {
         tally.dataset.finished = 'true';
@@ -116,31 +119,32 @@ function disablePrompts(){
 
 //This specifically disables the prompts at the end of the game and should not be used elsewhere.
 function hoverAllTallies(wordsArray) {
+    // debugger;
     const promptBoxes = document.querySelectorAll('#prompts .prompt-box');
     requestAnimationFrame(() => {
-    //todo: find a different workaround
-    appendTally(promptBoxes[4].children[0])
-    promptBoxes[4].children[5].children[0].classList.remove('prompt-target-word');
-    promptBoxes[4].children[5].children[0].classList.remove('prompt-word');
-    wordsArray.forEach((rowArr, row) => {
-        let wordTallyContainer = promptBoxes[row].children[0]
-        rowArr.forEach((word, col) => {
-            let wordTallyContainerTally = wordTallyContainer.children[col]
-            if (wordTallyContainerTally){
-            updateInnerTextSmooth(wordTallyContainerTally, word, true);
-            }
+        //todo: find a different workaround
+        appendTally(promptBoxes[4].children[0])
+        promptBoxes[4].children[5].children[0].classList.remove('prompt-target-word');
+        promptBoxes[4].children[5].children[0].classList.remove('prompt-word');
+        wordsArray.forEach((rowArr, row) => {
+            let wordTallyContainer = promptBoxes[row].children[0]
+            rowArr.forEach((word, col) => {
+                let wordTallyContainerTally = wordTallyContainer.children[col]
+                if (wordTallyContainerTally) {
+                    updateInnerTextSmooth(wordTallyContainerTally, word, true, FINISH_UNFOLD_MS);
+                }
+            })
         })
-    })
     });
 }
 
-function appendTally(container){
+function appendTally(container) {
     let tallyDiv = document.createElement("div");
     tallyDiv.className = 'tally';
     container.appendChild(tallyDiv);
 }
 // Renders tallies at the first position equal to the total number of tallies 
-function renderTalliesLinear(jumpsArray, wordsArray, end=false) {
+function renderTalliesLinear(jumpsArray, wordsArray, end = false) {
     if (!wordsArray) {
         wordsArray = []
     }
@@ -149,8 +153,8 @@ function renderTalliesLinear(jumpsArray, wordsArray, end=false) {
     jumpsArray.forEach((row, row_idx) => {
         rowSum = row.reduce((sum, val) => sum + val, 0) - 1
         //for all prior rows, we want to use rowSum + 1.
-        let shouldSetLastTally = false; 
-        if (end === true && row_idx === lastRow - 1){
+        let shouldSetLastTally = false;
+        if (end === true && row_idx === lastRow - 1) {
             shouldSetLastTally = true;
         }
         let targetPromptText = '';
@@ -158,27 +162,27 @@ function renderTalliesLinear(jumpsArray, wordsArray, end=false) {
             rowSum += 1
             targetPromptWord = promptBoxes[row_idx].children[5].children[0]
             //this is reset for last words.
-            if (targetPromptWord){
-            targetPromptText = targetPromptWord.innerText
-            targetPromptWord.innerText = '';
-            targetPromptWord.classList.remove('prompt-target-word')
-            targetPromptWord.classList.remove('prompt-word')
+            if (targetPromptWord) {
+                targetPromptText = targetPromptWord.innerText
+                targetPromptWord.innerText = '';
+                targetPromptWord.classList.remove('prompt-target-word')
+                targetPromptWord.classList.remove('prompt-word')
             }
         }
         let wordTallyContainer = promptBoxes[row_idx].children[0]
         let lastWordTallyContainer = promptBoxes[row_idx].children[5]
         while (wordTallyContainer.querySelectorAll('.tally').length < rowSum) {
-            appendTally(wordTallyContainer); 
+            appendTally(wordTallyContainer);
             if (lastWordTallyContainer.querySelectorAll('.tally').length < 1) {
                 appendTally(lastWordTallyContainer);
             }
         }
-        if (shouldSetLastTally && localStorage.getItem('in_progress')){
-                numTallies = Array.from(promptBoxes[row_idx].children[0].children).length
-                console.log(`setting last tally to ${targetPromptText}`)
-                lastTally = promptBoxes[row_idx].children[0].children[numTallies-1]
-                lastTally.innerText = targetPromptText
-                updateInnerTextSmooth(lastTally, '', true)
+        if (shouldSetLastTally && localStorage.getItem('in_progress')) {
+            numTallies = Array.from(promptBoxes[row_idx].children[0].children).length
+            console.log(`setting last tally to ${targetPromptText}`)
+            lastTally = promptBoxes[row_idx].children[0].children[numTallies - 1]
+            lastTally.innerText = targetPromptText
+            updateInnerTextSmooth(lastTally, '', true)
         }
     });
     //add hover collapse and entry
@@ -194,8 +198,8 @@ function renderTalliesLinear(jumpsArray, wordsArray, end=false) {
                     let hoverTimeout;
                     container.addEventListener('mouseenter', () => {
                         hoverTimeout = setTimeout(() => {
-                        updateInnerTextSmooth(container, rowArr[col], true);
-                    }, 100)
+                            updateInnerTextSmooth(container, rowArr[col], true);
+                        }, 100)
                     });
                     container.addEventListener('mouseleave', () => {
                         clearTimeout(hoverTimeout);
@@ -267,37 +271,38 @@ function cueLinkPromptOnHover(linkClass, promptClass) {
 }
 
 function renderScore(score) {
-    // if(!localStorage.getItem('in_progress')){
-    //     return 
-    // }
-    score = Math.min(score / 0.007, 100);
-    const promptsBar = document.getElementById('prompts-bar')
-    promptsBar.style.width = `${score}%`;
+    const promptsBar = document.getElementById('prompts-bar');
+    if (score === 1) {
+        promptsBar.style.width = `${100}%`
+    } else {
+        scoreWidth = Math.min(score / 0.007, 100);
+        if (promptsBar.style.width === '100%') {
+            setTimeout(() => {
+                promptsBar.style.width = `${scoreWidth}%`;
+            }, SCORE_DELAY_MS);
+        }
+        else { promptsBar.style.width = `${scoreWidth}%`; }
+    }
 }
 /**
  * @param {Array} jumpsArray
  * @param {[[number, number], [number, number]]} idxs 
  * @param {[string, string]} start_target
  */
-function renderPrompts(jumpsArray, wordsArray, idxs, start_target, score, end = false, no_clear=false) {
+function renderPrompts(jumpsArray, wordsArray, idxs, start_target, score, end = false, no_clear = false) {
     reverseDisplay = false
-    if (score == undefined) {
-        score = 0;
-    }
-    console.log(`[renderPrompts] jumpsArray: ${jumpsArray}, wordsArray: ${wordsArray}, idxs: ${idxs}, start_target: ${start_target}, score: ${score}, end: ${end}`);
+    if (score == undefined) { score = 0; }
     renderScore(score)
-    // debugger;
-    if (localStorage.getItem('is_help') !== 'true' && no_clear === false){
-    no_clear = wordsArray ? wordsArray.some(inner => inner.includes(start_target[1])) : false;
+    if (localStorage.getItem('is_help') !== 'true' && no_clear === false) {
+        no_clear = wordsArray ? wordsArray.some(inner => inner.includes(start_target[1])) : false;
     }
-    if(!no_clear){clearAllPromptWords();}
+    if (!no_clear) { clearAllPromptWords(); }
     let i = lastNonzeroRow(jumpsArray);
-    if (i == -1) { i = 5}
-    else { i = i + 1}
+    if (i == -1) { i = 5 }
+    else { i = i + 1 }
     document.getElementById('prompts-count').innerText = i;
     i = i - 1; // 0-index
-    // debugger;
-    renderTalliesLinear(jumpsArray, wordsArray, end=end)
+    renderTalliesLinear(jumpsArray, wordsArray, end = end)
     const [start_idx, target_idx] = idxs;
     const [start, target] = start_target;
     if (reverseDisplay) {
@@ -306,13 +311,10 @@ function renderPrompts(jumpsArray, wordsArray, idxs, start_target, score, end = 
     }
     //adjust to be linear.
     start_idx[1] = 0
-    //this is not right. We should be rendering words when, for instance, no dataset finished.
     const tallies = Array.from(document.querySelectorAll('#prompts .prompt-box .tally'));
-    //if neither the tally mark or the clear mark is on.
-    if(tallies[0].dataset.finished !== "true" && !no_clear){
-    // alert(`rendering ${start} ${target}`)
-    renderWord(start, ...start_idx, { style: ["prompt-start-word"] });
-    renderWord(target, ...target_idx, { animate: false, style: ["prompt-target-word"] });
+    if (tallies[0].dataset.finished !== "true" && !no_clear) {
+        renderWord(start, ...start_idx, { style: ["prompt-start-word"] });
+        renderWord(target, ...target_idx, { animate: false, style: ["prompt-target-word"] });
     }
     cueLinkPromptOnHover('.link--starting', '.prompt-start-word');
     cueLinkPromptOnHover('.link--target', '.prompt-target-word');
