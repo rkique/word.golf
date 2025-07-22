@@ -83,7 +83,7 @@ function renderFinish(resp) {
     let jumpsGridMessage = resp.jumpsArray ? renderGrid(resp.jumpsArray) : '';
     requestAnimationFrame(() => {requestAnimationFrame(() => {clearAllPromptWords()})});
     hoverAllTallies(resp.wordsArray);
-    runAfterBannerDisappears(() => {displayFinishModal(daily_idx, resp.totalJumps, resp.streak, resp.wordsArray, jumpsGridMessage, is_logged_in);})
+    runAfterBannerDisappears(() => {displayFinishModal(daily_idx, resp.total_jumps, resp.streak, resp.wordsArray, jumpsGridMessage, is_logged_in);})
 }
 
 /* Clears the modal, localStorage, and renders links with XML redirect=true*/
