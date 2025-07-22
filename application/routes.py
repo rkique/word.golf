@@ -759,6 +759,8 @@ def index_post():
                 redirect('/')
             total_jumps = current_game.total_jumps
             selected_words = current_game.selected_words
+            total_games = GameState.query.filter_by(user_id=user.id).filter(GameState.total_jumps > 0).count()
+            data['total_games'] = total_games
             data['streak'] = streak
             data['total_jumps'] = total_jumps
             starts = [prompt[0] for prompt in prompts_today]
