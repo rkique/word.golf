@@ -314,6 +314,7 @@ def make_help_session():
     }
     return json.dumps(data)
 
+# The shift_to function does not assign either a jumps or words Array to the object.
 def shift_to(i):
     '''
     Shifts the session data to the i-th prompt and returns the updated session data as a dict.
@@ -391,6 +392,8 @@ def get_existing_data():
     }
 
     if game_state:
+        # print('[get_existing_data] Found existing game state for user:', user.email)
+        # print('[get_existing_data] game_state:', game_state)
         data['jumpsArray'] = game_state.jumpsA
         data['results'] = game_state.results
         data['prompts'] = game_state.prompts
@@ -406,6 +409,7 @@ def get_existing_data():
             data['prompt'] = game_state.prompts[idx]
         else:
             data['prompt'] = prompts_today[0]
+    # print('data selected words:', data['selected_words'])
     return data
 
 @app.route('/')
@@ -420,15 +424,14 @@ def index():
         if data["results"] == []:
             i = data.get('i', 0)
             data_today = shift_to(0)
+            data_today['selected_words'] = []
             data_today['jumpsArray'] = BASE_JUMPS_ARRAY
             data_today['startTargetIdxs'] = BASE_START_TARGET_IDXS
             data_today['logged_in'] = data["logged_in"]
             data_today['total_jumps'] = 0
             data = data_today
         starts = [prompt[0] for prompt in prompts_today]
-        selected_words = data.get('selected_words', [])
-        jumps_array = data['jumpsArray']
-        data['wordsArray'] = words_array_from_data(starts, selected_words, jumps_array)
+        data['wordsArray'] = words_array_from_data(starts, data['selected_words'],  data['jumpsArray'])
         data['is_help'] = False
         session['data'] = json.dumps(data)
         response = make_response(render_template('index.html', data=json.loads(session.get('data'))))
@@ -695,7 +698,8 @@ def index_post():
                     data = data_today
                 data['is_help'] = False
                 starts = [prompt[0] for prompt in prompts_today]
-                data['wordsArray'] = words_array_from_data(starts, data['selected_words'], data['jumpsArray'], is_help=data['is_help'])
+                selected_words = data.get('selected_words', [])
+                data['wordsArray'] = words_array_from_data(starts, selected_words, data['jumpsArray'], is_help=data['is_help'])
                 session['data'] = json.dumps(data)
             else:
                 data = shift_to(0)
