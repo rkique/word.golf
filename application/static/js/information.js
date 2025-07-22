@@ -113,10 +113,12 @@ function startGame() {
     const is_end = 'total_jumps' in resp ? resp.total_jumps : 0;
     start_target = prompts[prompt_idx];
     start_target[0] = results[10];
-    // debugger;
-    // console.log("Here is the resp");
-    // console.log(resp);
-    no_clear = resp.wordsArray ? resp.wordsArray.some(inner => inner.includes(start_target[1])) : false;
+    //we want no_clear to be set when the user has finished. 
+    hasFinishedPrompt = resp.wordsArray.some(inner => inner.includes(start_target[1]))
+    hasSkippedPrompt = resp.wordsArray.some(inner => inner.length > 12)
+    noPromptWords = hasFinishedPrompt || hasSkippedPrompt
+    console.log('noPromptWords', noPromptWords, 'hasFinishedPrompt', hasFinishedPrompt, 'hasSkippedPrompt', hasSkippedPrompt);
+    no_clear = resp.wordsArray ? noPromptWords : false;
     renderPrompts(jumpsArray, resp.wordsArray, startTargetIdxs, start_target, resp.score, is_end, no_clear)
     renderLinks(start_target, results, prompt_idx, is_end); 
     activateLinks();

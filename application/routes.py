@@ -710,7 +710,6 @@ def index_post():
                 data['jumpsArray'] = BASE_JUMPS_ARRAY
                 data['startTargetIdxs'] = BASE_START_TARGET_IDXS
                 session['data'] = json.dumps(data)
-        print(f"data score is {data.get('score', 17)}")
         return make_response(json.loads(session['data']))
 
     elif request.form.get('help') is not None:
