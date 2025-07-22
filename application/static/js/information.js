@@ -108,9 +108,9 @@ function startGame() {
     let results = resp.results;
     let prompts = resp.prompts;
     let start_target = prompts[prompt_idx];
-    let startTargetIdxs = resp.startTargetIdxs
+    let startTargetIdxs = resp.startTargetIdxs;
     // total_jumps is only passed after game end.
-    const is_end = 'total_jumps' in data ? data.total_jumps : 0;
+    const is_end = 'total_jumps' in resp ? resp.total_jumps : 0;
     start_target = prompts[prompt_idx];
     start_target[0] = results[10];
     // debugger;

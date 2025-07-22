@@ -352,6 +352,8 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
     }
     if (jumps >= 13) { 
         resp = sendAndReceiveXML(`end=true`);
+        // console.log("Jumps greater than 13");
+        console.log("[Postword] here is new resp from 13 jumps: ", resp);
     }
     if (!use_animations) {
         if (jumps >= 13 && promptIdx === 4) {

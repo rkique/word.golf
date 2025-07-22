@@ -761,7 +761,7 @@ def index_post():
             total_jumps = current_game.total_jumps
             selected_words = current_game.selected_words
             data['streak'] = streak
-            data['totalJumps'] = total_jumps
+            data['total_jumps'] = total_jumps
             starts = [prompt[0] for prompt in prompts_today]
             data['wordsArray'] = words_array_from_data(starts, selected_words, data['jumpsArray'])
             session['data'] = json.dumps(data)
