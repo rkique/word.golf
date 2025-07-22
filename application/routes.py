@@ -247,26 +247,25 @@ def back():
     is_help = _data.get('is_help', False)
     if is_help:
         return "failed"
+    
     user = get_user_from_cookie()
     if not user:
         return "failed"
+    
     game_state = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
     if not game_state:
         return "failed"
+    
     print("Here is game_state previous words", game_state.selected_words)
-    # check for end of game/end of round 
+    
     target = _data['prompt'][1]
-    if target == _data['results'][10]:
-        return "failed"
-    # check if the selected words and check if we are at a starting word
-    if _data['prompt'][0] == _data['results'][10]:
-        return "failed"
-    # see if the length is ok and then 
-    if len(game_state.selected_words) < 2:
-        return "failed"
-    get_last_row = get_last_nonzero_row(game_state.jumpsA)
-    # see if we just switched prompts
-    if sum(game_state.jumpsA[get_last_row]) - 2 < 2:
+    results_10 = _data['results'][10]
+    prompt_start = _data['prompt'][0]
+    selected_words_len = len(game_state.selected_words)
+    last_row = get_last_nonzero_row(game_state.jumpsA)
+    last_row_score = sum(game_state.jumpsA[last_row]) - 2
+
+    if target == results_10 or prompt_start == results_10 or selected_words_len < 2 or last_row_score < 2:
         return "failed"
     # check current jumpsArray and see if it is in the beginning of it 
     start = game_state.selected_words[-2] 
@@ -389,6 +388,7 @@ def get_existing_data():
         'prompt': [],
         'logged_in': user.email if user.email else None,
         'total_jumps': 0,
+        'score': 0
     }
 
     if game_state:
@@ -404,12 +404,14 @@ def get_existing_data():
         data["startTargetIdxs"] = game_state.start_target_idxs
         if game_state.total_jumps:
             data['total_jumps'] = game_state.total_jumps
+        print('data prompt is', data['prompt'])
         if game_state.prompts and game_state.prompt_idx:
             idx = min(game_state.prompt_idx, 4)
             data['prompt'] = game_state.prompts[idx]
         else:
             data['prompt'] = prompts_today[0]
-    # print('data selected words:', data['selected_words'])
+        if data['selected_words']:
+            data['score'] = similarity(data['selected_words'][-1], data['prompt'][1], WV)
     return data
 
 @app.route('/')
@@ -695,6 +697,7 @@ def index_post():
                     data_today['startTargetIdxs'] = BASE_START_TARGET_IDXS
                     data_today['logged_in'] = data["logged_in"]
                     data_today['total_jumps'] = 0
+                    data_today['score'] = 0
                     data = data_today
                 data['is_help'] = False
                 starts = [prompt[0] for prompt in prompts_today]
@@ -706,6 +709,7 @@ def index_post():
                 data['jumpsArray'] = BASE_JUMPS_ARRAY
                 data['startTargetIdxs'] = BASE_START_TARGET_IDXS
                 session['data'] = json.dumps(data)
+        print(f"data score is {data.get('score', 17)}")
         return make_response(json.loads(session['data']))
 
     elif request.form.get('help') is not None:
@@ -777,7 +781,6 @@ def index_post():
         prev_data = json.loads(data_or_none)
         session['data'] = jump(current_word, current_word != prev_data['prompt'][1])
         new_data = json.loads(session['data'])
-        # print(f"[/ word] {new_data}")
         new_data['word'] = current_word
         if new_data['is_help'] == False:
             update_game_state(new_data)

@@ -72,7 +72,7 @@ function focusLink(startText, targetText) {
 }
 
 //@Parent: postWord
-function renderLinks(prompt, results, i, debug_session_done = false) {
+function renderLinks(prompt, results, i, session_done = false) {
     let wordspace = document.getElementById("wordspace")
     clearChildren(wordspace)
     let middleIndex = Math.floor(results.length / 2)
@@ -87,8 +87,8 @@ function renderLinks(prompt, results, i, debug_session_done = false) {
     cueLinkPromptOnHover('.link--target', '.prompt-target-word');
     addDoneFocus(prompt, results, i)
     addHelpFocuses(prompt, results)
-    if (promptEnded(prompt)) {
-        reportSessionEnded()
+    if (promptEnded(prompt) || session_done) {
+        reportSessionEnded(session_done)
     }
 }
 
@@ -276,7 +276,7 @@ function clearPrompts() {
 }
 
 //@Parent: maintainLinks
-function reportSessionEnded(debug_session_done) {
+function reportSessionEnded(session_done) {
     const isHelp = localStorage.getItem('is_help') === "true";
     resp = sendAndReceiveXML(`${isHelp ? 'help_end' : 'end'}=true`);
     console.log('reportSessionEnded resp: ', resp)
@@ -293,7 +293,7 @@ function reportSessionEnded(debug_session_done) {
         promptBox.children[5].children[0].classList.remove('prompt-word');
         disableLinks()
     }
-    else if (resp.hasOwnProperty('session_done') || debug_session_done) {
+    else if (resp.hasOwnProperty('session_done') || session_done) {
         renderSessionDone(resp)
         disableLinks()
     }
