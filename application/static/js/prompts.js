@@ -1,5 +1,5 @@
 SCORE_DELAY_MS = 250
-FINISH_UNFOLD_MS = 1500
+FINISH_UNFOLD_MS = 1200
 
 function clearAllPromptWords() {
     const promptWords = Array.from(document.querySelectorAll('.prompt-start-word'))
@@ -271,6 +271,9 @@ function cueLinkPromptOnHover(linkClass, promptClass) {
 }
 
 function renderScore(score) {
+    if (score === undefined){
+        score = 0;
+    }
     const promptsBar = document.getElementById('prompts-bar');
     if (score === 1) {
         promptsBar.style.width = `${100}%`
@@ -290,11 +293,11 @@ function renderScore(score) {
  * @param {[string, string]} start_target
  */
 function renderPrompts(jumpsArray, wordsArray, idxs, start_target, score, end = false, no_clear = false) {
-    reverseDisplay = false
-    if (score == undefined) { score = 0; }
     renderScore(score)
-    if (localStorage.getItem('is_help') !== 'true' && no_clear === false) {
-        no_clear = wordsArray ? wordsArray.some(inner => inner.includes(start_target[1])) : false;
+    const isNotHelp = localStorage.getItem('is_help') !== 'true'
+    //additional chance to clear words.
+    if (isNotHelp && !no_clear) {
+        no_clear = wordsArray?.some(inner => inner.includes(start_target[1])) ?? false;
     }
     if (!no_clear) { clearAllPromptWords(); }
     let i = lastNonzeroRow(jumpsArray);
@@ -305,10 +308,6 @@ function renderPrompts(jumpsArray, wordsArray, idxs, start_target, score, end = 
     renderTalliesLinear(jumpsArray, wordsArray, end = end)
     const [start_idx, target_idx] = idxs;
     const [start, target] = start_target;
-    if (reverseDisplay) {
-        start_idx[0] = i - start_idx[0]
-        target_idx[0] = i - target_idx[0]
-    }
     //adjust to be linear.
     start_idx[1] = 0
     const tallies = Array.from(document.querySelectorAll('#prompts .prompt-box .tally'));
