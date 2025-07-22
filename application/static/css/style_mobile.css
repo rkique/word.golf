@@ -24,7 +24,9 @@
     #prompts-bar-container {
         margin: 0 0;
     }
-
+    .stat-subtitle {
+        font-size: 1.1rem;
+    }
     #settings { 
         margin-top: 1vh !important;
         max-height: 6vh;
@@ -60,6 +62,11 @@
         align-items: center;        
         justify-content: center;  
         gap: 1rem;  
+    }
+    .help-close {
+        font-size: 3rem;
+        top: 0.25em;
+        right: 0.25em;
     }
 
     .help-container .switch--outlined{
@@ -180,9 +187,9 @@
     /* Help screen */
     /* *********** */
     .help {
-        width: 90vw;
-        height: 80vh;
-        max-width: 90vw;
+        width: 95vw;
+        height: 73vh;
+        max-width: 95vw;
         
         padding: 0 0;
     }
@@ -195,6 +202,7 @@
         flex-wrap: wrap;
         z-index: 3;
     }
+
     .link {
         min-width: 30vw;
     }
@@ -203,7 +211,7 @@
         background-color: var(--background-color);
         display: flex;
         flex-wrap: nowrap;
-        padding: 1em 2em;
+        padding: 1em 1.5em;
         flex-direction: column;
         align-items: center;
         z-index: 2;
@@ -215,6 +223,10 @@
         width: 92vw;
         max-width: 92vw;
         /* padding: 2rem; */
+    }
+    #modal-finish-guest .stat-row{
+        width: 100vw;
+        align-items: flex-start;
     }
     .finish-container {
         padding: 0; 
@@ -248,7 +260,6 @@
 
     .finish-container p {
         margin: 0 0;
-        font-size: 1.5rem;
     }
     
     .finish-text-end, .finish-text-end a{
@@ -266,11 +277,16 @@
         display: flex;
         flex-direction: column;
         max-width: 100%;
-        padding: 0.5em 1em;
+        padding: 0.5rem 0rem;
         gap: 0.5rem !important;
         width: 100vw;
         align-content: flex-start;
         align-items: center;
+    }
+    .stat-row > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
     }
     #finish-container h1 {
         font-size: 2.2rem;
@@ -301,10 +317,15 @@
     } */
 
     .help-text .--grayed-out {
-        font-size: 1rem;
+        font-size: 1.2rem;
     }
     .guest-buttons {
         flex-wrap: wrap;
+    }
+
+    .logged_in-buttons {
+        align-items: center;
+        padding: 0em 1em 2em 1em;
     }
 
     .prompts > div {
@@ -328,7 +349,7 @@
     }
 
     .help-text p{
-        font-size: 1rem;
+        font-size: 1.5rem;
         margin: 1em 0.1em;
     }
 }
