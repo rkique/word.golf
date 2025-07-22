@@ -60,6 +60,25 @@ def no_cache_index(response):
 @app.route('/solutions')
 def serve_data():
     combined = [[prompt[0], neighbor, prompt[1]] for prompt, neighbor in zip(prompts_today, neighbors_today)]
+    words = [word for triple in combined for word in triple[1:]]
+    js_lines = [
+        "function sleep(ms) {",
+        "    return new Promise(resolve => setTimeout(resolve, ms));",
+        "}",
+        "",
+        "async function postWordsSequentially() {",
+        f"    const words = {words};",
+        "    for (const word of words) {",
+        "        postWord(word);",
+        "        await sleep(200);",
+        "    }",
+        "}",
+        "",
+        "postWordsSequentially();"
+    ]
+    # Write to a .js file
+    print("******** Solution Script ********")
+    print("\n".join(js_lines))
     return make_response(json.dumps(combined))
 
 def load_data():
