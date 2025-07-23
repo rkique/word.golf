@@ -376,17 +376,4 @@
         font-size: 1.3rem;
         margin: 0.6em 0.1em;
     }
-
-    /* Force prompts elements to stay darker regardless of color mode */
-    #prompts-title-heading {
-        color: #928374 !important; /* Always use the darker grayed-out color from light mode */
-    }
-
-    #prompts-count {
-        color: #928374 !important; /* Always use the darker grayed-out color from light mode */
-    }
-
-    #prompts-count-remainder {
-        color: #665c54 !important; /* Use an even darker color for better visibility */
-    }
 }

@@ -787,6 +787,20 @@ button span {
     color: var(--grayed-out-color);
 }
 
+
+/* Use darker shades */
+#prompts-title-heading {
+    color: #928374 !important; 
+}
+
+#prompts-count {
+    color: #928374 !important
+}
+
+#prompts-count-remainder {
+    color: #665c54 !important; 
+}
+
 #information span {
     /* margin: 0 0.2em; */
     /* font-size: 1.3em; */

@@ -120,8 +120,8 @@ def finished_game(finish_request, state_model):
         game.selected_words.append(last_prompt)
         # game.jumpsA = data["jumpsA"]
         # game.jumpsA.append(game.current_jumps)
-        print("[finished_game]: appending current jumps: ", game.current_jumps)
-        print("[finished_game]: here is new jumpsA: ", game.jumpsA)
+        # print("[finished_game]: appending current jumps: ", game.current_jumps)
+        # print("[finished_game]: here is new jumpsA: ", game.jumpsA)
         game.total_jumps = sum_jumpsA(game.jumpsA)
 
         if user.last_date_completed:

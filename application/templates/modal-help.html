@@ -24,6 +24,12 @@
         // loginWelcome.querySelector('.welcome-email').textContent = text.email;
         document.getElementById('guest-buttons').style.display = 'none';
         document.getElementById('logged_in-buttons').style.display = 'flex';
+        
+        // Change the sign in text to profile
+        const profileSwitchContainer = document.querySelector('.switchContainer[onclick="renderProfile()"] p');
+        if (profileSwitchContainer) {
+            profileSwitchContainer.textContent = 'profile';
+        }
     }
 </script>
 <div id="help" class="help">
