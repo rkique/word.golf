@@ -1,13 +1,22 @@
 from .. import db, oauth, cookie_signer
 from flask import current_app as app, request, jsonify, redirect, session
 from .crypto import Hash, PasswordKDF, generate_salt
-from ..models import User, GameState
+from ..models import User, GameState, FakeGameState
 from cryptography.hazmat.primitives import constant_time
 from datetime import datetime, timedelta
 import uuid
 import json
 import itsdangerous
 from . import today
+
+def get_state_model():
+    dev_mode = False # base mode in production
+
+    host = request.host
+    if host.startswith('localhost') or host.startswith('dev.word.golf'):
+        dev_mode = True
+
+    return FakeGameState if dev_mode else GameState
 
 def get_user_from_cookie(finish_request=None):
     if finish_request:
@@ -35,6 +44,7 @@ def authlogin():
         data = request.get_json()
     else:
         data = request.args
+    state_model = get_state_model()
 
     email = data.get("email")
     password = data.get("password")
@@ -55,9 +65,9 @@ def authlogin():
         token = cookie_signer.dumps({"user_id": user.id})
         # Find the game state using the user ID from the cookie
         if current_user:
-            game_state = GameState.query.filter_by(user_id=current_user.id, current_date=today.today).first()
+            game_state = state_model.query.filter_by(user_id=current_user.id, current_date=today.today).first()
             if game_state:
-                login_state = GameState.query.filter_by(user_id=user.id, current_date=game_state.current_date).first()
+                login_state = state_model.query.filter_by(user_id=user.id, current_date=game_state.current_date).first()
                 if login_state:
                     # check this one 
                     if get_last_nonzero_row(game_state.jumpsA) > get_last_nonzero_row(login_state.jumpsA):
@@ -181,7 +191,7 @@ def create_user():
     
     return response
 
-def create_guest_user(date, id):
+def create_guest_user(date, id, state_model):
     user = User(
         id=id,
         date_created=date,
@@ -192,7 +202,7 @@ def create_guest_user(date, id):
     db.session.add(user)
     db.session.commit()
 
-    starting_game_state = GameState(
+    starting_game_state = state_model(
         user_id=user.id,
         current_date=date,
         selected_words=[],
@@ -240,7 +250,8 @@ def print_gamestate(gamestate):
 
 @app.route("/logout", methods=["POST"])
 def logout(): 
-    new_user = create_guest_user(today.today, str(uuid.uuid4()))
+    state_model = get_state_model()
+    new_user = create_guest_user(today.today, str(uuid.uuid4()), state_model)
 
     # Set the auth cookie to the new guest user
     token = cookie_signer.dumps({"user_id": new_user.id})
