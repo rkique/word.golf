@@ -704,6 +704,7 @@ def user_statistics():
 
 #Given start words, selected words from the database, and jumps array, return the actual word history for the user.
 def words_array_from_data(starts, selected_words, jumps_array,is_help=False):
+    # print(f'[words_array] {selected_words}')
     if is_help:
         return [['fruit', 'orchard', 'house', 'porch'],['whisper', 'shouting', 'scuffle']]
     result = []
@@ -711,8 +712,9 @@ def words_array_from_data(starts, selected_words, jumps_array,is_help=False):
     for i, row in enumerate(jumps_array):
         r_idx = l_idx + sum(row) - 1
         subarray = [starts[i]] + selected_words[l_idx:r_idx]
+        # print(subarray, l_idx, r_idx)
         result.append(subarray)
-        l_idx = r_idx + 1
+        l_idx = r_idx
     return result
 
 @app.route('/', methods=['POST'])
@@ -780,9 +782,9 @@ def index_post():
         print(f"[/] Shifting to Prompt {data.get('i', 0)+1}")
         if (data.get('i', 0) + 1 >= PCOUNT):
             data['i'] = 4
-            print("Previous data: ", data)
+            # print("Previous data: ", data)
             data = update_jumps_array(data)
-            print("Updated data: ", data)
+            # print("Updated data: ", data)
             update_game_state(data, state_model)
             #update data object with game information from database
             finished_game(request, state_model)
@@ -826,7 +828,7 @@ def index_post():
         starts = [prompt[0] for prompt in prompts_today]
         selected_words = get_current_game_state(state_model).selected_words
         new_data['wordsArray'] = words_array_from_data(starts, selected_words, new_data['jumpsArray'], is_help=new_data['is_help'])
-        print(f'[wordsArray] {new_data["wordsArray"]}')
+        # print(f'[wordsArray] {new_data["wordsArray"]}')
         session['data'] = json.dumps(new_data)
     else:
         print("[/] ERROR (None of the Above...) ", request.form)

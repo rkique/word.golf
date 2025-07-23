@@ -12,6 +12,18 @@
     font-style: italic;
 }
 
+#wg-banner {
+    font-family: 'Schibsted Grotesk', sans-serif;
+    font-size: 3.8rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-align: center;
+    color: var(--grayed-out-color);
+    margin: 4rem 0 2.5rem 0;
+    user-select: none;
+    line-height: 1.2;
+}
+
 .tint-background {
     position: fixed;
     top: 0;
@@ -60,22 +72,19 @@
   border-color: color-mix(in srgb, var(--4) 0%, var(--text-color) 100%);
 } */
 
-.footer-div {
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    padding: 0.5rem;
-    text-align: left;
+.help-footer-div {
+    margin-bottom: 2rem;
 }
+
 .footer-div div {
     display: inline;
 }
-.footer-div p {
+.footer-div p, .help-footer-div p{
     display: inline;
-    margin: 0.5rem;
+    margin-bottom: 10rem;
 }
-.footer-div p, .footer-div a {
-    font-size: 1.1rem;
+.footer-div p, .footer-div a, .help-footer-div a{
+    font-size: 1.3rem;
     color: var(--grayed-out-color);
 }
 
@@ -108,7 +117,7 @@ html {
 /* Topbar game icon (?) and switch (darkmode) */
 .switch {
     display: inline-block;
-    color: var(--text-color);
+    color: var(--grayed-out-color);
     background-color: transparent;
     outline: none;
     border: none;
@@ -119,6 +128,11 @@ html {
 .switchContainer:active{
     transform: scale(0.88);
     transform-origin: center;
+}
+
+.switchContainer p {
+    margin: -0.5rem 0 0 0;
+    text-align: center;
 }
 
 .switch--outlined {
@@ -133,12 +147,13 @@ html {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.5em 0em;
+    padding: 0em 0em;
     box-sizing: border-box;
+    width: 4rem;
+    height: 4rem;
 }
   .game-icon {
-      padding: 0.5em;
-      width: 4rem;
+      padding: 0rem 0.5rem;
   }
 
   #information {
@@ -150,27 +165,26 @@ html {
   }
   
 .tally:not(.prompt-word) {
-    transition: max-width 0.2s ease, padding 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+    transition: max-width 0.4s ease 0.15s, transform 0.2s ease;
     flex: 0 0 auto;
     min-width: 1.25rem;
+    max-width: 1.25rem;
     padding: 0;
     min-height: 100% !important;
     border: 1px solid var(--4);
     background-color: var(--background-color);
     transform: scale(1);
+    overflow: hidden;
 }
 
-.tally:not(.prompt-word).updateInnerTextSmooth {
-    transform: scale(1.1);
-    background-color: var(--hover-color);
-    transition: transform 0.3s ease, background-color 0.3s ease;
-}
 
   .switchContainer {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      min-width: 3em;
+      justify-content: flex-start;
+      min-width: 4rem;
+      width: 4rem;
   }
 
 
@@ -190,6 +204,40 @@ html {
     display: none;
     justify-content: center;
     z-index: 3;
+}
+
+.help-bg-image {
+    position: absolute;
+    opacity: 0.15;
+    z-index: 1;
+    pointer-events: none;
+    user-select: none;
+}
+
+.help-bg-image-0 {
+    top: 15%;
+    left: 10%;
+    width: 140px;
+    height: auto;
+    filter: contrast(0.8) brightness(1.2);
+}
+
+.help-bg-image-1 {
+    bottom: 15%;
+    right: 10%;
+    width: 280px;
+    height: auto;
+    filter: contrast(0.8) brightness(1.2);
+}
+
+.help-bg-image-2 {
+    opacity: 0.10;
+    bottom: 5%;
+    left: 10%;
+    transform: translateX(-50%) scaleX(-1);
+    width: 140px;
+    height: auto;
+    filter: contrast(0.8) brightness(1.2);
 }
 
 .help .credits {
@@ -357,6 +405,7 @@ html {
     width: 100%;
     text-align: center;
     justify-content: space-around;
+    gap: 3rem;
 }
 
 .stat-row {
@@ -426,7 +475,7 @@ html {
 
 .guest-buttons, .logged_in-buttons {
     flex-direction: row;
-    padding: 0em 0em 2em 0em;
+    padding: 0em 0em 0em 0em;
     justify-content: space-around;
     align-items: baseline;
     gap: 2.5rem;
@@ -465,7 +514,7 @@ button {
  }
 
 button {
-    transition: background 0.2s, color 0.2s, transform 0.2s
+    transition: background 0.2s, transform 0.2s
 }
 
 button:not(.grayed-out):active {
@@ -497,7 +546,9 @@ button span {
     outline:none;
     background-color: transparent;
     color: var(--text-color);
-    transition: color 0.2s;
+ }
+ #wordspace .link {
+        transition: color 0.2s;
  }
 
 .link--transition--disabled{
@@ -595,8 +646,8 @@ button span {
 #global {
     display: flex;
     flex-wrap: wrap;
-    height: 88vh;
-    max-height:88vh;
+    height: 85vh;
+    max-height:85vh;
     /* gap: 8vw; */
     align-content: flex-start;
     align-items: center;
@@ -607,8 +658,8 @@ button span {
 
 
 #settings {
-    margin-top: 2vh;
-    max-height: 8vh;
+    margin: 0vh 0vh 2vh 0vh;
+    max-height: 10vh;
     padding: 0 2em;
     display: flex;
     flex-direction: row;
@@ -618,6 +669,23 @@ button span {
     /* max-height: 8vh; */
 }
 
+#settings p{
+    color: var(--grayed-out-color);
+}
+
+.soft-emphasis {
+    /* background-color: var(--grayed-out-background); */
+    padding: 1rem 0.75rem 0.5rem 0.75rem;
+    /* border-radius: 0.5rem; */
+    border: 1px solid var(--4);
+}
+
+.settings-controls {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    border-radius: 0 0 0.5rem 0.5rem;
+}
 
 #information {
     flex: 1;
@@ -630,9 +698,30 @@ button span {
 
 .switchContainer {
     display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
-    min-width: 3em;
+    justify-content: flex-start;
+    min-width: 4rem;
+    width: 4rem;
+}
+
+.switchContainer:hover {
+    color: var(--text-color) !important;
+}
+
+.switchContainer:hover .switch,
+.switchContainer:hover .game-icon {
+    color: var(--text-color) !important;
+}
+
+.switchContainer:hover svg path,
+.switchContainer:hover svg circle {
+    fill: var(--text-color) !important;
+}
+
+.switchContainer:hover p {
+    color: var(--text-color) !important;
 }
 
 #information p {
@@ -676,10 +765,6 @@ button span {
 }
 
 
-#prompts-container {
-    font-size: 1.8rem;
-}
-
 #prompts-count {
     display: inline-block;
     color: var(--grayed-out-color);
@@ -702,6 +787,20 @@ button span {
     color: var(--grayed-out-color);
 }
 
+
+/* Use darker shades */
+#prompts-title-heading {
+    color: #928374 !important; 
+}
+
+#prompts-count {
+    color: #928374 !important
+}
+
+#prompts-count-remainder {
+    color: #665c54 !important; 
+}
+
 #information span {
     /* margin: 0 0.2em; */
     /* font-size: 1.3em; */
@@ -709,8 +808,10 @@ button span {
 
 
 #prompts-container {
+    font-size: 1.8rem;
     justify-content: flex-start;
     margin-top: 0.5rem;
+    padding: 0.75rem 1rem;
 }
 #prompts-container, #wordspace-container {
     flex-direction: column;
@@ -837,7 +938,7 @@ button span {
   overflow: hidden;
   white-space: nowrap;
   display: inline-block;
-  transition: max-width 0.2s ease, padding 0.2s ease, background 0.2s ease, transform 0.2s ease;
+  transition: max-width 0.2s ease, padding 0.2s ease, transform 0.2s ease;
   padding: 0rem 0.5rem;
 }
 

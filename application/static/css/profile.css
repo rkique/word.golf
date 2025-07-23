@@ -67,7 +67,7 @@ p {
 
 #profile-logout {
     margin: 0;
-    display: inline;
+    /* display: inline; */
     font-size: 1.2rem;
     margin-left: 1rem;
     padding: 0.5rem;

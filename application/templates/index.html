@@ -39,7 +39,7 @@
 <script src="{{ url_for('static', filename='js/information.js') }}?{{ version }}"></script>
 <script src="{{ url_for('static', filename='js/prompts.js') }}?{{ version }}"></script>
 
-{% include 'settings.html' %}
+{% include 'header.html' %}
 {% include 'modal-help.html' %}
 {% include 'modal.html' %}
 {% include 'modal-finish-user.html' %}
@@ -146,19 +146,13 @@
 
 <script>
     //TODO: update this to avoid flash-in. 
-    document.addEventListener('DOMContentLoaded', function () {
-        const idxSpan = document.getElementById('footer-daily-idx');
-        if (idxSpan) {
-            idxSpan.textContent = daysSinceStartDate();
-        }
-        // addTallyHovers(data.wordsArray)
-    });
+    // document.addEventListener('DOMContentLoaded', function () {
+    //     const idxSpan = document.getElementById('footer-daily-idx');
+    //     if (idxSpan) {
+    //         idxSpan.textContent = daysSinceStartDate();
+    //     }
+    //     // addTallyHovers(data.wordsArray)
+    // });
 </script>
-<div class="footer-div">
-    <div>
-    <p>word.golf #<span id="footer-daily-idx"></span></p>
-    </div>
-    <div>
-    <p><a href="https://tally.so/r/mV7Yay" target="_blank" rel="noopener">leave feedback</a></p>    
-    </div>
-</div>
+
+{% include 'footer.html' %}

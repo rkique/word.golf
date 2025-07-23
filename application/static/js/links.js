@@ -193,6 +193,13 @@ async function renderLogout(){
             logged_in_buttons.style.display = 'none';
             const logoutButton = document.getElementById('guest-buttons');
             logoutButton.style.display = 'flex';
+            
+            // Change the profile text back to sign in
+            const profileSwitchContainer = document.querySelector('.switchContainer[onclick="renderProfile()"] p');
+            if (profileSwitchContainer) {
+                profileSwitchContainer.textContent = 'sign in';
+            }
+            
             window.location.href = '/';
         } else {
             alert("Logout failed:", data);
