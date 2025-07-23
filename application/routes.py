@@ -602,9 +602,8 @@ def set_previous_day():
     except ValueError:
         return jsonify({"error": "Invalid date format"}), 400
 
-def load_previous_time(day_number):
-    origin_date = datetime.date(2025, 6, 1)
-    today.today = origin_date + add_days(day_number)
+def load_previous_time(new_date):
+    today.today = new_date
     global elapsed, prompts_today, neighbors_today
     elapsed, prompts_today, neighbors_today = get_prompts_for_date(today.today)
 
@@ -629,9 +628,13 @@ def replay_game():
 def prev_index():
     print('/ Loading previous..')
     load_data()
-    day_param = request.args.get('day', default=0, type=int)
-    print(f'Day offset received: {day_param}')
-    load_previous_time(day_param)
+    num_day = request.args.get('day', default=0, type=int)
+    print(f'Day offset received: {num_day}')
+    origin_date = datetime.date(2025, 6, 1)
+    new_date = origin_date + add_days(num_day)
+    if new_date >= date.today():
+        return redirect('/')
+    load_previous_time(new_date)
     data_or_none = get_existing_data()
     if data_or_none:
         data = data_or_none
