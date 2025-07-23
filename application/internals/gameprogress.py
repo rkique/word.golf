@@ -116,8 +116,8 @@ def finished_game(finish_request, state_model):
     if today.today != user.last_date_completed: # if it is the same do nothing 
         if not game.prompts or not game.prompts[-1]:
             return jsonify({"error": "User has not played non-tutorial"}), 401, None
-        last_prompt = game.prompts[-1][-1]
-        game.selected_words.append(last_prompt)
+        # last_prompt = game.prompts[-1][-1]
+        # game.selected_words.append(last_prompt)
         # game.jumpsA = data["jumpsA"]
         # game.jumpsA.append(game.current_jumps)
         print("[finished_game]: appending current jumps: ", game.current_jumps)

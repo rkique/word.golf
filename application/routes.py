@@ -479,6 +479,7 @@ def index():
         data['wordsArray'] = []
         session['data'] = json.dumps(data)
         response = make_response(render_template('index.html', data=json.loads(session.get('data'))))
+        print("Here is my guest user id: ", guest_user.id)
         token = cookie_signer.dumps({"user_id": guest_user.id})
 
         if os.getenv("DEV", "false").lower() == "true":
@@ -821,7 +822,7 @@ def index_post():
         new_data['word'] = current_word
         if new_data['is_help'] == False:
             update_game_state(new_data, state_model)
-
+        del new_data['word']
         starts = [prompt[0] for prompt in prompts_today]
         selected_words = get_current_game_state(state_model).selected_words
         new_data['wordsArray'] = words_array_from_data(starts, selected_words, new_data['jumpsArray'], is_help=new_data['is_help'])
