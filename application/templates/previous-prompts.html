@@ -119,24 +119,17 @@
         },
         dateClick: function(info) {
             const clickedDate = info.dateStr;
+            
+            // first day is 2025-06-01
             alert('Clicked on: ' + info.dateStr);
-            fetch('/set-previous-day', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ date: clickedDate })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Response:', data);
-                alert('Date updated to: ' + data.updated_date);
-                window.location.href = '/previous_index';
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Failed to update date.');
-            });
+            const dateClicked = new Date(clickedDate)
+            const firstDate = new Date("2025-06-01");
+            const diffInMs = dateClicked - firstDate;
+            // Convert milliseconds to days
+            const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+            alert("Difference in days:", diffInDays);
+            console.log("Difference in days:", diffInDays);
+            window.location.href = '/previous_index?day=' + diffInDays;
         },
         // datesSet: function() {
         //     // Remove images from disabled days every time the calendar updates

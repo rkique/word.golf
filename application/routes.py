@@ -17,6 +17,7 @@ from .models import GameState, User
 from . import cookie_signer, db
 from .internals import today
 from datetime import date
+from urllib.parse import urlparse, urlunparse, parse_qs, urlencode
 
 # store logged_in in routes.py
 prompt_neighbor_dict = get_prompts(txt_to_list("application/data/neighbors.txt"))
@@ -601,7 +602,9 @@ def set_previous_day():
     except ValueError:
         return jsonify({"error": "Invalid date format"}), 400
 
-def load_previous_time():
+def load_previous_time(day_number):
+    origin_date = datetime.date(2025, 6, 1)
+    today.today = origin_date + add_days(day_number)
     global elapsed, prompts_today, neighbors_today
     elapsed, prompts_today, neighbors_today = get_prompts_for_date(today.today)
 
@@ -626,7 +629,9 @@ def replay_game():
 def prev_index():
     print('/ Loading previous..')
     load_data()
-    load_previous_time()
+    day_param = request.args.get('day', default=0, type=int)
+    print(f'Day offset received: {day_param}')
+    load_previous_time(day_param)
     data_or_none = get_existing_data()
     if data_or_none:
         data = data_or_none
@@ -856,6 +861,20 @@ def index_post():
             data['totalJumps'] = total_jumps
             starts = [prompt[0] for prompt in prompts_today]
             data['wordsArray'] = words_array_from_data(starts, selected_words, data['jumpsArray'])
+
+            # url = request.url
+            # print("here is request.url: ", url)
+            # parsed_url = urlparse(url)
+            # query_params = parse_qs(parsed_url.query)
+            # print("here are query params: ", query_params)
+            # if 'v' in query_params:
+            #     del query_params['v']
+            # new_query_string = urlencode(query_params, doseq=True)
+
+            # new_url = urlunparse(parsed_url._replace(query=new_query_string))
+
+            # data['url'] = new_url
+
             session['data'] = json.dumps(data)
             update_game_state(json.loads(session['data']))
             return make_response("session_done" + session.get('data'))

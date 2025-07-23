@@ -55,7 +55,11 @@ function sendAndReceiveXML(message) {
     {
         j = JSON.parse(xhttp.responseText.substring(12));
         j['session_done'] = 1
-        // console.log("[session_done] Session is done, returning jumps and results")
+        alert("[session_done] Session is done, returning jumps and results")
+        console.log(j);
+        const url = new URL(window.location.href);
+        url.searchParams.delete('v');
+        j['url'] = url.toString();
         return j
     }
     else {
