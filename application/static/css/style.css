@@ -12,6 +12,18 @@
     font-style: italic;
 }
 
+#wg-banner {
+    font-family: 'Schibsted Grotesk', sans-serif;
+    font-size: 3.8rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-align: center;
+    color: var(--grayed-out-color);
+    margin: 4rem 0 2.5rem 0;
+    user-select: none;
+    line-height: 1.2;
+}
+
 .tint-background {
     position: fixed;
     top: 0;
@@ -108,7 +120,7 @@ html {
 /* Topbar game icon (?) and switch (darkmode) */
 .switch {
     display: inline-block;
-    color: var(--text-color);
+    color: var(--grayed-out-color);
     background-color: transparent;
     outline: none;
     border: none;
@@ -119,6 +131,11 @@ html {
 .switchContainer:active{
     transform: scale(0.88);
     transform-origin: center;
+}
+
+.switchContainer p {
+    margin: -0.5rem 0 0 0;
+    text-align: center;
 }
 
 .switch--outlined {
@@ -133,12 +150,13 @@ html {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.5em 0em;
+    padding: 0em 0em;
     box-sizing: border-box;
+    width: 4rem;
+    height: 4rem;
 }
   .game-icon {
-      padding: 0.5em;
-      width: 4rem;
+      padding: 0rem 0.5rem;
   }
 
   #information {
@@ -168,9 +186,11 @@ html {
 
   .switchContainer {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      min-width: 3em;
+      justify-content: flex-start;
+      min-width: 4rem;
+      width: 4rem;
   }
 
 
@@ -357,6 +377,7 @@ html {
     width: 100%;
     text-align: center;
     justify-content: space-around;
+    gap: 3rem;
 }
 
 .stat-row {
@@ -595,8 +616,8 @@ button span {
 #global {
     display: flex;
     flex-wrap: wrap;
-    height: 88vh;
-    max-height:88vh;
+    height: 85vh;
+    max-height:85vh;
     /* gap: 8vw; */
     align-content: flex-start;
     align-items: center;
@@ -607,8 +628,8 @@ button span {
 
 
 #settings {
-    margin-top: 2vh;
-    max-height: 8vh;
+    margin: 0vh 0vh 2vh 0vh;
+    max-height: 10vh;
     padding: 0 2em;
     display: flex;
     flex-direction: row;
@@ -618,6 +639,23 @@ button span {
     /* max-height: 8vh; */
 }
 
+#settings p{
+    color: var(--grayed-out-color);
+}
+
+.soft-emphasis {
+    /* background-color: var(--grayed-out-background); */
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--4);
+}
+
+.settings-controls {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    border-radius: 0 0 0.5rem 0.5rem;
+}
 
 #information {
     flex: 1;
@@ -630,9 +668,30 @@ button span {
 
 .switchContainer {
     display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
-    min-width: 3em;
+    justify-content: flex-start;
+    min-width: 4rem;
+    width: 4rem;
+}
+
+.switchContainer:hover {
+    color: var(--text-color) !important;
+}
+
+.switchContainer:hover .switch,
+.switchContainer:hover .game-icon {
+    color: var(--text-color) !important;
+}
+
+.switchContainer:hover svg path,
+.switchContainer:hover svg circle {
+    fill: var(--text-color) !important;
+}
+
+.switchContainer:hover p {
+    color: var(--text-color) !important;
 }
 
 #information p {
@@ -676,10 +735,6 @@ button span {
 }
 
 
-#prompts-container {
-    font-size: 1.8rem;
-}
-
 #prompts-count {
     display: inline-block;
     color: var(--grayed-out-color);
@@ -709,8 +764,10 @@ button span {
 
 
 #prompts-container {
+    font-size: 1.8rem;
     justify-content: flex-start;
     margin-top: 0.5rem;
+    padding: 0.75rem 1rem;
 }
 #prompts-container, #wordspace-container {
     flex-direction: column;
