@@ -27,9 +27,13 @@
     }
 </script>
 <div id="help" class="help">
+    <img src="/static/images/start_0.png" class="help-bg-image help-bg-image-0" alt="">
+    <img src="/static/images/start_1.png" class="help-bg-image help-bg-image-1" alt="">
+    <!-- <img src="/static/images/start_2.png" class="help-bg-image help-bg-image-2" alt=""> -->
+
     <div class="help-close" onclick="closeModal('help')">✕</div>
     <div class="help-container">
-            <h1 class="finish-summary">How to play</h1>
+        <h1 class="finish-summary">How to play</h1>
         <div class='help-text'>
             <p>Link two words by clicking their neighbors.</p>
             <p class='--grayed-out'>fruit ⟶ orchard ⟶ house ⟶ porch</p>
@@ -41,23 +45,21 @@
             <p>Logged in as <span id="logged_in-username"></span></p>
         </div>
         <div class="guest-buttons" id="guest-buttons">
-        <button onclick="closeModal('help'); beginTutorial()" class=" switch switch--outlined ">tutorial</button>
-        <p class="credits">Built with word2vec and Google Books.</p>
-        <script src="https://accounts.google.com/gsi/client" async></script>
-        <!-- <div id="g_id_onload"
+            <button onclick="closeModal('help'); beginTutorial()" class=" switch switch--outlined tutorial">tutorial</button>
+            <p class="credits">Built with word2vec and Google Books.</p>
+            <script src="https://accounts.google.com/gsi/client" async></script>
+            <!-- <div id="g_id_onload"
             data-client_id="490339325235-2colln65cgm89aue0mihetv8upkmr5bl.apps.googleusercontent.com"
             data-login_uri="https://word.golf/login/google"  
             data-auto_prompt="false"> 
         </div> -->
 
-        <div class="g_id_signin"
-            data-type="standard"
-            data-size="large"
-            data-theme="outline"
-            data-text="sign_in_with"
-            data-shape="rectangular"
-            data-logo_alignment="left">
+            <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline"
+                data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="left">
+            </div>
         </div>
-        </div>
+        <div class="help-footer-div">
+         <p><a href="https://tally.so/r/mV7Yay" target="_blank" rel="noopener">leave feedback</a></p> 
+         </div>
     </div>
 </div>

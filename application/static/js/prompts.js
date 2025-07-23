@@ -53,13 +53,14 @@ function updateInnerTextSmooth(elem, newText, animate, delay_ms=200) {
     if (newText === '') {
         elem.style.transition = `max-width ${delay_s}s ease, padding ${delay_s}s ease`;
         elem.style.setProperty('padding', '0rem');
+        // Clear text immediately to prevent clipping during shrink animation
+        elem.innerText = '';
         requestAnimationFrame(() => {
             elem.style.maxWidth = '0px';
             elem.style.setProperty('color', 'var(--4)');
 
         });
         setTimeout(() => {
-            elem.innerText = '';
             elem.style.setProperty('padding', '0rem');
             elem.style.maxWidth = 'none'; // reset after
             elem.style.setProperty('will-change', 'auto');
