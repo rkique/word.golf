@@ -212,13 +212,13 @@ async function renderLogout(){
 
 
 function switchToLoggedIn() {
-    document.getElementById('guest-buttons').style.display = 'none';
-    document.getElementById('logged_in-buttons').style.display = 'flex';
-    const logoutBtn = document.createElement('button');
-    logoutBtn.textContent = 'logout';
-    logoutBtn.className = 'switch switch--outlined';
-    logoutBtn.onclick = renderLogout;
-    document.getElementById('logged_in-buttons').appendChild(logoutBtn);
+    // document.getElementById('guest-buttons').style.display = 'none';
+    // document.getElementById('logged_in-buttons').style.display = 'flex';
+    // const logoutBtn = document.createElement('button');
+    // logoutBtn.textContent = 'logout';
+    // logoutBtn.className = 'switch switch--outlined';
+    // logoutBtn.onclick = renderLogout;
+    // document.getElementById('logged_in-buttons').appendChild(logoutBtn);
 }
 
 function renderSessionDone(resp) {
@@ -230,10 +230,10 @@ function renderSessionDone(resp) {
     disablePrompts() //on reload, this does not set anything. so behavior after not right. 
     localStorage.setItem('finished', 'true')
     renderPrompts(jumpsArray, resp.wordsArray, resp.startTargetIdxs, start_target, 0, true, true)
-    let is_logged_in = Boolean(localStorage.getItem('logged_in'));
-    if (is_logged_in) {
-        switchToLoggedIn();
-    }
+    // let is_logged_in = Boolean(localStorage.getItem('logged_in'));
+    // if (is_logged_in) {
+    //     switchToLoggedIn();
+    // }
 }
 
 

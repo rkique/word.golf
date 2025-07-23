@@ -152,6 +152,7 @@ html {
     width: 4rem;
     height: 4rem;
 }
+
   .game-icon {
       padding: 0rem 0.5rem;
   }
@@ -472,6 +473,11 @@ html {
 .guest-buttons {    
     display: flex;
 }
+
+.tutorial {
+    width: auto;
+}
+
 
 .guest-buttons, .logged_in-buttons {
     flex-direction: row;
@@ -1216,7 +1222,9 @@ background-size: 800% 100%;
     color: var(--emphasis-color);
 }
 
-
+#sendPinBtn {
+    width: 100%;
+}
 #login-welcome {
   display: none;
   /* max-height: 4vh; */

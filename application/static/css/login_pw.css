@@ -6,6 +6,12 @@
  
     /* Add this CSS to your style.css or inside a <style> tag */
 
+
+#loginForm .switch {
+    height: auto;
+    width: 100%;
+}
+
 .banner-bg {
   position: relative;
   display: flex;
