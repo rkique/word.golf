@@ -1,6 +1,6 @@
 from flask import current_app as app
 from flask import render_template, request, session, make_response, send_from_directory, jsonify
-from .utils import get_curve, similarity
+from .utils import get_curve, similarity, get_furthest_away_word, get_similar_word
 from zoneinfo import ZoneInfo
 import json
 import datetime
@@ -466,6 +466,7 @@ def index():
 def create_own_prompt():
     return render_template('create-prompt.html')
 
+
 @app.route('/check-new-prompts', methods=['POST'])
 def check_new_prompts():
     data = request.get_json()
@@ -473,7 +474,17 @@ def check_new_prompts():
         return jsonify({"error": "Start and End words are required"}), 400
     start_word = data["start_word"]
     end_word = data["end_word"]
-    results = get_curve(start_word, end_word, PRECOMPUTED, WV)
+
+    new_start = get_similar_word(start_word, PRECOMPUTED, WV)
+    print(new_start)
+    new_end = get_similar_word(end_word, PRECOMPUTED, WV)
+    print(new_end)
+
+    results = get_curve(new_start, new_end, PRECOMPUTED, WV)
+    output_end_word = get_furthest_away_word(new_start, PRECOMPUTED, WV)
+    print("furthest away target word from given start: ", output_end_word)
+    output_start_word = get_furthest_away_word(new_end, PRECOMPUTED, WV)
+    print("furthest away starting word from given target: ", output_start_word)
     return jsonify({"results": results})
 
 @app.route('/login', methods=['GET'])
