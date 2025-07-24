@@ -208,7 +208,7 @@
             pointRadius: 5,
         }];
 
-        new Chart(ctx, {
+        window.myChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: labelsMonthDay,
@@ -338,8 +338,101 @@
         });
     }
 
-
     renderGraph();
+
+    function renderBarGraph(total_jumps_data, my_total_jumps, date) {
+        const ctx = document.getElementById('jumps-graph').getContext('2d');
+        if (window.myChart) {
+            window.myChart.destroy();
+        }
+
+        let total_jumps_user = {};
+        // Count how many users have each number of jumps
+        for (let jumps of total_jumps_data) {
+            if (jumps in total_jumps_user) {
+                total_jumps_user[jumps] += 1;
+            } else {
+                total_jumps_user[jumps] = 1;
+            }
+        }
+
+        // Prepare the data for the chart
+        const labels = Object.keys(total_jumps_user).map(Number).sort((a, b) => a - b);
+        const data = labels.map(jumps => total_jumps_user[jumps]);
+
+        // Define colors based on whether it's your total jumps or not
+        const backgroundColors = labels.map(jumps =>
+            jumps === my_total_jumps ? 'rgba(255, 99, 132, 0.6)' : 'rgba(75, 192, 192, 0.6)'
+        );
+        const borderColors = labels.map(jumps =>
+            jumps === my_total_jumps ? 'rgba(255, 99, 132, 1)' : 'rgba(75, 192, 192, 1)'
+        );
+
+        // Create the chart
+        window.myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels, 
+                datasets: [{
+                    label: 'Users with your Jump Count',
+                    data: data, 
+                    backgroundColor: backgroundColors, 
+                    borderColor: borderColors, 
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: false,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Total Jumps'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Number of Users'
+                        },
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Total Jumps Distribution ' + date,
+                        padding: {
+                            top: 20,
+                            bottom: 10
+                        },
+                        font: {
+                            size: 25,
+                            weight: 'bold'
+                        }
+                    },
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (tooltipItem) {
+                                const jumps = labels[tooltipItem.dataIndex];
+                                const userCount = tooltipItem.raw;
+                                if (jumps === my_total_jumps) {
+                                    return `Your Total Jumps: ${jumps}, Users: ${userCount}`;
+                                }
+                                return `Total Jumps: ${jumps}, Users: ${userCount}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+
 </script>
 
 <script type="module">
@@ -402,6 +495,7 @@
                         console.log("My jump stats: ", data.my_jumps);
                         console.log("Everyone else's jump stats: ", data.other_jumps);
                         console.log("Everyone else's words arrays: ", data.other_words_arrays);
+                        renderBarGraph(data.other_jumps, data.my_jumps, clickedDate);
                         // You can now use data.my_jumps and data.other_jumps here
                     })
                     .catch(error => {
