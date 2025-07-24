@@ -5,6 +5,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/profile_mobile.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/previous_prompts.css') }}">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,129 +16,125 @@
     <title>User Statistics</title>
     {% include 'head.html' %}
     <script>
-    async function renderLogout(){
-        try {
-            const res = await fetch("/logout", {
-                method: "POST",
-                credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
-                headers: {
-                    'Content-Type': 'application/json'  // Ensure this matches what the server expects
-                },
-                body: JSON.stringify({
-                    date: new Date().toISOString().split('T')[0]
-                })
-            });
-            const data = await res.json();
-            if (res.ok) {
-                localStorage.removeItem('logged_in');
-                window.location.href = '/';
-            } else {
-                console.log("Logout failed:", data);
+        async function renderLogout() {
+            try {
+                const res = await fetch("/logout", {
+                    method: "POST",
+                    credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
+                    headers: {
+                        'Content-Type': 'application/json'  // Ensure this matches what the server expects
+                    },
+                    body: JSON.stringify({
+                        date: new Date().toISOString().split('T')[0]
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    localStorage.removeItem('logged_in');
+                    window.location.href = '/';
+                } else {
+                    console.log("Logout failed:", data);
+                }
+            } catch (err) {
+                console.log("Error during logout:", err);
             }
-        } catch (err) {
-            console.log("Error during logout:", err);
+            // }
         }
-        // }
-    }
-</script>
-</head> 
+    </script>
+</head>
 
 <body>
     <div class="flex global">
-    <div id="statistics" class="flex flex-column">
-        <div class="flex profile-container">
-        <a href="/" class="back-arrow" style="text-decoration: none; margin-right: 12px; font-size: 2rem; vertical-align: middle;">&#8592;</a>
-        <h2 class="profile-title">Profile <span 
-            class="profile-email"> {{ email }}</span></h2>
-        <button onclick="renderLogout()" class="switch switch--outlined" id="profile-logout">logout</button>
-        </div>
-        <canvas id="jumps-graph" width="600" height="400"></canvas>
-        <div class="profile-stats">
-            <div class="stat-row">
-                <p class="stat">{{streak}}</p>
-                <p class="stat-subtitle">Streak</p>
+        <div id="statistics" class="flex flex-column">
+            <div class="flex profile-container">
+                <a href="/" class="back-arrow"
+                    style="text-decoration: none; margin-right: 12px; font-size: 2rem; vertical-align: middle;">&#8592;</a>
+                <h2 class="profile-title">Profile <span class="profile-email"> {{ email }}</span></h2>
+                <button onclick="renderLogout()" class="switch switch--outlined" id="profile-logout">logout</button>
             </div>
-            <div class="stat-row">
-                <p class="stat">{{ total_games }}</p>
-                <p class="stat-subtitle">Games Played</p>
-            </div>
-            <div class="stat-row">
-                <p class="stat">{{ average_total_jumps }}</p>
-                <p class="stat-subtitle">Avg. Jumps</p>
-            </div>
-            <div class="stat-row">
-                <p class="stat">{{ average_prompt_jumps }}</p>
-                <p class="stat-subtitle">Avg. Jumps per Prompt</p>
-            </div>
-        <!-- <p>Total Jumps Today: {{ total_jumps }} </p>
+            <div class="stats-container">
+                <canvas id="jumps-graph" width="600" height="400"></canvas>
+                <div class="profile-stats">
+                    <div class="stat-row">
+                        <p class="stat">{{streak}}</p>
+                        <p class="stat-subtitle">Streak</p>
+                    </div>
+                    <div class="stat-row">
+                        <p class="stat">{{ total_games }}</p>
+                        <p class="stat-subtitle">Games Played</p>
+                    </div>
+                    <div class="stat-row">
+                        <p class="stat">{{ average_total_jumps }}</p>
+                        <p class="stat-subtitle">Avg. Jumps</p>
+                    </div>
+                    <div class="stat-row">
+                        <p class="stat">{{ average_prompt_jumps }}</p>
+                        <p class="stat-subtitle">Avg. Jumps per Prompt</p>
+                    </div>
+                    <!-- <p>Total Jumps Today: {{ total_jumps }} </p>
         <p>Best Score: {{ best_score }}</p> -->
-        </div>
-    </div>
-    <div id="divider" class="divider"></div>
-    <div id="calendar-container" class="flex flex-column">
-        <div id="calendar"></div>
-        <div class="legend">
-            <div class="legend-item">
-                <img src="../static/images/green_check.png" alt="Completed" class="legend-icon-green" />
-                <p>Completed Games</p>
-            </div>
-            <div class="legend-item">
-                <img src="../static/images/yellow_exclamation.png" alt="Incomplete" class="legend-icon-yellow" />
-                <p>Incomplete Games</p>
-            </div>
-            <div class="legend-item">
-                <span class="color-box transparent"></span>
-                <p>New Games</p>
+                </div>
             </div>
         </div>
-    </div>
+        <div id="divider" class="divider"></div>
+        <div id="calendar-container" class="flex flex-column">
+            <div id="calendar"></div>
+            <div class="legend">
+                <div class="legend-item">
+                    <img src="../static/images/green_check.png" alt="Completed" class="legend-icon-green" />
+                    <p>Completed Games</p>
+                </div>
+                <div class="legend-item">
+                    <img src="../static/images/yellow_exclamation.png" alt="Incomplete" class="legend-icon-yellow" />
+                    <p>Incomplete Games</p>
+                </div>
+                <div class="legend-item">
+                    <span class="color-box transparent"></span>
+                    <p>New Games</p>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 
 <script>
-// Draggable divider functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const divider = document.getElementById('divider');
-    const leftPanel = document.getElementById('statistics');
-    const rightPanel = document.getElementById('calendar-container');
-    const container = document.querySelector('.global');
-    
-    let isDragging = false;
-    
-    divider.addEventListener('mousedown', function(e) {
-        isDragging = true;
-        document.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('mouseup', handleMouseUp);
-        e.preventDefault();
-    });
-    
-    function handleMouseMove(e) {
-        if (!isDragging) return;
-        
-        const containerRect = container.getBoundingClientRect();
-        const mouseX = e.clientX - containerRect.left;
-        const containerWidth = containerRect.width;
-        
-        // Calculate percentages
-        const leftWidth = (mouseX / containerWidth) * 100;
-        const rightWidth = 100 - leftWidth - (4 / containerWidth * 100); // Subtract divider width percentage
-        
-        console.log('Mouse position:', mouseX, 'Container width:', containerWidth);
-        console.log('Left width:', leftWidth, 'Right width:', rightWidth);
-        
-        // Set minimum and maximum widths (20% to 75%)
-        if (leftWidth >= 20 && leftWidth <= 75) {
-            leftPanel.style.width = `${leftWidth}%`;
-            rightPanel.style.width = `${rightWidth}%`;
+    // Draggable divider functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        const divider = document.getElementById('divider');
+        const leftPanel = document.getElementById('statistics');
+        const rightPanel = document.getElementById('calendar-container');
+        const container = document.querySelector('.global');
+
+        let isDragging = false;
+
+        divider.addEventListener('mousedown', function (e) {
+            isDragging = true;
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+            e.preventDefault();
+        });
+
+        function handleMouseMove(e) {
+            if (!isDragging) return;
+            const containerRect = container.getBoundingClientRect();
+            const mouseX = e.clientX - containerRect.left;
+            const containerWidth = containerRect.width;
+            // Calculate percentages
+            const leftWidth = (mouseX / containerWidth) * 100;
+            const rightWidth = 100 - leftWidth - (4 / containerWidth * 100); // Subtract divider width percentage
+            // Set minimum and maximum widths (20% to 75%)
+            if (leftWidth >= 20 && leftWidth <= 75) {
+                leftPanel.style.width = `${leftWidth}%`;
+                rightPanel.style.width = `${rightWidth}%`;
+            }
         }
-    }
-    
-    function handleMouseUp() {
-        isDragging = false;
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-    }
-});
+
+        function handleMouseUp() {
+            isDragging = false;
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        }
+    });
 </script>
 
 <script>
@@ -176,22 +173,22 @@ document.addEventListener('DOMContentLoaded', function() {
             const d = new Date(date);
             return `${d.getMonth() + 1}/${d.getDate()}`;
         });
-        
+
         // Check if there are any perfect games (10 jumps)
         const hasPerfectGame = totalJumps.includes(10);
         // Check if there are any superb games (11-12 jumps)
         const hasSuperbGame = totalJumps.some(jumps => jumps >= 11 && jumps <= 12);
-        
+
         // Build datasets array
         const datasets = [{
             label: 'Jumps',
             data: totalJumps,
-            borderColor: grayedOutBackground,
-            pointBackgroundColor: function(context) {
+            borderColor: '#1a3009', // Darker green for line
+            pointBackgroundColor: function (context) {
                 const value = context.parsed.y;
-                if (value === 10) return '#ffff00'; // Yellow for perfect
-                if (value >= 11 && value <= 12) return '#00ff00'; // Green for superb
-                return textColor; // Default color
+                if (value === 10) return '#00ff00'; // Bright green for perfect
+                if (value >= 11 && value <= 12) return '#00cc00'; // Slightly darker green for superb
+                return '#2d5016'; // Dark green for regular scores
             },
             backgroundColor: backgroundColor,
             fill: false,
@@ -201,16 +198,16 @@ document.addEventListener('DOMContentLoaded', function() {
         {
             label: 'Average',
             data: averageJumps,
-            borderColor: softFailure,
-            pointBackgroundColor: failure, 
-            backgroundColor: 'rgba(255, 0, 0, 0)',
+            borderColor: '#333333', // Much darker grey for average line
+            pointBackgroundColor: '#444444', // Much darker grey for average points
+            backgroundColor: 'rgba(51, 51, 51, 0.1)', // Dark grey background
             fill: false,
             borderWidth: 2,
             tension: 0.1,
             showLine: true,
             pointRadius: 5,
         }];
-        
+
         new Chart(ctx, {
             type: 'line',
             data: {
@@ -231,27 +228,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         labels: {
                             color: textColor, // <-- legend text color
                             usePointStyle: true, // This makes legend items use point styles instead of rectangles
-                            generateLabels: function(chart) {
+                            generateLabels: function (chart) {
                                 const original = Chart.defaults.plugins.legend.labels.generateLabels;
                                 const labels = original.call(this, chart);
-                                
+
                                 // Add perfect game legend item if there are perfect games
                                 if (hasPerfectGame) {
                                     labels.push({
                                         text: 'Perfect (10)',
-                                        fillStyle: '#ffff00',
-                                        strokeStyle: '#ffff00',
-                                        pointStyle: 'circle',
-                                        hidden: false,
-                                        datasetIndex: -1, // Not associated with a dataset
-                                        lineWidth: 2
-                                    });
-                                }
-                                
-                                // Add superb game legend item if there are superb games
-                                if (hasSuperbGame) {
-                                    labels.push({
-                                        text: 'Superb (11-12)',
                                         fillStyle: '#00ff00',
                                         strokeStyle: '#00ff00',
                                         pointStyle: 'circle',
@@ -260,7 +244,20 @@ document.addEventListener('DOMContentLoaded', function() {
                                         lineWidth: 2
                                     });
                                 }
-                                
+
+                                // Add superb game legend item if there are superb games
+                                if (hasSuperbGame) {
+                                    labels.push({
+                                        text: 'Superb (11-12)',
+                                        fillStyle: '#00cc00',
+                                        strokeStyle: '#00cc00',
+                                        pointStyle: 'circle',
+                                        hidden: false,
+                                        datasetIndex: -1, // Not associated with a dataset
+                                        lineWidth: 2
+                                    });
+                                }
+
                                 return labels;
                             }
                         }
@@ -279,19 +276,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         borderColor: textColor,
                         borderWidth: 1,
                         callbacks: {
-                            title: function(context) {
+                            title: function (context) {
                                 const index = context[0].dataIndex;
                                 const date = new Date(labels[index]);
-                                return date.toLocaleDateString('en-US', { 
-                                    weekday: 'short', 
-                                    month: 'short', 
-                                    day: 'numeric' 
+                                return date.toLocaleDateString('en-US', {
+                                    weekday: 'short',
+                                    month: 'short',
+                                    day: 'numeric'
                                 });
                             },
-                            label: function(context) {
+                            label: function (context) {
                                 const label = context.dataset.label;
                                 const value = context.parsed.y;
-                                
+
                                 if (label === 'Jumps') {
                                     let performance = '';
                                     if (value === 10) performance = ' (Perfect!)';
@@ -311,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         },
                         ticks: {
                             color: textColor, // <-- x-axis labels
-                            callback: function(value, index, values) {
+                            callback: function (value, index, values) {
                                 return labelsMonthDay[index]; // Format as month/day
                             }
                         },
@@ -331,7 +328,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             color: textColor // <-- y-axis labels
                         },
                         title: {
-                            display: true,
+                            display: false,
                             text: 'Total Jumps',
                             color: textColor
                         }
@@ -384,7 +381,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 center: 'title',
                 right: ''
             },
-            dateClick: function(info) {
+            dateClick: function (info) {
                 const clickedDate = info.dateStr;
 
                 fetch('/total_jumps_statistics_per_day', {
@@ -394,21 +391,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                     body: JSON.stringify({ date: clickedDate })
                 })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Network response was not ok");
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("Jump stats for", clickedDate, "→", data);
-                    console.log("My jump stats: ", data.my_jumps);
-                    console.log("Everyone else's jump stats: ", data.other_jumps);
-                    // You can now use data.my_jumps and data.other_jumps here
-                })
-                .catch(error => {
-                    console.error("Error fetching jump statistics:", error);
-                });
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Network response was not ok");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log("Jump stats for", clickedDate, "→", data);
+                        console.log("My jump stats: ", data.my_jumps);
+                        console.log("Everyone else's jump stats: ", data.other_jumps);
+                        console.log("Everyone else's words arrays: ", data.other_words_arrays);
+                        // You can now use data.my_jumps and data.other_jumps here
+                    })
+                    .catch(error => {
+                        console.error("Error fetching jump statistics:", error);
+                    });
                 // first day is 2025-06-01 (but profile starts from 2025-07-01)
                 // const dateClicked = new Date(clickedDate);
                 // const firstDate = new Date("2025-06-01");
@@ -418,12 +416,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // window.location.href = '/previous_index?day=' + diffInDays;
             },
-            dayCellDidMount: function(info) {
+            dayCellDidMount: function (info) {
                 const date = info.date;
-                const dateString = date.toISOString().split('T')[0]; 
+                const dateString = date.toISOString().split('T')[0];
                 console.log(dateString);
                 info.el.style.border = `1px solid ${borderColor}`;
-                
+
                 if (!info.el.classList.contains('fc-day-disabled')) {
                     if (eventDates.has(dateString)) {
                         // Add green checkmark for completed games
@@ -436,7 +434,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         img.style.margin = '0 auto';
                         img.style.marginTop = '4px';
                         img.style.backgroundColor = 'transparent';
-                        
+
                         const eventContainer = info.el.querySelector('.fc-daygrid-day-events');
                         if (eventContainer) {
                             eventContainer.appendChild(img);
@@ -452,7 +450,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         img.style.margin = '0 auto';
                         img.style.marginTop = '4px';
                         img.style.backgroundColor = 'transparent';
-                        
+
                         const eventContainer = info.el.querySelector('.fc-daygrid-day-events');
                         if (eventContainer) {
                             eventContainer.appendChild(img);
@@ -460,12 +458,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             },
-            datesSet: function() {
+            datesSet: function () {
                 // Remove existing images
                 document.querySelectorAll('.fc-daygrid-day img').forEach(img => img.remove());
 
                 document.querySelectorAll('.fc-daygrid-day:not(.fc-day-disabled)').forEach(cell => {
-                    const dateString = cell.getAttribute('data-date'); 
+                    const dateString = cell.getAttribute('data-date');
                     if (!dateString) return;
 
                     const eventContainer = cell.querySelector('.fc-daygrid-day-events');

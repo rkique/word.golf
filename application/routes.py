@@ -624,13 +624,14 @@ def jump_statistics_per_day():
     new_date_str = data.get('date') 
     print("here is new data string: ", new_date_str)
     new_date = datetime.strptime(new_date_str, '%Y-%m-%d').date()
-    jumpsArray_of_today_games = [
-        game.total_jumps
-        for game in state_model.query.filter(
-            state_model.current_date == new_date,
-            state_model.total_jumps > 0
-        ).all()
-    ]
+    
+    # Get all games for the specified date
+    games_for_date = state_model.query.filter(
+        state_model.current_date == new_date,
+        state_model.total_jumps > 0
+    ).all()
+    
+    jumpsArray_of_today_games = [game.total_jumps for game in games_for_date]
 
     result = state_model.query.filter(
         state_model.current_date == new_date,
@@ -639,9 +640,22 @@ def jump_statistics_per_day():
     ).first()
 
     my_jumps_today = result.total_jumps if result else 0
+    
+    # Get prompts for the specified date to get starting words
+    elapsed, prompts_for_date, neighbors_for_date = get_prompts_for_date(new_date)
+    starts = [prompt[0] for prompt in prompts_for_date]
+    
+    # Generate wordsArray for each user
+    other_words_arrays = []
+    for game in games_for_date:
+        if game.selected_words and game.jumpsA:
+            words_array = words_array_from_data(starts, game.selected_words, game.jumpsA)
+            other_words_arrays.append(words_array)
+    
     returned_data = {}
     returned_data['other_jumps'] = jumpsArray_of_today_games
     returned_data['my_jumps'] = my_jumps_today
+    returned_data['other_words_arrays'] = other_words_arrays
     return make_response(returned_data)
 
 
