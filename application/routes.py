@@ -667,7 +667,8 @@ def prev_index():
     if new_date >= date.today():
         return redirect('/')
     load_previous_time(new_date)
-    data_or_none = get_existing_data()
+    state_model = get_state_model()
+    data_or_none = get_existing_data(state_model)
     if data_or_none:
         data = data_or_none
         # use data_today as base

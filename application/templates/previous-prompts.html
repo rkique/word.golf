@@ -119,26 +119,15 @@
         },
         dateClick: function(info) {
             const clickedDate = info.dateStr;
-            
             // first day is 2025-06-01
-            alert('Clicked on: ' + info.dateStr);
             const dateClicked = new Date(clickedDate)
             const firstDate = new Date("2025-06-01");
             const diffInMs = dateClicked - firstDate;
             // Convert milliseconds to days
             const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-            alert("Difference in days:", diffInDays);
             console.log("Difference in days:", diffInDays);
             window.location.href = '/previous_index?day=' + diffInDays;
         },
-        // datesSet: function() {
-        //     // Remove images from disabled days every time the calendar updates
-        //     document.querySelectorAll('.fc-day-disabled').forEach(cell => {
-        //         const images = cell.querySelectorAll('img');
-        //         images.forEach(img => img.remove());
-        //     });
-        //     // re-render images that do not contain the .fc-day-disabled 
-        // }
         datesSet: function() {
             
             document.querySelectorAll('.fc-daygrid-day img').forEach(img => img.remove());

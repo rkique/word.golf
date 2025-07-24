@@ -10,6 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.8/index.global.min.js"></script>
     <title>User Statistics</title>
     {% include 'head.html' %}
     <script>
@@ -61,6 +62,7 @@
     </div>
     <div id="calendar"></div>
     </div>
+    <div>Missed a day? Click to play it again!</div>
 </body>
 
 <script>
@@ -92,38 +94,93 @@
             const d = new Date(date);
             return `${d.getMonth() + 1}/${d.getDate()}`;
         });
+        
+        // Check if there are any perfect games (10 jumps)
+        const hasPerfectGame = totalJumps.includes(10);
+        // Check if there are any superb games (11-12 jumps)
+        const hasSuperbGame = totalJumps.some(jumps => jumps >= 11 && jumps <= 12);
+        
+        // Build datasets array
+        const datasets = [{
+            label: 'Jumps',
+            data: totalJumps,
+            borderColor: grayedOutBackground,
+            pointBackgroundColor: function(context) {
+                const value = context.parsed.y;
+                if (value === 10) return '#ffff00'; // Yellow for perfect
+                if (value >= 11 && value <= 12) return '#00ff00'; // Green for superb
+                return textColor; // Default color
+            },
+            backgroundColor: backgroundColor,
+            fill: false,
+            showLine: true,
+            pointRadius: 5,
+        },
+        {
+            label: 'Average',
+            data: averageJumps,
+            borderColor: softFailure,
+            pointBackgroundColor: failure, 
+            backgroundColor: 'rgba(255, 0, 0, 0)',
+            fill: false,
+            borderWidth: 2,
+            tension: 0.1,
+            showLine: true,
+            pointRadius: 5,
+        }];
+        
         new Chart(ctx, {
             type: 'line',
             data: {
                 labels: labelsMonthDay,
-                datasets: [{
-                    label: 'Jumps',
-                    data: totalJumps,
-                    borderColor: grayedOutBackground,
-                    pointBackgroundColor: textColor, 
-                    backgroundColor: backgroundColor,
-                    fill: false,
-                    showLine: true,
-                    pointRadius: 5,
-                },
-                {
-                    label: 'Average Jumps',
-                    data: averageJumps,
-                    borderColor: softFailure,
-                    pointBackgroundColor: failure, 
-                    backgroundColor: 'rgba(255, 0, 0, 0)',
-                    fill: false,
-                    borderWidth: 2,
-                    tension: 0.1,
-                    showLine: true,
-                    pointRadius: 5,
-                }]
+                datasets: datasets
             },
             options: {
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'index',
+                    intersect: false,
+                },
                 plugins: {
                     legend: {
                         labels: {
-                        color: textColor // <-- legend text color
+                            color: textColor, // <-- legend text color
+                            usePointStyle: true, // This makes legend items use point styles instead of rectangles
+                            generateLabels: function(chart) {
+                                const original = Chart.defaults.plugins.legend.labels.generateLabels;
+                                const labels = original.call(this, chart);
+                                
+                                // Add perfect game legend item if there are perfect games
+                                if (hasPerfectGame) {
+                                    labels.push({
+                                        text: 'Perfect (10)',
+                                        fillStyle: '#ffff00',
+                                        strokeStyle: '#ffff00',
+                                        pointStyle: 'circle',
+                                        hidden: false,
+                                        datasetIndex: -1, // Not associated with a dataset
+                                        lineWidth: 2
+                                    });
+                                }
+                                
+                                // Add superb game legend item if there are superb games
+                                if (hasSuperbGame) {
+                                    labels.push({
+                                        text: 'Superb (11-12)',
+                                        fillStyle: '#00ff00',
+                                        strokeStyle: '#00ff00',
+                                        pointStyle: 'circle',
+                                        hidden: false,
+                                        datasetIndex: -1, // Not associated with a dataset
+                                        lineWidth: 2
+                                    });
+                                }
+                                
+                                return labels;
+                            }
                         }
                     },
                     title: {
@@ -131,10 +188,37 @@
                         color: textColor
                     },
                     tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        animation: false,
+                        backgroundColor: backgroundColor,
+                        titleColor: textColor,
+                        bodyColor: textColor,
+                        borderColor: textColor,
+                        borderWidth: 1,
                         callbacks: {
-                            title: () => null
-                        },
-                        animation: false
+                            title: function(context) {
+                                const index = context[0].dataIndex;
+                                const date = new Date(labels[index]);
+                                return date.toLocaleDateString('en-US', { 
+                                    weekday: 'short', 
+                                    month: 'short', 
+                                    day: 'numeric' 
+                                });
+                            },
+                            label: function(context) {
+                                const label = context.dataset.label;
+                                const value = context.parsed.y;
+                                
+                                if (label === 'Jumps') {
+                                    let performance = '';
+                                    if (value === 10) performance = ' (Perfect!)';
+                                    else if (value >= 11 && value <= 12) performance = ' (Superb!)';
+                                    return `${label}: ${value}${performance}`;
+                                }
+                                return `${label}: ${value.toFixed(1)}`;
+                            }
+                        }
                     },
                 },
                 scales: {
@@ -196,6 +280,9 @@
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             initialDate: '2025-07-01',
+            selectable: true,
+            selectHelper: true,
+            showNonCurrentDates: false,
             validRange: {
                 start: '2025-07-01',
                 end: '2025-08-01'
@@ -205,14 +292,67 @@
                 center: 'title',
                 right: ''
             },
+            dateClick: function(info) {
+                const clickedDate = info.dateStr;
+                // first day is 2025-06-01 (but profile starts from 2025-07-01)
+                const dateClicked = new Date(clickedDate);
+                const firstDate = new Date("2025-06-01");
+                const diffInMs = dateClicked - firstDate;
+                // Convert milliseconds to days
+                const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+                console.log("Difference in days:", diffInDays);
+                window.location.href = '/previous_index?day=' + diffInDays;
+            },
             dayCellDidMount: function(info) {
                 const date = info.date;
                 const dateString = date.toISOString().split('T')[0]; 
                 console.log(dateString);
                 info.el.style.border = `1px solid ${borderColor}`;
-                if (eventDates.has(dateString)) {
-                    info.el.style.backgroundColor = softCheck;
-                } 
+                
+                if (!info.el.classList.contains('fc-day-disabled')) {
+                    if (eventDates.has(dateString)) {
+                        // Add green checkmark for completed games
+                        const img = document.createElement('img');
+                        img.src = '../static/images/green_check.png';
+                        img.alt = 'Completed';
+                        img.style.width = '30px';
+                        img.style.height = '30px';
+                        img.style.display = 'block';
+                        img.style.margin = '0 auto';
+                        img.style.marginTop = '4px';
+                        img.style.backgroundColor = 'transparent';
+                        
+                        const eventContainer = info.el.querySelector('.fc-daygrid-day-events');
+                        if (eventContainer) {
+                            eventContainer.appendChild(img);
+                        }
+                    }
+                }
+            },
+            datesSet: function() {
+                // Remove existing images
+                document.querySelectorAll('.fc-daygrid-day img').forEach(img => img.remove());
+
+                document.querySelectorAll('.fc-daygrid-day:not(.fc-day-disabled)').forEach(cell => {
+                    const dateString = cell.getAttribute('data-date'); 
+                    if (!dateString) return;
+
+                    const eventContainer = cell.querySelector('.fc-daygrid-day-events');
+                    if (!eventContainer) return;
+
+                    if (eventDates.has(dateString)) {
+                        const img = document.createElement('img');
+                        img.src = '../static/images/green_check.png';
+                        img.alt = 'Completed';
+                        img.style.width = '30px';
+                        img.style.height = '30px';
+                        img.style.display = 'block';
+                        img.style.margin = '0 auto';
+                        img.style.marginTop = '4px';
+                        img.style.backgroundColor = 'transparent';
+                        eventContainer.appendChild(img);
+                    }
+                });
             }
         });
 

@@ -1253,9 +1253,8 @@ background-size: 800% 100%;
 }
 
 #prev-prompts {
-  display: none;   
+  display: block;   
   margin: 0 0 0 0;  
-  display: block; 
   text-align: center;
   font-size: 1.5rem;
 }

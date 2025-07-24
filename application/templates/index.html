@@ -113,23 +113,6 @@
         document.getElementById('replay-button').style.display = 'block';
     }
 </script>
-<!-- <script>
-    let BACKEND_OK = true
-    //**** FALLBACK: render data as normal without saving ***** //
-    fetch(`${window.backendURL}/is_logged_in`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' }
-    })
-    .then(response => {
-    if (!response.ok) throw new Error('POST blocked (mostly likely CORS)');
-    })
-    .catch(error => {
-    console.warn(`[word.golf] Hey! The backend is either blocked or offline, not saving -- Eric`, error);
-    BACKEND_OK = false;
-    });
-    startHelpSession();
-</script> -->
 <script src="static/js/is_game_complete.js"> </script>
 <script>
     localStorage.setItem('current_date', data['date']);

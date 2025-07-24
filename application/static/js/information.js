@@ -93,7 +93,8 @@ function renderFinish(resp) {
             prev_btn.innerHTML = 'Previous<br>Prompts';
         }
     }
-    runAfterBannerDisappears(() => {displayFinishModal(daily_idx, resp.total_jumps, resp.streak, resp.total_games, resp.wordsArray, jumpsGridMessage, is_logged_in, resp.url);})
+    runAfterBannerDisappears(() => {
+        displayFinishModal(daily_idx, resp.total_jumps, resp.streak, resp.total_games, resp.wordsArray, jumpsGridMessage, is_logged_in, resp.url);})
 }
 
 /* Clears the modal, localStorage, and renders links with XML redirect=true*/
@@ -205,7 +206,7 @@ function startGame() {
 function formatFinishWords(wordsArray){
     return wordsArray.map(row => row.map(word => `<span class="finish-word">${word}</span>`).join(' ')).join('<br>');
 }
-function displayFinishModal(daily_idx, totalJumps, currentStreak, selectedWords, jumpsGridMessage, is_user=false, url) {
+function displayFinishModal(daily_idx, totalJumps, currentStreak, total_games, selectedWords, jumpsGridMessage, is_user=false, url) {
     const modalFinish = document.getElementById(is_user ? 'modal-finish-user' : 'modal-finish-guest');
     modalFinish.querySelector('.daily-idx').innerHTML = daily_idx;
     modalFinish.querySelector('.totalJumps').innerHTML = totalJumps;
