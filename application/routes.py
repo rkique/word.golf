@@ -511,7 +511,6 @@ def profile():
     if not user or not user.email:
         return redirect('/login')
     state_model = get_state_model()
-    
     game_state = state_model.query.filter_by(user_id=user.id, current_date=today.today).first()
 
     # look for best score through all game states
@@ -570,10 +569,21 @@ def profile():
         state_model.user_id == user.id,
         state_model.total_jumps > 0
     )
+
     for game in games_this_month:
         games_and_dates_played_this_month.append({
             'date': game.current_date.strftime('%Y-%m-%d')
         })
+    
+    jumpsArray_of_today_games = [
+        game.jumpsA
+        for game in state_model.query.filter(
+            state_model.current_date == today.today,
+            state_model.total_jumps > 0
+        ).all()
+    ]
+
+    my_jumps_today = game_state.total_jumps
 
     return render_template('profile.html', email=user.email, 
                            total_games=total_games, 
@@ -583,7 +593,42 @@ def profile():
                            best_score=best_score, 
                            jumps_data=total_jumps_over_time, 
                            jumps_average_data=total_jumps_average_per_date, 
-                           month_stats=games_and_dates_played_this_month)
+                           month_stats=games_and_dates_played_this_month,
+                           today_jumps_stats=jumpsArray_of_today_games,
+                           my_jumps_today=my_jumps_today)
+
+
+@app.route('/total_jumps_statistics_per_day', methods=['POST'])
+def jump_statistics_per_day():
+    user = get_user_from_cookie()
+    if not user:
+        return redirect('/')
+    from datetime import datetime
+    state_model = get_state_model()
+    data = request.get_json()
+    new_date_str = data.get('date') 
+    print("here is new data string: ", new_date_str)
+    new_date = datetime.strptime(new_date_str, '%Y-%m-%d').date()
+    jumpsArray_of_today_games = [
+        game.total_jumps
+        for game in state_model.query.filter(
+            state_model.current_date == new_date,
+            state_model.total_jumps > 0
+        ).all()
+    ]
+
+    result = state_model.query.filter(
+        state_model.current_date == new_date,
+        state_model.total_jumps > 0,
+        state_model.user_id == user.id
+    ).first()
+
+    my_jumps_today = result.total_jumps if result else 0
+    returned_data = {}
+    returned_data['other_jumps'] = jumpsArray_of_today_games
+    returned_data['my_jumps'] = my_jumps_today
+    return make_response(returned_data)
+
 
 @app.route('/per-jump-statistics', methods=['GET'])
 def per_jump_statistics():
