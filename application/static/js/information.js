@@ -83,7 +83,6 @@ function renderFinish(resp) {
     let jumpsGridMessage = resp.jumpsArray ? renderGrid(resp.jumpsArray) : '';
     requestAnimationFrame(() => {requestAnimationFrame(() => {clearAllPromptWords()})});
     hoverAllTallies(resp.wordsArray);
-    document.getElementById('prev-prompts').style.display = 'block';
     if (window.innerWidth <= 992) {
         // here is window.innerWidth and make the prompts stack on each other 
         const btn = document.getElementById('today-button');

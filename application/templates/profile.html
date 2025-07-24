@@ -4,6 +4,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style_mobile.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/profile_mobile.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/previous_prompts.css') }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -52,18 +53,92 @@
         </div>
         <canvas id="jumps-graph" width="600" height="400"></canvas>
         <div class="profile-stats">
-        <p>Streak: {{streak}}</p>
-        <p>Games Played: {{ total_games }}</p>
-        <p>Average Jumps / Game: {{ average_total_jumps }}</p>
-        <p>Average Jumps / Prompt: {{ average_prompt_jumps }}</p>
+            <div class="stat-row">
+                <p class="stat">{{streak}}</p>
+                <p class="stat-subtitle">Streak</p>
+            </div>
+            <div class="stat-row">
+                <p class="stat">{{ total_games }}</p>
+                <p class="stat-subtitle">Games Played</p>
+            </div>
+            <div class="stat-row">
+                <p class="stat">{{ average_total_jumps }}</p>
+                <p class="stat-subtitle">Avg. Jumps</p>
+            </div>
+            <div class="stat-row">
+                <p class="stat">{{ average_prompt_jumps }}</p>
+                <p class="stat-subtitle">Avg. Jumps per Prompt</p>
+            </div>
         <!-- <p>Total Jumps Today: {{ total_jumps }} </p>
         <p>Best Score: {{ best_score }}</p> -->
         </div>
     </div>
-    <div id="calendar"></div>
+    <div id="divider" class="divider"></div>
+    <div id="calendar-container" class="flex flex-column">
+        <div id="calendar"></div>
+        <div class="legend">
+            <div class="legend-item">
+                <img src="../static/images/green_check.png" alt="Completed" class="legend-icon-green" />
+                <p>Completed Games</p>
+            </div>
+            <div class="legend-item">
+                <img src="../static/images/yellow_exclamation.png" alt="Incomplete" class="legend-icon-yellow" />
+                <p>Incomplete Games</p>
+            </div>
+            <div class="legend-item">
+                <span class="color-box transparent"></span>
+                <p>New Games</p>
+            </div>
+        </div>
     </div>
-    <div>Missed a day? Click to play it again!</div>
+    </div>
 </body>
+
+<script>
+// Draggable divider functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const divider = document.getElementById('divider');
+    const leftPanel = document.getElementById('statistics');
+    const rightPanel = document.getElementById('calendar-container');
+    const container = document.querySelector('.global');
+    
+    let isDragging = false;
+    
+    divider.addEventListener('mousedown', function(e) {
+        isDragging = true;
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+        e.preventDefault();
+    });
+    
+    function handleMouseMove(e) {
+        if (!isDragging) return;
+        
+        const containerRect = container.getBoundingClientRect();
+        const mouseX = e.clientX - containerRect.left;
+        const containerWidth = containerRect.width;
+        
+        // Calculate percentages
+        const leftWidth = (mouseX / containerWidth) * 100;
+        const rightWidth = 100 - leftWidth - (4 / containerWidth * 100); // Subtract divider width percentage
+        
+        console.log('Mouse position:', mouseX, 'Container width:', containerWidth);
+        console.log('Left width:', leftWidth, 'Right width:', rightWidth);
+        
+        // Set minimum and maximum widths (20% to 75%)
+        if (leftWidth >= 20 && leftWidth <= 75) {
+            leftPanel.style.width = `${leftWidth}%`;
+            rightPanel.style.width = `${rightWidth}%`;
+        }
+    }
+    
+    function handleMouseUp() {
+        isDragging = false;
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+    }
+});
+</script>
 
 <script>
     const labels = JSON.parse('{{ jumps_data|tojson|safe }}').map(entry => entry.date);
@@ -265,12 +340,21 @@
 <script type="module">
     document.addEventListener('DOMContentLoaded', function () {
         const calendarData = JSON.parse('{{ month_stats|tojson|safe }}');
+        const incompleteData = JSON.parse('{{ incomplete_games|tojson|safe }}');
 
         console.log("here is calendar data");
         console.log(calendarData);
+        console.log("here is incomplete data");
+        console.log(incompleteData);
 
         const eventDates = new Set(
             calendarData.map(event => {
+                return new Date(event.date).toISOString().split('T')[0];
+            })
+        );
+
+        const incompleteDates = new Set(
+            incompleteData.map(event => {
                 return new Date(event.date).toISOString().split('T')[0];
             })
         );
@@ -284,11 +368,11 @@
             selectHelper: true,
             showNonCurrentDates: false,
             validRange: {
-                start: '2025-07-01',
+                start: '2025-06-01',
                 end: '2025-08-01'
             },
             headerToolbar: {
-                left: '',
+                left: 'prev,next today',
                 center: 'title',
                 right: ''
             },
@@ -326,6 +410,22 @@
                         if (eventContainer) {
                             eventContainer.appendChild(img);
                         }
+                    } else if (incompleteDates.has(dateString)) {
+                        // Add yellow exclamation for incomplete games
+                        const img = document.createElement('img');
+                        img.src = '../static/images/yellow_exclamation.png';
+                        img.alt = 'Incomplete';
+                        img.style.width = '25px';
+                        img.style.height = '25px';
+                        img.style.display = 'block';
+                        img.style.margin = '0 auto';
+                        img.style.marginTop = '4px';
+                        img.style.backgroundColor = 'transparent';
+                        
+                        const eventContainer = info.el.querySelector('.fc-daygrid-day-events');
+                        if (eventContainer) {
+                            eventContainer.appendChild(img);
+                        }
                     }
                 }
             },
@@ -351,12 +451,29 @@
                         img.style.marginTop = '4px';
                         img.style.backgroundColor = 'transparent';
                         eventContainer.appendChild(img);
+                    } else if (incompleteDates.has(dateString)) {
+                        const img = document.createElement('img');
+                        img.src = '../static/images/yellow_exclamation.png';
+                        img.alt = 'Incomplete';
+                        img.style.width = '25px';
+                        img.style.height = '25px';
+                        img.style.display = 'block';
+                        img.style.margin = '0 auto';
+                        img.style.marginTop = '4px';
+                        img.style.backgroundColor = 'transparent';
+                        eventContainer.appendChild(img);
                     }
                 });
             }
         });
 
         calendar.render();
+
+        // Hide the today button like in previous-prompts
+        const todayButton = document.querySelector('.fc-today-button.fc-button.fc-button-primary');
+        if (todayButton) {
+            todayButton.style.display = 'none';
+        }
     });
 </script>
 

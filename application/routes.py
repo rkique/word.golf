@@ -575,6 +575,20 @@ def profile():
             'date': game.current_date.strftime('%Y-%m-%d')
         })
 
+    # get incomplete games this month
+    incomplete_games_this_month = []
+    incomplete_games = state_model.query.filter(
+        db.extract('year', state_model.current_date) == today.today.year,
+        db.extract('month', state_model.current_date) == today.today.month,
+        state_model.user_id == user.id,
+        state_model.total_jumps == 0,
+        state_model.selected_words != []
+    )
+    for game in incomplete_games:
+        incomplete_games_this_month.append({
+            'date': game.current_date.strftime('%Y-%m-%d')
+        })
+
     return render_template('profile.html', email=user.email, 
                            total_games=total_games, 
                            streak=streak,
@@ -583,7 +597,8 @@ def profile():
                            best_score=best_score, 
                            jumps_data=total_jumps_over_time, 
                            jumps_average_data=total_jumps_average_per_date, 
-                           month_stats=games_and_dates_played_this_month)
+                           month_stats=games_and_dates_played_this_month,
+                           incomplete_games=incomplete_games_this_month)
 
 @app.route('/per-jump-statistics', methods=['GET'])
 def per_jump_statistics():
