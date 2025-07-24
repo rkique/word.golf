@@ -12,8 +12,8 @@ from flask import redirect
 import os
 import uuid
 from .internals.auth import get_user_from_cookie, create_guest_user, user_session_exists, set_response_cookie
-from .internals.gameprogress import update_game_state, finished_game
-from .models import GameState, User
+from .internals.gameprogress import update_game_state, finished_game, sum_jumpsA, get_current_game_state
+from .models import GameState, User, FakeGameState
 from . import cookie_signer, db
 from .internals import today
 from datetime import date
@@ -49,6 +49,16 @@ HELP_NEIGHBORS = ["tree", "shouting"]
 WV = None
 PRECOMPUTED = None
 
+def get_state_model():
+    dev_mode = False # base mode in production
+
+    host = request.host
+    if host.startswith('localhost') or host.startswith('dev.word.golf'):
+        dev_mode = True
+    
+    print("here is dev mode: ", dev_mode)
+    return FakeGameState if dev_mode else GameState
+
 #max-age=0: forces the browser to revalidate on first load
 @app.after_request
 def no_cache_index(response):
@@ -61,6 +71,25 @@ def no_cache_index(response):
 @app.route('/solutions')
 def serve_data():
     combined = [[prompt[0], neighbor, prompt[1]] for prompt, neighbor in zip(prompts_today, neighbors_today)]
+    words = [word for triple in combined for word in triple[1:]]
+    js_lines = [
+        "function sleep(ms) {",
+        "    return new Promise(resolve => setTimeout(resolve, ms));",
+        "}",
+        "",
+        "async function postWordsSequentially() {",
+        f"    const words = {words};",
+        "    for (const word of words) {",
+        "        postWord(word);",
+        "        await sleep(200);",
+        "    }",
+        "}",
+        "",
+        "postWordsSequentially();"
+    ]
+    # Write to a .js file
+    print("******** Solution Script ********")
+    print("\n".join(js_lines))
     return make_response(json.dumps(combined))
 
 def load_data():
@@ -163,7 +192,8 @@ def skip():
     user = get_user_from_cookie()
     if not user:
         return "failed"
-    game_state = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
+    state_model = get_state_model()
+    game_state = state_model.query.filter_by(user_id=user.id, current_date=today.today).first()
     if not game_state:
         return "failed"
     print("Here is game_state previous words", game_state.selected_words)
@@ -248,26 +278,25 @@ def back():
     is_help = _data.get('is_help', False)
     if is_help:
         return "failed"
+    
     user = get_user_from_cookie()
     if not user:
         return "failed"
-    game_state = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
+    state_model = get_state_model()
+    game_state = state_model.query.filter_by(user_id=user.id, current_date=today.today).first()
     if not game_state:
         return "failed"
+    
     print("Here is game_state previous words", game_state.selected_words)
-    # check for end of game/end of round 
+    
     target = _data['prompt'][1]
-    if target == _data['results'][10]:
-        return "failed"
-    # check if the selected words and check if we are at a starting word
-    if _data['prompt'][0] == _data['results'][10]:
-        return "failed"
-    # see if the length is ok and then 
-    if len(game_state.selected_words) < 2:
-        return "failed"
-    get_last_row = get_last_nonzero_row(game_state.jumpsA)
-    # see if we just switched prompts
-    if sum(game_state.jumpsA[get_last_row]) - 2 < 2:
+    results_10 = _data['results'][10]
+    prompt_start = _data['prompt'][0]
+    selected_words_len = len(game_state.selected_words)
+    last_row = get_last_nonzero_row(game_state.jumpsA)
+    last_row_score = sum(game_state.jumpsA[last_row]) - 2
+
+    if target == results_10 or prompt_start == results_10 or selected_words_len < 2 or last_row_score < 2:
         return "failed"
     # check current jumpsArray and see if it is in the beginning of it 
     start = game_state.selected_words[-2] 
@@ -315,6 +344,7 @@ def make_help_session():
     }
     return json.dumps(data)
 
+# The shift_to function does not assign either a jumps or words Array to the object.
 def shift_to(i):
     '''
     Shifts the session data to the i-th prompt and returns the updated session data as a dict.
@@ -324,13 +354,11 @@ def shift_to(i):
     try:
         prompt = prompts_today[i]
         neighbor = neighbors_today[i]
-        # print(f"[shift_to] prompt {i}: {prompt} with neighbor {neighbor}")
         results = get_curve(prompt[0], prompt[1], PRECOMPUTED, WV, neighbor=neighbor)
         data['i'] = i
         data['jumps'] = 0
         data['date'] = today.today.strftime('%Y-%m-%d')
         data['prompt'], data['prompts'] = prompt, prompts_today
-        print(f"[shift_to] prompts_today {prompts_today}")
         data['results'] = results
     except IndexError:
         print(f"Index {i} out of range for prompts_today or neighbors_today, indicating user finish. Returning same data.")
@@ -373,15 +401,16 @@ def update_jumps_array(new_data):
     return new_data
 
 #if user exists and game state for user exists, return it. Else, None.
-def get_existing_data():
+def get_existing_data(state_model):
     user = get_user_from_cookie()
     if not user:
         return None
     
-    game_state = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
+    game_state = state_model.query.filter_by(user_id=user.id, current_date=today.today).first()
     data = {
         'jumpsArray': BASE_JUMPS_ARRAY,
         'startTargetIdxs': BASE_START_TARGET_IDXS,
+        'selected_words': [],
         'jumps': 0,
         'i': 0,
         'date': today.today.strftime('%Y-%m-%d'),
@@ -390,24 +419,31 @@ def get_existing_data():
         'prompt': [],
         'logged_in': user.email if user.email else None,
         'total_jumps': 0,
+        'score': 0
     }
 
     if game_state:
         data['jumpsArray'] = game_state.jumpsA
         data['results'] = game_state.results
         data['prompts'] = game_state.prompts
-        # data['prompt'] = game_state.prompts[game_state.prompt_idx] if game_state.prompts and game_state.prompt_idx else prompts_today[0]
+        data['selected_words'] = game_state.selected_words
         data['jumps'] = game_state.current_jumps
         data['i'] = game_state.prompt_idx
         data['logged_in'] = user.email
         data["startTargetIdxs"] = game_state.start_target_idxs
         if game_state.total_jumps:
             data['total_jumps'] = game_state.total_jumps
+        print('data prompt is', data['prompt'])
         if game_state.prompts and game_state.prompt_idx:
             idx = min(game_state.prompt_idx, 4)
             data['prompt'] = game_state.prompts[idx]
         else:
             data['prompt'] = prompts_today[0]
+            
+        if data['selected_words']:
+            targets = [prompt[1] for prompt in prompts_today]
+            if data['selected_words'][-1] not in targets:
+                data['score'] = similarity(data['selected_words'][-1], data['prompt'][1], WV)
     return data
 
 @app.route('/')
@@ -415,39 +451,33 @@ def index():
     print('/ Starting Fresh..')
     load_data()
     load_time()
-    data_or_none = get_existing_data()
+    state_model = get_state_model()
+    data_or_none = get_existing_data(state_model)
+    #use the user object with updates from today's data.
     if data_or_none:
         data = data_or_none
-        # use data_today as base
-
         if data["results"] == []:
             i = data.get('i', 0)
             data_today = shift_to(0)
+            data_today['selected_words'] = []
             data_today['jumpsArray'] = BASE_JUMPS_ARRAY
             data_today['startTargetIdxs'] = BASE_START_TARGET_IDXS
             data_today['logged_in'] = data["logged_in"]
             data_today['total_jumps'] = 0
             data = data_today
+        starts = [prompt[0] for prompt in prompts_today]
+        data['wordsArray'] = words_array_from_data(starts, data['selected_words'],  data['jumpsArray'])
         data['is_help'] = False
         session['data'] = json.dumps(data)
         response = make_response(render_template('index.html', data=json.loads(session.get('data')), previous=False))
     else:
         print('Creating new user')
-        guest_user = create_guest_user(today.today, str(uuid.uuid4()))
-        # try:
-        #     #
-        #     session_data = json.loads(session.get("data", "{}"))
-        #     if session_data.get('date') != today.today.strftime('%Y-%m-%d'):
-        #         session_data['i'] = 0
-        # except Exception:
-        #     print('[/] Exception in loading session_data')
-        #     session_data = {}
-        # i = session_data.get('i', 0)
-
+        guest_user = create_guest_user(today.today, str(uuid.uuid4()), state_model)
         data = shift_to(0)
         data['jumpsArray'] = BASE_JUMPS_ARRAY
         data['startTargetIdxs'] = BASE_START_TARGET_IDXS
         data['is_help'] = False
+        data['wordsArray'] = []
         session['data'] = json.dumps(data)
         response = make_response(render_template('index.html', data=json.loads(session.get('data')), previous=False))
         token = cookie_signer.dumps({"user_id": guest_user.id})
@@ -459,7 +489,7 @@ def index():
             set_response_cookie(response, token, secure=True)
 
     assert WV is not None, "Word vectors not loaded"
-    print('/ data is set to:', session.get('data'))
+    # print('/ data is set to:', session.get('data'))
     # return render_template('index.html', data=json.loads(session.get('data')))
     return response
 
@@ -480,43 +510,44 @@ def profile():
     user = get_user_from_cookie()
     if not user or not user.email:
         return redirect('/login')
+    state_model = get_state_model()
     
-    game_state = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
+    game_state = state_model.query.filter_by(user_id=user.id, current_date=today.today).first()
 
     # look for best score through all game states
-    best_score = GameState.query.filter_by(user_id=user.id).order_by(GameState.total_jumps.asc()).first()
+    best_score = state_model.query.filter_by(user_id=user.id).order_by(state_model.total_jumps.asc()).first()
     if best_score:
         best_score = best_score.total_jumps
     else:
-        best_score = game_state.total_jumps
+        best_score = game_state.total_jumps if game_state else 0
     
-    total_games = GameState.query.filter_by(user_id=user.id).filter(GameState.total_jumps > 0).count()
+    total_games = state_model.query.filter_by(user_id=user.id).filter(state_model.total_jumps > 0).count()
+    streak = user.streak if user.streak else 0
 
     # get the average jumps per game
     if total_games > 0:
-        average_total_jumps = round(GameState.query.filter_by(user_id=user.id).filter(GameState.total_jumps > 0).with_entities(db.func.avg(GameState.total_jumps)).scalar(), PRECISION)
+        average_total_jumps = round(state_model.query.filter_by(user_id=user.id).filter(state_model.total_jumps > 0).with_entities(db.func.avg(state_model.total_jumps)).scalar(), PRECISION)
     else:
-        average_total_jumps = game_state.total_jumps
+        average_total_jumps = game_state.total_jumps if game_state else 0
     
-    total_jumps = GameState.query.filter_by(user_id=user.id).with_entities(db.func.sum(GameState.total_jumps)).scalar()
+    total_jumps = state_model.query.filter_by(user_id=user.id).with_entities(db.func.sum(state_model.total_jumps)).scalar()
     if total_jumps is None:
         total_jumps = 0 
     average_jumps_per_prompt = round(total_jumps / (total_games * PCOUNT), PRECISION) if total_games > 0 else 0
 
     # make an array of the total jumps over time (filtering from furthest date to today)
-    game_states = GameState.query.filter_by(user_id=user.id).order_by(GameState.current_date.desc()).all()
+    game_states = state_model.query.filter_by(user_id=user.id).order_by(state_model.current_date.desc()).all()
     total_jumps_over_time = []
     total_jumps_average_per_date = []
     for gs in game_states:
         if gs.total_jumps == 0:
             continue
         else:
-            # now calculate the average jumps per date for all users!
-            relavent_game_states = GameState.query.filter_by(current_date=gs.current_date).all()
+            relevant_game_states = state_model.query.filter_by(current_date=gs.current_date).all()
             total_jumps_for_date = 0
             number_of_game_states = 0
-            if relavent_game_states:
-                for g in relavent_game_states:
+            if relevant_game_states:
+                for g in relevant_game_states:
                     if g.total_jumps > 0:
                         number_of_game_states += 1
                     total_jumps_for_date += g.total_jumps
@@ -533,11 +564,11 @@ def profile():
 
     # get the amount of games played this month
     games_and_dates_played_this_month = []
-    games_this_month = GameState.query.filter(
-        db.extract('year', GameState.current_date) == today.today.year,
-        db.extract('month', GameState.current_date) == today.today.month,
-        GameState.user_id == user.id,
-        GameState.total_jumps > 0
+    games_this_month = state_model.query.filter(
+        db.extract('year', state_model.current_date) == today.today.year,
+        db.extract('month', state_model.current_date) == today.today.month,
+        state_model.user_id == user.id,
+        state_model.total_jumps > 0
     )
     for game in games_this_month:
         games_and_dates_played_this_month.append({
@@ -546,9 +577,9 @@ def profile():
 
     return render_template('profile.html', email=user.email, 
                            total_games=total_games, 
+                           streak=streak,
                            average_total_jumps=average_total_jumps, 
                            average_prompt_jumps=average_jumps_per_prompt, 
-                           total_jumps=game_state.total_jumps, 
                            best_score=best_score, 
                            jumps_data=total_jumps_over_time, 
                            jumps_average_data=total_jumps_average_per_date, 
@@ -557,7 +588,8 @@ def profile():
 @app.route('/per-jump-statistics', methods=['GET'])
 def per_jump_statistics():
     game_date = today.today
-    gamestates = GameState.query.filter_by(current_date=game_date).order_by(GameState.current_date.desc()).all()
+    state_model = get_state_model()
+    gamestates = state_model.query.filter_by(current_date=game_date).order_by(state_model.current_date.desc()).all()
     today_prompts = gamestates[0].prompts
     starting_words = []
     ending_words = []
@@ -710,35 +742,36 @@ def user_statistics():
     user = get_user_from_cookie()
     if not user:
         return redirect('/login')
+    state_model = get_state_model()
     
-    game_state = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
+    game_state = state_model.query.filter_by(user_id=user.id, current_date=today.today).first()
     if not game_state:
         return redirect('/')
 
     # look for best score through all game states
-    best_score = GameState.query.filter_by(user_id=user.id).order_by(GameState.total_jumps.asc()).first()
+    best_score = state_model.query.filter_by(user_id=user.id).order_by(state_model.total_jumps.asc()).first()
     if best_score:
         best_score = best_score.total_jumps
     else:
         best_score = game_state.total_jumps
     
     # get the total games played by user
-    total_games = GameState.query.filter_by(user_id=user.id).count()
+    total_games = state_model.query.filter_by(user_id=user.id).count()
 
     # get the average jumps per game
     if total_games > 0:
-        average_total_jumps = GameState.query.filter_by(user_id=user.id).with_entities(db.func.avg(GameState.total_jumps)).scalar()
+        average_total_jumps = state_model.query.filter_by(user_id=user.id).with_entities(db.func.avg(state_model.total_jumps)).scalar()
     else:
         average_total_jumps = game_state.total_jumps
 
     # get the average jumps per prompt for all time
-    total_jumps = GameState.query.filter_by(user_id=user.id).with_entities(db.func.sum(GameState.total_jumps)).scalar()
+    total_jumps = state_model.query.filter_by(user_id=user.id).with_entities(db.func.sum(state_model.total_jumps)).scalar()
     if total_jumps is None:
         total_jumps = 0 
     average_jumps_per_prompt = total_jumps / (total_games * PCOUNT) if total_games > 0 else 0
 
     # of the LOGGED IN users (user.email is not None), get my 'leaderboard' position
-    all_game_states = GameState.query.filter_by(current_date=today.today).order_by(GameState.total_jumps.asc()).all()
+    all_game_states = state_model.query.filter_by(current_date=today.today).order_by(state_model.total_jumps.asc()).all()
     current_user = user
     leaderboard = []
     for gs in all_game_states:
@@ -785,24 +818,30 @@ def user_statistics():
                            total_streaks_leaderboard=my_streak_position,
                            real_leaderboard=real_leaderboard)
 
-def words_array_from_data(starts, selected_words, jumps_array):
+#Given start words, selected words from the database, and jumps array, return the actual word history for the user.
+def words_array_from_data(starts, selected_words, jumps_array,is_help=False):
+    # print(f'[words_array] {selected_words}')
+    if is_help:
+        return [['fruit', 'orchard', 'house', 'porch'],['whisper', 'shouting', 'scuffle']]
     result = []
     l_idx = 0
     for i, row in enumerate(jumps_array):
         r_idx = l_idx + sum(row) - 1
         subarray = [starts[i]] + selected_words[l_idx:r_idx]
+        # print(subarray, l_idx, r_idx)
         result.append(subarray)
         l_idx = r_idx
     return result
 
 @app.route('/', methods=['POST'])
 def index_post():
+    state_model = get_state_model()
     if request.form.get('redirect') is not None:
         print('[/] Redirecting to start...')
         #only run this if data in session.
         session_data = json.loads(session["data"])
         if session_data["prompts"] == HELP_PROMPTS or session_data["results"] == []: 
-            data_or_none = get_existing_data()
+            data_or_none = get_existing_data(state_model)
             if data_or_none:
                 data = data_or_none
                 # use data_today as base
@@ -813,8 +852,12 @@ def index_post():
                     data_today['startTargetIdxs'] = BASE_START_TARGET_IDXS
                     data_today['logged_in'] = data["logged_in"]
                     data_today['total_jumps'] = 0
+                    data_today['score'] = 0
                     data = data_today
                 data['is_help'] = False
+                starts = [prompt[0] for prompt in prompts_today]
+                selected_words = data.get('selected_words', [])
+                data['wordsArray'] = words_array_from_data(starts, selected_words, data['jumpsArray'], is_help=data['is_help'])
                 session['data'] = json.dumps(data)
             else:
                 data = shift_to(0)
@@ -848,20 +891,32 @@ def index_post():
         else:
             data = help_shift(data)
             session['data'] = json.dumps(data)
+            return make_response("end" + session.get('data'))
 
     elif request.form.get('end') is not None:
         data = json.loads(session.get('data', '{}'))
         print(f"[/] Shifting to Prompt {data.get('i', 0)+1}")
         if (data.get('i', 0) + 1 >= PCOUNT):
             data['i'] = 4
-            print("Previous data: ", data)
+            # print("Previous data: ", data)
             data = update_jumps_array(data)
-            print("Updated data: ", data)
-            update_game_state(data)
+            # print("Updated data: ", data)
+            update_game_state(data, state_model)
             #update data object with game information from database
-            streak, total_jumps, selected_words = finished_game(request)
+            finished_game(request, state_model)
+            user = get_user_from_cookie()
+            if not user:
+                redirect('/')
+            streak = user.streak
+            current_game = get_current_game_state(state_model)
+            if not current_game:
+                redirect('/')
+            total_jumps = current_game.total_jumps
+            selected_words = current_game.selected_words
+            total_games = state_model.query.filter_by(user_id=user.id).filter(state_model.total_jumps > 0).count()
+            data['total_games'] = total_games
             data['streak'] = streak
-            data['totalJumps'] = total_jumps
+            data['total_jumps'] = total_jumps
             starts = [prompt[0] for prompt in prompts_today]
             data['wordsArray'] = words_array_from_data(starts, selected_words, data['jumpsArray'])
 
@@ -879,13 +934,14 @@ def index_post():
             # data['url'] = new_url
 
             session['data'] = json.dumps(data)
-            update_game_state(json.loads(session['data']))
+            update_game_state(json.loads(session['data']), state_model)
             return make_response("session_done" + session.get('data'))
         data['i'] += 1
         _data = shift_to(data['i'])
         session['data'] = json.dumps(update_jumps_array(_data))
-        update_game_state(json.loads(session['data']))
-        
+        update_game_state(json.loads(session['data']), state_model)
+        return make_response("end" + session.get('data'))
+
     elif request.form.get('word') is not None:
         current_word = request.form.get('word') 
         print(f"[/] Jumping: {current_word}")
@@ -894,14 +950,16 @@ def index_post():
             return redirect('/')
         prev_data = json.loads(data_or_none)
         session['data'] = jump(current_word, current_word != prev_data['prompt'][1])
-        print(f"[/ word] {session['data']}")
         new_data = json.loads(session['data'])
         new_data['word'] = current_word
-        print("here is new data is_help: ", new_data['is_help'])
-        print(new_data['is_help'] == False)
         if new_data['is_help'] == False:
-            update_game_state(new_data)
-
+            update_game_state(new_data, state_model)
+        del new_data['word']
+        starts = [prompt[0] for prompt in prompts_today]
+        selected_words = get_current_game_state(state_model).selected_words
+        new_data['wordsArray'] = words_array_from_data(starts, selected_words, new_data['jumpsArray'], is_help=new_data['is_help'])
+        # print(f'[wordsArray] {new_data["wordsArray"]}')
+        session['data'] = json.dumps(new_data)
     else:
         print("[/] ERROR (None of the Above...) ", request.form)
 

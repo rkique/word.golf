@@ -3,6 +3,8 @@
         height: 100%;
         margin: 0;
         padding: 0;
+        overflow-x: hidden;
+        max-width: 100vw;
     }
     #global{
         gap: 0vw;
@@ -13,21 +15,41 @@
         /*       top  left   bottom    right */
         justify-items: center;
         justify-content: center; 
-        padding: 1.5rem 5rem 1.5rem 5.5rem;
+        padding: 3rem 5rem 1rem 5.5rem;
     }
 
     #prompts-container {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
+    margin-top: 0vh;
     }
 
+    #prompts-bar-container {
+        margin: 0 0;
+    }
+    .stat-subtitle {
+        font-size: 1.1rem;
+    }
     #settings { 
-        margin-top: 1vh !important;
+        /* margin-top: 1vh !important; */
         max-height: 6vh;
         padding: 0 1em;
         margin: 0 0;
     }
-    #settings p {
-        font-size: 1.1rem;
+    #settings #information, #settings #wg-banner {
+        display: none;
+    }
+
+    .settings-controls {
+        margin: 0 auto;
+        width: fit-content;
+        height: fit-content;
+        gap: 0.75em;
+    }
+
+    
+    .switchContainer p {
+        font-size: 0.85rem;
+        margin: -0.7rem 0 0 0;
     }
     #settings span{ font-size: 1.4rem; }
 
@@ -45,6 +67,7 @@
 
     .footer-div p {
         display: inline-block;
+        font-size: 1rem;
     }
 
     .footer-div {
@@ -64,7 +87,12 @@
         flex-direction: column;      
         align-items: center;        
         justify-content: center;  
-        gap: 1rem;  
+        gap: 0rem;  
+    }
+    .help-close {
+        font-size: 3rem;
+        top: 0.25em;
+        right: 0.25em;
     }
 
     .help-container .switch--outlined{
@@ -72,8 +100,8 @@
     }
 
     #prompts {
-        gap: 0.4rem;
-        padding: 0.8rem 0.8rem;
+        gap: 0.25rem;
+        padding: 1rem 0.5rem;
         width: 100vw;
         min-height: 30vh;
         max-height: 32vh;
@@ -83,15 +111,13 @@
         flex-direction: column;
         justify-content: flex-start;
     }
-    #prompts-container {
-        margin-top: 0vh;
-    }
-    .prompts-title {
-        border-top: 1px solid var(--grayed-out-color);
-        border-bottom: 1px solid var(--grayed-out-color);
+
+    #prompts-title {
+        border-top: none;
+        border-bottom: none;
         border-right: none;
         border-left: none;
-        font-size: 1.1rem;
+        font-size: 1.4rem;
         padding: 0.3rem;
         max-height: 6vh;
         margin: 0 0;
@@ -106,9 +132,9 @@
     }
 
     .tally:not(.prompt-word) {
-    max-width: 0.3rem !important;
-    min-width: 0.3rem !important;
-    padding: 0 !important;
+    max-width: 0.3rem;
+    min-width: 0.3rem ;
+    padding: 0;
     }
     .prompt-box {
         /* outline: 1px solid var(--border-color); */
@@ -118,6 +144,7 @@
         height: 5vh;
         min-height: 5vh;
         font-size: 1.1rem;
+        
     }
     .switch, .game-icon {
         padding: 0.5em 0em;
@@ -182,15 +209,19 @@
     #modal button {
         font-size: 1.4rem;
     }
-    /* ************ */
-    /* Help screen */
-    /* *********** */
+
     .help {
-        width: 90vw;
-        height: 80vh;
-        max-width: 90vw;
-        
-        padding: 0 0;
+        z-index: 6;
+        width: 92vw;
+        height: 85vh;
+        max-width: 92vw;
+        max-height: 85vh;
+        margin: 0 auto;
+        padding: 0;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
     }
     #info-box {
         background-color: var(--background-color);
@@ -201,18 +232,20 @@
         flex-wrap: wrap;
         z-index: 3;
     }
+
     .link {
         min-width: 30vw;
     }
     .help-container {
+        max-height: 100%;
         max-width: 100%;
-        background-color: var(--background-color);
         display: flex;
         flex-wrap: nowrap;
-        padding: 1em 2em;
+        padding: 1em 1.5em;
         flex-direction: column;
         align-items: center;
         z-index: 2;
+        justify-content: flex-start;
     }
     .switchContainer {
         min-width: 0em;
@@ -221,6 +254,10 @@
         width: 92vw;
         max-width: 92vw;
         /* padding: 2rem; */
+    }
+    #modal-finish-guest .stat-row{
+        width: 100vw;
+        align-items: flex-start;
     }
     .finish-container {
         padding: 0; 
@@ -254,7 +291,6 @@
 
     .finish-container p {
         margin: 0 0;
-        font-size: 1rem;
     }
     
     .finish-text-end, .finish-text-end a{
@@ -272,11 +308,16 @@
         display: flex;
         flex-direction: column;
         max-width: 100%;
-        padding: 0.5em 1em;
+        padding: 0.5rem 0rem;
         gap: 0.5rem !important;
         width: 100vw;
         align-content: flex-start;
         align-items: center;
+    }
+    .stat-row > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
     }
     #finish-container h1 {
         font-size: 2.2rem;
@@ -307,10 +348,15 @@
     } */
 
     .help-text .--grayed-out {
-        font-size: 1rem;
+        font-size: 1.2rem;
     }
     .guest-buttons {
         flex-wrap: wrap;
+    }
+
+    .logged_in-buttons {
+        align-items: center;
+        padding: 0em 1em 2em 1em;
     }
 
     .prompts > div {
@@ -320,21 +366,25 @@
     .prompts > div:first-child {
     border-top: none;
     }
-
+    .tutorial {
+        font-size: 1.8rem !important;
+    }
     .help button {
         background-color: var(--background-color);
         color: var(--text-color);
         font-size: 1rem;
-        padding: 0.5rem 2rem;
+        padding: 0.8rem 3rem;
         border: none;
         border-radius: 1.5rem;
         cursor: pointer;
         transition: background 0.2s;
         outline: 1px solid var(--border-color);
+        min-width: 60%;
+        width: auto;
     }
 
     .help-text p{
-        font-size: 1rem;
-        margin: 1em 0.1em;
+        font-size: 1.3rem;
+        margin: 0.6em 0.1em;
     }
 }

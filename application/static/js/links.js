@@ -56,17 +56,12 @@ let HELP_STEPS = [
 
 function focusLink(startText, targetText) {
     const links = Array.from(document.getElementsByClassName("link"));
-    // let middleWords = [...new Set(HELP_STEPS.map(step => step.result))];
-    // console.log(middleWords)
     links.forEach(link => {
         const text = link.innerText.trim();
         if (text == startText) {
             link.classList.add("link--help-target");
         }
         if (text === targetText) {
-            // link.style.outlineOffset = "2px";
-            link.id = "link--target";
-            link.classList.add("link--target")
             link.classList.remove("link--unfocused");
         } else if (links.indexOf(link) !== 10) {
             link.style.outline = "";
@@ -77,7 +72,7 @@ function focusLink(startText, targetText) {
 }
 
 //@Parent: postWord
-function renderLinks(prompt, results, i, debug_session_done = false) {
+function renderLinks(prompt, results, i, session_done = false) {
     let wordspace = document.getElementById("wordspace")
     clearChildren(wordspace)
     let middleIndex = Math.floor(results.length / 2)
@@ -88,12 +83,13 @@ function renderLinks(prompt, results, i, debug_session_done = false) {
             wordspace.append(makeLink(prompt, result))
         }
     })
+    cueLinkPromptOnHover('.link--starting', '.prompt-start-word');
+    cueLinkPromptOnHover('.link--target', '.prompt-target-word');
     addDoneFocus(prompt, results, i)
     addHelpFocuses(prompt, results)
-    if (sessionEnded(prompt) || debug_session_done) {
-        disableLinks()
-        // console.log(`[renderLinks] sessionEnded: ${sessionEnded(prompt)}`)
-        reportSessionEnded(debug_session_done)
+    if (promptEnded(prompt) || session_done) {
+        renderScore(1)
+        reportSessionEnded(session_done)
     }
 }
 
@@ -197,6 +193,13 @@ async function renderLogout(){
             logged_in_buttons.style.display = 'none';
             const logoutButton = document.getElementById('guest-buttons');
             logoutButton.style.display = 'flex';
+            
+            // Change the profile text back to sign in
+            const profileSwitchContainer = document.querySelector('.switchContainer[onclick="renderProfile()"] p');
+            if (profileSwitchContainer) {
+                profileSwitchContainer.textContent = 'sign in';
+            }
+            
             window.location.href = '/';
         } else {
             alert("Logout failed:", data);
@@ -209,13 +212,13 @@ async function renderLogout(){
 
 
 function switchToLoggedIn() {
-    document.getElementById('guest-buttons').style.display = 'none';
-    document.getElementById('logged_in-buttons').style.display = 'flex';
-    const logoutBtn = document.createElement('button');
-    logoutBtn.textContent = 'logout';
-    logoutBtn.className = 'switch switch--outlined';
-    logoutBtn.onclick = renderLogout;
-    document.getElementById('logged_in-buttons').appendChild(logoutBtn);
+    // document.getElementById('guest-buttons').style.display = 'none';
+    // document.getElementById('logged_in-buttons').style.display = 'flex';
+    // const logoutBtn = document.createElement('button');
+    // logoutBtn.textContent = 'logout';
+    // logoutBtn.className = 'switch switch--outlined';
+    // logoutBtn.onclick = renderLogout;
+    // document.getElementById('logged_in-buttons').appendChild(logoutBtn);
 }
 
 function renderSessionDone(resp) {
@@ -224,11 +227,13 @@ function renderSessionDone(resp) {
     jumpsArray = resp.jumpsArray
     start_target = prompts[4]
     previous_words = resp.previous_words
-    renderPrompts(jumpsArray, resp.startTargetIdxs, start_target, true)
-    let is_logged_in = Boolean(localStorage.getItem('logged_in'));
-    if (is_logged_in) {
-        switchToLoggedIn();
-    }
+    disablePrompts() //on reload, this does not set anything. so behavior after not right. 
+    localStorage.setItem('finished', 'true')
+    renderPrompts(jumpsArray, resp.wordsArray, resp.startTargetIdxs, start_target, 0, true, true)
+    // let is_logged_in = Boolean(localStorage.getItem('logged_in'));
+    // if (is_logged_in) {
+    //     switchToLoggedIn();
+    // }
 }
 
 
@@ -258,27 +263,6 @@ function addHelpFocuses(prompt, results) {
     }
 }
 
-// //@Parent: postWord
-// function renderLinks(prompt, results, i, debug_session_done = false) {
-//     // console.log('[renderLinks] Rendering links for prompt:', prompt, 'with results:', results);
-//     let wordspace = document.getElementById("wordspace")
-//     clearChildren(wordspace)
-//     let middleIndex = Math.floor(results.length / 2)
-//     results.forEach((result, idx) => {
-//         if (idx === middleIndex) {
-//             wordspace.append(makeStartLink(prompt, result))
-//         } else {
-//             wordspace.append(makeLink(prompt, result))
-//         }
-//     })
-//     addDoneFocus(prompt, results, i)
-//     addHelpFocuses(prompt, results)
-//     if(sessionEnded(prompt) || debug_session_done){
-//     disableLinks()
-//     reportSessionEnded(debug_session_done)
-//     }
-// }
-
 function saveWordspace() {
     const wordspace = document.getElementById("wordspace");
     if (wordspace) {
@@ -300,31 +284,32 @@ function clearPrompts() {
 }
 
 //@Parent: maintainLinks
-function reportSessionEnded(debug_session_done) {
-    if (localStorage.getItem('is_help') == "true") {
-        resp = sendAndReceiveXML(`help_end=true`)
-        // _ = send_game_resp_to_backend(resp, `help_end=true`);
-    } else {
-        resp = sendAndReceiveXML(`end=true`)
-        // _ = send_game_resp_to_backend(resp, `end=true`);
+function reportSessionEnded(session_done) {
+    const isHelp = localStorage.getItem('is_help') === "true";
+    resp = sendAndReceiveXML(`${isHelp ? 'help_end' : 'end'}=true`);
+    console.log('reportSessionEnded resp: ', resp)
+    if (resp.hasOwnProperty('end')) {
+        renderLinks(resp.prompt, resp.results)
+        let start_target = resp.prompts[resp.i]
+        renderPrompts(resp.jumpsArray, resp.wordsArray, resp.startTargetIdxs, start_target, 0, end=true)
     }
-    
-    //If user has completed all prompts
-    if (resp.hasOwnProperty('help_session_done')) {
-        // alert('rendering prompts')
+    else if (resp.hasOwnProperty('help_session_done')) {
         runAfterBannerDisappears(() => {renderHelpFinish()})
-        renderPrompts(resp.jumpsArray, resp.startTargetIdxs, resp.prompts[0], end=true)
+        renderPrompts(resp.jumpsArray, resp.wordsArray, resp.startTargetIdxs, resp.prompts[0], 0, end=true)
+        let promptBox = document.querySelectorAll('#prompts .prompt-box')[1]
+        promptBox.children[5].children[0].classList.remove('prompt-target-word');
+        promptBox.children[5].children[0].classList.remove('prompt-word');
+        disableLinks()
     }
-    else if (resp.hasOwnProperty('session_done') || debug_session_done) {
-        // alert('received session_done')
+    else if (resp.hasOwnProperty('session_done') || session_done) {
         renderSessionDone(resp)
-        localStorage.setItem("lastComplete", resp["date"])
+        disableLinks()
     }
     else {
+        console.log('[helpSessionEnd]')
         renderLinks(resp.prompt, resp.results)
-        // console.log('[reportSessionEnded] Rendering prompts..')
         let start_target = resp.prompts[resp.i]
-        renderPrompts(resp.jumpsArray, resp.startTargetIdxs, start_target)
+        renderPrompts(resp.jumpsArray, resp.wordsArray, resp.startTargetIdxs, start_target)
         activateLinks()
     }
 }
@@ -370,22 +355,21 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
     let promptIdx = lastNonzeroRow(resp.jumpsArray)
     let jumps = resp.jumpsArray[promptIdx].reduce((a, b) => a + b, 0) - 1;
     if (jumps > 5) {
-        // show the skip button if we have more than 5 jumps
         // document.getElementById("skip-button").style.display = "block";
     }
-    if (jumps >= 13) { // cap it at 12 current jumps
+    if (jumps >= 13) { 
         resp = sendAndReceiveXML(`end=true`);
+        // console.log("Jumps greater than 13");
+        console.log("[Postword] here is new resp from 13 jumps: ", resp);
     }
     if (!use_animations) {
-        // check if we are at the ending page now (for when we have 12 jumps):
         if (jumps >= 13 && promptIdx === 4) {
             renderLinks(resp.prompt, resp.results, resp.i, true);
             return;
         } else {
             renderLinks(resp.prompt, resp.results, resp.i);
         }
-        // console.log('word:', word, 'resp.prompt[1]:', resp.prompt[1], 'jumps:', resp.jumps);
-        //This is the source of nearly all renderPrompt calls.
+        //IMPORTANT: nearly all renderPrompt calls come from here.
         if (word !== resp.prompt[1]) {
             let start_target = [word, resp.prompt[1]]
             let score = resp.score;
@@ -394,10 +378,9 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
                 score = 0;
                 showBanner("skipped :(", "banner");
             }
-            renderPrompts(resp.jumpsArray, resp.startTargetIdxs, start_target);
+            renderPrompts(resp.jumpsArray, resp.wordsArray, resp.startTargetIdxs, start_target, resp.score);
         }
         else {
-            // console.log(`[showBanner] ${jumps}`)
             if (jumps <= 2) showBanner("perfect!", "banner-perfect");
             else if (jumps <= 3) showBanner("superb!", "banner-impressive");
             else if (jumps <= 5) showBanner("great", "banner-great");

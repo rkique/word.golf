@@ -6,23 +6,26 @@
             <span class="daily-idx"></span>
         </div>
         <div class="inline-title">
-            <h1 class="finish-summary">Summary</h1>
+            <h1 id="finish-summary" class="finish-summary">Summary</h1>
         </div>
         <div class="stat-row">
-
             <div>
                 <p class="stat totalJumps"></p>
-                <p> jumps</p>
+                <p class="stat-subtitle"> jumps</p>
             </div>
-            
             <div>
                 <p class="stat streak"></p>
-                <p>streak</p>
+                <p class="stat-subtitle">streak</p>
+            </div>
+            <div>
+                <p class="stat totalGames"></p>
+                <p class="stat-subtitle">days played</p>
             </div>
         </div>
         <!-- <div>
             <p class="stat selectedWords"></p>
         </div> -->
+        <div class="below-summary">
         <div class="share-link" id="share-link">
             <a id="shareLink">
                 Share
@@ -35,9 +38,23 @@
             </a>
         </div>
         <div class="finish-text-end">
-            <p>Come back tomorrow to play again.</p>
+            <p id="come-back-tomorrow">Come back tomorrow to play again.</p>
             <p><a href="login">Sign up to see today's solution.</a></p>
+        </div>
         </div>
     </div>
 </div>
 </div>
+<script>
+    if (window.innerWidth <= 992) {
+        const comeBackTomorrowElement = document.getElementById('come-back-tomorrow');
+        if (comeBackTomorrowElement) {
+            comeBackTomorrowElement.remove(); // Remove the element
+        }
+
+        const finishSummaryElement = document.getElementById('finish-summary');
+        if (finishSummaryElement) {
+            finishSummaryElement.remove(); // Remove the element
+        }
+    }
+</script>

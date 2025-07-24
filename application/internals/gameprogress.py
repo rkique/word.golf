@@ -1,10 +1,11 @@
 from .. import db
-from flask import current_app as app, request, jsonify
-from ..models import GameState
+from flask import current_app as app, request, jsonify, redirect
+from ..models import GameState, FakeGameState
 from .auth import get_user_from_cookie
 from dateutil import parser
 from datetime import timedelta, date
 from . import today
+
 
 def sum_jumpsA(jumpsA): 
     if not jumpsA: 
@@ -16,16 +17,16 @@ def sum_jumpsA(jumpsA):
         # 1D list 
         return sum(jumpsA) 
 
-def game_progress(): 
+def game_progress(state_model): 
     user = get_user_from_cookie()
     if not user:
         return jsonify({"error": "Not authenticated"}), 401
 
-    game_state = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
+    game_state = state_model.query.filter_by(user_id=user.id, current_date=today.today).first()
 
     if not game_state:
         # create a new game state for today to reference and update
-        starting_game_state = GameState(
+        starting_game_state = state_model(
             user_id=user.id,
             current_date=today.today,
             selected_words=[],
@@ -59,16 +60,22 @@ def game_progress():
 
     return jsonify(result)
 
+def get_current_game_state(state_model):
+    user = get_user_from_cookie()
+    if user:
+        return state_model.query.filter_by(user_id=user.id, current_date=today.today).first()
+    else:
+        return None
 
-def update_game_state(data): 
+def update_game_state(data, state_model): 
     user = get_user_from_cookie()
     if not user:
         return jsonify({"error": "Not authenticated"}), 401
 
-    game_state = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
+    game_state = state_model.query.filter_by(user_id=user.id, current_date=today.today).first()
 
     if not game_state:
-        game_state = GameState(user_id=user.id, current_date=today.today)
+        game_state = state_model(user_id=user.id, current_date=today.today)
         db.session.add(game_state)
         db.session.commit()
 
@@ -96,23 +103,25 @@ def update_game_state(data):
 
     return jsonify({"message": "Game state updated successfully."}), 200
 
-def finished_game(finish_request): 
+def finished_game(finish_request, state_model): 
     user = get_user_from_cookie(finish_request)
     if not user:
-        return jsonify({"error": "Not authenticated"}), 401
+        return redirect('/')
 
-    game = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
+    game = state_model.query.filter_by(user_id=user.id, current_date=today.today).first()
     if not game:
-        return jsonify({"error": "Should already have a game state"}), 400
+        return redirect('/')
     
 
     if today.today != user.last_date_completed: # if it is the same do nothing 
-        # last_prompt = game.prompts[-1][-1] 
-        # game.selected_words.append(last_prompt) 
-        # game.jumpsA = data["jumpsA"] 
-        # game.jumpsA.append(game.current_jumps) 
-        print("[finished_game]: appending current jumps: ", game.current_jumps)
-        print("[finished_game]: here is new jumpsA: ", game.jumpsA)
+        if not game.prompts or not game.prompts[-1]:
+            return jsonify({"error": "User has not played non-tutorial"}), 401, None
+        # last_prompt = game.prompts[-1][-1]
+        # game.selected_words.append(last_prompt)
+        # game.jumpsA = data["jumpsA"]
+        # game.jumpsA.append(game.current_jumps)
+        # print("[finished_game]: appending current jumps: ", game.current_jumps)
+        # print("[finished_game]: here is new jumpsA: ", game.jumpsA)
         game.total_jumps = sum_jumpsA(game.jumpsA)
 
         # now we check for the 'today date' case if the real date today is greater than today.today it means 
@@ -133,4 +142,4 @@ def finished_game(finish_request):
         # db.session.add(game)
         db.session.commit()
 
-    return user.streak, game.total_jumps, game.selected_words
+    return None

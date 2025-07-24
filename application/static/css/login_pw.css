@@ -6,6 +6,12 @@
  
     /* Add this CSS to your style.css or inside a <style> tag */
 
+
+#loginForm .switch {
+    height: auto;
+    width: 100%;
+}
+
 .banner-bg {
   position: relative;
   display: flex;
@@ -37,6 +43,7 @@
       pointer-events: none;
     }
     .wg-banner-title {
+      display:inline;
       font-family: 'Schibsted Grotesk', sans-serif;
       color: var(--text-color);
       font-size: 4rem;
@@ -89,7 +96,19 @@
     flex-direction: column;
     gap: 0.3rem;
   }
-
+  .back-arrow {
+    text-decoration: none; 
+    margin-right: 12px; 
+    font-size: 2rem; 
+    vertical-align: middle;
+     position: absolute;
+     top: 0;
+     left: 0;
+     padding: 1rem;
+  }
+  .back-arrow:hover {
+    color: var(--emphasis-color);
+}
   /* need to override tachyons default */
   input {
     font-size: 1.2rem !important;

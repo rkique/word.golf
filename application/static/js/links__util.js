@@ -25,13 +25,15 @@ function ws_to_text(){
 }
 
 //Checks if the middle element is the target.
-function sessionEnded(prompt){
+function promptEnded(prompt){
     ws_texts = ws_to_text()
     if (ws_texts.length < 21) {
         return false
     }
     middle_idx = Math.floor(ws_texts.length / 2)
     let isSessionOver = ws_texts[middle_idx] == prompt[1]
+    console.log("[prompt Ended]: ", prompt)
+    console.log("[prompt Ended]: ", ws_texts)
     return isSessionOver
 
 }

@@ -51,6 +51,7 @@
         </div>
         <canvas id="jumps-graph" width="600" height="400"></canvas>
         <div class="profile-stats">
+        <p>Streak: {{streak}}</p>
         <p>Games Played: {{ total_games }}</p>
         <p>Average Jumps / Game: {{ average_total_jumps }}</p>
         <p>Average Jumps / Prompt: {{ average_prompt_jumps }}</p>
@@ -87,18 +88,23 @@
         const grayedOutBackground = getCSSVariable('--grayed-out-background');
         const textColor = getCSSVariable('--text-color');
         const backgroundColor = getCSSVariable('--grayed-out-background');
+        const labelsMonthDay = labels.map(date => {
+            const d = new Date(date);
+            return `${d.getMonth() + 1}/${d.getDate()}`;
+        });
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: labels,
+                labels: labelsMonthDay,
                 datasets: [{
-                    label: 'Total Jumps',
+                    label: 'Jumps',
                     data: totalJumps,
                     borderColor: grayedOutBackground,
                     pointBackgroundColor: textColor, 
                     backgroundColor: backgroundColor,
                     fill: false,
                     showLine: true,
+                    pointRadius: 5,
                 },
                 {
                     label: 'Average Jumps',
@@ -110,6 +116,7 @@
                     borderWidth: 2,
                     tension: 0.1,
                     showLine: true,
+                    pointRadius: 5,
                 }]
             },
             options: {
@@ -123,6 +130,12 @@
                         display: false,
                         color: textColor
                     },
+                    tooltip: {
+                        callbacks: {
+                            title: () => null
+                        },
+                        animation: false
+                    },
                 },
                 scales: {
                     x: {
@@ -133,8 +146,7 @@
                         ticks: {
                             color: textColor, // <-- x-axis labels
                             callback: function(value, index, values) {
-                                const date = new Date(labels[index]);
-                                return `${date.getMonth() + 1}/${date.getDate() + 1}`;
+                                return labelsMonthDay[index]; // Format as month/day
                             }
                         },
                         title: {

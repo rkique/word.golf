@@ -60,13 +60,11 @@ function renderGrid(counts) {
 function runAfterBannerDisappears(callback) {
   const banner = document.querySelector('.promptEndBanner');
   if (!banner) {
-    // console.log('No banner found, executing callback immediately.');
     callback();
     return;
   }
   const observer = new MutationObserver(() => {
     if (!document.body.contains(banner)) {
-        // console.log('Banner has disappeared, executing callback.');
       observer.disconnect();
       callback();
     }
@@ -79,11 +77,12 @@ function runAfterBannerDisappears(callback) {
 
 
 function renderFinish(resp) {
-    clearAllPromptWords();
     const daily_idx = daysSinceStartDate();
     is_logged_in = Boolean(localStorage.getItem('logged_in'))
     localStorage.removeItem('in_progress');
     let jumpsGridMessage = resp.jumpsArray ? renderGrid(resp.jumpsArray) : '';
+    requestAnimationFrame(() => {requestAnimationFrame(() => {clearAllPromptWords()})});
+    hoverAllTallies(resp.wordsArray);
     document.getElementById('prev-prompts').style.display = 'block';
     if (window.innerWidth <= 992) {
         // here is window.innerWidth and make the prompts stack on each other 
@@ -94,7 +93,7 @@ function renderFinish(resp) {
             prev_btn.innerHTML = 'Previous<br>Prompts';
         }
     }
-    runAfterBannerDisappears(() => {displayFinishModal(daily_idx, resp.totalJumps, resp.streak, resp.wordsArray, jumpsGridMessage, is_logged_in, resp.url)})
+    runAfterBannerDisappears(() => {displayFinishModal(daily_idx, resp.total_jumps, resp.streak, resp.total_games, resp.wordsArray, jumpsGridMessage, is_logged_in, resp.url);})
 }
 
 /* Clears the modal, localStorage, and renders links with XML redirect=true*/
@@ -119,12 +118,18 @@ function startGame() {
     let results = resp.results;
     let prompts = resp.prompts;
     let start_target = prompts[prompt_idx];
-    let startTargetIdxs = resp.startTargetIdxs
+    let startTargetIdxs = resp.startTargetIdxs;
     // total_jumps is only passed after game end.
-    const is_end = 'totalJumps' in resp ? resp.totalJumps : 0;
+    const is_end = 'total_jumps' in resp ? resp.total_jumps : 0;
     start_target = prompts[prompt_idx];
     start_target[0] = results[10];
-    renderPrompts(jumpsArray, startTargetIdxs, start_target=start_target, is_end)
+    //we want no_clear to be set when the user has finished. 
+    hasFinishedPrompt = resp.wordsArray.some(inner => inner.includes(start_target[1]))
+    hasSkippedPrompt = resp.wordsArray.some(inner => inner.length > 12)
+    noPromptWords = hasFinishedPrompt || hasSkippedPrompt
+    console.log('noPromptWords', noPromptWords, 'hasFinishedPrompt', hasFinishedPrompt, 'hasSkippedPrompt', hasSkippedPrompt);
+    no_clear = resp.wordsArray ? noPromptWords : false;
+    renderPrompts(jumpsArray, resp.wordsArray, startTargetIdxs, start_target, resp.score, is_end, no_clear)
     renderLinks(start_target, results, prompt_idx, is_end); 
     activateLinks();
 }
@@ -205,6 +210,7 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, selectedWords,
     modalFinish.querySelector('.daily-idx').innerHTML = daily_idx;
     modalFinish.querySelector('.totalJumps').innerHTML = totalJumps;
     modalFinish.querySelector('.streak').innerHTML = currentStreak;
+    modalFinish.querySelector('.totalGames').innerHTML = total_games;
     // Map selectedWords to an array of words each in a finish-word class
     const selectedWordsEl = modalFinish.querySelector('.selectedWords');
     if (selectedWordsEl && Array.isArray(selectedWords)) {
@@ -263,12 +269,11 @@ function startHelpSession() {
     renderLinks(resp.prompt, resp.results, resp.i)
     let start_target = resp.prompt
     clearBoxes()
-    renderPrompts(resp.jumpsArray, resp.startTargetIdxs, start_target)
+    renderPrompts(resp.jumpsArray, resp.wordsArray, resp.startTargetIdxs, start_target)
     activateLinks()
     addHelpFocuses(resp.prompt, resp.results)
     document.getElementById('prompts-title-heading').innerText = 'Tutorial'
     document.getElementById('prompts-count-remainder').innerText = '/2'
-
     start_text = `<p id="modalText"> Welcome to word.golf, a sport played with the meanings of words!</p>
     <button class="switch switch--outlined" id='startHelpButton'> OK </button>
     <a id="startGameLink">Skip tutorial</a>`

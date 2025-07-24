@@ -3,6 +3,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 {% set version = 'v1.02' %}
+
 <head>
     {% include 'head.html' %}
     <title>word.golf</title>
@@ -10,24 +11,24 @@
 
 <script>
 
-window.addEventListener('load', function() {
-    // Check if the browser is Safari and not running on localhost
-    if (isSafari() && window.location.origin !== 'http://127.0.0.1:8080') {
-        if (window.location.search.indexOf('v=') === -1) {
-            var uniqueParam = 'v=' + new Date().getTime(); 
-            var newUrl = 'https://www.word.golf?' + uniqueParam;
-            window.location.replace(newUrl);
+    data = JSON.parse('{{data|tojson|safe}}');
+    window.addEventListener('load', function () {
+        // Check if the browser is Safari and not running on localhost
+        if (isSafari() && window.location.origin !== 'http://127.0.0.1:8080') {
+            if (window.location.search.indexOf('v=') === -1) {
+                var uniqueParam = 'v=' + new Date().getTime();
+                var newUrl = 'https://www.word.golf?' + uniqueParam;
+                window.location.replace(newUrl);
+            }
         }
+    });
+
+    function isSafari() {
+        return false;
+        var userAgent = navigator.userAgent;
+        return /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
     }
-});
 
-function isSafari() {
-    return false;
-    var userAgent = navigator.userAgent;
-    return /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
-}
-
-data = JSON.parse('{{data|tojson|safe}}');
 
 </script>
 <script src="{{ url_for('static', filename='js/XML.js') }}?{{ version }}"></script>
@@ -38,7 +39,7 @@ data = JSON.parse('{{data|tojson|safe}}');
 <script src="{{ url_for('static', filename='js/information.js') }}?{{ version }}"></script>
 <script src="{{ url_for('static', filename='js/prompts.js') }}?{{ version }}"></script>
 
-{% include 'settings.html' %}
+{% include 'header.html' %}
 {% include 'modal-help.html' %}
 {% include 'modal.html' %}
 {% include 'modal-finish-user.html' %}
@@ -51,17 +52,56 @@ data = JSON.parse('{{data|tojson|safe}}');
     </div>
     <div id="prompts-container">
         <div id="prompts-title">
-        <div id="prompts-title-heading">Prompts</div> 
-        <div id="prompts-count-container">
-        <div id="prompts-count">1</div> <div id="prompts-count-remainder">/ 5</div>
+        <div id="prompts-bar-container">
+        <div id="prompts-bar"></div>
         </div>
+            <div id="prompts-title-heading">Prompts</div>
+            <div id="prompts-count-container">
+                <div id="prompts-count">1</div>
+                <div id="prompts-count-remainder">/ 5</div>
+            </div>
         </div>
         <div id="prompts">
-            <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
-            <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
-            <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
-            <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
-            <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
+            <div class="prompt-box">
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+            </div>
+            <div class="prompt-box">
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+            </div>
+            <div class="prompt-box">
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+            </div>
+            <div class="prompt-box">
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+            </div>
+            <div class="prompt-box">
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+                <div class="word-tally-box"></div>
+            </div>
         </div>
     </div>
 
@@ -94,19 +134,20 @@ data = JSON.parse('{{data|tojson|safe}}');
 <script>
     localStorage.setItem('current_date', data['date']);
     let is_help = localStorage.getItem('is_help');
-    if ("logged_in" in data) { // figure out this logic a bit later not now
+    if ("logged_in" in data) { 
         if (data.logged_in) {
             renderLogin(data.logged_in)
         }
     }
     // start help session
-    if (is_help !== 'false' && !data.logged_in) { 
-        startHelpSession()
-        localStorage.setItem('in_progress', 'true')
-    } 
+    if (is_help !== 'false') {
+        if (!data.logged_in) {
+            startHelpSession()
+            localStorage.setItem('in_progress', 'true');
+        }
+    }
     else {
-        console.log("here is the data from the backend");
-        console.log(data);
+        console.log("[index]: here is backend data: ", data);
         let prompt_idx = data['i'];
         let jumpsArray = data.jumpsArray;
         let jumps = data.jumps;
@@ -119,24 +160,22 @@ data = JSON.parse('{{data|tojson|safe}}');
         // check if prompt_idx is 5 
         const is_end = 'total_jumps' in data ? data.total_jumps : 0;
         // _ = editSession(jumpsArray, jumps, results, prompt_idx, start_target);
-        // 
-        renderPrompts(jumpsArray, startTargetIdxs, start_target, is_end);
+        renderPrompts(jumpsArray, data.wordsArray, startTargetIdxs, start_target, data.score, is_end);
         // start_target = prompts[prompt_idx];
-        renderLinks(start_target, results, prompt_idx, is_end); 
+        renderLinks(start_target, results, prompt_idx, is_end);
         activateLinks();
     }
-
-
 </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const idxSpan = document.getElementById('footer-daily-idx');
-        if (idxSpan) {
-            idxSpan.textContent = daysSinceStartDate();
-        }
-    });
+    //TODO: update this to avoid flash-in. 
+    // document.addEventListener('DOMContentLoaded', function () {
+    //     const idxSpan = document.getElementById('footer-daily-idx');
+    //     if (idxSpan) {
+    //         idxSpan.textContent = daysSinceStartDate();
+    //     }
+    //     // addTallyHovers(data.wordsArray)
+    // });
 </script>
-<div class="footer-div">
-    <p>word.golf #<span id="footer-daily-idx"></span> <a href="https://tally.so/r/mV7Yay" target="_blank" rel="noopener">leave feedback</a></p>
-</div>
+
+{% include 'footer.html' %}

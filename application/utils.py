@@ -11,6 +11,7 @@ LAZY_EXCLUDE = ["fuckable", "shitshow", "jegging", "daddy", "brat",
 
 N_LIMIT = 100
 
+
 def txt_to_set(path):
     txt_file = open(path, 'r', encoding="utf-8")
     txt = txt_file.readlines()

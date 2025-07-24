@@ -54,7 +54,7 @@ function syncColorMode() {
     document.documentElement.style.setProperty('--soft-failure', '#3c1d1dff');
     document.documentElement.style.setProperty('--0', '#181818');                  // ~neutral black (less brown than #1d2021)
     document.documentElement.style.setProperty('--2', '#222222');                 // slightly lighter than --0, less earthy
-    document.documentElement.style.setProperty('--4', '#3a3a3a');                 // neutral bg1
+    document.documentElement.style.setProperty('--4', '#413f3a');                 // neutral bg1
     document.documentElement.style.setProperty('--c', '#e0dccc');                 // desaturated light beige
     document.documentElement.style.setProperty('--hover-color', '#f0ece0');       // light hover (pale sand)
     document.documentElement.style.setProperty('--emphasis-color', '#f1cd50');    // toned-down Gruvbox yellow
@@ -62,7 +62,7 @@ function syncColorMode() {
     document.documentElement.style.setProperty('--logo-color', '#c8c2b2');        // cooler off-white
     document.documentElement.style.setProperty('--text-color', '#c6bca4');        // warm gray-beige
     document.documentElement.style.setProperty('--background-color', '#181818');  // consistent with --0
-    document.documentElement.style.setProperty('--grayed-out-background', '#2a2a2a');  // more neutral bg2
+    document.documentElement.style.setProperty('--grayed-out-background', '#252525');  // more neutral bg2
     document.documentElement.style.setProperty('--grayed-out-color', '#837e74');       // softer comment tone
     document.documentElement.style.setProperty('--grayed-out-color-help-target', '#9c9584'); // near-muted beige
     document.documentElement.style.setProperty('--grayed-out-color-unfocused', '#434343');   // neutral bg3
