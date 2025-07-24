@@ -143,6 +143,13 @@ document.addEventListener('DOMContentLoaded', function() {
 <script>
     const labels = JSON.parse('{{ jumps_data|tojson|safe }}').map(entry => entry.date);
 
+    console.log("HERE IS MY JUMPS");
+    const myJumpsToday = JSON.parse('{{ my_jumps_today|tojson|safe }}');
+    console.log(myJumpsToday);
+    console.log("HERE IS TOTAL STATISTICS TODAY");
+    const todayJumpStats = JSON.parse('{{ today_jumps_stats|tojson|safe }}');
+    console.log(todayJumpStats);
+
     function renderGraph() {
         const ctx = document.getElementById('jumps-graph').getContext('2d');
         const data = JSON.parse('{{ jumps_data|tojson|safe }}');
@@ -334,6 +341,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+
     renderGraph();
 </script>
 
@@ -378,14 +386,37 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             dateClick: function(info) {
                 const clickedDate = info.dateStr;
+
+                fetch('/total_jumps_statistics_per_day', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ date: clickedDate })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Jump stats for", clickedDate, "→", data);
+                    console.log("My jump stats: ", data.my_jumps);
+                    console.log("Everyone else's jump stats: ", data.other_jumps);
+                    // You can now use data.my_jumps and data.other_jumps here
+                })
+                .catch(error => {
+                    console.error("Error fetching jump statistics:", error);
+                });
                 // first day is 2025-06-01 (but profile starts from 2025-07-01)
-                const dateClicked = new Date(clickedDate);
-                const firstDate = new Date("2025-06-01");
-                const diffInMs = dateClicked - firstDate;
-                // Convert milliseconds to days
-                const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-                console.log("Difference in days:", diffInDays);
-                window.location.href = '/previous_index?day=' + diffInDays;
+                // const dateClicked = new Date(clickedDate);
+                // const firstDate = new Date("2025-06-01");
+                // const diffInMs = dateClicked - firstDate;
+                // const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+                // console.log("Difference in days:", diffInDays);
+
+                // window.location.href = '/previous_index?day=' + diffInDays;
             },
             dayCellDidMount: function(info) {
                 const date = info.date;
