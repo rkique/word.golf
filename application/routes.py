@@ -465,7 +465,10 @@ def index():
             data_today['total_jumps'] = 0
             data = data_today
         starts = [prompt[0] for prompt in prompts_today]
-        data['wordsArray'] = words_array_from_data(starts, data['selected_words'],  data['jumpsArray'])
+        selected_words = data.get('selected_words') or []
+        jumpsArray = data.get('jumpsArray', BASE_JUMPS_ARRAY)
+        data['wordsArray'] = words_array_from_data(starts, selected_words,  jumpsArray)
+        data['other_words_arrays'] = get_other_words_arrays_for_date(today.today, state_model)
         data['is_help'] = False
         session['data'] = json.dumps(data)
         response = make_response(render_template('index.html', data=json.loads(session.get('data'))))
@@ -708,6 +711,10 @@ def words_array_from_data(starts, selected_words, jumps_array,is_help=False):
     if is_help:
         return [['fruit', 'orchard', 'house', 'porch'],['whisper', 'shouting', 'scuffle']]
     result = []
+    if selected_words == []:
+        print('[words_array] No selected words, returning starts only')
+        return [starts]
+    print('words_array_from_data] Selected words:', selected_words)
     l_idx = 0
     for i, row in enumerate(jumps_array):
         r_idx = l_idx + sum(row) - 1
@@ -716,6 +723,39 @@ def words_array_from_data(starts, selected_words, jumps_array,is_help=False):
         result.append(subarray)
         l_idx = r_idx
     return result
+
+def get_other_words_arrays_for_date(date_to_query, state_model):
+    """
+    Get words arrays for all completed games on a specific date.
+    Always queries production GameState regardless of dev mode.
+    Args:
+        date_to_query: The date to query for (datetime.date object)
+        state_model: The GameState or FakeGameState model (ignored for network diagram data)
+    Returns:
+        List of words arrays for all users who completed games on that date
+    """
+    # print(f'[get_other_words_arrays_for_date] Querying date: {date_to_query}')
+    # Always use production GameState (not persisting data)
+    games_for_date = GameState.query.filter(
+        GameState.current_date == date_to_query,
+        GameState.total_jumps > 0
+    ).all()
+    
+    
+    if not games_for_date:
+        return []
+    
+    # Get prompts for the date
+    _, prompts_for_date, _ = get_prompts_for_date(date_to_query)
+    starts = [prompt[0] for prompt in prompts_for_date]
+    
+    other_words_arrays = []
+    for game in games_for_date:
+        if game.selected_words and game.jumpsA:
+            words_array = words_array_from_data(starts, game.selected_words, game.jumpsA)
+            other_words_arrays.append(words_array)
+    
+    return other_words_arrays
 
 @app.route('/', methods=['POST'])
 def index_post():
@@ -742,6 +782,7 @@ def index_post():
                 starts = [prompt[0] for prompt in prompts_today]
                 selected_words = data.get('selected_words', [])
                 data['wordsArray'] = words_array_from_data(starts, selected_words, data['jumpsArray'], is_help=data['is_help'])
+                data['other_words_arrays'] = get_other_words_arrays_for_date(today.today, state_model)
                 session['data'] = json.dumps(data)
             else:
                 data = shift_to(0)
@@ -760,16 +801,7 @@ def index_post():
         if data['i'] == num_prompts - 1:
             print('[/] Finished Help')
             data['jumpsArray'] = HELP_END_JUMPS_ARRAY
-            # data['i'] = 0
-            # data['jumpsArray'] = BASE_JUMPS_ARRAY
-            # data['startTargetIdxs'] = BASE_START_TARGET_IDXS
-            # data['jumps'] = 0
             data['is_help'] = False
-            # new_data = get_existing_data()
-            # if new_data:
-            #     new_data['is_help'] = False
-            #     session['data'] = json.dumps(new_data)
-            # else:
             session['data'] = json.dumps(data)
             return make_response("help_session_done" + session.get('data'))
         else:
@@ -803,6 +835,11 @@ def index_post():
             data['total_jumps'] = total_jumps
             starts = [prompt[0] for prompt in prompts_today]
             data['wordsArray'] = words_array_from_data(starts, selected_words, data['jumpsArray'])
+            
+            # Get other users' words arrays for today
+            data['other_words_arrays'] = get_other_words_arrays_for_date(today.today, state_model)
+            # print(f"[/] data[other_words_arrays] is {data['other_words_arrays']}")
+            print()
             session['data'] = json.dumps(data)
             update_game_state(json.loads(session['data']), state_model)
             return make_response("session_done" + session.get('data'))

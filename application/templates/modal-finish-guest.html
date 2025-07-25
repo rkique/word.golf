@@ -5,9 +5,9 @@
             <span class="hash">#</span>
             <span class="daily-idx"></span>
         </div>
-        <div class="inline-title">
+        <!-- <div class="inline-title">
             <h1 id="finish-summary" class="finish-summary">Summary</h1>
-        </div>
+        </div> -->
         <div class="stat-row">
             <div>
                 <p class="stat totalJumps"></p>
@@ -25,6 +25,15 @@
         <!-- <div>
             <p class="stat selectedWords"></p>
         </div> -->
+        
+        <!-- Word Path Network Diagram -->
+        <div class="word-path-container" id="word-path-container-guest" style="margin: 20px 0;">
+            <div id="network-diagram-guest" style="width: 100%; border: 1px solid var(--grayed-out-background, #ccc); border-radius: 8px; position: relative; overflow: auto; background: var(--background-color, #1a1a1a);">
+                <svg id="path-svg-guest" width="400" height="400" style="background: var(--background-color, #1a1a1a);">
+                </svg>
+            </div>
+        </div>
+        
         <div class="below-summary">
         <div class="share-link" id="share-link">
             <a id="shareLink">
@@ -36,6 +45,20 @@
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                 </svg>
             </a>
+            <div class="svg-download-container">
+                <a id="downloadSvg" onclick="downloadSvg('path-svg-guest')" style="cursor: pointer; margin-left: 10px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="icon-download">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                </a>
+                <span class="spoilers-tooltip">
+                    <span class="caution-icon">⚠</span>spoilers
+                </span>
+            </div>
         </div>
         <div class="finish-text-end">
             <p id="come-back-tomorrow">Come back tomorrow to play again.</p>
@@ -45,6 +68,7 @@
     </div>
 </div>
 </div>
+<script src="{{ url_for('static', filename='js/finish_graph.js') }}?{{ version }}"></script>
 <script>
     if (window.innerWidth <= 992) {
         const comeBackTomorrowElement = document.getElementById('come-back-tomorrow');
@@ -58,3 +82,6 @@
         }
     }
 </script>
+
+<!-- D3.js CDN for force-directed network diagrams -->
+<script src="https://d3js.org/d3.v7.min.js"></script>
