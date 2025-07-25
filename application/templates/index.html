@@ -125,6 +125,9 @@
     }
     else {
         console.log("[index]: here is backend data: ", data);
+        if (data.other_words_arrays) {
+            console.log("[index]: other users' words arrays: ", data.other_words_arrays);
+        }
         let prompt_idx = data['i'];
         let jumpsArray = data.jumpsArray;
         let jumps = data.jumps;
@@ -145,14 +148,7 @@
 </script>
 
 <script>
-    //TODO: update this to avoid flash-in. 
-    // document.addEventListener('DOMContentLoaded', function () {
-    //     const idxSpan = document.getElementById('footer-daily-idx');
-    //     if (idxSpan) {
-    //         idxSpan.textContent = daysSinceStartDate();
-    //     }
-    //     // addTallyHovers(data.wordsArray)
-    // });
+
 </script>
 
 {% include 'footer.html' %}

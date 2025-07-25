@@ -81,9 +81,11 @@ function renderFinish(resp) {
     is_logged_in = Boolean(localStorage.getItem('logged_in'))
     localStorage.removeItem('in_progress');
     let jumpsGridMessage = resp.jumpsArray ? renderGrid(resp.jumpsArray) : '';
+    scores = resp.jumpsArray ? resp.jumpsArray.map(inner => inner.reduce((a, b) => a + b, 0)) : [];
+    lowestScoreIndex = scores.indexOf(Math.min(...scores));
     requestAnimationFrame(() => {requestAnimationFrame(() => {clearAllPromptWords()})});
     hoverAllTallies(resp.wordsArray);
-    runAfterBannerDisappears(() => {displayFinishModal(daily_idx, resp.total_jumps, resp.streak, resp.total_games, resp.wordsArray, jumpsGridMessage, is_logged_in);})
+    runAfterBannerDisappears(() => {displayFinishModal(daily_idx, resp.total_jumps, resp.streak, resp.total_games, resp.wordsArray, jumpsGridMessage, is_logged_in, resp.other_words_arrays, lowestScoreIndex);})
 }
 
 /* Clears the modal, localStorage, and renders links with XML redirect=true*/
@@ -124,78 +126,109 @@ function startGame() {
     activateLinks();
 }
 
-// function generateLineGraph(scores) {
-//     localStorage.setItem('jumpsArray', JSON.stringify(scores));
-//     const graphContainer = document.getElementById("scoresGraph");
-//     if (!graphContainer) return;
-//     const rootStyles = getComputedStyle(document.documentElement);
-//     const axisLineColor = rootStyles.getPropertyValue('--border-color') || '#cccccc';
+function downloadSvg(svgId) {
+    // Use SVG Crowbar approach for robust SVG download
+    const svg = document.getElementById(svgId);
+    if (!svg) return;
 
-//     const trace = {
-//         x: scores.map((_, i) => i + 1),
-//         y: scores,
-//         type: 'scatter',
-//         mode: 'lines+markers',
-//         hoverinfo: 'y',
-//         hoverlabel: {
-//             bgcolor: rootStyles.getPropertyValue('--background-color'),
-//             font: {
-//                 color: rootStyles.getPropertyValue('--text-color'),
-//                 size: 14
-//             },
-//             bordercolor: rootStyles.getPropertyValue('--grayed-out-color')
-//         },
-//         line: {
-//             color: rootStyles.getPropertyValue('--border-color'),
-//             width: 3
-//         },
-//         marker: {
-//             color: rootStyles.getPropertyValue('--hover-color'),
-//             size: 10,
-//             opacity: 0.6
-//         }
-//     };
+    // Create a clone to avoid modifying the original
+    const clone = svg.cloneNode(true);
+    
+    // Add custom font definitions to the SVG
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+    style.setAttribute('type', 'text/css');
+    style.textContent = `
+        @font-face {
+            font-family: 'Schibsted Grotesk';
+            src: url('static/Schibsted_Grotesk/SchibstedGrotesk-VariableFont_wght.ttf') format('truetype');
+            font-weight: 100 900;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Schibsted Grotesk';
+            src: url('static/Schibsted_Grotesk/SchibstedGrotesk-Italic-VariableFont_wght.ttf') format('truetype');
+            font-weight: 100 900;
+            font-style: italic;
+        }
+        text {
+            font-family: 'Schibsted Grotesk', Arial, sans-serif;
+        }
+    `;
+    defs.appendChild(style);
+    clone.insertBefore(defs, clone.firstChild);
+    
+    const allElements = clone.querySelectorAll('*');
+    allElements.forEach(element => {
+        const computedStyle = window.getComputedStyle(element);
+        let styleStr = Array.from(computedStyle).map(prop => 
+            `${prop}:${computedStyle.getPropertyValue(prop)}`
+        ).join(';');
+        
+        // Ensure font-family is set to Schibsted Grotesk for text elements
+        if (element.tagName === 'text') {
+            styleStr = styleStr.replace(/font-family:[^;]+/, "font-family:'Schibsted Grotesk', Arial, sans-serif");
+        }
+        
+        element.setAttribute('style', styleStr);
+    });
 
-//     const layout = {
-//         height: window.innerHeight * 0.4,
-//         width: window.innerWidth * 0.4,
-//         dragmode: false,
-//         xaxis: {
-//             visible: true,
-//             autorange: true,
-//             showline: true,
-//             linecolor: axisLineColor,
-//             linewidth: 1,
-//             mirror: true
-//         },
-//         yaxis: {
-//             visible: true,
-//             range: [0,6],
-//             showline: true,
-//             linecolor: axisLineColor,
-//             linewidth: 1,
-//             mirror: true
-//         },
-//         plot_bgcolor: rootStyles.getPropertyValue('--background-color') || '#ffffff',
-//         paper_bgcolor: rootStyles.getPropertyValue('--background-color') || '#ffffff',
-//     };
-
-//     const config = {
-//         displayModeBar: false,
-//         displaylogo: false,
-//         responsive: true,
-//         scrollZoom: false,
-//         doubleClick: false,
-//         staticPlot: false
-//     };
-
-//     Plotly.newPlot(graphContainer, [trace], layout, config);
-// }
+    // Add namespace and other required attributes
+    clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+    
+    // Get SVG dimensions
+    const svgRect = svg.getBoundingClientRect();
+    const width = svgRect.width || 800;
+    const height = svgRect.height || 600;
+    
+    // Create canvas for PNG conversion
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Set canvas size with higher resolution for better quality
+    const scale = 2;
+    canvas.width = width * scale;
+    canvas.height = height * scale;
+    ctx.scale(scale, scale);
+    
+    // Set white background
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, width, height);
+    
+    // Serialize SVG
+    const serializer = new XMLSerializer();
+    const svgString = serializer.serializeToString(clone);
+    
+    // Create image from SVG
+    const img = new Image();
+    img.onload = function() {
+        // Draw image to canvas
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Convert canvas to PNG and download
+        canvas.toBlob(function(blob) {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'word-path-network.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }, 'image/png');
+    };
+    
+    // Convert SVG to data URL and load into image
+    const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+    const svgUrl = URL.createObjectURL(svgBlob);
+    img.src = svgUrl;
+}
 
 function formatFinishWords(wordsArray){
     return wordsArray.map(row => row.map(word => `<span class="finish-word">${word}</span>`).join(' ')).join('<br>');
 }
-function displayFinishModal(daily_idx, totalJumps, currentStreak, total_games, selectedWords, jumpsGridMessage, is_user=false) {
+function displayFinishModal(daily_idx, totalJumps, currentStreak, total_games, selectedWords, jumpsGridMessage, is_user=false, otherWordsArrays=null, lowestScoreIndex) {
     const modalFinish = document.getElementById(is_user ? 'modal-finish-user' : 'modal-finish-guest');
     modalFinish.querySelector('.daily-idx').innerHTML = daily_idx;
     modalFinish.querySelector('.totalJumps').innerHTML = totalJumps;
@@ -220,7 +253,7 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, total_games, s
                 shareLink.textContent = 'Copied to clipboard!';
                 setTimeout(() => shareLink.innerHTML = 
                 `
-                Share your results <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-copy">
+                Share <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-copy">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> 
                 `, 2000);
@@ -244,6 +277,13 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, total_games, s
                 modalFinish.querySelector('.solutionWords').innerHTML =
                     `<p> ${formatFinishWords(json)}</p>`;
             });
+    }
+
+    // Create word path diagram for lowest score if data is available
+    if (otherWordsArrays && typeof window.createWordPathDiagram === 'function') {
+        setTimeout(() => {
+            window.createWordPathDiagram(otherWordsArrays, selectedWords, lowestScoreIndex);
+        }, 50);
     }
 }
 

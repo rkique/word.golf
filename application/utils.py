@@ -95,7 +95,6 @@ def backoff_selection(start, target, start_neighbors: list[str], target_neighbor
 
     if neighbor is not None:
         # print(f'neighbor: {neighbor}, target:{target}, results: {results}')
-        print(f'[Neighbor] {neighbor}')
         assert neighbor in start_neighbors, "Neighbor must be in results"
         neighbor_idx = start_neighbors.index(neighbor)
         seen.add(neighbor_idx)
