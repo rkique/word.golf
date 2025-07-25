@@ -53,7 +53,7 @@ def get_state_model():
     dev_mode = False # base mode in production
 
     host = request.host
-    if host.startswith('localhost') or host.startswith('dev.word.golf'):
+    if host.startswith('localhost') or host.startswith('dev.word.golf') or host.startswith('127.0.0.1'):
         dev_mode = True
     
     print("here is dev mode: ", dev_mode)
@@ -760,7 +760,7 @@ def prev_index():
         response = make_response(render_template('index.html', data=json.loads(session.get('data')), previous=True))
     else:
         print('Creating new user')
-        guest_user = create_guest_user(today.today, str(uuid.uuid4()))
+        guest_user = create_guest_user(today.today, str(uuid.uuid4()), state_model)
 
         data = shift_to(0)
         data['jumpsArray'] = BASE_JUMPS_ARRAY
