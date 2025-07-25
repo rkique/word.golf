@@ -143,9 +143,6 @@
     console.log("HERE IS MY JUMPS");
     const myJumpsToday = JSON.parse('{{ my_jumps_today|tojson|safe }}');
     console.log(myJumpsToday);
-    console.log("HERE IS TOTAL STATISTICS TODAY");
-    const todayJumpStats = JSON.parse('{{ today_jumps_stats|tojson|safe }}');
-    console.log(todayJumpStats);
 
     function renderGraph() {
         const ctx = document.getElementById('jumps-graph').getContext('2d');
@@ -169,10 +166,13 @@
         const grayedOutBackground = getCSSVariable('--grayed-out-background');
         const textColor = getCSSVariable('--text-color');
         const backgroundColor = getCSSVariable('--grayed-out-background');
+
+        // console.log("here is the passed in jumps data: ", labels);
         const labelsMonthDay = labels.map(date => {
-            const d = new Date(date);
-            return `${d.getMonth() + 1}/${d.getDate()}`;
+            const [year, month, day] = date.split('-').map(Number);
+            return `${month}/${day}`;
         });
+        // console.log("here is the month day labels: ", labelsMonthDay);
 
         // Check if there are any perfect games (10 jumps)
         const hasPerfectGame = totalJumps.includes(10);
@@ -345,6 +345,10 @@
         if (window.myChart) {
             window.myChart.destroy();
         }
+        let label_message = "Number of Users";
+        if (total_jumps_data.includes(my_total_jumps)) {
+            label_message = "Users with your Jump Count";
+        }
 
         let total_jumps_user = {};
         // Count how many users have each number of jumps
@@ -374,7 +378,7 @@
             data: {
                 labels: labels, 
                 datasets: [{
-                    label: 'Users with your Jump Count',
+                    label: label_message,
                     data: data, 
                     backgroundColor: backgroundColors, 
                     borderColor: borderColors, 
