@@ -214,3 +214,8 @@ def get_similar_word(word: str, PRECOMPUTED: dict, WV):
     print(f"[SIMILAR] Input: {word} → Candidates: {matches}")
 
     return matches[0]
+
+def find_common_neighbor(starting_word: str, target_word: str, PRECOMPUTED: dict):
+    start_neighbors = set(PRECOMPUTED[starting_word])
+    target_neighbors = set(PRECOMPUTED[target_word])
+    return start_neighbors.intersection(target_neighbors)

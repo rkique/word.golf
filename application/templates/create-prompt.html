@@ -3,6 +3,7 @@
 <link rel="stylesheet" href="static/css/style.css">
 <link rel="stylesheet" href="static/css/style_mobile.css">
 <link rel="stylesheet" href="static/css/statistics_pw.css">
+<link rel="stylesheet" href="static/css/create_prompt.css">
 
 <head>
     <meta charset="UTF-8">
@@ -16,87 +17,218 @@
     <div class="wg-banner">
         <a href="/" class="wg-banner-title">word.golf</a>
     </div>
+    
+    <!-- Input Fields for Start and End Words -->
     <input type="text" id="start-word" placeholder="Start Word" />
     <input type="text" id="end-word" placeholder="End Word" />
-    <button onclick="send_start_end_to_backend()"> See backend data</button>
-    <button onclick="generateUrl()"> Generate Unique URL</button>
+    <button onclick="submitWord()" id="prompt-submit">Submit Word</button>
+
+    <div id="prompt-display" style="margin-top: 20px;">
+        <label>Prompt:</label>
+        <span id="prompt-start">word1</span>
+        <span> → </span>
+        <span id="prompt-end">word3</span>
+    </div>
+
+    <!-- Show Solution Button -->
+    <div style="margin-top: 20px;">
+        <button onclick="toggleSolution()">Show Solution</button>
+    </div>
+
+    <!-- Solution Display Section -->
+    <div id="solution-display" style="display: none; margin-top: 10px;">
+        <label>Solution:</label>
+        <div id="solution-path">word1 → word2 → word3</div>
+    </div>
+
+    <!-- Word Space Container (will dynamically populate)
     <div id="wordspace-container">
         <div id="wordspace"></div>
+    </div> -->
+
+    <!-- Next Prompt Navigation -->
+    <div style="margin-top: 20px;">
+        <button onclick="nextPrompt()">Next Prompt</button>
+    </div>
+
+    <!-- History Section -->
+    <div id="history-container" style="margin-top: 20px;">
+        <h3>Prompt History</h3>
+        <div id="history-list"></div>
     </div>
 </body>
 
+
 <script>
+    let currentPromptIndex = 0; 
+    let promptsData = []; 
+    let current_prompt_data = null;
+    let focusedWord = '';
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const startWord = document.getElementById('start-word');
+        const endWord = document.getElementById('end-word');
+        const body = document.body;
+        
+        startWord.addEventListener('focus', () => focusMode('start'));
+        endWord.addEventListener('focus', () => focusMode('end'));
+    });
+
+    function focusMode(wordType) {
+        document.body.classList.add('focus-mode');
+        focusedWord = wordType;
+        
+        if (wordType === 'start') {
+            document.getElementById('end-word').disabled = true;
+            document.getElementById('end-word').style.display = "none";
+        } else {
+            document.getElementById('start-word').disabled = true;
+            document.getElementById('start-word').style.display = "none";
+        }
+    }
+
+    function exitFocusMode() {
+        const body = document.body;
+        document.body.classList.remove('focus-mode');
+        document.getElementById('start-word').disabled = false;
+        document.getElementById('start-word').style.display = "block";
+        document.getElementById('end-word').disabled = false;
+        document.getElementById('end-word').style.display = "block";
+    }
+
+    function toggleSolution() {
+        const solutionDiv = document.getElementById('solution-display');
+        const button = event.target;
+        if (solutionDiv.style.display === 'none') {
+            solutionDiv.style.display = 'block';
+            button.textContent = 'Hide Solution';
+        } else {
+            solutionDiv.style.display = 'none';
+            button.textContent = 'Show Solution';
+        }
+    }
+
+    function setPrompts(startWord, endWord) {
+        document.getElementById('prompt-start').textContent = startWord;
+        document.getElementById('prompt-end').textContent = endWord;
+    }
+
+    function setSolutionPath(pathArray) {
+        const solutionPath = pathArray.join(' → ');
+        document.getElementById('solution-path').textContent = solutionPath;
+    }
 
     function generateUrl() {
-        console.log("called -> finish later")
+        console.log("called -> finish later");
     }
 
     function makeLink(prompt, word) {
         let link = document.createElement("button");
-        let span = document.createElement("span")
+        let span = document.createElement("span");
         span.innerText = word;
-        link.appendChild(span)
-        link.className = "link"
-        if (prompt == word) {
-            link.id = 'rainbow_text_animated'
-            link.className = "link link--target"
+        link.appendChild(span);
+        link.className = "link";
+        if (prompt === word) {
+            link.id = 'rainbow_text_animated';
+            link.className = "link link--target";
         }
-        return link
+        return link;
     }
 
     function makeStartLink(prompt, word) {
-        startLink = makeLink(prompt, word)
-        startLink.className = "link link--starting"
-        return startLink
+        startLink = makeLink(prompt, word);
+        startLink.className = "link link--starting";
+        return startLink;
     }
 
-    function clearChildren(element){
+    function clearChildren(element) {
         while (element.lastChild) {
             element.removeChild(element.lastChild);
         }
     }
 
-    async function send_start_end_to_backend() {
-        const start_word = document.getElementById('start-word').value.trim();
-        if (!start_word) {
-            alert("Enter a starting word");
+    function nextPrompt() {
+        console.log("CALLED!!!");
+        console.log(promptsData);
+        console.log(currentPromptIndex);
+        console.log(promptsData[currentPromptIndex]);
+        console.log(current_prompt_data);
+        if (currentPromptIndex < 5 && current_prompt_data) {
+            promptsData.push(current_prompt_data);
+            const nextPrompt = promptsData[currentPromptIndex];
+            setPrompts(nextPrompt.startWord, nextPrompt.endWord);
+            setSolutionPath(nextPrompt.solution);
+            currentPromptIndex++;
+            displayPromptHistory();
+            current_prompt_data = null;
+        } else {
+            alert("ALREADY GENERATED 5 PROMPTS OR NONE");
+        }
+            
+    }
+
+    function displayPromptHistory() {
+        const historyList = document.getElementById('history-list');
+        clearChildren(historyList);
+
+        promptsData.forEach((promptData, index) => {
+            const promptDiv = document.createElement('div');
+            promptDiv.classList.add('prompt-history-item');
+            promptDiv.innerHTML = `
+                <strong>Prompt ${index + 1}: </strong>
+                ${promptData.startWord} → ${promptData.endWord}
+                <br/>
+                <strong>Solution: </strong>${promptData.solution.join(' → ')}
+            `;
+            historyList.appendChild(promptDiv);
+        });
+    }
+
+    async function submitWord() {
+        let wordToSubmit = '';
+        const startWord = document.getElementById('start-word').value.trim();
+        const endWord = document.getElementById('end-word').value.trim();
+
+        if (startWord && !endWord) {
+            wordToSubmit = startWord;
+        } else if (endWord && !startWord) {
+            wordToSubmit = endWord;
+        } else {
+            alert("Please enter either a starting word or an ending word, not both.");
             return;
         }
-        const end_word = document.getElementById('end-word').value.trim();
-        if (!end_word) {
-            alert("Enter an ending word");
-            return;
-        }
+
         try {
             const res = await fetch("/check-new-prompts", {
                 method: "POST",
-                credentials: "include", 
+                credentials: "include",
                 headers: {
-                    'Content-Type': 'application/json' 
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    start_word: start_word, 
-                    end_word: end_word
+                    word: wordToSubmit,
+                    isStartWord: startWord ? true : false
                 })
             });
+
             const data = await res.json();
+
             if (res.ok) {
-                let wordspace = document.getElementById("wordspace");
-                clearChildren(wordspace);
-                const results = data.results;
-                console.log(results);
-                results.forEach((result, idx) => {
-                   if (idx === 10) {
-                        wordspace.append(makeStartLink(end_word, result))
-                    } else {
-                        wordspace.append(makeLink(end_word, result))
-                    }
-                })
+                const newPromptData = {
+                    startWord: data.start_word,
+                    endWord: data.target_word,
+                    solution: [data.start_word, data.neighbor, data.target_word]
+                }
+                
+                current_prompt_data = newPromptData;
+                setPrompts(newPromptData.startWord, newPromptData.endWord);
+                setSolutionPath(newPromptData.solution);
+                exitFocusMode();
             } else {
-                console.log("Logout failed:", data);
+                console.log("Error:", data);
             }
         } catch (err) {
-            console.log("Error during logout:", err);
+            console.error("Error during backend call:", err);
         }
     }
 
