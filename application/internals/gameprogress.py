@@ -92,8 +92,6 @@ def update_game_state(data, state_model):
     game_state.start_target_idxs = data["startTargetIdxs"] 
 
     word = data.get('word', None)
-    # print("here is word in update_game_state")
-    # print(wrd)
     if word:
         if game_state.selected_words is None:
             game_state.selected_words = []
