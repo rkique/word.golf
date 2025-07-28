@@ -717,6 +717,114 @@ def words_array_from_data(starts, selected_words, jumps_array,is_help=False):
         l_idx = r_idx
     return result
 
+def load_previous_time(new_date):
+    today.today = new_date
+    global elapsed, prompts_today, neighbors_today
+    elapsed, prompts_today, neighbors_today = get_prompts_for_date(today.today)
+
+@app.route('/replay-game', methods=['GET'])
+def replay_game():
+    # reset gamestate object and href to prev_index 
+    user = get_user_from_cookie()
+    if user:
+        previous_gamestate = get_state_model().query.filter_by(user_id=user.id, current_date=today.today).first()
+        if previous_gamestate:
+            previous_gamestate.jumpsA = BASE_JUMPS_ARRAY
+            previous_gamestate.results = []
+            previous_gamestate.selected_words = []
+            previous_gamestate.total_jumps = 0
+            previous_gamestate.prompt_idx = 0
+            previous_gamestate.current_jumps = 0
+            previous_gamestate.start_target_idxs = BASE_START_TARGET_IDXS
+        db.session.commit()
+    return redirect('/catalog')
+
+@app.route('/catalog', methods=['GET'])
+def catalog():
+    print('/ Starting Fresh..')
+    load_data()
+    num_day = request.args.get('day', default=0, type=int)
+    print(f'Day offset received: {num_day}')
+    origin_date = datetime.date(2025, 6, 1)
+    new_date = origin_date + add_days(num_day)
+    if new_date >= date.today():
+        return redirect('/')
+    load_previous_time(new_date)
+    state_model = get_state_model()
+    data_or_none = get_existing_data(state_model)
+    #use the user object with updates from today's data.
+    if data_or_none:
+        data = data_or_none
+        if data["results"] == []:
+            i = data.get('i', 0)
+            data_today = shift_to(0)
+            data_today['selected_words'] = []
+            data_today['jumpsArray'] = BASE_JUMPS_ARRAY
+            data_today['startTargetIdxs'] = BASE_START_TARGET_IDXS
+            data_today['logged_in'] = data["logged_in"]
+            data_today['total_jumps'] = 0
+            data = data_today
+        starts = [prompt[0] for prompt in prompts_today]
+        data['wordsArray'] = words_array_from_data(starts, data['selected_words'],  data['jumpsArray'])
+        data['is_help'] = False
+        session['data'] = json.dumps(data)
+        response = make_response(render_template('index.html', data=json.loads(session.get('data'))))
+    else:
+        print('Creating new user')
+        guest_user = create_guest_user(today.today, str(uuid.uuid4()), state_model)
+        data = shift_to(0)
+        data['jumpsArray'] = BASE_JUMPS_ARRAY
+        data['startTargetIdxs'] = BASE_START_TARGET_IDXS
+        data['is_help'] = False
+        data['wordsArray'] = []
+        session['data'] = json.dumps(data)
+        response = make_response(render_template('index.html', data=json.loads(session.get('data'))))
+        print("Here is my guest user id: ", guest_user.id)
+        token = cookie_signer.dumps({"user_id": guest_user.id})
+
+        if os.getenv("DEV", "false").lower() == "true":
+            print("This Dev should NEVER BE TRUE!!!!!")
+            set_response_cookie(response, token, secure=False)
+        else:
+            set_response_cookie(response, token, secure=True)
+
+    assert WV is not None, "Word vectors not loaded"
+    # print('/ data is set to:', session.get('data'))
+    # return render_template('index.html', data=json.loads(session.get('data')))
+    return response
+
+@app.route('/previous-prompts', methods=['GET'])
+def previous_prompts():
+    user = get_user_from_cookie()
+    if not user:
+        redirect('/')
+    
+    complete_games_and_dates = []
+    incomplete_games_and_dates = []
+    state_model = get_state_model()
+    completed_games = state_model.query.filter(
+        state_model.user_id == user.id,
+        state_model.total_jumps > 0
+    )
+
+    for game in completed_games:
+        complete_games_and_dates.append({
+            'date': game.current_date.strftime('%Y-%m-%d')
+        })
+    
+    incomplete_games = state_model.query.filter(
+        state_model.user_id == user.id,
+        state_model.total_jumps == 0,
+        state_model.selected_words != []
+    )
+
+    for game in incomplete_games:
+        incomplete_games_and_dates.append({
+            'date': game.current_date.strftime('%Y-%m-%d')
+        })
+    
+    return render_template('previous-prompts.html', completed_games = complete_games_and_dates, incomplete_games = incomplete_games_and_dates)
+
 @app.route('/', methods=['POST'])
 def index_post():
     state_model = get_state_model()

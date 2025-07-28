@@ -52,6 +52,13 @@ function sendAndReceiveXML(message) {
     for (const header of headers) {
         if (xhttp.responseText.startsWith(header)) {
             console.log(`${header}`);
+            if (header === 'session_done'){
+                j = parseJSONWithHeader(xhttp.responseText, header);
+                const url = new URL(window.location.href);
+                url.searchParams.delete('v');
+                j['url'] = url.toString();
+                return j
+            }
             return parseJSONWithHeader(xhttp.responseText, header);
         }
     }

@@ -83,7 +83,7 @@ function renderFinish(resp) {
     let jumpsGridMessage = resp.jumpsArray ? renderGrid(resp.jumpsArray) : '';
     requestAnimationFrame(() => {requestAnimationFrame(() => {clearAllPromptWords()})});
     hoverAllTallies(resp.wordsArray);
-    runAfterBannerDisappears(() => {displayFinishModal(daily_idx, resp.total_jumps, resp.streak, resp.total_games, resp.wordsArray, jumpsGridMessage, is_logged_in);})
+    runAfterBannerDisappears(() => {displayFinishModal(daily_idx, resp.total_jumps, resp.streak, resp.total_games, resp.wordsArray, jumpsGridMessage, is_logged_in, resp.url);})
 }
 
 /* Clears the modal, localStorage, and renders links with XML redirect=true*/
@@ -195,7 +195,7 @@ function startGame() {
 function formatFinishWords(wordsArray){
     return wordsArray.map(row => row.map(word => `<span class="finish-word">${word}</span>`).join(' ')).join('<br>');
 }
-function displayFinishModal(daily_idx, totalJumps, currentStreak, total_games, selectedWords, jumpsGridMessage, is_user=false) {
+function displayFinishModal(daily_idx, totalJumps, currentStreak, total_games, selectedWords, jumpsGridMessage, is_user=false, url) {
     const modalFinish = document.getElementById(is_user ? 'modal-finish-user' : 'modal-finish-guest');
     modalFinish.querySelector('.daily-idx').innerHTML = daily_idx;
     modalFinish.querySelector('.totalJumps').innerHTML = totalJumps;
@@ -208,10 +208,10 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, total_games, s
     }
     modalFinish.style.display = "flex";
     let tweetMessage;
-    if(is_user){
-        tweetMessage = `https://word.golf #${daily_idx} \nJumps: ${totalJumps} \nStreak: ${currentStreak} \n${jumpsGridMessage}`;
+    if (is_user) {
+        tweetMessage = url + ` #${daily_idx} \nJumps: ${totalJumps} \nStreak: ${currentStreak} \n${jumpsGridMessage}`;
     } else {
-        tweetMessage = `https://word.golf #${daily_idx} \n\nJumps: ${totalJumps} \n${jumpsGridMessage}`;
+        tweetMessage = url + ` #${daily_idx} \n\nJumps: ${totalJumps} \n${jumpsGridMessage}`;
     }
     const shareLink = modalFinish.querySelector('#shareLink');
     shareLink.addEventListener('click', () => {
