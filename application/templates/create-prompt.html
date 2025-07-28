@@ -62,12 +62,13 @@
 
     <div id="prompt-demo" style='display: none'>
         <!-- Word Space Container (will dynamically populate) -->
+        <h2>Your Prompts Sample Game</h2>
         <div id="wordspace-container">
             <div id="wordspace"></div>
-        </div> 
-        <div style="margin-top: 20px;">
-            <button onclick="createPrompts()">Back to creating Prompts</button>
         </div>
+        <!-- <div style="margin-top: 20px;"> -->
+        <button onclick="createPrompts()">Back to creating Prompts</button>
+        <!-- </div> -->
     </div>
     
 </body>
@@ -76,20 +77,20 @@
 <script>
     let currentPromptIndex = 0; 
     let promptsData = []; 
-    let current_prompt_data = null;
-    let focusedWord = '';
+    let current_prompt_data = null; 
+    let focusedWord = ''; 
 
     document.addEventListener("DOMContentLoaded", () => {
         const startWord = document.getElementById('start-word');
         const endWord = document.getElementById('end-word');
-        const body = document.body;
         
         startWord.addEventListener('focus', () => focusMode('start'));
         endWord.addEventListener('focus', () => focusMode('end'));
     });
 
     function focusMode(wordType) {
-        document.body.classList.add('focus-mode');
+        const promptMaker = document.getElementById('prompt-maker');
+        promptMaker.classList.add('focus-mode');
         focusedWord = wordType;
         
         if (wordType === 'start') {
@@ -102,8 +103,8 @@
     }
 
     function exitFocusMode() {
-        const body = document.body;
-        document.body.classList.remove('focus-mode');
+        const promptMaker = document.getElementById('prompt-maker');
+        promptMaker.classList.remove('focus-mode');
         document.getElementById('start-word').disabled = false;
         document.getElementById('start-word').style.display = "block";
         document.getElementById('end-word').disabled = false;
@@ -207,7 +208,13 @@
                 ${promptData.startWord} → ${promptData.endWord}
                 <br/>
                 <strong>Solution: </strong>${promptData.solution.join(' → ')}
+                <button class="delete-prompt-btn" style="margin-left:10px;">Delete</button>
             `;
+            promptDiv.querySelector('.delete-prompt-btn').onclick = function() {
+                promptsData.splice(index, 1);
+                if (currentPromptIndex > 0) currentPromptIndex--;
+                displayPromptHistory();
+            };
             historyList.appendChild(promptDiv);
         });
     }

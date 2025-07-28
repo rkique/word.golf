@@ -13,17 +13,17 @@
     transform: scale(1.05);
 }
 
-body.focus-mode *:not(.wg-banner):not(#start-word):not(#end-word):not(#prompt-submit) {
+#prompt-maker.focus-mode *:not(.wg-banner):not(#start-word):not(#end-word):not(#prompt-submit) {
     display: none;
 }
 
-body.focus-mode #start-word,
-body.focus-mode #end-word {
+#prompt-maker.focus-mode #start-word,
+#prompt-maker.focus-mode #end-word {
     position: relative;
     z-index: 10;
 }
 
-body.focus-mode .wg-banner {
+#prompt-maker.focus-mode .wg-banner {
     position: relative;
     z-index: 10;
 }
