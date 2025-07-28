@@ -18,9 +18,11 @@
         <a href="/" class="wg-banner-title">word.golf</a>
     </div>
     
-    <!-- Input Fields for Start and End Words -->
+    <h2>Choose a start word or an end word</h2>
     <input type="text" id="start-word" placeholder="Start Word" />
+    <p>OR</p>
     <input type="text" id="end-word" placeholder="End Word" />
+    <p></p>
     <button onclick="submitWord()" id="prompt-submit">Submit Word</button>
 
     <div id="prompt-display" style="margin-top: 20px;">
@@ -197,6 +199,8 @@
             alert("Please enter either a starting word or an ending word, not both.");
             return;
         }
+        document.getElementById('start-word').value = '';
+        document.getElementById('end-word').value = '';
 
         try {
             const res = await fetch("/check-new-prompts", {
