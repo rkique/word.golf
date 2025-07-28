@@ -511,7 +511,6 @@ def profile():
     if not user or not user.email:
         return redirect('/login')
     state_model = get_state_model()
-    
     game_state = state_model.query.filter_by(user_id=user.id, current_date=today.today).first()
 
     # look for best score through all game states
@@ -570,8 +569,33 @@ def profile():
         state_model.user_id == user.id,
         state_model.total_jumps > 0
     )
+
     for game in games_this_month:
         games_and_dates_played_this_month.append({
+            'date': game.current_date.strftime('%Y-%m-%d')
+        })
+    
+    jumpsArray_of_today_games = [
+        game.jumpsA
+        for game in state_model.query.filter(
+            state_model.current_date == today.today,
+            state_model.total_jumps > 0
+        ).all()
+    ]
+
+    my_jumps_today = game_state.total_jumps
+
+    # get incomplete games this month
+    incomplete_games_this_month = []
+    incomplete_games = state_model.query.filter(
+        db.extract('year', state_model.current_date) == today.today.year,
+        db.extract('month', state_model.current_date) == today.today.month,
+        state_model.user_id == user.id,
+        state_model.total_jumps == 0,
+        state_model.selected_words != []
+    )
+    for game in incomplete_games:
+        incomplete_games_this_month.append({
             'date': game.current_date.strftime('%Y-%m-%d')
         })
 
@@ -583,7 +607,56 @@ def profile():
                            best_score=best_score, 
                            jumps_data=total_jumps_over_time, 
                            jumps_average_data=total_jumps_average_per_date, 
-                           month_stats=games_and_dates_played_this_month)
+                           month_stats=games_and_dates_played_this_month,
+                           incomplete_games=incomplete_games_this_month,
+                           today_jumps_stats=jumpsArray_of_today_games,
+                           my_jumps_today=my_jumps_today)
+
+#Gets the total jumps statistics for a particular day.
+@app.route('/total_jumps_statistics_per_day', methods=['POST'])
+def jump_statistics_per_day():
+    user = get_user_from_cookie()
+    if not user:
+        return redirect('/')
+    from datetime import datetime
+    state_model = get_state_model()
+    data = request.get_json()
+    new_date_str = data.get('date') 
+    print("here is new date string: ", new_date_str)
+    new_date = datetime.strptime(new_date_str, '%Y-%m-%d').date()
+    
+    # Get all games for the specified date
+    games_for_date = state_model.query.filter(
+        state_model.current_date == new_date,
+        state_model.total_jumps > 0
+    ).all()
+    
+    jumpsArray_of_today_games = [game.total_jumps for game in games_for_date]
+
+    result = state_model.query.filter(
+        state_model.current_date == new_date,
+        state_model.total_jumps > 0,
+        state_model.user_id == user.id
+    ).first()
+
+    my_jumps_today = result.total_jumps if result else 0
+    
+    # Get prompts for the specified date to get starting words
+    _, prompts_for_date, _ = get_prompts_for_date(new_date)
+    starts = [prompt[0] for prompt in prompts_for_date]
+    
+    # Generate wordsArray for each user
+    other_words_arrays = []
+    for game in games_for_date:
+        if game.selected_words and game.jumpsA:
+            words_array = words_array_from_data(starts, game.selected_words, game.jumpsA)
+            other_words_arrays.append(words_array)
+    
+    returned_data = {}
+    returned_data['other_jumps'] = jumpsArray_of_today_games
+    returned_data['my_jumps'] = my_jumps_today
+    returned_data['other_words_arrays'] = other_words_arrays
+    return make_response(returned_data)
 
 @app.route('/per-jump-statistics', methods=['GET'])
 def per_jump_statistics():

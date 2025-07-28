@@ -71,15 +71,96 @@ p {
     font-size: 1.2rem;
     margin-left: 1rem;
     padding: 0.5rem;
+    width: 8rem;
+    border-radius: 0.5rem;
 }
 
-#statistics, #calendar {
-  gap: 2rem;
-  flex: 1;
+#statistics, #calendar-container {
+  gap: 1rem;
   font-size: 1rem;
-  margin: 0 auto;      /* Center it */
-  padding: 2rem;
+  padding: 1rem;
+  max-height: 100vh;
+  display: inline-block;
+  vertical-align: top;
+  /* overflow-y: auto; */
+}
 
+#statistics {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+}
+
+#calendar-container {
+  width: calc(50% - 4px); /* Subtract divider width */
+  max-width: 100%;
+  max-height: 100vh;
+  gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+#calendar {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  height: 80vh !important;
+  max-height: 80vh;
+  border: 1px solid var(--4);
+}
+
+/* Force FullCalendar to use the specified height */
+#calendar .fc {
+  height: 70vh !important;
+}
+
+#calendar .fc-view-harness {
+  height: 70vh !important;
+}
+
+/* Increase day cell heights to make calendar taller */
+#calendar .fc-daygrid-day {
+  min-height: 80px !important;
+  height: 80px !important;
+}
+
+#calendar .fc-daygrid-day-frame {
+  min-height: 80px !important;
+  height: 80px !important;
+}
+
+#calendar .fc-scrollgrid-sync-table {
+  height: 100% !important;
+}
+
+.profile-stats {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    justify-content: space-around;
+    margin: 2rem 0;
+}
+
+.profile-stats .stat {
+    font-size: 2.5em;
+    margin-top: 0;
+    margin-bottom: 0.25em;
+    color: var(--hover-color);
+    text-align: center;
+}
+
+.profile-stats .stat-subtitle {
+    font-size: 1rem;
+    color: var(--text-color);
+    text-align: center;
+    margin: 0;
+}
+
+.profile-stats .stat-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0; /* Allow flex items to shrink */
 }
 
 .fc-scroller-liquid-absolute {
