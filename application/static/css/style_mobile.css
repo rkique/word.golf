@@ -53,6 +53,17 @@
     }
     #settings span{ font-size: 1.4rem; }
 
+    #prev-prompts {
+        font-size: 1rem;
+    }
+    
+    #today-button {
+        font-size: 1rem;
+    }
+
+    .footer-div{
+        position: relative !important;
+    }
 
     .footer-div p {
         display: inline-block;

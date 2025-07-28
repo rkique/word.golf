@@ -1,5 +1,5 @@
 from flask import current_app as app
-from flask import render_template, request, session, make_response, send_from_directory
+from flask import render_template, request, session, make_response, jsonify
 from .utils import get_curve, similarity
 from zoneinfo import ZoneInfo
 import json
@@ -17,6 +17,7 @@ from .models import GameState, User, FakeGameState
 from . import cookie_signer, db
 from .internals import today
 from datetime import date
+from urllib.parse import urlparse, urlunparse, parse_qs, urlencode
 
 # store logged_in in routes.py
 prompt_neighbor_dict = get_prompts(txt_to_list("application/data/neighbors.txt"))
@@ -52,7 +53,7 @@ def get_state_model():
     dev_mode = False # base mode in production
 
     host = request.host
-    if host.startswith('localhost') or host.startswith('dev.word.golf'):
+    if host.startswith('localhost') or host.startswith('dev.word.golf') or host.startswith('127.0.0.1'):
         dev_mode = True
     
     print("here is dev mode: ", dev_mode)
@@ -468,7 +469,7 @@ def index():
         data['wordsArray'] = words_array_from_data(starts, data['selected_words'],  data['jumpsArray'])
         data['is_help'] = False
         session['data'] = json.dumps(data)
-        response = make_response(render_template('index.html', data=json.loads(session.get('data'))))
+        response = make_response(render_template('index.html', data=json.loads(session.get('data')), previous=False))
     else:
         print('Creating new user')
         guest_user = create_guest_user(today.today, str(uuid.uuid4()), state_model)
@@ -478,8 +479,7 @@ def index():
         data['is_help'] = False
         data['wordsArray'] = []
         session['data'] = json.dumps(data)
-        response = make_response(render_template('index.html', data=json.loads(session.get('data'))))
-        print("Here is my guest user id: ", guest_user.id)
+        response = make_response(render_template('index.html', data=json.loads(session.get('data')), previous=False))
         token = cookie_signer.dumps({"user_id": guest_user.id})
 
         if os.getenv("DEV", "false").lower() == "true":
@@ -511,7 +511,6 @@ def profile():
     if not user or not user.email:
         return redirect('/login')
     state_model = get_state_model()
-    
     game_state = state_model.query.filter_by(user_id=user.id, current_date=today.today).first()
 
     # look for best score through all game states
@@ -570,8 +569,33 @@ def profile():
         state_model.user_id == user.id,
         state_model.total_jumps > 0
     )
+
     for game in games_this_month:
         games_and_dates_played_this_month.append({
+            'date': game.current_date.strftime('%Y-%m-%d')
+        })
+    
+    jumpsArray_of_today_games = [
+        game.jumpsA
+        for game in state_model.query.filter(
+            state_model.current_date == today.today,
+            state_model.total_jumps > 0
+        ).all()
+    ]
+
+    my_jumps_today = game_state.total_jumps
+
+    # get incomplete games this month
+    incomplete_games_this_month = []
+    incomplete_games = state_model.query.filter(
+        db.extract('year', state_model.current_date) == today.today.year,
+        db.extract('month', state_model.current_date) == today.today.month,
+        state_model.user_id == user.id,
+        state_model.total_jumps == 0,
+        state_model.selected_words != []
+    )
+    for game in incomplete_games:
+        incomplete_games_this_month.append({
             'date': game.current_date.strftime('%Y-%m-%d')
         })
 
@@ -583,7 +607,57 @@ def profile():
                            best_score=best_score, 
                            jumps_data=total_jumps_over_time, 
                            jumps_average_data=total_jumps_average_per_date, 
-                           month_stats=games_and_dates_played_this_month)
+                           month_stats=games_and_dates_played_this_month,
+                           incomplete_games=incomplete_games_this_month,
+                           today_jumps_stats=jumpsArray_of_today_games,
+                           my_jumps_today=my_jumps_today)
+
+
+@app.route('/total_jumps_statistics_per_day', methods=['POST'])
+def jump_statistics_per_day():
+    user = get_user_from_cookie()
+    if not user:
+        return redirect('/')
+    from datetime import datetime
+    state_model = get_state_model()
+    data = request.get_json()
+    new_date_str = data.get('date') 
+    print("here is new data string: ", new_date_str)
+    new_date = datetime.strptime(new_date_str, '%Y-%m-%d').date()
+    
+    # Get all games for the specified date
+    games_for_date = state_model.query.filter(
+        state_model.current_date == new_date,
+        state_model.total_jumps > 0
+    ).all()
+    
+    jumpsArray_of_today_games = [game.total_jumps for game in games_for_date]
+
+    result = state_model.query.filter(
+        state_model.current_date == new_date,
+        state_model.total_jumps > 0,
+        state_model.user_id == user.id
+    ).first()
+
+    my_jumps_today = result.total_jumps if result else 0
+    
+    # Get prompts for the specified date to get starting words
+    elapsed, prompts_for_date, neighbors_for_date = get_prompts_for_date(new_date)
+    starts = [prompt[0] for prompt in prompts_for_date]
+    
+    # Generate wordsArray for each user
+    other_words_arrays = []
+    for game in games_for_date:
+        if game.selected_words and game.jumpsA:
+            words_array = words_array_from_data(starts, game.selected_words, game.jumpsA)
+            other_words_arrays.append(words_array)
+    
+    returned_data = {}
+    returned_data['other_jumps'] = jumpsArray_of_today_games
+    returned_data['my_jumps'] = my_jumps_today
+    returned_data['other_words_arrays'] = other_words_arrays
+    return make_response(returned_data)
+
 
 @app.route('/per-jump-statistics', methods=['GET'])
 def per_jump_statistics():
@@ -620,6 +694,123 @@ def per_jump_statistics():
                                 counts[i][index][list_replacing_prompts[previous_jumps + index - 1]] = 1
     print("Counts: ", counts)
     return make_response(counts)
+
+@app.route('/set-previous-day', methods=['POST'])
+def set_previous_day():
+    from datetime import datetime
+    data = request.get_json()
+    new_date_str = data.get('date') 
+    print("here is new data string: ", new_date_str)
+    try:
+        new_date = datetime.strptime(new_date_str, '%Y-%m-%d').date()
+        today.today = new_date
+        return jsonify({"updated_date": str(today.today)})
+    except ValueError:
+        return jsonify({"error": "Invalid date format"}), 400
+
+def load_previous_time(new_date):
+    today.today = new_date
+    global elapsed, prompts_today, neighbors_today
+    elapsed, prompts_today, neighbors_today = get_prompts_for_date(today.today)
+
+@app.route('/replay-game', methods=['GET'])
+def replay_game():
+    # reset gamestate object and href to prev_index 
+    user = get_user_from_cookie()
+    if user:
+        previous_gamestate = GameState.query.filter_by(user_id=user.id, current_date=today.today).first()
+        if previous_gamestate:
+            previous_gamestate.jumpsA = BASE_JUMPS_ARRAY
+            previous_gamestate.results = []
+            previous_gamestate.selected_words = []
+            previous_gamestate.total_jumps = 0
+            previous_gamestate.prompt_idx = 0
+            previous_gamestate.current_jumps = 0
+            previous_gamestate.start_target_idxs = BASE_START_TARGET_IDXS
+        db.session.commit()
+    return redirect('/previous_index')
+
+@app.route('/previous_index', methods=['GET'])
+def prev_index():
+    print('/ Loading previous..')
+    load_data()
+    num_day = request.args.get('day', default=0, type=int)
+    print(f'Day offset received: {num_day}')
+    origin_date = datetime.date(2025, 6, 1)
+    new_date = origin_date + add_days(num_day)
+    if new_date >= date.today():
+        return redirect('/')
+    load_previous_time(new_date)
+    state_model = get_state_model()
+    data_or_none = get_existing_data(state_model)
+    if data_or_none:
+        data = data_or_none
+        # use data_today as base
+
+        if data["results"] == []:
+            i = data.get('i', 0)
+            data_today = shift_to(0)
+            data_today['jumpsArray'] = BASE_JUMPS_ARRAY
+            data_today['startTargetIdxs'] = BASE_START_TARGET_IDXS
+            data_today['logged_in'] = data["logged_in"]
+            data_today['total_jumps'] = 0
+            data = data_today
+        data['is_help'] = False
+        session['data'] = json.dumps(data)
+        response = make_response(render_template('index.html', data=json.loads(session.get('data')), previous=True))
+    else:
+        print('Creating new user')
+        guest_user = create_guest_user(today.today, str(uuid.uuid4()), state_model)
+
+        data = shift_to(0)
+        data['jumpsArray'] = BASE_JUMPS_ARRAY
+        data['startTargetIdxs'] = BASE_START_TARGET_IDXS
+        data['is_help'] = False
+        session['data'] = json.dumps(data)
+        response = make_response(render_template('index.html', data=json.loads(session.get('data')), previous=True))
+        token = cookie_signer.dumps({"user_id": guest_user.id})
+
+        if os.getenv("DEV", "false").lower() == "true":
+            print("This Dev should NEVER BE TRUE!!!!!")
+            set_response_cookie(response, token, secure=False)
+        else:
+            set_response_cookie(response, token, secure=True)
+
+    assert WV is not None, "Word vectors not loaded"
+    print('/ data is set to:', session.get('data'))
+    # return render_template('index.html', data=json.loads(session.get('data')))
+    return response
+
+@app.route('/previous-prompts', methods=['GET'])
+def previous_prompts():
+    user = get_user_from_cookie()
+    if not user:
+        redirect('/')
+    
+    complete_games_and_dates = []
+    incomplete_games_and_dates = []
+    completed_games = GameState.query.filter(
+        GameState.user_id == user.id,
+        GameState.total_jumps > 0
+    )
+
+    for game in completed_games:
+        complete_games_and_dates.append({
+            'date': game.current_date.strftime('%Y-%m-%d')
+        })
+    
+    incomplete_games = GameState.query.filter(
+        GameState.user_id == user.id,
+        GameState.total_jumps == 0,
+        GameState.selected_words != []
+    )
+
+    for game in incomplete_games:
+        incomplete_games_and_dates.append({
+            'date': game.current_date.strftime('%Y-%m-%d')
+        })
+    
+    return render_template('previous-prompts.html', completed_games = complete_games_and_dates, incomplete_games = incomplete_games_and_dates)
 
 @app.route('/user-statistics', methods=['GET'])
 def user_statistics():
@@ -803,6 +994,20 @@ def index_post():
             data['total_jumps'] = total_jumps
             starts = [prompt[0] for prompt in prompts_today]
             data['wordsArray'] = words_array_from_data(starts, selected_words, data['jumpsArray'])
+
+            # url = request.url
+            # print("here is request.url: ", url)
+            # parsed_url = urlparse(url)
+            # query_params = parse_qs(parsed_url.query)
+            # print("here are query params: ", query_params)
+            # if 'v' in query_params:
+            #     del query_params['v']
+            # new_query_string = urlencode(query_params, doseq=True)
+
+            # new_url = urlunparse(parsed_url._replace(query=new_query_string))
+
+            # data['url'] = new_url
+
             session['data'] = json.dumps(data)
             update_game_state(json.loads(session['data']), state_model)
             return make_response("session_done" + session.get('data'))

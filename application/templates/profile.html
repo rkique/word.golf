@@ -4,67 +4,145 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style_mobile.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/profile_mobile.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/previous_prompts.css') }}">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.8/index.global.min.js"></script>
     <title>User Statistics</title>
     {% include 'head.html' %}
     <script>
-    async function renderLogout(){
-        try {
-            const res = await fetch("/logout", {
-                method: "POST",
-                credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
-                headers: {
-                    'Content-Type': 'application/json'  // Ensure this matches what the server expects
-                },
-                body: JSON.stringify({
-                    date: new Date().toISOString().split('T')[0]
-                })
-            });
-            const data = await res.json();
-            if (res.ok) {
-                localStorage.removeItem('logged_in');
-                window.location.href = '/';
-            } else {
-                console.log("Logout failed:", data);
+        async function renderLogout() {
+            try {
+                const res = await fetch("/logout", {
+                    method: "POST",
+                    credentials: "include", // to store cookies sent by backend (make sure all requests to backend have this)
+                    headers: {
+                        'Content-Type': 'application/json'  // Ensure this matches what the server expects
+                    },
+                    body: JSON.stringify({
+                        date: new Date().toISOString().split('T')[0]
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    localStorage.removeItem('logged_in');
+                    window.location.href = '/';
+                } else {
+                    console.log("Logout failed:", data);
+                }
+            } catch (err) {
+                console.log("Error during logout:", err);
             }
-        } catch (err) {
-            console.log("Error during logout:", err);
+            // }
         }
-        // }
-    }
-</script>
-</head> 
+    </script>
+</head>
 
 <body>
     <div class="flex global">
-    <div id="statistics" class="flex flex-column">
-        <div class="flex profile-container">
-        <a href="/" class="back-arrow" style="text-decoration: none; margin-right: 12px; font-size: 2rem; vertical-align: middle;">&#8592;</a>
-        <h2 class="profile-title">Profile <span 
-            class="profile-email"> {{ email }}</span></h2>
-        <button onclick="renderLogout()" class="switch switch--outlined" id="profile-logout">logout</button>
-        </div>
-        <canvas id="jumps-graph" width="600" height="400"></canvas>
-        <div class="profile-stats">
-        <p>Streak: {{streak}}</p>
-        <p>Games Played: {{ total_games }}</p>
-        <p>Average Jumps / Game: {{ average_total_jumps }}</p>
-        <p>Average Jumps / Prompt: {{ average_prompt_jumps }}</p>
-        <!-- <p>Total Jumps Today: {{ total_jumps }} </p>
+        <div id="statistics" class="flex flex-column">
+            <div class="flex profile-container">
+                <a href="/" class="back-arrow"
+                    style="text-decoration: none; margin-right: 12px; font-size: 2rem; vertical-align: middle;">&#8592;</a>
+                <h2 class="profile-title">Profile <span class="profile-email"> {{ email }}</span></h2>
+                <button onclick="renderLogout()" class="switch switch--outlined" id="profile-logout">logout</button>
+            </div>
+            <div class="stats-container">
+                <canvas id="jumps-graph" width="600" height="400"></canvas>
+                <div class="profile-stats">
+                    <div class="stat-row">
+                        <p class="stat">{{streak}}</p>
+                        <p class="stat-subtitle">Streak</p>
+                    </div>
+                    <div class="stat-row">
+                        <p class="stat">{{ total_games }}</p>
+                        <p class="stat-subtitle">Games Played</p>
+                    </div>
+                    <div class="stat-row">
+                        <p class="stat">{{ average_total_jumps }}</p>
+                        <p class="stat-subtitle">Avg. Jumps</p>
+                    </div>
+                    <div class="stat-row">
+                        <p class="stat">{{ average_prompt_jumps }}</p>
+                        <p class="stat-subtitle">Avg. Jumps per Prompt</p>
+                    </div>
+                    <!-- <p>Total Jumps Today: {{ total_jumps }} </p>
         <p>Best Score: {{ best_score }}</p> -->
+                </div>
+            </div>
         </div>
-    </div>
-    <div id="calendar"></div>
+        <div id="divider" class="divider"></div>
+        <div id="calendar-container" class="flex flex-column">
+            <div id="calendar"></div>
+            <div class="legend">
+                <div class="legend-item">
+                    <img src="../static/images/green_check.png" alt="Completed" class="legend-icon-green" />
+                    <p>Completed Games</p>
+                </div>
+                <div class="legend-item">
+                    <img src="../static/images/yellow_exclamation.png" alt="Incomplete" class="legend-icon-yellow" />
+                    <p>Incomplete Games</p>
+                </div>
+                <div class="legend-item">
+                    <span class="color-box transparent"></span>
+                    <p>New Games</p>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 
 <script>
+    // Draggable divider functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        const divider = document.getElementById('divider');
+        const leftPanel = document.getElementById('statistics');
+        const rightPanel = document.getElementById('calendar-container');
+        const container = document.querySelector('.global');
+
+        let isDragging = false;
+
+        divider.addEventListener('mousedown', function (e) {
+            isDragging = true;
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+            e.preventDefault();
+        });
+
+        function handleMouseMove(e) {
+            if (!isDragging) return;
+            const containerRect = container.getBoundingClientRect();
+            const mouseX = e.clientX - containerRect.left;
+            const containerWidth = containerRect.width;
+            // Calculate percentages
+            const leftWidth = (mouseX / containerWidth) * 100;
+            const rightWidth = 100 - leftWidth - (4 / containerWidth * 100); // Subtract divider width percentage
+            // Set minimum and maximum widths (20% to 75%)
+            if (leftWidth >= 20 && leftWidth <= 75) {
+                leftPanel.style.width = `${leftWidth}%`;
+                rightPanel.style.width = `${rightWidth}%`;
+            }
+        }
+
+        function handleMouseUp() {
+            isDragging = false;
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        }
+    });
+</script>
+
+<script>
     const labels = JSON.parse('{{ jumps_data|tojson|safe }}').map(entry => entry.date);
+
+    console.log("HERE IS MY JUMPS");
+    const myJumpsToday = JSON.parse('{{ my_jumps_today|tojson|safe }}');
+    console.log(myJumpsToday);
 
     function renderGraph() {
         const ctx = document.getElementById('jumps-graph').getContext('2d');
@@ -88,42 +166,100 @@
         const grayedOutBackground = getCSSVariable('--grayed-out-background');
         const textColor = getCSSVariable('--text-color');
         const backgroundColor = getCSSVariable('--grayed-out-background');
+
+        // console.log("here is the passed in jumps data: ", labels);
         const labelsMonthDay = labels.map(date => {
-            const d = new Date(date);
-            return `${d.getMonth() + 1}/${d.getDate()}`;
+            const [year, month, day] = date.split('-').map(Number);
+            return `${month}/${day}`;
         });
-        new Chart(ctx, {
+        // console.log("here is the month day labels: ", labelsMonthDay);
+
+        // Check if there are any perfect games (10 jumps)
+        const hasPerfectGame = totalJumps.includes(10);
+        // Check if there are any superb games (11-12 jumps)
+        const hasSuperbGame = totalJumps.some(jumps => jumps >= 11 && jumps <= 12);
+
+        // Build datasets array
+        const datasets = [{
+            label: 'Jumps',
+            data: totalJumps,
+            borderColor: '#1a3009', // Darker green for line
+            pointBackgroundColor: function (context) {
+                const value = context.parsed.y;
+                if (value === 10) return '#00ff00'; // Bright green for perfect
+                if (value >= 11 && value <= 12) return '#00cc00'; // Slightly darker green for superb
+                return '#2d5016'; // Dark green for regular scores
+            },
+            backgroundColor: backgroundColor,
+            fill: false,
+            showLine: true,
+            pointRadius: 5,
+        },
+        {
+            label: 'Average',
+            data: averageJumps,
+            borderColor: '#333333', // Much darker grey for average line
+            pointBackgroundColor: '#444444', // Much darker grey for average points
+            backgroundColor: 'rgba(51, 51, 51, 0.1)', // Dark grey background
+            fill: false,
+            borderWidth: 2,
+            tension: 0.1,
+            showLine: true,
+            pointRadius: 5,
+        }];
+
+        window.myChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: labelsMonthDay,
-                datasets: [{
-                    label: 'Jumps',
-                    data: totalJumps,
-                    borderColor: grayedOutBackground,
-                    pointBackgroundColor: textColor, 
-                    backgroundColor: backgroundColor,
-                    fill: false,
-                    showLine: true,
-                    pointRadius: 5,
-                },
-                {
-                    label: 'Average Jumps',
-                    data: averageJumps,
-                    borderColor: softFailure,
-                    pointBackgroundColor: failure, 
-                    backgroundColor: 'rgba(255, 0, 0, 0)',
-                    fill: false,
-                    borderWidth: 2,
-                    tension: 0.1,
-                    showLine: true,
-                    pointRadius: 5,
-                }]
+                datasets: datasets
             },
             options: {
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'index',
+                    intersect: false,
+                },
                 plugins: {
                     legend: {
                         labels: {
-                        color: textColor // <-- legend text color
+                            color: textColor, // <-- legend text color
+                            usePointStyle: true, // This makes legend items use point styles instead of rectangles
+                            generateLabels: function (chart) {
+                                const original = Chart.defaults.plugins.legend.labels.generateLabels;
+                                const labels = original.call(this, chart);
+
+                                // Add perfect game legend item if there are perfect games
+                                if (hasPerfectGame) {
+                                    labels.push({
+                                        text: 'Perfect (10)',
+                                        fillStyle: '#00ff00',
+                                        strokeStyle: '#00ff00',
+                                        pointStyle: 'circle',
+                                        hidden: false,
+                                        datasetIndex: -1, // Not associated with a dataset
+                                        lineWidth: 2
+                                    });
+                                }
+
+                                // Add superb game legend item if there are superb games
+                                if (hasSuperbGame) {
+                                    labels.push({
+                                        text: 'Superb (11-12)',
+                                        fillStyle: '#00cc00',
+                                        strokeStyle: '#00cc00',
+                                        pointStyle: 'circle',
+                                        hidden: false,
+                                        datasetIndex: -1, // Not associated with a dataset
+                                        lineWidth: 2
+                                    });
+                                }
+
+                                return labels;
+                            }
                         }
                     },
                     title: {
@@ -131,10 +267,37 @@
                         color: textColor
                     },
                     tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        animation: false,
+                        backgroundColor: backgroundColor,
+                        titleColor: textColor,
+                        bodyColor: textColor,
+                        borderColor: textColor,
+                        borderWidth: 1,
                         callbacks: {
-                            title: () => null
-                        },
-                        animation: false
+                            title: function (context) {
+                                const index = context[0].dataIndex;
+                                const date = new Date(labels[index]);
+                                return date.toLocaleDateString('en-US', {
+                                    weekday: 'short',
+                                    month: 'short',
+                                    day: 'numeric'
+                                });
+                            },
+                            label: function (context) {
+                                const label = context.dataset.label;
+                                const value = context.parsed.y;
+
+                                if (label === 'Jumps') {
+                                    let performance = '';
+                                    if (value === 10) performance = ' (Perfect!)';
+                                    else if (value >= 11 && value <= 12) performance = ' (Superb!)';
+                                    return `${label}: ${value}${performance}`;
+                                }
+                                return `${label}: ${value.toFixed(1)}`;
+                            }
+                        }
                     },
                 },
                 scales: {
@@ -145,7 +308,7 @@
                         },
                         ticks: {
                             color: textColor, // <-- x-axis labels
-                            callback: function(value, index, values) {
+                            callback: function (value, index, values) {
                                 return labelsMonthDay[index]; // Format as month/day
                             }
                         },
@@ -165,7 +328,7 @@
                             color: textColor // <-- y-axis labels
                         },
                         title: {
-                            display: true,
+                            display: false,
                             text: 'Total Jumps',
                             color: textColor
                         }
@@ -176,17 +339,124 @@
     }
 
     renderGraph();
+
+    function renderBarGraph(total_jumps_data, my_total_jumps, date) {
+        const ctx = document.getElementById('jumps-graph').getContext('2d');
+        if (window.myChart) {
+            window.myChart.destroy();
+        }
+        let label_message = "Number of Users";
+        if (total_jumps_data.includes(my_total_jumps)) {
+            label_message = "Users with your Jump Count";
+        }
+
+        let total_jumps_user = {};
+        // Count how many users have each number of jumps
+        for (let jumps of total_jumps_data) {
+            if (jumps in total_jumps_user) {
+                total_jumps_user[jumps] += 1;
+            } else {
+                total_jumps_user[jumps] = 1;
+            }
+        }
+
+        // Prepare the data for the chart
+        const labels = Object.keys(total_jumps_user).map(Number).sort((a, b) => a - b);
+        const data = labels.map(jumps => total_jumps_user[jumps]);
+
+        // Define colors based on whether it's your total jumps or not
+        const backgroundColors = labels.map(jumps =>
+            jumps === my_total_jumps ? 'rgba(255, 99, 132, 0.6)' : 'rgba(75, 192, 192, 0.6)'
+        );
+        const borderColors = labels.map(jumps =>
+            jumps === my_total_jumps ? 'rgba(255, 99, 132, 1)' : 'rgba(75, 192, 192, 1)'
+        );
+
+        // Create the chart
+        window.myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels, 
+                datasets: [{
+                    label: label_message,
+                    data: data, 
+                    backgroundColor: backgroundColors, 
+                    borderColor: borderColors, 
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: false,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Total Jumps'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Number of Users'
+                        },
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Total Jumps Distribution ' + date,
+                        padding: {
+                            top: 20,
+                            bottom: 10
+                        },
+                        font: {
+                            size: 25,
+                            weight: 'bold'
+                        }
+                    },
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (tooltipItem) {
+                                const jumps = labels[tooltipItem.dataIndex];
+                                const userCount = tooltipItem.raw;
+                                if (jumps === my_total_jumps) {
+                                    return `Your Total Jumps: ${jumps}, Users: ${userCount}`;
+                                }
+                                return `Total Jumps: ${jumps}, Users: ${userCount}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+
 </script>
 
 <script type="module">
     document.addEventListener('DOMContentLoaded', function () {
         const calendarData = JSON.parse('{{ month_stats|tojson|safe }}');
+        const incompleteData = JSON.parse('{{ incomplete_games|tojson|safe }}');
 
         console.log("here is calendar data");
         console.log(calendarData);
+        console.log("here is incomplete data");
+        console.log(incompleteData);
 
         const eventDates = new Set(
             calendarData.map(event => {
+                return new Date(event.date).toISOString().split('T')[0];
+            })
+        );
+
+        const incompleteDates = new Set(
+            incompleteData.map(event => {
                 return new Date(event.date).toISOString().split('T')[0];
             })
         );
@@ -196,27 +466,141 @@
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             initialDate: '2025-07-01',
+            selectable: true,
+            selectHelper: true,
+            showNonCurrentDates: false,
             validRange: {
-                start: '2025-07-01',
+                start: '2025-06-01',
                 end: '2025-08-01'
             },
             headerToolbar: {
-                left: '',
+                left: 'prev,next today',
                 center: 'title',
                 right: ''
             },
-            dayCellDidMount: function(info) {
+            dateClick: function (info) {
+                const clickedDate = info.dateStr;
+
+                fetch('/total_jumps_statistics_per_day', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ date: clickedDate })
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Network response was not ok");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log("Jump stats for", clickedDate, "→", data);
+                        console.log("My jump stats: ", data.my_jumps);
+                        console.log("Everyone else's jump stats: ", data.other_jumps);
+                        console.log("Everyone else's words arrays: ", data.other_words_arrays);
+                        renderBarGraph(data.other_jumps, data.my_jumps, clickedDate);
+                        // You can now use data.my_jumps and data.other_jumps here
+                    })
+                    .catch(error => {
+                        console.error("Error fetching jump statistics:", error);
+                    });
+                // first day is 2025-06-01 (but profile starts from 2025-07-01)
+                // const dateClicked = new Date(clickedDate);
+                // const firstDate = new Date("2025-06-01");
+                // const diffInMs = dateClicked - firstDate;
+                // const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+                // console.log("Difference in days:", diffInDays);
+
+                // window.location.href = '/previous_index?day=' + diffInDays;
+            },
+            dayCellDidMount: function (info) {
                 const date = info.date;
-                const dateString = date.toISOString().split('T')[0]; 
+                const dateString = date.toISOString().split('T')[0];
                 console.log(dateString);
                 info.el.style.border = `1px solid ${borderColor}`;
-                if (eventDates.has(dateString)) {
-                    info.el.style.backgroundColor = softCheck;
-                } 
+
+                if (!info.el.classList.contains('fc-day-disabled')) {
+                    if (eventDates.has(dateString)) {
+                        // Add green checkmark for completed games
+                        const img = document.createElement('img');
+                        img.src = '../static/images/green_check.png';
+                        img.alt = 'Completed';
+                        img.style.width = '30px';
+                        img.style.height = '30px';
+                        img.style.display = 'block';
+                        img.style.margin = '0 auto';
+                        img.style.marginTop = '4px';
+                        img.style.backgroundColor = 'transparent';
+
+                        const eventContainer = info.el.querySelector('.fc-daygrid-day-events');
+                        if (eventContainer) {
+                            eventContainer.appendChild(img);
+                        }
+                    } else if (incompleteDates.has(dateString)) {
+                        // Add yellow exclamation for incomplete games
+                        const img = document.createElement('img');
+                        img.src = '../static/images/yellow_exclamation.png';
+                        img.alt = 'Incomplete';
+                        img.style.width = '25px';
+                        img.style.height = '25px';
+                        img.style.display = 'block';
+                        img.style.margin = '0 auto';
+                        img.style.marginTop = '4px';
+                        img.style.backgroundColor = 'transparent';
+
+                        const eventContainer = info.el.querySelector('.fc-daygrid-day-events');
+                        if (eventContainer) {
+                            eventContainer.appendChild(img);
+                        }
+                    }
+                }
+            },
+            datesSet: function () {
+                // Remove existing images
+                document.querySelectorAll('.fc-daygrid-day img').forEach(img => img.remove());
+
+                document.querySelectorAll('.fc-daygrid-day:not(.fc-day-disabled)').forEach(cell => {
+                    const dateString = cell.getAttribute('data-date');
+                    if (!dateString) return;
+
+                    const eventContainer = cell.querySelector('.fc-daygrid-day-events');
+                    if (!eventContainer) return;
+
+                    if (eventDates.has(dateString)) {
+                        const img = document.createElement('img');
+                        img.src = '../static/images/green_check.png';
+                        img.alt = 'Completed';
+                        img.style.width = '30px';
+                        img.style.height = '30px';
+                        img.style.display = 'block';
+                        img.style.margin = '0 auto';
+                        img.style.marginTop = '4px';
+                        img.style.backgroundColor = 'transparent';
+                        eventContainer.appendChild(img);
+                    } else if (incompleteDates.has(dateString)) {
+                        const img = document.createElement('img');
+                        img.src = '../static/images/yellow_exclamation.png';
+                        img.alt = 'Incomplete';
+                        img.style.width = '25px';
+                        img.style.height = '25px';
+                        img.style.display = 'block';
+                        img.style.margin = '0 auto';
+                        img.style.marginTop = '4px';
+                        img.style.backgroundColor = 'transparent';
+                        eventContainer.appendChild(img);
+                    }
+                });
             }
         });
 
         calendar.render();
+
+        // Hide the today button like in previous-prompts
+        const todayButton = document.querySelector('.fc-today-button.fc-button.fc-button-primary');
+        if (todayButton) {
+            todayButton.style.display = 'none';
+        }
     });
 </script>
 

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style_mobile.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/previous_prompts.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile_mobile.css') }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.8/index.global.min.js"></script>
+    {% include 'head.html' %}
+</head> 
+
+<body>
+    <div class="wg-banner">
+        <a href="/" class="wg-banner-title">word.golf</a>
+    </div>
+    <h1 style="text-align: center;">Play Past Dates </h1>
+    <h2 style="text-align: center;">Select a Day to Play the Prompts for that Day </h2>
+    <div class="legend">
+        <div class="legend-item">
+            <img src="../static/images/green_check.png" alt="Completed" class="legend-icon-green" />
+            <p>Completed Games</p>
+        </div>
+        <div class="legend-item">
+            <img src="../static/images/yellow_exclamation.png" alt="Incomplete" class="legend-icon-yellow" />
+            <p>Incomplete Games</p>
+        </div>
+        <div class="legend-item">
+            <span class="color-box transparent"></span>
+            <p>New Games</p>
+        </div>
+    </div>
+    <div class="flex global">
+        <div id="calendar" style="width: 100%; max-width: 900px; height: 800px; margin: 0 auto;"></div>
+    </div>
+</body>
+
+<script>
+    const calendarEl = document.getElementById('calendar');
+
+    const completed_games = JSON.parse('{{ completed_games|tojson|safe }}');
+
+    const incomplete_games = JSON.parse('{{ incomplete_games|tojson|safe }}');
+
+    const CompleteDates = new Set(
+        completed_games.map(event => {
+            return new Date(event.date).toISOString().split('T')[0];
+        })
+    );
+
+    const IncompleteDates = new Set(
+        incomplete_games.map(event => {
+            return new Date(event.date).toISOString().split('T')[0];
+        })
+    );
+    const borderColor = getCSSVariable('--grayed-out-background');
+
+    const today = new Date().toISOString().split('T')[0];
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        // plugins: [interactionPlugin],
+        initialView: 'dayGridMonth',
+        initialDate: '2025-07-01',
+        selectable: true,
+        selectHelper: true,
+        showNonCurrentDates: false,
+        validRange: {
+            start: '2025-06-01',
+            end: today
+        },
+        dayCellDidMount: function(info) {
+            const date = info.date;
+            const dateString = date.toISOString().split('T')[0]; 
+            console.log(dateString);
+            info.el.style.border = `1px solid ${borderColor}`;
+            if (!info.el.classList.contains('fc-day-disabled')) {
+                if (CompleteDates.has(dateString)) {
+                    // info.el.style.backgroundColor = 'red';
+                    const img = document.createElement('img');
+                    img.src = '../static/images/green_check.png';
+                    img.alt = 'Completed';
+                    img.style.width = '30px';
+                    img.style.height = '30px';
+                    img.style.display = 'block';
+                    img.style.margin = '0 auto'; 
+                    img.style.marginTop = '4px'; 
+                    img.style.backgroundColor = 'transparent';
+                    // info.el.prepend(img);
+                    const eventContainer = info.el.querySelector('.fc-daygrid-day-events');
+
+                    if (eventContainer) {
+                        eventContainer.appendChild(img);
+                    }
+                } 
+                if (IncompleteDates.has(dateString)) {
+                    // info.el.style.backgroundColor = 'blue'
+                    const img = document.createElement('img');
+                    img.src = '../static/images/yellow_exclamation.png';
+                    img.alt = 'Incomplete';
+                    img.style.width = '25px';
+                    img.style.height = '25px';
+                    img.style.display = 'block';
+                    img.style.margin = '0 auto';
+                    img.style.marginTop = '4px';
+                    img.style.backgroundColor = 'transparent';
+                    // info.el.prepend(img);
+                    const eventContainer = info.el.querySelector('.fc-daygrid-day-events');
+
+                    if (eventContainer) {
+                        eventContainer.appendChild(img);
+                    }
+                }
+            }
+        },
+        dateClick: function(info) {
+            const clickedDate = info.dateStr;
+            // first day is 2025-06-01
+            const dateClicked = new Date(clickedDate)
+            const firstDate = new Date("2025-06-01");
+            const diffInMs = dateClicked - firstDate;
+            // Convert milliseconds to days
+            const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+            console.log("Difference in days:", diffInDays);
+            window.location.href = '/previous_index?day=' + diffInDays;
+        },
+        datesSet: function() {
+            
+            document.querySelectorAll('.fc-daygrid-day img').forEach(img => img.remove());
+
+            document.querySelectorAll('.fc-daygrid-day:not(.fc-day-disabled)').forEach(cell => {
+                const dateString = cell.getAttribute('data-date'); 
+                if (!dateString) return;
+
+                const eventContainer = cell.querySelector('.fc-daygrid-day-events');
+                if (!eventContainer) return;
+
+                if (CompleteDates.has(dateString)) {
+                    const img = document.createElement('img');
+                    img.src = '../static/images/green_check.png';
+                    img.alt = 'Completed';
+                    img.style.width = '30px';
+                    img.style.height = '30px';
+                    img.style.display = 'block';
+                    img.style.margin = '0 auto';
+                    img.style.marginTop = '4px';
+                    img.style.backgroundColor = 'transparent';
+                    eventContainer.appendChild(img);
+                }
+
+                if (IncompleteDates.has(dateString)) {
+                    const img = document.createElement('img');
+                    img.src = '../static/images/yellow_exclamation.png';
+                    img.alt = 'Incomplete';
+                    img.style.width = '25px';
+                    img.style.height = '25px';
+                    img.style.display = 'block';
+                    img.style.margin = '0 auto';
+                    img.style.marginTop = '4px';
+                    img.style.backgroundColor = 'transparent';
+                    eventContainer.appendChild(img);
+                }
+            });
+        }
+
+    });
+
+    calendar.render();
+
+    const todayButton = document.querySelector('.fc-today-button.fc-button.fc-button-primary');
+    if (todayButton) {
+        todayButton.style.display = 'none';
+    }
+
+    // check if (info.el.classList.contains('fc-day-disabled') and for all
+    // of the places where it is true, remove the images 
+    // document.querySelectorAll('.fc-day-disabled').forEach(cell => {
+    //     console.log(cell);
+    //     const images = cell.querySelectorAll('img');
+    //     images.forEach(img => img.remove());
+    // });
+
+</script>

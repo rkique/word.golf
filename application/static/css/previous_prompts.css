@@ -1,0 +1,52 @@
+.legend {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+
+.color-box {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #999;
+  border-radius: 3px;
+}
+
+.color-box.red {
+  background-color: red;
+}
+
+.color-box.blue {
+  background-color: blue;
+}
+
+.color-box.transparent {
+  background-color: transparent;
+}
+
+#calendar {
+  gap: 2rem;
+  flex: 1;
+  font-size: 1rem;
+  margin: 0 auto; 
+  padding: 2rem;
+}
+
+.legend-icon-green {
+  width: 30px;
+  height: 30px;
+}
+
+.legend-icon-yellow {
+  width: 25px;
+  height: 25px;
+}
