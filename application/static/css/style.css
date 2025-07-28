@@ -343,6 +343,13 @@ html {
     color: var(--text-color);
 }
 
+#share-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+}
+
 #shareLink {
     text-decoration: none;
     font-size: 1.3rem;
@@ -366,10 +373,10 @@ html {
     justify-content: flex-end;
     /* gap: 1.5rem; */
     color: var(--text-color);
-    padding: 2em 1em;
+    padding: 2em 1em 0em 1em;
     border-radius: 16px;
     text-align: center;
-    margin: 1em 1em 1em 2em;
+    margin: 1em 1em 0em 2em;
     z-index: 2;
 }
 
@@ -382,12 +389,15 @@ html {
 .finish-container > :last-child {
 }
 
+.below-summary {
+    width: 100%;
+}
 
 .finish-container .stat-column-user {
     display: flex;
     flex-direction: row;
     gap: 2rem;
-    margin-top: 2rem;
+    /* margin-top: 2rem; */
     flex: 1;         
     height: 100%;   
     flex-wrap: wrap;
@@ -395,15 +405,12 @@ html {
 }
 
 #modal-finish-guest {
-    padding: 2rem;
+    padding: 1.2rem;
 }
 
 #modal-finish-guest .finish-container {
     /* max-height: 90vh; */
-    display: flex;
-    flex-direction: column;
     font-size: 1rem;
-    align-items: center;
     justify-content: flex-start;
     color: var(--text-color);
     padding: 2em 1em;
@@ -415,6 +422,43 @@ html {
     box-sizing: border-box;
 }
 
+#user-modal-swiper {
+    width: 100%;
+    height: auto;
+}
+
+.swiper-slide {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 0.5rem;
+}
+
+.swiper-pagination {
+    position: relative !important;
+}
+
+.swiper-pagination-bullet {
+    background: var(--grayed-out-color, #666) !important;
+    opacity: 0.5 !important;
+}
+
+.swiper-pagination-bullet-active {
+    background: var(--text-color, #fff) !important;
+    opacity: 1 !important;
+}
+
+.stat-row > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#modal-finish-user .finish-container {
+    width: 60vw;
+    max-width: 60vw;
+}
 #modal-finish-guest .stat-row{
     display: flex;
     flex-direction: row;
@@ -1317,3 +1361,19 @@ background-size: 800% 100%;
   color: var(--text-color);
   word-break: break-all;
 }
+
+/* Word path container styling */
+#word-path-container-guest,
+#word-path-container-user {
+  margin: 1rem 0;
+}
+
+#word-path-container-guest {
+    width: 95%;
+}
+
+#word-path-container-user {
+    width: 80%;
+    margin: 0 auto;
+}
+

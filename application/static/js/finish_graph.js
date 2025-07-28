@@ -3,24 +3,33 @@ function createWordPathDiagram(otherWordsArrays, userWordsArray = null, columnIn
     if (!otherWordsArrays || otherWordsArrays.length === 0) {
         return;
     }
-
-    // Determine which modal is being used (guest or user)
+    // Determine which modal is being used (guest or user) by checking visibility
     const guestContainer = document.getElementById('word-path-container-guest');
     const userContainer = document.getElementById('word-path-container-user');
 
-    let container, svgId;
-    if (guestContainer) {
+    let container, svgId, downloadContainer;
+    
+    // Check which container is actually visible
+    const guestModal = document.getElementById('modal-finish-guest');
+    const userModal = document.getElementById('modal-finish-user');
+    
+    const isGuestVisible = guestModal && window.getComputedStyle(guestModal).display !== 'none';
+    const isUserVisible = userModal && window.getComputedStyle(userModal).display !== 'none';
+    
+    if (isGuestVisible && guestContainer) {
         container = guestContainer;
         svgId = 'path-svg-guest';
-    } else if (userContainer) {
+        downloadContainer = document.querySelector('#modal-finish-guest .svg-download-container');
+    } else if (isUserVisible && userContainer) {
         container = userContainer;
         svgId = 'path-svg-user';
+        downloadContainer = document.querySelector('#modal-finish-user .svg-download-container');
     } else {
         return;
     }
 
     container.style.display = 'block';
-    container.style.visibility = 'visible';
+    container.style.visibility = 'hidden'; // Hide initially, show in finalizeLayout
 
     const selectedPromptPaths = otherWordsArrays.map(userWords => userWords[columnIndex] || []).filter(path => path.length > 0);
     let currentUserPath = null;
@@ -28,8 +37,23 @@ function createWordPathDiagram(otherWordsArrays, userWordsArray = null, columnIn
         currentUserPath = userWordsArray[columnIndex];
     }
 
+    // Show/hide the appropriate svg-download-container based on word-path-container display
     if (selectedPromptPaths.length === 0) {
+        // Hide download container when no graph is shown
+        if (downloadContainer) {
+            downloadContainer.style.display = 'none';
+        }
         return;
+    }
+
+    // Show download container when graph is displayed
+    if (downloadContainer) {
+        const containerDisplay = window.getComputedStyle(container).display;
+        if (containerDisplay === 'block') {
+            downloadContainer.style.display = 'block';
+        } else {
+            downloadContainer.style.display = 'none';
+        }
     }
 
     const nodes = new Map();
@@ -126,11 +150,7 @@ async function drawNetworkDiagram(nodes, edges, paths, svgId, currentUserPath) {
     // Get start and final words
     const startWord = paths[0][0];
     const finalWord = paths[0][paths[0].length - 1];
-    const importantNodes = nodes.filter(node =>
-        node.id === startWord ||
-        node.id === finalWord ||
-        (currentUserPath && currentUserPath.includes(node.id))
-    );
+    const importantNodes = nodes.filter(node => (currentUserPath.includes(node.id)));
     let countLimits = [6, 5, 3]
 
     if (importantNodes.length > 7){
@@ -312,11 +332,11 @@ async function drawNetworkDiagram(nodes, edges, paths, svgId, currentUserPath) {
     node.append('rect')
         .attr('x', d => {
             const bbox = calculateTextBoundingBox(d);
-            return -bbox.halfWidth;
+            return -bbox.halfWidth + 10
         })
         .attr('y', d => {
             const bbox = calculateTextBoundingBox(d);
-            return -bbox.halfHeight;
+            return -bbox.halfHeight
         })
         .attr('width', d => {
             const bbox = calculateTextBoundingBox(d);
@@ -324,14 +344,14 @@ async function drawNetworkDiagram(nodes, edges, paths, svgId, currentUserPath) {
         })
         .attr('height', d => {
             const bbox = calculateTextBoundingBox(d);
-            return bbox.height - 15;
+            return bbox.height * 0.8;
         })
         .attr('fill', backgroundColor)
         // .attr('stroke', borderColor)
         // .attr('stroke-width', 1)
         // .attr('rx', 4)
         // .attr('ry', 4)
-        .attr('opacity', 0.0);
+        .attr('opacity', 0.7);
 
     // Add text
     node.append('text')
@@ -368,19 +388,17 @@ async function drawNetworkDiagram(nodes, edges, paths, svgId, currentUserPath) {
 
 
         node.attr('transform', d => `translate(${d.x},${d.y})`);
-
         // Stop simulation when alpha gets low (nodes have settled)
         if (simulation.alpha() < 0.005) {
             simulation.stop();
             
             // After simulation stops, check for collisions and resolve them
             checkAndResolveCollisions();
+            finalizeLayout();
         }
     });
 
     function checkAndResolveCollisions() {
-        console.log('Starting collision detection and resolution...');
-        
         let maxIterations = 100;
         let iteration = 0;
         let hasCollisions = true;
@@ -396,13 +414,9 @@ async function drawNetworkDiagram(nodes, edges, paths, svgId, currentUserPath) {
                 for (let j = i + 1; j < d3Nodes.length; j++) {
                     const node1 = d3Nodes[i];
                     const node2 = d3Nodes[j];
-                    
-                    // Quick distance check as broad phase filter
                     const dx = node2.x - node1.x;
                     const dy = node2.y - node1.y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
-                    
-                    // Use maximum possible bounding box diagonal as early rejection test
                     const bbox1 = calculateTextBoundingBox(node1);
                     const bbox2 = calculateTextBoundingBox(node2);
                     const maxDistance = Math.sqrt(
@@ -425,7 +439,6 @@ async function drawNetworkDiagram(nodes, edges, paths, svgId, currentUserPath) {
                     hasCollisions = true;
                     resolvedCount++;
                     
-                    // Standard collision resolution using impulse-based separation
                     const bbox1 = calculateTextBoundingBox(node1);
                     const bbox2 = calculateTextBoundingBox(node2);
                     
@@ -444,10 +457,8 @@ async function drawNetworkDiagram(nodes, edges, paths, svgId, currentUserPath) {
                         // Normalize collision vector
                         const normalX = dx / distance;
                         const normalY = dy / distance;
-                        
                         // Calculate required separation
                         const separationDistance = minSeparation - distance;
-                        
                         // Apply separation force (move both nodes to distribute load)
                         const separationX = normalX * separationDistance * 0.5;
                         const separationY = normalY * separationDistance * 0.5;
@@ -484,20 +495,12 @@ async function drawNetworkDiagram(nodes, edges, paths, svgId, currentUserPath) {
             iteration++;
             if (resolvedCount > 0) {
                 const totalPairs = d3Nodes.length * (d3Nodes.length - 1) / 2;
-                console.log(`Iteration ${iteration}: Checked ${potentialCollisions.length}/${totalPairs} pairs, resolved ${resolvedCount} collisions`);
+                // console.log(`Iteration ${iteration}: Checked ${potentialCollisions.length}/${totalPairs} pairs, resolved ${resolvedCount} collisions`);
             }
         }
-        
-        console.log(`Collision resolution completed in ${iteration} iterations. ${hasCollisions ? 'Some collisions may remain' : 'All collisions resolved'}`);
-        
-        // Update visual positions after collision resolution
-        finalizeLayout();
     }
 
-    function finalizeLayout() {
-        // Hide SVG during optimization
-        svg.style.visibility = 'hidden';
-        
+    function finalizeLayout() {        
         // Update visual positions with best layout
         node.attr('transform', d => `translate(${d.x},${d.y})`);
         link
@@ -513,18 +516,21 @@ async function drawNetworkDiagram(nodes, edges, paths, svgId, currentUserPath) {
 
         // Set final viewBox with best layout
         const xMargin = 100;
-        const yMargin = 100;
+        const bottomMargin = 100;
+        const topMargin = 40;
         const xExtent = d3.extent(d3Nodes, d => d.x);
         const yExtent = d3.extent(d3Nodes, d => d.y);
         const viewBoxX = xExtent[0] - xMargin;
-        const viewBoxY = yExtent[0] - yMargin;
+        const viewBoxY = yExtent[0] - topMargin;
         const viewBoxWidth = xExtent[1] - xExtent[0] + 2 * xMargin;
-        const viewBoxHeight = yExtent[1] - yExtent[0] + 2 * yMargin;
+        const viewBoxHeight = yExtent[1] - yExtent[0] + bottomMargin + topMargin;
         svg.setAttribute('viewBox', `${viewBoxX} ${viewBoxY} ${viewBoxWidth} ${viewBoxHeight}`);
-        console.log(`Setting viewBox to: ${viewBoxX}, ${viewBoxY}, ${viewBoxWidth}, ${viewBoxHeight}`);
-        // Show SVG after optimization is complete
-        svg.style.visibility = 'visible';
-        console.log(`Final optimized layout: ${viewBoxWidth} x ${viewBoxHeight}`);
+        // Show container after optimization is complete
+        const container = document.getElementById(svgId.replace('path-svg-', 'word-path-container-'));
+        if (container) {
+            container.style.visibility = 'visible';
+        }
+        // console.log(`Final optimized layout: ${viewBoxWidth} x ${viewBoxHeight}`);
         localStorage.setItem('viewBoxWidth', viewBoxWidth);
         localStorage.setItem('viewBoxHeight', viewBoxHeight);
         
@@ -537,7 +543,7 @@ function addLegendToMainSvg(svg, viewBoxX, viewBoxY, viewBoxWidth, viewBoxHeight
 
     const d3Svg = d3.select(svg);
     
-    const legendX = viewBoxX - 55;
+    const legendX = viewBoxX + 20;
     const legendY = viewBoxY + viewBoxHeight - 60;
     const legend = d3Svg.append('g')
         .attr('class', 'legend')
@@ -582,7 +588,7 @@ function addLegendToMainSvg(svg, viewBoxX, viewBoxY, viewBoxWidth, viewBoxHeight
         .text('other users');
     
     // Add URL watermark to bottom right corner in viewBox coordinates
-    const watermarkX = viewBoxX + viewBoxWidth - 12;
+    const watermarkX = viewBoxX + viewBoxWidth - 85;
     const watermarkY = viewBoxY + viewBoxHeight - 12;
     
     const watermark = d3Svg.append('g')

@@ -57,6 +57,7 @@ def get_state_model():
     
     print("here is dev mode: ", dev_mode)
     return FakeGameState if dev_mode else GameState
+    # return GameState
 
 #max-age=0: forces the browser to revalidate on first load
 @app.after_request
