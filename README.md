@@ -1,6 +1,6 @@
-# word golf: a sport played with the meanings of words
+# word.golf: a sport played with the meanings of words
 
-This is a revised implementation of word golf (word.golf). Word golf is built on a modified set of [word2vec](http://jalammar.github.io/illustrated-word2vec/) embeddings, efficiently stored as a gensim KeyedVector. 
+Word golf is built on a modified set of [word2vec](http://jalammar.github.io/illustrated-word2vec/) embeddings, efficiently stored as a gensim KeyedVector. 
 
 At the basic level, the frontend uses Jinja templating and the Tachyons CSS framework. HTML DOM manipulation is handled by Javascript functions provided in the static folder. The backend follows the Flask Application Factory, and uses Flask `Session` to persist across client reloads. 
 
