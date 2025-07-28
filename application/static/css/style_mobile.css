@@ -200,7 +200,9 @@
     .profile-icon {
         transform: none !important;
     }
-
+    .catalog-icon {
+        transform: scale(0.7);
+    }
     #modal {
         max-width: 90vw;
         min-height: 50vh;

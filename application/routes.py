@@ -746,7 +746,6 @@ def prev_index():
     if data_or_none:
         data = data_or_none
         # use data_today as base
-
         if data["results"] == []:
             i = data.get('i', 0)
             data_today = shift_to(0)
@@ -781,7 +780,7 @@ def prev_index():
     # return render_template('index.html', data=json.loads(session.get('data')))
     return response
 
-@app.route('/previous-prompts', methods=['GET'])
+@app.route('/catalog', methods=['GET'])
 def previous_prompts():
     user = get_user_from_cookie()
     if not user:
@@ -810,7 +809,7 @@ def previous_prompts():
             'date': game.current_date.strftime('%Y-%m-%d')
         })
     
-    return render_template('previous-prompts.html', completed_games = complete_games_and_dates, incomplete_games = incomplete_games_and_dates)
+    return render_template('catalog.html', completed_games = complete_games_and_dates, incomplete_games = incomplete_games_and_dates)
 
 @app.route('/user-statistics', methods=['GET'])
 def user_statistics():

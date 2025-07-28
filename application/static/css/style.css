@@ -298,7 +298,22 @@ html {
        font-size: 2em;
 }
 
+.finish-container .day-cell {
+    width: 70px;
+    height: 70px;
+    background-color: var(--2);
+    color: var(--text-color);
+    position: absolute;
+    top: 1rem; 
+    left: 1rem;
+}
 
+.finish-container .day-cell p {
+    font-size: 2.1rem;
+    text-align: center;
+    margin: 0;
+    font-weight: 400;
+}
 #finish-container .daily-idx-tag{
     font-family: "Inter", sans-serif;
     position: absolute;
