@@ -23,6 +23,9 @@
     margin-top: 0vh;
     }
 
+    .catalog-icon {
+        transform: scale(0.7);
+    }
     #prompts-bar-container {
         margin: 0 0;
     }

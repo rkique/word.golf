@@ -47,6 +47,8 @@ def similarity(word1 : str, word2 : str, wv: dict) -> float:
     """
     Calculate the cosine similarity between two words based on their vectors.
     """
+    if word1 == '<SKIPPED>' or word2 == '<SKIPPED>':
+        return 0.0
     vec1 = wv[word1]
     vec2 = wv[word2]
     if vec1 is None or vec2 is None:

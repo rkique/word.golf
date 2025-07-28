@@ -87,8 +87,8 @@ def serve_data():
         "postWordsSequentially();"
     ]
     # Write to a .js file
-    print("******** Solution Script ********")
-    print("\n".join(js_lines))
+    # print("******** Solution Script ********")
+    # print("\n".join(js_lines))
     return make_response(json.dumps(combined))
 
 def load_data():
@@ -104,12 +104,12 @@ def load_data():
 elapsed = None
 prompts_today = None
 neighbors_today = None
+start_date = datetime.datetime.strptime("05-30-2025", '%m-%d-%Y').date()
 
 def add_days(days: int) -> datetime.timedelta:
     return datetime.timedelta(days=days)
 
 def elapsed_days(date : datetime.datetime) -> int:
-    start_date = datetime.datetime.strptime("05-30-2025", '%m-%d-%Y').date()
     return (date - start_date).days
 
 def get_prompts_for_date(date : datetime.datetime) -> list:
@@ -737,17 +737,17 @@ def replay_game():
             previous_gamestate.current_jumps = 0
             previous_gamestate.start_target_idxs = BASE_START_TARGET_IDXS
         db.session.commit()
-    return redirect('/catalog')
+    return redirect('/past')
 
-@app.route('/catalog', methods=['GET'])
+@app.route('/past', methods=['GET'])
 def catalog():
     print('/ Starting Fresh..')
     load_data()
     num_day = request.args.get('day', default=0, type=int)
     print(f'Day offset received: {num_day}')
-    origin_date = datetime.date(2025, 6, 1)
-    new_date = origin_date + add_days(num_day)
+    new_date = start_date + add_days(num_day)
     if new_date >= date.today():
+        print('[past] in future')
         return redirect('/')
     load_previous_time(new_date)
     state_model = get_state_model()
@@ -793,7 +793,7 @@ def catalog():
     # return render_template('index.html', data=json.loads(session.get('data')))
     return response
 
-@app.route('/previous-prompts', methods=['GET'])
+@app.route('/catalog', methods=['GET'])
 def previous_prompts():
     user = get_user_from_cookie()
     if not user:
@@ -823,7 +823,7 @@ def previous_prompts():
             'date': game.current_date.strftime('%Y-%m-%d')
         })
     
-    return render_template('previous-prompts.html', completed_games = complete_games_and_dates, incomplete_games = incomplete_games_and_dates)
+    return render_template('catalog.html', completed_games = complete_games_and_dates, incomplete_games = incomplete_games_and_dates)
 
 @app.route('/', methods=['POST'])
 def index_post():

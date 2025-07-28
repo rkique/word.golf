@@ -317,9 +317,6 @@ html {
 
 #finish-container .daily-idx {
     font-family: "Inter", sans-serif;
-    display: inline;
-    margin-top: 0;
-    margin-bottom: 0;
     font-size: 2.8rem;
 }
 
@@ -371,6 +368,26 @@ html {
     text-align: center;
     margin: 1em 1em 1em 2em;
     z-index: 2;
+}
+
+.finish-container .day-cell {
+    width: 70px;
+    height: 70px;
+    background-color: var(--2);
+    color: var(--text-color);
+    position: absolute;
+    top: 1rem; 
+    left: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.finish-container .day-cell p {
+    font-size: 2.1rem;
+    text-align: center;
+    margin: 0;
+    font-weight: 400;
 }
 
 
@@ -691,6 +708,7 @@ button span {
     flex-direction: row;
     gap: 1em;
     border-radius: 0 0 0.5rem 0.5rem;
+    font-family: 'Inter', sans-serif;
 }
 
 #information {

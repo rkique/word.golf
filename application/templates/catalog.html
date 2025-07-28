@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+    
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style_mobile.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/previous_prompts.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile_mobile.css') }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include 'head.html' %}
+    <script>
+
+    </script>
+</head> 
+
+<body>
+    {% include 'header.html' %}
+    <script>
+        //check logged in and update header
+        logged_in = localStorage.getItem('logged_in');
+        if (logged_in) {
+        const profileSwitchContainer = document.querySelector('.switchContainer[onclick="renderProfile()"] p');
+        if (profileSwitchContainer) {
+            profileSwitchContainer.textContent = 'profile';
+        }
+    }
+    </script>
+    <a href="/" class="back-arrow">&#8592;</a>
+    <h1 class='play-past-prompts'>Play past days</h1>
+    <div class="calendar-grid-container">
+        <div class="weekday-headers">
+            <div class="weekday">Sun</div>
+            <div class="weekday">Mon</div>
+            <div class="weekday">Tues</div>
+            <div class="weekday">Wed</div>
+            <div class="weekday">Thurs</div>
+            <div class="weekday">Fri</div>
+            <div class="weekday">Sat</div>
+        </div>
+    </div>
+    <div class="scroll">
+    <div class="calendar-grid-container">
+        <div class="calendar-grid" id="calendar-grid">
+        </div>
+    </div>
+    </div>
+</body>
+
+<style>
+    .play-past-prompts {
+        margin: 0 auto 2rem;
+        max-width: 600px;
+        text-align: left; 
+        margin-top: 2rem;
+        font-family: 'Inter', sans-serif;
+    }
+    .back-arrow {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        font-size: 1.5rem;
+        color: var(--text-color);
+        text-decoration: none;
+        z-index: 100;
+    }
+    
+    .back-arrow:hover {
+        color: var(--hover-color);
+    }
+    
+    .calendar-grid-container {
+        max-width: 600px;
+        margin: 0.5rem auto;
+        /* padding: 0 1rem; */
+    }
+    
+    .weekday-headers {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 2px;
+        margin-bottom: 0.5rem;
+    }
+    
+    .weekday {
+        text-align: center;
+        font-weight: bold;
+        font-family: 'Inter', sans-serif;
+        color: var(--grayed-out-color);
+        padding: 0.25rem;
+        font-size: 0.9rem;
+    }
+    
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0px;
+    }
+    
+    .day-cell {
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        text-decoration: none;
+        font-size: 1.2rem;
+        font-weight: 400;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    
+    .day-cell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .day-cell:hover {
+        color: var(--hover-color);
+    }
+    
+    .day-cell:hover p,
+    .day-cell:hover span {
+        color: var(--hover-color);
+    }
+
+    /* .day-cell.today p,
+    .day-cell.today span {
+        color: var(--emphasis-color) !important;
+        color: var(--hover-color);
+    } */
+    /* .day-cell.today {
+        background-color: var(--2) !important;
+    } */
+
+    .day-cell p {
+        font-size: 2.1rem;
+        text-align: center;
+        margin: 0;
+    }
+    
+    .day-cell span {
+        font-size: 0.8rem;
+        color: var(--grayed-out-color);
+    }
+
+    .day-cell.empty {
+        pointer-events: none;
+        background-color: transparent;
+    }
+    
+    .day-cell.june {
+        background-color: var(--2);
+    }
+    
+    .day-cell.july {
+        background-color: var(--2);
+    }
+    
+    .day-cell.completed {
+        color: var(--grayed-out-color);
+    }
+    
+    .day-cell.completed p {
+        color: var(--grayed-out-color);
+    }
+    
+    .day-cell.completed span {
+        color: var(--grayed-out-color);
+    }
+    .scroll {
+        width: 100vw;
+        overflow-y: auto;
+    }
+    
+    .scroll::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .scroll::-webkit-scrollbar-track {
+        background: var(--background-color);
+    }
+    
+    .scroll::-webkit-scrollbar-thumb {
+        background: var(--grayed-out-color);
+        border-radius: 4px;
+    }
+    
+    .scroll::-webkit-scrollbar-thumb:hover {
+        background: var(--hover-color);
+    }
+    .calendar-grid-container {
+        max-height: 70vh;
+    }
+</style>
+
+<script src="{{ url_for('static', filename='util/colors.js') }}"></script>
+<script>
+    // Current date: July 28, 2025 (index 58)
+    const startDate = new Date('2025-05-30');
+    const currentDate = new Date();
+    const currentIndex = Math.floor((currentDate - startDate) / (1000 * 60 * 60 * 24));
+    
+    // Read completed games from Jinja template
+    const completed_games = JSON.parse('{{ completed_games|tojson|safe }}');
+    console.log('Completed games:', completed_games);
+    
+    // Create a Set of completed game day indexes for efficient lookup
+    const completedDayIndexes = new Set(
+        completed_games.map(game => {
+            const gameDate = new Date(game.date);
+            return Math.floor((gameDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+        })
+    );
+    console.log('Completed day indexes:', completedDayIndexes);
+    
+    function generateCalendarGrid() {
+        const grid = document.getElementById('calendar-grid');
+        
+        const startDayOfWeek = 5;
+        const currentDayOfWeek = 1;
+        const weeksToShow = Math.ceil((currentIndex + startDayOfWeek) / 7);
+        const totalCells = weeksToShow * 7;
+        const cells = [];
+        
+        // Fill cells array
+        for (let i = 0; i < totalCells; i++) {
+            const cell = document.createElement('a');
+            cell.className = 'day-cell';
+            
+            // Calculate day index for this position
+            // Position 0 maps to some day before index 1
+            // We want index 1 to appear at position startDayOfWeek in the last row
+            const dayIndex = i - startDayOfWeek;
+            
+            if (dayIndex >= 1 && dayIndex <= currentIndex) {
+                // Calculate the actual date for this day index
+                const actualDate = new Date(startDate);
+                actualDate.setDate(actualDate.getDate() + dayIndex + 1);
+                
+                const month = actualDate.getMonth();
+
+                let dateString;
+                if (dayIndex === currentIndex){
+                    dateString = 'today'
+                }
+                else if (dayIndex % 7 == 2) {
+                    dateString = actualDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                }
+                else {
+                    dateString = ''
+                }
+                cell.innerHTML = `<div><p>${dayIndex}</p><span>${dateString}</span></div>`;
+                cell.href = `/past?day=${dayIndex}`;
+                
+                // Add month class for background color
+                if (1 <= month && month <= 12) { // June
+                    cell.classList.add('june');
+                } 
+                
+                // Check if this day is completed
+                if (completedDayIndexes.has(dayIndex)) {
+                    cell.classList.add('completed');
+                }
+                
+                if (dayIndex === currentIndex) {
+                    cell.classList.add('today');
+                }
+            } else {
+                cell.classList.add('empty');
+            }
+            cells.push(cell);
+        }
+        
+        // for (i = cells.length - 1; i > 0; i--){
+        //     grid.appendChild(cells[i]) //need to add one to offset.
+        // }
+
+        //Add cells to grid in reverse order (bottom to top)
+
+        for (let i = weeksToShow - 1; i >= 0; i--) {
+            for (let j = 0; j < 7; j++) {
+                const cellIndex = i * 7 + j;
+                if (2 < cellIndex < cells.length + 2) {
+                    grid.appendChild(cells[cellIndex]);
+                }
+            }
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', generateCalendarGrid);
+</script>
+
+</html>

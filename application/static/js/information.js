@@ -15,15 +15,18 @@ function displayModal(displayHTML, accent){
     modalEl.style.display = 'flex';
 }
 
-function daysSinceStartDate(startDateStr = '2025-05-31', storageKey = 'current_date') {
-    const currentDateStr = localStorage.getItem(storageKey);
+function daysSinceStartDate(resp, startDateStr = '2025-05-30') {
+    const currentDateStr = resp.date;
     if (!currentDateStr) return null;
 
     const startDate = new Date(startDateStr);
     const currentDate = new Date(currentDateStr);
+    
     const diffMs = currentDate - startDate;
 
-    return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    alert(`Days since start date: ${days}`);
+    return days
 }
 
 /* Sums a 2D count array to produce a message */
@@ -77,7 +80,7 @@ function runAfterBannerDisappears(callback) {
 
 
 function renderFinish(resp) {
-    const daily_idx = daysSinceStartDate();
+    const daily_idx = daysSinceStartDate(resp);
     is_logged_in = Boolean(localStorage.getItem('logged_in'))
     localStorage.removeItem('in_progress');
     let jumpsGridMessage = resp.jumpsArray ? renderGrid(resp.jumpsArray) : '';
