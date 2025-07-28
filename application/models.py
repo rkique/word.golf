@@ -41,11 +41,12 @@ class PasswordResetPin(db.Model):
     pin = db.Column(db.String(6), nullable=False)
     expires_at = db.Column(db.DateTime, nullable=False)
 
-# stores the user's game state for a specific day -> change this to make it actually the full game state 
-# class UserConstructedGamestate(db.Model):
+# stores the generated gamestate for the user 
+# class UserConstructedGamestate(db.Model): 
 #     id = db.Column(db.Integer, primary_key=True)
 #     user_creator_id = db.Column(db.String(36), db.ForeignKey("user.id"), nullable=False)
 #     url = db.Column(db.String(36), nullable=True) # this is guaranteed to be unique (should be unique at least)
+#     game_id = db.Column(db.String(36), nullable=False)
 #     user_player_id = db.Column(db.String(36), nullable=False)
 #     current_date = db.Column(db.Date, nullable=True) # this should be date that is generated when another user plays your game 
 #     selected_words = db.Column(MutableList.as_mutable(JSON), nullable=True)
