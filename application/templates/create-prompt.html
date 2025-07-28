@@ -18,46 +18,58 @@
         <a href="/" class="wg-banner-title">word.golf</a>
     </div>
     
-    <h2>Choose a start word or an end word</h2>
-    <input type="text" id="start-word" placeholder="Start Word" />
-    <p>OR</p>
-    <input type="text" id="end-word" placeholder="End Word" />
-    <p></p>
-    <button onclick="submitWord()" id="prompt-submit">Submit Word</button>
+    <div id="prompt-maker">
+        <h2>Choose a start word or an end word</h2>
+        <input type="text" id="start-word" placeholder="Start Word" />
+        <p>OR</p>
+        <input type="text" id="end-word" placeholder="End Word" />
+        <p></p>
+        <button onclick="submitWord()" id="prompt-submit">Submit Word</button>
 
-    <div id="prompt-display" style="margin-top: 20px;">
-        <label>Prompt:</label>
-        <span id="prompt-start">word1</span>
-        <span> → </span>
-        <span id="prompt-end">word3</span>
+        <div id="prompt-display" style="margin-top: 20px;">
+            <label>Prompt:</label>
+            <span id="prompt-start">word1</span>
+            <span> → </span>
+            <span id="prompt-end">word3</span>
+        </div>
+
+        <!-- Show Solution Button -->
+        <div style="margin-top: 20px;">
+            <button onclick="toggleSolution()">Show Solution</button>
+        </div>
+
+        <!-- Solution Display Section -->
+        <div id="solution-display" style="display: none; margin-top: 10px;">
+            <label>Solution:</label>
+            <div id="solution-path">word1 → word2 → word3</div>
+        </div>
+
+        <!-- Next Prompt Navigation -->
+        <div style="margin-top: 20px;">
+            <button onclick="nextPrompt()">Next Prompt</button>
+        </div>
+
+        <!-- History Section -->
+        <div id="history-container" style="margin-top: 20px;">
+            <h3>Prompt History</h3>
+            <div id="history-list"></div>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <button onclick="demoGame()">Play Demo Game Using your Prompts</button>
+        </div>
     </div>
 
-    <!-- Show Solution Button -->
-    <div style="margin-top: 20px;">
-        <button onclick="toggleSolution()">Show Solution</button>
+    <div id="prompt-demo" style='display: none'>
+        <!-- Word Space Container (will dynamically populate) -->
+        <div id="wordspace-container">
+            <div id="wordspace"></div>
+        </div> 
+        <div style="margin-top: 20px;">
+            <button onclick="createPrompts()">Back to creating Prompts</button>
+        </div>
     </div>
-
-    <!-- Solution Display Section -->
-    <div id="solution-display" style="display: none; margin-top: 10px;">
-        <label>Solution:</label>
-        <div id="solution-path">word1 → word2 → word3</div>
-    </div>
-
-    <!-- Next Prompt Navigation -->
-    <div style="margin-top: 20px;">
-        <button onclick="nextPrompt()">Next Prompt</button>
-    </div>
-
-    <!-- History Section -->
-    <div id="history-container" style="margin-top: 20px;">
-        <h3>Prompt History</h3>
-        <div id="history-list"></div>
-    </div>
-
-    <!-- Word Space Container (will dynamically populate) -->
-    <!-- <div id="wordspace-container">
-        <div id="wordspace"></div>
-    </div>  -->
+    
 </body>
 
 
@@ -96,6 +108,20 @@
         document.getElementById('start-word').style.display = "block";
         document.getElementById('end-word').disabled = false;
         document.getElementById('end-word').style.display = "block";
+    }
+
+    function demoGame() {
+        const promptMaker = document.getElementById('prompt-maker');
+        promptMaker.style.display = 'none';
+        const promptDemo = document.getElementById('prompt-demo');
+        promptDemo.style.display = 'block';
+    }
+
+    function createPrompts() {
+        const promptDemo = document.getElementById('prompt-demo');
+        promptDemo.style.display = 'none';
+        const promptMaker = document.getElementById('prompt-maker');
+        promptMaker.style.display = 'block';
     }
 
     function toggleSolution() {
