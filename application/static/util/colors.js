@@ -30,6 +30,7 @@ function syncColorMode() {
   document.documentElement.style.setProperty('--banner-closecall', '#b23a2e');
   document.documentElement.style.setProperty('--soft-check', '#98971a');
   document.documentElement.style.setProperty('--0', '#f2f0e9');                  // light background
+  document.documentElement.style.setProperty('--1', '#eeebe3');                 // between --0 and --2
   document.documentElement.style.setProperty('--2', '#eae7dd');                 // slightly darker paper
   document.documentElement.style.setProperty('--4', '#a89f93');                 // light frame bg
   document.documentElement.style.setProperty('--c', '#3c3836');                 // main text (dark gray-brown)
@@ -53,6 +54,7 @@ function syncColorMode() {
     document.documentElement.style.setProperty('--soft-check', '#647035ff');
     document.documentElement.style.setProperty('--soft-failure', '#3c1d1dff');
     document.documentElement.style.setProperty('--0', '#181818');                  // ~neutral black (less brown than #1d2021)
+    document.documentElement.style.setProperty('--1', '#1d1d1d');                 // between --0 and --2
     document.documentElement.style.setProperty('--2', '#222222');                 // slightly lighter than --0, less earthy
     document.documentElement.style.setProperty('--4', '#413f3a');                 // neutral bg1
     document.documentElement.style.setProperty('--c', '#e0dccc');                 // desaturated light beige

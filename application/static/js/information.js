@@ -1,6 +1,6 @@
 HELP_FINISH_DELAY_MS = 300
 START_GAME_DELAY_MS = 800
-
+let startDateStr = '2025-05-30'
 function displayModal(displayHTML, accent){
     let modalEl;
     if (accent == "exclaim") {
@@ -15,17 +15,14 @@ function displayModal(displayHTML, accent){
     modalEl.style.display = 'flex';
 }
 
-function daysSinceStartDate(resp, startDateStr = '2025-05-30') {
+function daysSinceStartDate(resp) {
     const currentDateStr = resp.date;
     if (!currentDateStr) return null;
-
     const startDate = new Date(startDateStr);
     const currentDate = new Date(currentDateStr);
-    
     const diffMs = currentDate - startDate;
 
     days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    alert(`Days since start date: ${days}`);
     return days
 }
 
