@@ -32,8 +32,6 @@ function promptEnded(prompt){
     }
     middle_idx = Math.floor(ws_texts.length / 2)
     let isSessionOver = ws_texts[middle_idx] == prompt[1]
-    console.log("[prompt Ended]: ", prompt)
-    console.log("[prompt Ended]: ", ws_texts)
     return isSessionOver
 
 }

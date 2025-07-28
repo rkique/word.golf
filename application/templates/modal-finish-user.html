@@ -26,74 +26,62 @@
             <p>your paths</p>
             </div> -->
         </div>
-        <div class="stat-row">
-            <div class="solutionWords" id=""></div>
-            <p class="stat-subtitle">solutions</p>
-        </div>
         
-        <!-- Network Diagram Container -->
-        <div id="word-path-container-user" style="
-            background-color: var(--grayed-out-background, #2a2a2a);
-            border-radius: 8px;
-            border: 1px solid var(--border-color, #444);
-            display: none;
-        ">
-            <h3 style="
-                margin: 0 0 15px 0;
-                color: var(--text-color, #ffffff);
-                font-size: 16px;
-                text-align: center;
-            ">Word Path Network</h3>
-                        <div id="network-diagram-user" style="
-                width: 100%;
-                height: 600px;
-                border: 1px solid var(--grayed-out-background, #ccc);
-                border-radius: 8px;
-                position: relative;
-                overflow: auto;
-            ">
-                <svg id="path-svg-user" width="400" height="400" style="background: var(--background-color, #1a1a1a);">
-                </svg>
+        <!-- Swiper Container -->
+        <div class="swiper" id="user-modal-swiper">
+            <div class="swiper-wrapper">
+                <!-- View solutions -->
+                <div class="swiper-slide">
+                    <div class="stat-row">
+                        <div class="solutionWords" id=""></div>
+                        <p class="stat-subtitle">solutions</p>
+                    </div>
+                    <div class="stat-row">
+                        <a id="shareLink">
+                            Share
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-copy">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <!-- View diagram -->
+                <div class="swiper-slide">
+                    <div class="stat-row">
+                        <div class="word-path-container" id="word-path-container-user" style="display: none;">
+                            <div id="network-diagram-user"
+                                style="border: 1px solid var(--grayed-out-background, #ccc); border-radius: 8px; position: relative; overflow: visible; background: var(--background-color, #1a1a1a);">
+                                <svg id="path-svg-user" style="background: var(--background-color, #1a1a1a);">
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-row">
+                        <div class="svg-download-container" style="display: none;">
+                            <a id="downloadSvg" onclick="downloadSvg('path-svg-user')" style="cursor: pointer; margin-left: 10px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="icon-download">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                            </a>
+                            <span class="spoilers-tooltip">
+                                <span class="caution-icon">⚠</span>spoilers
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <button id="animate-paths" style="
-                margin-top: 10px;
-                padding: 8px 16px;
-                background-color: var(--hover-color, #3a3a3a);
-                color: var(--text-color, #ffffff);
-                border: 1px solid var(--border-color, #555);
-                border-radius: 4px;
-                cursor: pointer;
-                width: 100%;
-                font-size: 14px;
-            " onclick="window.drawNetworkDiagram()">
-                Animate Paths
-            </button>
+            
+            <!-- Pagination dots -->
+            <div class="swiper-pagination"></div>
         </div>
     </div>
-    <div class="stat-row">
-        <a id="shareLink">
-            Share
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-copy">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-            </svg>
-        </a>
-        <div class="svg-download-container">
-            <a id="downloadSvg" onclick="downloadSvg('path-svg-user')" style="cursor: pointer; margin-left: 10px;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-download">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="7 10 12 15 17 10"></polyline>
-                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                </svg>
-            </a>
-            <span class="spoilers-tooltip">
-                <span class="caution-icon">⚠</span>spoilers
-            </span>
-        </div>
     </div>
-    <!-- <button class="switch switch--outlined" onclick="window.location.href='/user-statistics'">View Stats</button> -->
 </div>
 </div>
 <script>
@@ -110,6 +98,82 @@
     }
 </script>
 
+<!-- Swiper.js CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+
 <!-- D3.js CDN for force-directed network diagrams -->
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script src="{{ url_for('static', filename='js/finish_graph.js', v=version) }}"></script>
+
+<script>
+    let graphInitialized = false;
+    let userModalSwiper = null;
+    
+    // Only initialize Swiper on mobile devices
+    if (window.innerWidth <= 992) {
+        // Mobile: Initialize Swiper
+        userModalSwiper = new Swiper('#user-modal-swiper', {
+            direction: 'horizontal',
+            loop: false,
+            slidesPerView: 1,
+            spaceBetween: 0,
+            
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            
+            touchRatio: 1,
+            touchAngle: 45,
+            grabCursor: true,
+            
+            // Event handlers
+            on: {
+                slideChange: function () {
+                    const activeSlideIndex = this.activeIndex;
+                    
+                    // If we're on slide 1 (graph slide) and graph hasn't been initialized
+                    if (activeSlideIndex === 1 && !graphInitialized) {
+                        // Show the graph container
+                        const container = document.getElementById('word-path-container-user');
+                        if (container) {
+                            container.style.display = 'block';
+                            graphInitialized = true;
+                        }
+                    }
+                }
+            }
+        });
+    } else {
+        // Desktop: Convert to flex layout and show graph immediately
+        const swiperContainer = document.getElementById('user-modal-swiper');
+        if (swiperContainer) {
+            swiperContainer.style.display = 'flex';
+            swiperContainer.style.gap = '2rem';
+            swiperContainer.style.flexDirection = 'column';
+            
+            const swiperWrapper = swiperContainer.querySelector('.swiper-wrapper');
+            if (swiperWrapper) {
+            swiperWrapper.style.display = 'flex';
+            swiperWrapper.style.flexDirection = 'row';
+            swiperWrapper.style.width = '100%';
+            }
+            const slides = swiperContainer.querySelectorAll('.swiper-slide');
+            slides.forEach((slide, index) => {
+            if (index === 1) {
+                slide.style.flex = '0 0 60%';
+            } else {
+                slide.style.flex = '0 0 40%';
+            }
+            slide.style.minWidth = '0';
+            });
+            
+            // Hide pagination on desktop
+            const pagination = swiperContainer.querySelector('.swiper-pagination');
+            if (pagination) {pagination.style.display = 'none';}
+        }
+        graphInitialized = true;
+    }
+</script>

@@ -239,17 +239,26 @@
     .switchContainer {
         min-width: 0em;
     }
+    .swiper-slide {
+        padding: 0rem;
+    }
+    #modal-finish-user .finish-container {
+        max-width: 100vw;
+        width: 100vw;
+    }
+    #word-path-container-user {
+        width: 80%;
+    }
     #modal-finish-guest, #modal-finish-user {
         width: 92vw;
         max-width: 92vw;
-        /* padding: 2rem; */
+        padding: 1rem;
     }
     #modal-finish-guest .stat-row{
         width: 100vw;
         align-items: flex-start;
     }
     .finish-container {
-        padding: 0; 
         gap: 0.5rem;
     }
 
@@ -271,7 +280,7 @@
     #share-link, #share-link a{
         font-size: 1.3rem;
         padding: 0rem;
-        padding-top: 2rem;
+        /* padding-top: 2rem; */
     }
 
     .finish-container .stat {
