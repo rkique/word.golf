@@ -197,7 +197,9 @@ function formatFinishWords(wordsArray){
 }
 function displayFinishModal(daily_idx, totalJumps, currentStreak, total_games, selectedWords, jumpsGridMessage, is_user=false, url) {
     const modalFinish = document.getElementById(is_user ? 'modal-finish-user' : 'modal-finish-guest');
-    modalFinish.querySelector('.daily-idx').innerHTML = daily_idx;
+    const date = new Date();
+    const formatted = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    modalFinish.querySelector('.day-cell').innerHTML = `<p>${daily_idx}</p> <span>${formatted}</span>` 
     modalFinish.querySelector('.totalJumps').innerHTML = totalJumps;
     modalFinish.querySelector('.streak').innerHTML = currentStreak;
     modalFinish.querySelector('.totalGames').innerHTML = total_games;
@@ -237,8 +239,9 @@ function displayFinishModal(daily_idx, totalJumps, currentStreak, total_games, s
             .then(json => {
                 localStorage.setItem('solutions', JSON.stringify(json));
                 json.forEach(row => {
-                    if (row.length > 0) row[0] = `<span class="finish-word-start">${row[0]}</span>`;
-                    if (row.length > 1) row[row.length - 1] = `<span class="finish-word-end">${row[row.length - 1]}</span>`; 
+                    row.forEach((word, idx) => {
+                        row[idx] = `<span class="finish-words">${word}</span>`;
+                    });
                 });
                 const modalFinish = document.querySelector('.modal-finish');
                 modalFinish.querySelector('.solutionWords').innerHTML =

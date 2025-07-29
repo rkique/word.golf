@@ -87,8 +87,8 @@ def serve_data():
         "postWordsSequentially();"
     ]
     # Write to a .js file
-    # print("******** Solution Script ********")
-    # print("\n".join(js_lines))
+    print("******** Solution Script ********")
+    print("\n".join(js_lines))
     return make_response(json.dumps(combined))
 
 def load_data():

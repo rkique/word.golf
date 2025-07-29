@@ -389,6 +389,10 @@ html {
     margin: 0;
     font-weight: 400;
 }
+.finish-container .day-cell span {
+    font-size: 0.8rem;
+    color: var(--grayed-out-color);
+}
 
 
 .solution-title {
@@ -1072,11 +1076,8 @@ button span {
     border: 1px solid var(--4);
     color: var(--grayed-out-color-help-target);
 }
-.finish-word-start {
-    color: var(--grayed-out-color);
-}
 
-.finish-word-end {
+.finish-words {
     color: var(--text-color);
 }
 

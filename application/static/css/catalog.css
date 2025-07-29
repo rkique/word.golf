@@ -1,5 +1,6 @@
 .play-past-prompts {
-        margin: 0 auto 2rem;
+        margin: 0 auto 0vh;
+        height: 14vh;
         max-width: 600px;
         font-weight: 400;
         text-align: left; 
@@ -124,6 +125,7 @@
         color: var(--hover-color);
     }
     .scroll {
+        height: 65vh;
         width: 100vw;
         overflow-y: auto;
     }
@@ -145,5 +147,5 @@
         background: var(--hover-color);
     }
     .calendar-grid-container {
-        max-height: 70vh;
+        max-height: 65vh;
     }

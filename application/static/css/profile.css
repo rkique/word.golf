@@ -124,6 +124,12 @@ p {
   height: 80px !important;
 }
 
+.fc .fc-daygrid-day-top {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+}
+
 #calendar .fc-daygrid-day-frame {
   min-height: 80px !important;
   height: 80px !important;
@@ -167,7 +173,9 @@ p {
     overflow: hidden !important;
 }
 
-
+.fc-scroller {
+    overflow: hidden !important;
+}
 .back-arrow {
     color: var(--text-color);
     transition: color 0.2s;
@@ -187,4 +195,47 @@ p {
 }
 .fc td, .fc th {
   border: 1px solid var(--transparent) !important;
+}
+
+td[role="gridcell"]:has(a[id^="fc-dom-"]) {
+    /* display: flex;
+    flex-direction: column;
+    align-items: center;
+    aspect-ratio: 1; */
+    justify-content: center;
+    background-color: var(--background-color);
+    /* background-color: blue; */
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 400;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+
+/* Control calendar cell content */
+th[role='columnheader'] {
+    color: var(--grayed-out-color);
+    text-align: center;
+}
+th[role='columnheader'] div{
+    text-align: center;
+}
+
+td[role="gridcell"]:has(a[id^="fc-dom-"]) p {
+    font-size: 2.1rem !important;
+    text-align: center;
+    margin: 0;
+}
+
+td[role="gridcell"]:has(a[id^="fc-dom-"]) a {
+    font-size: 1.1rem !important;
+    text-align: center;
+    margin: 0;
+}
+
+td[role="gridcell"]:has(a[id^="fc-dom-"]) span {
+    color: var(--grayed-out-color);
+    text-align: center;
+    margin: 0;
 }

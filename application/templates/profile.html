@@ -80,18 +80,7 @@
         <div id="calendar-container" class="flex flex-column">
             <div id="calendar"></div>
             <div class="legend">
-                <div class="legend-item">
-                    <img src="../static/images/green_check.png" alt="Completed" class="legend-icon-green" />
-                    <p>Completed Games</p>
-                </div>
-                <div class="legend-item">
-                    <img src="../static/images/yellow_exclamation.png" alt="Incomplete" class="legend-icon-yellow" />
-                    <p>Incomplete Games</p>
-                </div>
-                <div class="legend-item">
-                    <span class="color-box transparent"></span>
-                    <p>New Games</p>
-                </div>
+                Click a past day to view jumps from that day.
             </div>
         </div>
     </div>
@@ -165,12 +154,16 @@
         const allYValues = totalJumps.concat(averageJumps);
         const computedMaxY = Math.max(...allYValues);
         const yMax = Math.max(computedMaxY, 25) + 1;
-        const yMin = 9;
+        const yMin = 0;
         const failure = getCSSVariable('--failure');
         const softFailure = getCSSVariable('--soft-failure');
         const grayedOutBackground = getCSSVariable('--grayed-out-background');
         const textColor = getCSSVariable('--text-color');
         const backgroundColor = getCSSVariable('--grayed-out-background');
+
+        userColorEmph = '#c0c499';
+        userColor = getComputedStyle(document.documentElement).getPropertyValue('--grayed-out-color-help-target');
+        otherUserColor = getComputedStyle(document.documentElement).getPropertyValue('--border-color');
 
         // console.log("here is the passed in jumps data: ", labels);
         const labelsMonthDay = labels.map(date => {
@@ -188,12 +181,12 @@
         const datasets = [{
             label: 'Jumps',
             data: totalJumps,
-            borderColor: '#1a3009', // Darker green for line
+            borderColor: userColor,
             pointBackgroundColor: function (context) {
                 const value = context.parsed.y;
-                if (value === 10) return '#00ff00'; // Bright green for perfect
-                if (value >= 11 && value <= 12) return '#00cc00'; // Slightly darker green for superb
-                return '#2d5016'; // Dark green for regular scores
+                if (value === 10) return userColorEmph;
+                if (value >= 11 && value <= 12) return userColorEmph; 
+                return userColorEmph; 
             },
             backgroundColor: backgroundColor,
             fill: false,
@@ -236,33 +229,6 @@
                             generateLabels: function (chart) {
                                 const original = Chart.defaults.plugins.legend.labels.generateLabels;
                                 const labels = original.call(this, chart);
-
-                                // Add perfect game legend item if there are perfect games
-                                if (hasPerfectGame) {
-                                    labels.push({
-                                        text: 'Perfect (10)',
-                                        fillStyle: '#00ff00',
-                                        strokeStyle: '#00ff00',
-                                        pointStyle: 'circle',
-                                        hidden: false,
-                                        datasetIndex: -1, // Not associated with a dataset
-                                        lineWidth: 2
-                                    });
-                                }
-
-                                // Add superb game legend item if there are superb games
-                                if (hasSuperbGame) {
-                                    labels.push({
-                                        text: 'Superb (11-12)',
-                                        fillStyle: '#00cc00',
-                                        strokeStyle: '#00cc00',
-                                        pointStyle: 'circle',
-                                        hidden: false,
-                                        datasetIndex: -1, // Not associated with a dataset
-                                        lineWidth: 2
-                                    });
-                                }
-
                                 return labels;
                             }
                         }
@@ -326,6 +292,7 @@
                     y: {
                         min: yMin,
                         max: yMax,
+                        display: false,
                         grid: {
                             color: grayedOutBackground,
                         },
@@ -346,18 +313,13 @@
     renderGraph();
 
     function renderBarGraph(total_jumps_data, my_total_jumps, date) {
-        lastRendered = 'previous'
-        const ctx = document.getElementById('jumps-graph').getContext('2d');
         if (window.myChart) {
             window.myChart.destroy();
         }
-        let label_message = "Number of Users";
-        if (total_jumps_data.includes(my_total_jumps)) {
-            label_message = "Users with your Jump Count";
-        }
-
+        lastRendered = 'previous'
+        const ctx = document.getElementById('jumps-graph').getContext('2d');
+        //dict for handling jumps
         let total_jumps_user = {};
-        // Count how many users have each number of jumps
         for (let jumps of total_jumps_data) {
             if (jumps in total_jumps_user) {
                 total_jumps_user[jumps] += 1;
@@ -365,18 +327,35 @@
                 total_jumps_user[jumps] = 1;
             }
         }
-
-        // Prepare the data for the chart
         const labels = Object.keys(total_jumps_user).map(Number).sort((a, b) => a - b);
         const data = labels.map(jumps => total_jumps_user[jumps]);
-
-        // Define colors based on whether it's your total jumps or not
         const backgroundColors = labels.map(jumps =>
-            jumps === my_total_jumps ? 'rgba(255, 99, 132, 0.6)' : 'rgba(75, 192, 192, 0.6)'
+            jumps === my_total_jumps ? userColorEmph : userColor
         );
         const borderColors = labels.map(jumps =>
-            jumps === my_total_jumps ? 'rgba(255, 99, 132, 1)' : 'rgba(75, 192, 192, 1)'
+            jumps === my_total_jumps ? userColorEmph : userColor
         );
+        let label_message = "Number of Users";
+        console.log('total_jumps_data:', total_jumps_data);
+        if (total_jumps_data.includes(my_total_jumps)) {
+            // Show a persistent tooltip for the user's bar
+            setTimeout(function() {
+                if (window.myChart) {
+                    const userIndex = labels.indexOf(my_total_jumps);
+                    if (userIndex !== -1) {
+                        window.myChart.setActiveElements([
+                            {datasetIndex: 0, index: userIndex}
+                        ]);
+                        window.myChart.tooltip.setActiveElements([
+                            {datasetIndex: 0, index: userIndex}
+                        ], {x: 0, y: 0});
+                        window.myChart.tooltip.update();
+                        window.myChart.update();
+                    }
+                }
+            }, 200);
+        }
+
 
         // Create the chart
         window.myChart = new Chart(ctx, {
@@ -384,7 +363,7 @@
             data: {
                 labels: labels, 
                 datasets: [{
-                    label: label_message,
+                    label: '',
                     data: data, 
                     backgroundColor: backgroundColors, 
                     borderColor: borderColors, 
@@ -392,8 +371,8 @@
                 }]
             },
             options: {
-                responsive: false,
-                maintainAspectRatio: false,
+                responsive: true,
+                maintainAspectRatio: true,
                 scales: {
                     x: {
                         title: {
@@ -406,43 +385,46 @@
                             display: false,
                             text: 'Number of Users'
                         },
+                        display: false,
                         beginAtZero: true
                     }
                 },
                 plugins: {
                     title: {
                         display: true,
-                        text: 'Total Jumps Distribution ' + date,
+                        text: `Games Played on ${new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}`,
                         padding: {
                             top: 20,
                             bottom: 10
                         },
                         font: {
-                            size: 25,
-                            weight: 'bold'
+                            size: 32,
                         }
                     },
                     legend: {
                         position: 'top',
+                        display: false,
                     },
                     tooltip: {
+                        enabled: true,
+                        filter: function(context) {
+                            return context.label == my_total_jumps;
+                        },
                         callbacks: {
-                            label: function (tooltipItem) {
-                                const jumps = labels[tooltipItem.dataIndex];
-                                const userCount = tooltipItem.raw;
-                                if (jumps === my_total_jumps) {
-                                    return `Your Total Jumps: ${jumps}, Users: ${userCount}`;
+                            label: function(context) {
+                                if (context.label == my_total_jumps) {
+                                    return 'Your score: ' + my_total_jumps;
                                 }
-                                return `Total Jumps: ${jumps}, Users: ${userCount}`;
+                                // Returning null disables tooltip for this item
+                                return null;
                             }
-                        }
+                        },
+                        displayColors: false
                     }
                 }
             }
         });
     }
-
-
 </script>
 
 <script type="module">
@@ -469,7 +451,12 @@
         const borderColor = getCSSVariable('--grayed-out-background');
         const softCheck = getCSSVariable('--soft-check');
         const calendarEl = document.getElementById('calendar');
-        
+        const currentDate = new Date();
+        function getStartOfNextMonth(date) {
+            return new Date(date.getFullYear(), date.getMonth() + 1, 1);
+        }
+        const startOfNextMonth = getStartOfNextMonth(currentDate).toISOString().split('T')[0];
+
         //define dateClick for fetch and renderBarGraph
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
@@ -478,16 +465,22 @@
             selectHelper: true,
             showNonCurrentDates: false,
             validRange: {
-                start: '2025-06-01',
-                end: '2025-08-01'
+                start: '2025-07-01',
+                end: startOfNextMonth,
             },
             headerToolbar: {
                 left: 'prev,next today',
-                center: 'title',
+                center: '', // Remove the month/year title
                 right: ''
             },
             dateClick: function (info) {
                 const clickedDate = info.dateStr;
+                //if clickedDate is > today, do not fetch
+                const today = new Date();
+                const dateClicked = new Date(clickedDate);
+                if (dateClicked > today) {
+                    return;
+                }
                 fetch('/total_jumps_statistics_per_day', {
                     method: 'POST',
                     headers: {
@@ -511,58 +504,35 @@
                     .catch(error => {
                         console.error("Error fetching jump statistics:", error);
                     });
-                // first day is 2025-06-01 (but profile starts from 2025-07-01)
-                // const dateClicked = new Date(clickedDate);
-                // const firstDate = new Date("2025-06-01");
-                // const diffInMs = dateClicked - firstDate;
-                // const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-                // console.log("Difference in days:", diffInDays);
-
                 // window.location.href = '/previous_index?day=' + diffInDays;
+            },
+            dayCellContent: function(arg) {
+                const date = arg.date;
+                const may30 = new Date(2025, 4, 30); // Months are 0-indexed
+                const today = new Date(arg.date.getFullYear(), arg.date.getMonth(), arg.date.getDate());
+                if (date > currentDate) {
+                    return { html: `` };
+                }
+                const daysDiff = Math.floor((today - may30) / (1000 * 60 * 60 * 24));
+                const formatted = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                return { html: `<p>${daysDiff}</p> <span>${formatted}</span>` };
             },
             dayCellDidMount: function (info) {
                 const date = info.date;
                 const dateString = date.toISOString().split('T')[0];
-                console.log(dateString);
                 info.el.style.border = `1px solid ${borderColor}`;
 
                 if (!info.el.classList.contains('fc-day-disabled')) {
                     if (eventDates.has(dateString)) {
-                        // Add green checkmark for completed games
-                        const img = document.createElement('img');
-                        img.src = '../static/images/green_check.png';
-                        img.alt = 'Completed';
-                        img.style.width = '30px';
-                        img.style.height = '30px';
-                        img.style.display = 'block';
-                        img.style.margin = '0 auto';
-                        img.style.marginTop = '4px';
-                        img.style.backgroundColor = 'transparent';
-
+                        // should update the info.el.querySelector
                         const eventContainer = info.el.querySelector('.fc-daygrid-day-events');
-                        if (eventContainer) {
-                            eventContainer.appendChild(img);
-                        }
                     } else if (incompleteDates.has(dateString)) {
-                        // Add yellow exclamation for incomplete games
-                        const img = document.createElement('img');
-                        img.src = '../static/images/yellow_exclamation.png';
-                        img.alt = 'Incomplete';
-                        img.style.width = '25px';
-                        img.style.height = '25px';
-                        img.style.display = 'block';
-                        img.style.margin = '0 auto';
-                        img.style.marginTop = '4px';
-                        img.style.backgroundColor = 'transparent';
-
+                        //should update the info.el.querySelector
                         const eventContainer = info.el.querySelector('.fc-daygrid-day-events');
-                        if (eventContainer) {
-                            eventContainer.appendChild(img);
-                        }
                     }
                 }
             },
-            datesSet: function () {
+            datesSet: function () { //calendar switch months. 
                 // Remove existing images
                 document.querySelectorAll('.fc-daygrid-day img').forEach(img => img.remove());
 
@@ -574,27 +544,27 @@
                     if (!eventContainer) return;
 
                     if (eventDates.has(dateString)) {
-                        const img = document.createElement('img');
-                        img.src = '../static/images/green_check.png';
-                        img.alt = 'Completed';
-                        img.style.width = '30px';
-                        img.style.height = '30px';
-                        img.style.display = 'block';
-                        img.style.margin = '0 auto';
-                        img.style.marginTop = '4px';
-                        img.style.backgroundColor = 'transparent';
-                        eventContainer.appendChild(img);
+                        // const img = document.createElement('img');
+                        // img.src = '../static/images/green_check.png';
+                        // img.alt = 'Completed';
+                        // img.style.width = '30px';
+                        // img.style.height = '30px';
+                        // img.style.display = 'block';
+                        // img.style.margin = '0 auto';
+                        // img.style.marginTop = '4px';
+                        // img.style.backgroundColor = 'transparent';
+                        // eventContainer.appendChild(img);
                     } else if (incompleteDates.has(dateString)) {
-                        const img = document.createElement('img');
-                        img.src = '../static/images/yellow_exclamation.png';
-                        img.alt = 'Incomplete';
-                        img.style.width = '25px';
-                        img.style.height = '25px';
-                        img.style.display = 'block';
-                        img.style.margin = '0 auto';
-                        img.style.marginTop = '4px';
-                        img.style.backgroundColor = 'transparent';
-                        eventContainer.appendChild(img);
+                        // const img = document.createElement('img');
+                        // img.src = '../static/images/yellow_exclamation.png';
+                        // img.alt = 'Incomplete';
+                        // img.style.width = '25px';
+                        // img.style.height = '25px';
+                        // img.style.display = 'block';
+                        // img.style.margin = '0 auto';
+                        // img.style.marginTop = '4px';
+                        // img.style.backgroundColor = 'transparent';
+                        // eventContainer.appendChild(img);
                     }
                 });
             }
@@ -610,7 +580,7 @@
 
         // const calendarEl = document.getElementById('calendar');
         document.body.addEventListener('click', function (e) {
-            if (!e.target.closest('.fc-daygrid-day') && lastRendered == 'previous'){
+            if ((!e.target.closest('.fc-daygrid-day') && !e.target.closest('#jumps-graph')) && lastRendered == 'previous'){
                 renderGraph();
             }
         })
