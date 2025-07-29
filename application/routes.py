@@ -583,7 +583,7 @@ def profile():
         ).all()
     ]
 
-    my_jumps_today = game_state.total_jumps
+    my_jumps_today = game_state.total_jumps if game_state else 0
 
     # get incomplete games this month
     incomplete_games_this_month = []
