@@ -41,7 +41,7 @@ function parseJSONWithHeader(responseText, header) {
 }
 
 function sendAndReceiveXML(message) {
-    alert(`[sendAndReceiveXML] Sending message: ${message}`);
+    // alert(`[sendAndReceiveXML] Sending message: ${message}`);
     let xhttp = new XMLHttpRequest();
     xhttp.open("POST", '/', false);
     xhttp.withCredentials = true;
@@ -81,7 +81,7 @@ function sendAndReceiveXML(message) {
         return response_text;
         // }     
     } catch (e) {
-        alert('Error in backend. Please check logs.')
+        alert('Error in backend. Please check logs and refresh page')
         console.log(e)
     }
     xhttp.onreadystatechange = function () {
