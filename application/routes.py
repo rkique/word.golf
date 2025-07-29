@@ -399,6 +399,43 @@ def update_jumps_array(new_data):
     # print("[update_jumps_array] jumpsArray: ", new_data)
     return new_data
 
+def handle_session_end(data, state_model):
+    '''
+    Updates game state, retrieves user statistics, and updates the data object.
+    '''
+    data['i'] = 4
+    data = update_jumps_array(data)
+    update_game_state(data, state_model)
+    
+    # Update data object with game information from database
+    finished_game(request, state_model)
+    
+    user = get_user_from_cookie()
+    if not user:
+        redirect('/')
+    
+    streak = user.streak
+    current_game = get_current_game_state(state_model)
+    
+    if not current_game:
+        redirect('/')
+    
+    total_jumps = current_game.total_jumps
+    selected_words = current_game.selected_words
+    total_games = state_model.query.filter_by(user_id=user.id).filter(state_model.total_jumps > 0).count()
+    
+    # Update data with final statistics
+    data['total_games'] = total_games
+    data['streak'] = streak
+    data['total_jumps'] = total_jumps
+    
+    # Generate words array for display
+    starts = [prompt[0] for prompt in prompts_today]
+    data['wordsArray'] = words_array_from_data(starts, selected_words, data['jumpsArray'])
+    session['data'] = json.dumps(data)
+    update_game_state(json.loads(session['data']), state_model)
+    return data
+
 #if user exists and game state for user exists, return it. Else, None.
 def get_existing_data(state_model):
     user = get_user_from_cookie()
@@ -964,32 +1001,7 @@ def index_post():
         data = json.loads(session.get('data', '{}'))
         print(f"[/] Shifting to Prompt {data.get('i', 0)+1}")
         if (data.get('i', 0) + 1 >= PCOUNT):
-            data['i'] = 4
-            # print("Previous data: ", data)
-            data = update_jumps_array(data)
-            # print("Updated data: ", data)
-            update_game_state(data, state_model)
-            #update data object with game information from database
-            finished_game(request, state_model)
-            user = get_user_from_cookie()
-            if not user:
-                redirect('/')
-            streak = user.streak
-            current_game = get_current_game_state(state_model)
-            # print('current game is', current_game, 'current game total jumps is', current_game.total_jumps)
-            if not current_game:
-                redirect('/')
-            total_jumps = current_game.total_jumps
-            selected_words = current_game.selected_words
-            total_games = state_model.query.filter_by(user_id=user.id).filter(state_model.total_jumps > 0).count()
-            data['total_games'] = total_games
-            data['streak'] = streak
-            # print('[/ end 4] total_jumps is', total_jumps)
-            data['total_jumps'] = total_jumps
-            starts = [prompt[0] for prompt in prompts_today]
-            data['wordsArray'] = words_array_from_data(starts, selected_words, data['jumpsArray'])
-            session['data'] = json.dumps(data)
-            update_game_state(json.loads(session['data']), state_model)
+            data = handle_session_end(data, state_model)
             return make_response("session_done" + session.get('data'))
         data['i'] += 1
         _data = shift_to(data['i'])

@@ -396,6 +396,7 @@ html {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    text-decoration: none;
 }
 
 .finish-container .day-cell p {
