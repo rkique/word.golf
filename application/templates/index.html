@@ -111,6 +111,7 @@
 <script>
     localStorage.setItem('current_date', data['date']);
     let is_help = localStorage.getItem('is_help');
+    console.log("value of is_help: ", is_help);
     if ("logged_in" in data) { 
         if (data.logged_in) {
             renderLogin(data.logged_in)
@@ -118,10 +119,23 @@
     }
     // start help session
     if (is_help !== 'false') {
-        if (!data.logged_in) {
+        if (!data.logged_in && is_help == null) {
+            // on first load 
             startHelpSession()
             localStorage.setItem('in_progress', 'true');
+        } else if (is_help === "true") {
+            // startHelpSession()
+            // localStorage.setItem('in_progress', 'true');
+            data = sendAndReceiveXML(`help=true`);
+            document.getElementById('prompts-title-heading').innerText = 'Tutorial';
+            document.getElementById('prompts-count-remainder').innerText = '/2';
+            renderLinks(data.prompt, data.results);
+            clearBoxes();
+            renderPrompts(data.jumpsArray, data.wordsArray, data.startTargetIdxs, data.prompt);
+            activateLinks();
+            addHelpFocuses(data.prompt, data.results);
         }
+
     }
     else {
         console.log("[index]: here is backend data: ", data);

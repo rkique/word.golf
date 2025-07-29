@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+    
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style_mobile.css') }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include 'head.html' %}
+</head> 
+
+<body>
+    {% include 'header.html' %}
+    {% include 'modal-help.html' %}
+    {% include 'modal.html' %}
+    <a href="/" class="back-arrow">&#8592;</a>
+    <div class="scroll">
+        <h1 class="finish-summary">How to play</h1>
+        <div class='help-text'>
+            <p>Link two words by clicking their neighbors.</p>
+            <p class='--grayed-out'>fruit ⟶ orchard ⟶ house ⟶ porch</p>
+            <p>Choose carefully! You only need two jumps.</p>
+            <p class='--grayed-out'>whisper ⟶ shouting ⟶ scuffle</p>
+            <p>Five prompts daily. The best score is ten.</p>
+        </div>
+
+        <div class="guest-buttons" id="guest-buttons">
+            <p class="credits">Built with word2vec and Google Books.</p>
+            <button onclick="closeModal('help'); beginTutorial()" class=" switch switch--outlined tutorial">tutorial</button>
+        </div>
+
+        <div class="help-footer-div">
+         <p><a href="https://tally.so/r/mV7Yay" target="_blank" rel="noopener">leave feedback</a></p> 
+        </div>
+    </div>
+</body>
+
+<script>
+    function beginTutorial() {
+        localStorage.setItem('is_help', 'true');
+        // data = sendAndReceiveXML(`help=true`);
+        window.location.href = '/';
+        // document.getElementById('prompts-title-heading').innerText = 'Tutorial';
+        // document.getElementById('prompts-count-remainder').innerText = '/2'
+        // renderLinks(data.prompt, data.results)
+        // clearBoxes()
+        // renderPrompts(data.jumpsArray, data.wordsArray, data.startTargetIdxs, data.prompt)
+        // activateLinks()
+        // addHelpFocuses(data.prompt, data.results)
+    }
+</script>
+
+</html>

@@ -505,6 +505,10 @@ def resetpassword():
     date = today.today.strftime('%Y-%m-%d') if today.today else datetime.datetime.today().strftime('%Y-%m-%d')
     return render_template('resetpassword.html', date=date)
 
+@app.route('/help', methods=['GET'])
+def help():
+    return render_template('help.html')
+
 @app.route('/profile', methods=['GET'])
 def profile():
     user = get_user_from_cookie()
@@ -901,6 +905,7 @@ def previous_prompts():
 @app.route('/', methods=['POST'])
 def index_post():
     state_model = get_state_model()
+    print(request.form)
     if request.form.get('redirect') is not None:
         print('[/] Redirecting to start...')
         #only run this if data in session.
@@ -930,7 +935,7 @@ def index_post():
                 data['startTargetIdxs'] = BASE_START_TARGET_IDXS
                 session['data'] = json.dumps(data)
         return make_response(json.loads(session['data']))
-
+    
     elif request.form.get('help') is not None:
         session['data'] = make_help_session()
         print('[/] Help Session')

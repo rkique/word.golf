@@ -41,14 +41,14 @@ function parseJSONWithHeader(responseText, header) {
 }
 
 function sendAndReceiveXML(message) {
-    // alert(`[sendAndReceiveXML] Sending message: ${message}`);
+    alert(`[sendAndReceiveXML] Sending message: ${message}`);
     let xhttp = new XMLHttpRequest();
     xhttp.open("POST", '/', false);
     xhttp.withCredentials = true;
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.send(message);
     resp = {}
-    const headers = ["help_session_done", "session_done", "end"];
+    const headers = ["help_session_done", "session_done", "end", "help"];
     for (const header of headers) {
         if (xhttp.responseText.startsWith(header)) {
             console.log(`${header}`);
