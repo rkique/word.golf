@@ -66,6 +66,21 @@
         <div id="wordspace-container">
             <div id="wordspace"></div>
         </div>
+        <div id="prompts-container">
+            <div id="prompts-title">
+                <div id="prompts-title-heading">Prompts</div> 
+                <div id="prompts-count-container">
+                    <div id="prompts-count">1</div> <div id="prompts-count-remainder">/ 5</div>
+                </div>
+            </div>
+            <div id="prompts">
+                <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
+                <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
+                <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
+                <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
+                <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
+            </div>
+        </div>
         <!-- <div style="margin-top: 20px;"> -->
         <button onclick="createPrompts()">Back to creating Prompts</button>
         <!-- </div> -->
@@ -151,7 +166,7 @@
         console.log("called -> finish later");
     }
 
-    function makeLink(prompt, word) {
+    function fakeMakeLink(prompt, word) {
         let link = document.createElement("button");
         let span = document.createElement("span");
         span.innerText = word;
@@ -164,8 +179,8 @@
         return link;
     }
 
-    function makeStartLink(prompt, word) {
-        startLink = makeLink(prompt, word);
+    function fakeMakeStartLink(prompt, word) {
+        startLink = fakeMakeLink(prompt, word);
         startLink.className = "link link--starting";
         return startLink;
     }
@@ -174,6 +189,19 @@
         while (element.lastChild) {
             element.removeChild(element.lastChild);
         }
+    }
+
+    function fakeRenderLinks(prompt, results) {
+        let wordspace = document.getElementById("wordspace")
+        clearChildren(wordspace)
+        let middleIndex = Math.floor(results.length / 2)
+        results.forEach((result, idx) => {
+            if (idx === middleIndex) {
+                wordspace.append(fakeMakeStartLink(prompt, result))
+            } else {
+                wordspace.append(fakeMakeLink(prompt, result))
+            }
+        })
     }
 
     function nextPrompt() {
@@ -257,6 +285,8 @@
                     solution: [data.start_word, data.neighbor, data.target_word]
                 }
                 
+                // data.results
+                fakeRenderLinks(data.target_word, data.results)
                 current_prompt_data = newPromptData;
                 setPrompts(newPromptData.startWord, newPromptData.endWord);
                 setSolutionPath(newPromptData.solution);
