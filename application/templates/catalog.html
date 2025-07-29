@@ -103,7 +103,7 @@
                 else {
                     dateString = displayDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
                 }
-                cell.innerHTML = `<div><p>${dayIndex}</p><span>${dateString}</span></div>`;
+                cell.innerHTML = `<div><p>${dayIndex}</p><p class='date'>${dateString}</p></div>`;
                 cell.href = `/past?day=${dayIndex}`;
                 
                 // Add month class for background color

@@ -5,6 +5,21 @@
     font-style: normal;
 }
 
+.back-arrow {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    font-size: 2rem;
+    color: var(--text-color);
+    text-decoration: none;
+    z-index: 100;
+}
+
+.back-arrow:hover {
+    color: var(--hover-color);
+}
+    
+
 @font-face {
     font-family: "Schibsted Grotesk";
     src: url("/static/Schibsted_Grotesk/SchibstedGrotesk-Italic-VariableFont_wght.ttf") format("truetype");

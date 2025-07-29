@@ -51,42 +51,40 @@
                     style="text-decoration: none; margin-right: 12px; font-size: 2rem; vertical-align: middle;">&#8592;</a>
                 <h2 class="profile-title">
                     {% if email %}
-                    <span class="profile-email"></span>{{ email }}</span>
+                    <span class="profile-email">{{ email }}</span>
                     {% else %}
                     <span class="profile-email" style="font-style: italic;">guest</span>
                     {% endif %}
                     </span>
                 </h2>
             </div>
-            <div class="stats-container">
-                <canvas id="jumps-graph" width="600" height="400"></canvas>
-                <div class="profile-stats">
-                    <div class="stat-row">
-                        <p class="stat">{{streak}}</p>
-                        <p class="stat-subtitle">Streak</p>
-                    </div>
-                    <div class="stat-row">
-                        <p class="stat">{{ total_games }}</p>
-                        <p class="stat-subtitle">Games Played</p>
-                    </div>
-                    <div class="stat-row">
-                        <p class="stat">{{ average_total_jumps }}</p>
-                        <p class="stat-subtitle">Avg. Jumps</p>
-                    </div>
-                    <div class="stat-row">
-                        <p class="stat">{{ average_prompt_jumps }}</p>
-                        <p class="stat-subtitle">Avg. Jumps per Prompt</p>
-                    </div>
-                    <!-- <p>Total Jumps Today: {{ total_jumps }} </p>
-        <p>Best Score: {{ best_score }}</p> -->
+                <div id="jumps-graph-container" style="position: relative; height:50vh;">
+                    <canvas id="jumps-graph"></canvas>
                 </div>
+            <div class="profile-stats">
+                <div class="stat-row">
+                    <p class="stat">{{streak}}</p>
+                    <p class="stat-subtitle">Streak</p>
+                </div>
+                <div class="stat-row">
+                    <p class="stat">{{ total_games }}</p>
+                    <p class="stat-subtitle">Games Played</p>
+                </div>
+                <div class="stat-row">
+                    <p class="stat">{{ average_total_jumps }}</p>
+                    <p class="stat-subtitle">Avg. Jumps</p>
+                </div>
+                <div class="stat-row">
+                    <p class="stat">{{ average_prompt_jumps }}</p>
+                    <p class="stat-subtitle">Avg. Jumps per Prompt</p>
+                </div>
+                <!-- <p>Total Jumps Today: {{ total_jumps }} </p>
+            <p>Best Score: {{ best_score }}</p> -->
             </div>
             <div class="profile-buttons">
-                        <button onclick="renderLogout()" class="switch switch--outlined" id="profile-logout">logout</button>
+                <button onclick="renderLogout()" class="switch switch--outlined" id="profile-logout">logout</button>
             </div>
-
         </div>
-        <div id="divider" class="divider"></div>
         <div id="calendar-container" class="flex flex-column">
             <div id="calendar"></div>
             <div class="legend">
@@ -94,47 +92,8 @@
             </div>
         </div>
     </div>
+    <div id="divider" class="divider"></div>
 </body>
-
-<script>
-    // Draggable divider functionality
-    document.addEventListener('DOMContentLoaded', function () {
-        const divider = document.getElementById('divider');
-        const leftPanel = document.getElementById('statistics');
-        const rightPanel = document.getElementById('calendar-container');
-        const container = document.querySelector('.global');
-
-        let isDragging = false;
-
-        divider.addEventListener('mousedown', function (e) {
-            isDragging = true;
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', handleMouseUp);
-            e.preventDefault();
-        });
-
-        function handleMouseMove(e) {
-            if (!isDragging) return;
-            const containerRect = container.getBoundingClientRect();
-            const mouseX = e.clientX - containerRect.left;
-            const containerWidth = containerRect.width;
-            // Calculate percentages
-            const leftWidth = (mouseX / containerWidth) * 100;
-            const rightWidth = 100 - leftWidth - (4 / containerWidth * 100); // Subtract divider width percentage
-            // Set minimum and maximum widths (20% to 75%)
-            if (leftWidth >= 20 && leftWidth <= 75) {
-                leftPanel.style.width = `${leftWidth}%`;
-                rightPanel.style.width = `${rightWidth}%`;
-            }
-        }
-
-        function handleMouseUp() {
-            isDragging = false;
-            document.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('mouseup', handleMouseUp);
-        }
-    });
-</script>
 
 <script>
     const labels = JSON.parse('{{ jumps_data|tojson|safe }}').map(entry => entry.date);
@@ -172,7 +131,6 @@
         const computedMaxY = Math.max(...allYValues);
         const yMax = Math.max(computedMaxY, 25) + 1;
         const yMin = 0;
-
         userColorEmph = '#c0c499';
         userColor = getComputedStyle(document.documentElement).getPropertyValue('--grayed-out-color-help-target');
         otherUserColor = getComputedStyle(document.documentElement).getPropertyValue('--border-color');
@@ -217,7 +175,6 @@
             showLine: true,
             pointRadius: 5,
         }];
-
         window.myChart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -225,6 +182,8 @@
                 datasets: datasets
             },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 interaction: {
                     mode: 'index',
                     intersect: false,
@@ -314,12 +273,15 @@
                     y: {
                         min: yMin,
                         max: yMax,
-                        display: false,
+                        suggestedMin: 0,
+                        suggestedMax: 25,
+                        // display: false,
                         grid: {
                             color: grayedOutBackground,
                         },
                         ticks: {
-                            color: textColor // <-- y-axis labels
+                            color: textColor, // <-- y-axis labels
+                            padding: 20
                         },
                         title: {
                             display: false,
@@ -330,6 +292,17 @@
                 }
             }
         });
+        console.log(window.myChart.canvas.parentNode)
+        // Set the height and width of the canvas container to reasonable values
+        // setTimeout(() => {
+        //     window.myChart.height = 600;
+        //     window.myChart.width = 1200;
+        //     window.myChart.canvas.height = 600;
+        //     window.myChart.canvas.width = 1200;
+        // }, 100);
+        // Set the height of the canvas container
+        console.log('window.myChart.width:', window.myChart.width);
+        console.log('window.myChart.height:', window.myChart.height);
     }
 
     renderGraph();
@@ -394,8 +367,8 @@
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: true,
+                responsive: false,
+                maintainAspectRatio: false,
                 scales: {
                     x: {
                         title: {
@@ -610,6 +583,15 @@
                 renderGraph();
             }
         })
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        if(window.innerWidth <= 992){
+            const stats = document.getElementById('statistics');
+            const msg = document.createElement('p');
+            msg.classList.add('mobile-stats-message');
+            msg.textContent = "View full statistics on desktop";
+            stats.querySelector('.profile-buttons').after(msg);
+        }
     });
 </script>
 

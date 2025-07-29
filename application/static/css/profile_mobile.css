@@ -5,17 +5,46 @@
     .profile-container {
         max-width: 100vw;
     }
+    .profile-email {
+        font-size: 2.4rem !important;
+    }
     #statistics {
         max-width: 100vw;
-        padding: 1rem !important;
-    }
-    #jumps-graph {
+        padding: 1rem 0.5rem !important;
         width: 100vw;
-        max-width: 100vw;
     }
-    #calendar {
-        margin: 0;
-        padding: 1rem !important;
+    jumps-graph {
+        height: auto;
+    }
+    #jumps-graph-container {
+        height: auto;
+    }
+    .mobile-stats-message {
+        font-size: 1.2rem;
+        font-style: italic;
+        color: var(--grayed-out-color);
+        text-align: center;
+        margin-top: 1rem;
+    }
+
+    .profile-stats {
+        gap: 0.6rem;
+    }
+    .profile-stats .stat {
+        font-size: 2.1rem;
+    }
+    .profile-buttons{
+        display: flex;
+        justify-content: center;
+    }
+    .profile-stats .stat-subtitle {
+        font-size: 1rem;
+    }
+    .legend {
+        display: none !important;
+    }
+    #calendar, #calendar-container{
+        display: none;
     }
     .fc .fc-scroller-harness {
     direction: ltr;
