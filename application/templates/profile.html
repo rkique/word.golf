@@ -40,6 +40,11 @@
             }
             // }
         }
+
+        function renderLogin() {
+            window.location.href = '/login';
+        }
+
     </script>
 </head>
 
@@ -82,7 +87,11 @@
             <p>Best Score: {{ best_score }}</p> -->
             </div>
             <div class="profile-buttons">
+                {% if email %}
                 <button onclick="renderLogout()" class="switch switch--outlined" id="profile-logout">logout</button>
+                {% else %}
+                <button onclick="renderLogin()" class="switch switch--outlined" id="profile-logout">login</button>
+                {% endif %}
             </div>
         </div>
         <div id="calendar-container" class="flex flex-column">
