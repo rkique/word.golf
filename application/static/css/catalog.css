@@ -1,8 +1,8 @@
-.play-past-prompts {
+    .play-past-prompts {
         margin: 0 auto 2rem;
         max-width: 600px;
         font-weight: 400;
-        text-align: left; 
+        text-align: center; 
         margin-top: 2rem;
         font-family: 'Inter', sans-serif;
     }
