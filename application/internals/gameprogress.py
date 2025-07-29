@@ -109,7 +109,6 @@ def finished_game(finish_request, state_model):
     game = state_model.query.filter_by(user_id=user.id, current_date=today.today).first()
     if not game:
         return redirect('/')
-    
 
     if today.today != user.last_date_completed: # if it is the same do nothing 
         if not game.prompts or not game.prompts[-1]:
@@ -136,5 +135,6 @@ def finished_game(finish_request, state_model):
         user.last_date_completed = today.today
         # db.session.add(game)
         db.session.commit()
-
+    else:
+        print("[finished_game]: User has already completed today's game, no changes made.")
     return None

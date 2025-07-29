@@ -53,15 +53,22 @@ p {
     justify-content: center;
     align-items: center;
 }
+#jumps-graph {
+    margin-top: 1rem;
+}
+
+.profile-container{
+    gap: 2rem;
+}
 
 .profile-title {
     display: inline;
     margin: 0;
-    font-size: 1.8rem;
 }
 .profile-email {
     font-weight: 300;
-    font-size: 1.4rem;
+    font-size: 3.2rem !important;
+    color: var(--grayed-out-color);
     margin: 0;
 }
 
@@ -70,13 +77,13 @@ p {
     /* display: inline; */
     font-size: 1.2rem;
     margin-left: 1rem;
-    padding: 0.5rem;
+    /* padding: 0.5rem; */
     width: 8rem;
     border-radius: 0.5rem;
+    height: 2.4rem;
 }
 
 #statistics, #calendar-container {
-  gap: 1rem;
   font-size: 1rem;
   padding: 1rem;
   max-height: 100vh;

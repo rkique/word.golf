@@ -508,11 +508,12 @@ def resetpassword():
 @app.route('/profile', methods=['GET'])
 def profile():
     user = get_user_from_cookie()
-    if not user or not user.email:
-        return redirect('/login')
+    # if not user or not user.email:
+    #     return redirect('/login')
     state_model = get_state_model()
     game_state = state_model.query.filter_by(user_id=user.id, current_date=today.today).first()
-
+    # print(f'user game_state is {game_state}')
+    # print(f'game state has keys and values {game_state.__dict__.keys()} and {game_state.__dict__.values()}')
     # look for best score through all game states
     best_score = state_model.query.filter_by(user_id=user.id).order_by(state_model.total_jumps.asc()).first()
     if best_score:
@@ -521,6 +522,7 @@ def profile():
         best_score = game_state.total_jumps if game_state else 0
     
     total_games = state_model.query.filter_by(user_id=user.id).filter(state_model.total_jumps > 0).count()
+    # print(f'user total games is {total_games}')
     streak = user.streak if user.streak else 0
 
     # get the average jumps per game
@@ -974,6 +976,7 @@ def index_post():
                 redirect('/')
             streak = user.streak
             current_game = get_current_game_state(state_model)
+            # print('current game is', current_game, 'current game total jumps is', current_game.total_jumps)
             if not current_game:
                 redirect('/')
             total_jumps = current_game.total_jumps
@@ -981,6 +984,7 @@ def index_post():
             total_games = state_model.query.filter_by(user_id=user.id).filter(state_model.total_jumps > 0).count()
             data['total_games'] = total_games
             data['streak'] = streak
+            # print('[/ end 4] total_jumps is', total_jumps)
             data['total_jumps'] = total_jumps
             starts = [prompt[0] for prompt in prompts_today]
             data['wordsArray'] = words_array_from_data(starts, selected_words, data['jumpsArray'])

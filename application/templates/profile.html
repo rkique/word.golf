@@ -49,8 +49,14 @@
             <div class="flex profile-container">
                 <a href="/" class="back-arrow"
                     style="text-decoration: none; margin-right: 12px; font-size: 2rem; vertical-align: middle;">&#8592;</a>
-                <h2 class="profile-title">Profile <span class="profile-email"> {{ email }}</span></h2>
-                <button onclick="renderLogout()" class="switch switch--outlined" id="profile-logout">logout</button>
+                <h2 class="profile-title">
+                    {% if email %}
+                    <span class="profile-email"></span>{{ email }}</span>
+                    {% else %}
+                    <span class="profile-email" style="font-style: italic;">guest</span>
+                    {% endif %}
+                    </span>
+                </h2>
             </div>
             <div class="stats-container">
                 <canvas id="jumps-graph" width="600" height="400"></canvas>
@@ -75,6 +81,10 @@
         <p>Best Score: {{ best_score }}</p> -->
                 </div>
             </div>
+            <div class="profile-buttons">
+                        <button onclick="renderLogout()" class="switch switch--outlined" id="profile-logout">logout</button>
+            </div>
+
         </div>
         <div id="divider" class="divider"></div>
         <div id="calendar-container" class="flex flex-column">
@@ -134,7 +144,14 @@
     console.log(myJumpsToday);
     let lastRendered = 'global';
 
+    const failure = getCSSVariable('--failure');
+    const softFailure = getCSSVariable('--soft-failure');
+    const grayedOutBackground = getCSSVariable('--grayed-out-background');
+    const textColor = getCSSVariable('--text-color');
+    const backgroundColor = getCSSVariable('--grayed-out-background');
+    const grayedOutColor = getCSSVariable('--grayed-out-color');
     function renderGraph() {
+        console.log("rendering graph");
         lastRendered = 'global';
         if (window.myChart) {
             window.myChart.destroy();
@@ -155,11 +172,6 @@
         const computedMaxY = Math.max(...allYValues);
         const yMax = Math.max(computedMaxY, 25) + 1;
         const yMin = 0;
-        const failure = getCSSVariable('--failure');
-        const softFailure = getCSSVariable('--soft-failure');
-        const grayedOutBackground = getCSSVariable('--grayed-out-background');
-        const textColor = getCSSVariable('--text-color');
-        const backgroundColor = getCSSVariable('--grayed-out-background');
 
         userColorEmph = '#c0c499';
         userColor = getComputedStyle(document.documentElement).getPropertyValue('--grayed-out-color-help-target');
@@ -185,8 +197,8 @@
             pointBackgroundColor: function (context) {
                 const value = context.parsed.y;
                 if (value === 10) return userColorEmph;
-                if (value >= 11 && value <= 12) return userColorEmph; 
-                return userColorEmph; 
+                if (value >= 11 && value <= 12) return userColorEmph;
+                return userColorEmph;
             },
             backgroundColor: backgroundColor,
             fill: false,
@@ -234,8 +246,18 @@
                         }
                     },
                     title: {
-                        display: false,
-                        color: textColor
+                        display: true,
+                        text: 'All time games',
+                        color: grayedOutColor,
+                        padding: {
+                            top: 20,
+                            bottom: 10
+                        },
+                        font: {
+                            family: "'Inter', sans-serif",
+                            weight: 400,
+                            size: 32,
+                        }
                     },
                     tooltip: {
                         mode: 'index',
@@ -313,6 +335,7 @@
     renderGraph();
 
     function renderBarGraph(total_jumps_data, my_total_jumps, date) {
+        console.log("rendering bar graph");
         if (window.myChart) {
             window.myChart.destroy();
         }
@@ -339,16 +362,16 @@
         console.log('total_jumps_data:', total_jumps_data);
         if (total_jumps_data.includes(my_total_jumps)) {
             // Show a persistent tooltip for the user's bar
-            setTimeout(function() {
+            setTimeout(function () {
                 if (window.myChart) {
                     const userIndex = labels.indexOf(my_total_jumps);
                     if (userIndex !== -1) {
                         window.myChart.setActiveElements([
-                            {datasetIndex: 0, index: userIndex}
+                            { datasetIndex: 0, index: userIndex }
                         ]);
                         window.myChart.tooltip.setActiveElements([
-                            {datasetIndex: 0, index: userIndex}
-                        ], {x: 0, y: 0});
+                            { datasetIndex: 0, index: userIndex }
+                        ], { x: 0, y: 0 });
                         window.myChart.tooltip.update();
                         window.myChart.update();
                     }
@@ -361,12 +384,12 @@
         window.myChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: labels, 
+                labels: labels,
                 datasets: [{
                     label: '',
-                    data: data, 
-                    backgroundColor: backgroundColors, 
-                    borderColor: borderColors, 
+                    data: data,
+                    backgroundColor: backgroundColors,
+                    borderColor: borderColors,
                     borderWidth: 1
                 }]
             },
@@ -392,12 +415,15 @@
                 plugins: {
                     title: {
                         display: true,
-                        text: `Games Played on ${new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}`,
+                        text: `Games played — ${new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}`,
+                        color: grayedOutColor,
                         padding: {
                             top: 20,
                             bottom: 10
                         },
                         font: {
+                            family: "'Inter', sans-serif",
+                            weight: 400,
                             size: 32,
                         }
                     },
@@ -407,11 +433,11 @@
                     },
                     tooltip: {
                         enabled: true,
-                        filter: function(context) {
+                        filter: function (context) {
                             return context.label == my_total_jumps;
                         },
                         callbacks: {
-                            label: function(context) {
+                            label: function (context) {
                                 if (context.label == my_total_jumps) {
                                     return 'Your score: ' + my_total_jumps;
                                 }
@@ -506,7 +532,7 @@
                     });
                 // window.location.href = '/previous_index?day=' + diffInDays;
             },
-            dayCellContent: function(arg) {
+            dayCellContent: function (arg) {
                 const date = arg.date;
                 const may30 = new Date(2025, 4, 30); // Months are 0-indexed
                 const today = new Date(arg.date.getFullYear(), arg.date.getMonth(), arg.date.getDate());
@@ -580,7 +606,7 @@
 
         // const calendarEl = document.getElementById('calendar');
         document.body.addEventListener('click', function (e) {
-            if ((!e.target.closest('.fc-daygrid-day') && !e.target.closest('#jumps-graph')) && lastRendered == 'previous'){
+            if ((!e.target.closest('.fc-daygrid-day') && !e.target.closest('#jumps-graph')) && lastRendered == 'previous') {
                 renderGraph();
             }
         })
