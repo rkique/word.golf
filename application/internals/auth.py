@@ -13,7 +13,7 @@ def get_state_model():
     dev_mode = False # base mode in production
 
     host = request.host
-    if host.startswith('localhost') or host.startswith('dev.word.golf'):
+    if host.startswith('localhost') or host.startswith('dev.word.golf') or host.startswith("127.0.0.1"):
         dev_mode = True
 
     return FakeGameState if dev_mode else GameState
