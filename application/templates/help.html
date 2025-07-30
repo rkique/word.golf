@@ -17,13 +17,24 @@
     <a href="/" class="back-arrow">&#8592;</a>
     <div class="scroll" id="help-screen-container">
         <h1 id="help-finish">How to play</h1>
-        <div class='help-text'>
-            <p>Link two words by clicking their neighbors.</p>
-            <p class='--grayed-out'>fruit ⟶ orchard ⟶ house ⟶ porch</p>
-            <p>Choose carefully! You only need two jumps.</p>
-            <p class='--grayed-out'>whisper ⟶ shouting ⟶ scuffle</p>
-            <p>Five prompts daily. The best score is ten.</p>
+        <div class="help-text">
+            <p><strong>Your Goal:</strong> Connect two unrelated words by clicking through a chain of <em>semantic neighbors</em> — words related in meaning or context.</p>
+
+            <p>Each day, you’ll get <strong>5 new word pairs</strong>. Each pair includes a <em>start word</em> and a <em>target word</em> from opposite ends of the semantic space.</p>
+
+            <p>Click a word to reveal its <strong>semantic neighbors</strong>. These aren’t exact synonyms, but they tend to appear in similar contexts or categories. Use them to navigate toward the target word.</p>
+
+            <p>Each jump shows new neighbors that are biased toward the target, helping guide you closer as you go. The progress bar on the bottom of the screen shows how close you are to the target word</p>
+
+            <p class="--grayed-out">Example:<br>
+                <strong>whisper ⟶ shouting ⟶ scuffle</strong><br>
+                – “Whisper” and “shouting” are related by volume.<br>
+                – “Shouting” connects to “scuffle” in the context of conflict.
+            </p>
+
+            <p><strong>Your challenge:</strong> Reach the target in as few jumps as possible. A perfect solve takes just <strong>2 jumps per pair</strong> — 10 total for the day.</p>
         </div>
+
 
         <div class="guest-buttons" id="guest-buttons">
             <p class="credits">Built with word2vec and Google Books.</p>
