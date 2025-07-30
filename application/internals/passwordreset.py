@@ -7,7 +7,6 @@ import os
 from datetime import datetime, timedelta
 from .crypto import generate_salt, PasswordKDF, Hash
 from .auth import get_user_from_cookie, get_last_nonzero_row
-from . import today
 
 
 # DO NOT USE GLOBAL DATE FOR THIS CASE (needs to be real time date)
@@ -81,7 +80,7 @@ def reset_password():
     db.session.commit()
 
     if current_user:
-        game_state = GameState.query.filter_by(user_id=current_user.id, current_date=today.today).first()
+        game_state = GameState.query.filter_by(user_id=current_user.id, current_date=globals.today).first()
         if game_state:
             login_state = GameState.query.filter_by(user_id=user.id, current_date=game_state.current_date).first()
             if login_state:

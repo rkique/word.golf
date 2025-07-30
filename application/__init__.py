@@ -7,6 +7,7 @@ import itsdangerous
 import os
 from dotenv import load_dotenv
 
+
 load_dotenv()
 db = SQLAlchemy()
 mail = Mail()
@@ -56,7 +57,6 @@ def create_app():
     )
 
     with app.app_context():
-        from . import routes
         from .internals import crypto
         from .internals import auth
         from .internals import passwordreset
@@ -65,5 +65,9 @@ def create_app():
         import logging
         log = logging.getLogger('werkzeug')
         log.setLevel(logging.ERROR)
+
+    from .routes import blueprints
+    for blueprint in blueprints:
+        app.register_blueprint(blueprint)
 
     return app
