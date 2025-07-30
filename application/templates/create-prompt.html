@@ -66,6 +66,9 @@
         <div id="wordspace-container">
             <div id="wordspace"></div>
         </div>
+        <div id="finish-msg" style='display: none'>
+            <p>Total Jumps: 0</p>
+        </div>
         <div id="prompts-container">
             <div id="prompts-title">
                 <div id="prompts-title-heading">Prompts</div> 
@@ -74,11 +77,6 @@
                 </div>
             </div>
             <div id="prompts">
-                <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
-                <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
-                <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
-                <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
-                <div class="prompt-box"> <div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div><div class="word-tally-box"></div> </div>
             </div>
         </div>
         <!-- <div style="margin-top: 20px;"> -->
@@ -91,6 +89,8 @@
 
 <script>
     let currentPromptIndex = 0; 
+    let curr_game_idx = 0;
+    let jumps = 0;
     let promptsData = []; 
     let current_prompt_data = null; 
     let focusedWord = ''; 
@@ -117,6 +117,80 @@
         }
     }
 
+    function fake_ws_to_text(){
+        let wordspace = document.getElementById("wordspace")
+        ws_array = Array.from(wordspace.children)
+        return ws_array.map(el => el.firstChild.innerText)
+    }
+
+    function fakeActivateLinks(end_word) {
+        ws_texts = fake_ws_to_text()
+        ws_array.map(function (el, i) {
+            if (i !== 10) {
+                el.onclick = async function () {
+                    let result = await fakePostWord(ws_texts[i], end_word);
+                    console.log("[fakeActivateLinks] here is the post word result: ", result);
+                    if (result > -1) {
+                        const wordspace = document.getElementById("wordspace");
+                        wordspace.style.display = 'none';
+                        // clearChildren(document.getElementById("wordspace"));
+                        const finishMsg = document.getElementById('finish-msg');
+                        finishMsg.style.display = 'block';
+                        const totalJumpsP = finishMsg.querySelector('p');
+                        totalJumpsP.textContent = 'Total Jumps: ' + jumps;
+                    }
+                }
+            }
+        })
+    }
+
+    async function fakePostWord(word, target) {
+        jumps += 1;
+        let start_word = word;
+        let end_word = target;
+        if (word === target) {
+            // get the results for the next word or end the session 
+            const promptsCount = document.getElementById('prompts-count');
+            let previous_counts = parseInt(promptsCount.textContent, 10);
+            // console.log("[fakePostWord] here is the previous counts" , previous_counts);
+
+            if (previous_counts == promptsData.length) {
+                return jumps;
+            } else {
+                promptsCount.textContent = previous_counts += 1;
+                curr_game_idx += 1;
+                // then move onto the next prompt 
+                start_word = promptsData[curr_game_idx].startWord;
+                end_word = promptsData[curr_game_idx].endWord;
+            }
+        } 
+        // now we send the backend request 
+        const res = await fetch("/next_word", {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                start_word,
+                end_word
+            })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            // change wordspace 
+            fakeRenderLinks(end_word, data.results);
+            fakeActivateLinks(end_word);
+            return -1;
+        } else {
+            console.log("Error:", data);
+        }
+        return -1;
+
+    }
+
     function exitFocusMode() {
         const promptMaker = document.getElementById('prompt-maker');
         promptMaker.classList.remove('focus-mode');
@@ -126,11 +200,60 @@
         document.getElementById('end-word').style.display = "block";
     }
 
-    function demoGame() {
+    async function demoGame() {
+        jumps = 0;
         const promptMaker = document.getElementById('prompt-maker');
         promptMaker.style.display = 'none';
         const promptDemo = document.getElementById('prompt-demo');
         promptDemo.style.display = 'block';
+        const promptsRemainder = document.getElementById('prompts-count-remainder');
+        promptsRemainder.textContent = `/ ${promptsData.length}`;
+        const prompts = document.getElementById('prompts');
+        curr_game_idx = 0;
+        const promptsCount = document.getElementById('prompts-count');
+        promptsCount.textContent = curr_game_idx + 1;
+        const wordspace = document.getElementById("wordspace");
+        wordspace.style.removeProperty('display');
+        const finishMsg = document.getElementById('finish-msg');
+        finishMsg.style.display = 'none';
+        for (let i = 0; i < promptsData.length; i++) {
+            prompts.innerHTML += `
+                <div class="prompt-box">
+                    <div class="word-tally-box"></div>
+                    <div class="word-tally-box"></div>
+                    <div class="word-tally-box"></div>
+                    <div class="word-tally-box"></div>
+                    <div class="word-tally-box"></div>
+                    <div class="word-tally-box"></div>
+                </div>
+            `;
+        }
+        try {
+            const res = await fetch("/next_word", {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    start_word: promptsData[0].startWord,
+                    end_word: promptsData[0].endWord
+                })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                // data.results
+                fakeRenderLinks(promptsData[0].endWord, data.results)
+                fakeActivateLinks(promptsData[0].endWord);
+            } else {
+                console.log("Error:", data);
+            }
+        } catch (err) {
+            console.error("Error during backend call:", err);
+        }
+        
     }
 
     function createPrompts() {
@@ -202,6 +325,10 @@
                 wordspace.append(fakeMakeLink(prompt, result))
             }
         })
+    }
+
+    function fakeRenderPrompts() {
+        
     }
 
     function nextPrompt() {

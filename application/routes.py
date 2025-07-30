@@ -717,6 +717,15 @@ def words_array_from_data(starts, selected_words, jumps_array):
         l_idx = r_idx
     return result
 
+@app.route('/next_word', methods=['POST'])
+def next_word():
+    data = request.get_json()
+    start_word = data["start_word"]
+    target_word = data["end_word"]
+    new_data = {}
+    new_data["results"] = get_curve(start_word, target_word, PRECOMPUTED, WV)
+    return make_response(new_data)
+
 @app.route('/', methods=['POST'])
 def index_post():
     if request.form.get('redirect') is not None:
