@@ -6,9 +6,6 @@ import nltk
 from nltk.corpus import wordnet as wn
 from collections import defaultdict
 
-nltk.download('wordnet')
-nltk.download('omw-1.4')
-
 LAZY_EXCLUDE = ["fuckable", "shitshow", "jegging", "daddy", "brat",
                 "dominatrix"," hotness"," sexiness"," perky"," kissable"," fatale"," seductive", "aybe",
                   "orgasmed", "sodomized", "sodomize", "kinkier", "ravish", "ravage",
