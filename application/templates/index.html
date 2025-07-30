@@ -16,6 +16,7 @@
         // Check if the browser is Safari and not running on localhost
         if (isSafari() && window.location.origin !== 'http://127.0.0.1:8080' && window.location.origin != 'http://localhost:8080') {
             if (window.location.search.indexOf('v=') === -1 && window.location.origin !== 'https://word.golf/past') {
+                console.log(window.location.origin);
                 var uniqueParam = 'v=' + new Date().getTime();
                 var newUrl = 'https://www.word.golf?' + uniqueParam;
                 window.location.replace(newUrl);
