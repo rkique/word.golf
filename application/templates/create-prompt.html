@@ -13,6 +13,8 @@
     {% include 'head.html' %}
 </head> 
 
+<script src="{{ url_for('static', filename='js/prompts.js') }}?{{ version }}"></script>
+
 <body>
     <div class="wg-banner">
         <a href="/" class="wg-banner-title">word.golf</a>
@@ -71,6 +73,9 @@
         </div>
         <div id="prompts-container">
             <div id="prompts-title">
+                <div id="prompts-bar-container">
+                    <div id="prompts-bar"></div>
+                </div>
                 <div id="prompts-title-heading">Prompts</div> 
                 <div id="prompts-count-container">
                     <div id="prompts-count">1</div> <div id="prompts-count-remainder">/ 5</div>
@@ -237,7 +242,8 @@
                 },
                 body: JSON.stringify({
                     start_word: promptsData[0].startWord,
-                    end_word: promptsData[0].endWord
+                    end_word: promptsData[0].endWord,
+                    neighbor: promptsData[0].solution[1]
                 })
             });
 

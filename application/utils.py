@@ -2,6 +2,10 @@ import pandas as pd
 import numpy as np
 import random 
 import ast
+import nltk
+from nltk.corpus import wordnet as wn
+nltk.download('wordnet')
+nltk.download('omw-1.4')
 
 LAZY_EXCLUDE = ["fuckable", "shitshow", "jegging", "daddy", "brat",
                 "dominatrix"," hotness"," sexiness"," perky"," kissable"," fatale"," seductive", "aybe",
@@ -153,3 +157,68 @@ def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict, linear=Fals
     return results
 
 
+
+def get_furthest_away_word(word: str, PRECOMPUTED: dict, WV: dict) -> str:
+    '''
+    Returns the word that is furthest from the input word in terms of embedding similarity,
+    but still shares at least one neighbor with the input word.
+    '''
+    if word not in PRECOMPUTED:
+        raise ValueError(f"{word} not found in PRECOMPUTED.")
+
+    word_neighbors = set(PRECOMPUTED[word])
+
+    max_distance = float('-inf')
+    furthest_word = None
+
+    for candidate, candidate_neighbors in PRECOMPUTED.items():
+        if candidate == word:
+            continue
+        
+        if not word_neighbors.intersection(candidate_neighbors):
+            continue
+        
+        sim = similarity(word, candidate, WV)
+        distance = 1 - sim
+
+        if distance > max_distance:
+            max_distance = distance
+            furthest_word = candidate
+
+    return furthest_word
+
+def get_synonyms(word: str):
+    word_list = []
+
+    for synset in wn.synsets(word):
+        for lemma in synset.lemmas():
+            name = lemma.name().replace('_', ' ')
+            word_list.append(name)
+
+        for hyponym in synset.hyponyms():
+            for lemma in hyponym.lemmas():
+                name = lemma.name().replace('_', ' ')
+                word_list.append(name)
+
+        for hypernym in synset.hypernyms():
+            for lemma in hypernym.lemmas():
+                name = lemma.name().replace('_', ' ')
+                word_list.append(name)
+
+    return word_list
+
+def get_similar_word(word: str, PRECOMPUTED: dict, WV):
+    if word in PRECOMPUTED:
+        return word
+
+    possible = get_synonyms(word)
+
+    matches = [w for w in possible if w in PRECOMPUTED]
+    print(f"[SIMILAR] Input: {word} → Candidates: {matches}")
+
+    return matches[0]
+
+def find_common_neighbor(starting_word: str, target_word: str, PRECOMPUTED: dict):
+    start_neighbors = set(PRECOMPUTED[starting_word])
+    target_neighbors = set(PRECOMPUTED[target_word])
+    return start_neighbors.intersection(target_neighbors)
