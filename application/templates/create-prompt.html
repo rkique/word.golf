@@ -231,8 +231,8 @@
         curr_game_idx = 0;
         const promptsCount = document.getElementById('prompts-count');
         promptsCount.textContent = curr_game_idx + 1;
-        const global = document.getElementById("wordspace");
-        global.style.removeProperty('display');
+        const global = document.getElementById("global");
+        global.style.display = 'flex';
         const finishMsg = document.getElementById('finish-msg');
         finishMsg.style.display = 'none';
         for (let i = 0; i < promptsData.length; i++) {
