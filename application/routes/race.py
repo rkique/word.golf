@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, request, jsonify, make_response
 from flask_socketio import SocketIO, join_room, leave_room, emit
 import uuid
 from .. import socketio
-from ..utils import get_prompts, txt_to_list, get_curve
+from ..utils import get_prompts, txt_to_list, get_curve, similarity
 from . import main
 import random
 
@@ -17,6 +17,8 @@ lobbies = {}
 game_states = {}
 
 sid_to_user = {}
+
+default_user_state = {'score': 0, 'wins': 0}
 
 @race_bp.route('/race')
 def race_lobby():
@@ -51,13 +53,13 @@ def handle_connect():
 
 @socketio.on('create_lobby')
 def handle_create_lobby(data):
-    name = data.get('name')
+    name = data.get('name', 'Anonymous')
     code = str(uuid.uuid4())[:6].upper()
     [start, target] = random.choice(PROMPTS)
     lobbies[code] = {'start': start, 'target': target}
     join_room(code) #join room
     game_states[code] = {}
-    game_states[code][name] = ''
+    game_states[code][name] = default_user_state.copy() #can store score, but also game states
     sid_to_user[request.sid] = (code, name)
     #Trigger lobby join on both create 
     print('lobby joined:', code, 'by', request.sid)
@@ -82,9 +84,9 @@ def handle_join_lobby(data):
                 suffix = name.split('(')[-1][0] #get number in parens
                 name = name[:-3] + f'({int(suffix) + 1})'
                 print(f'[join_lobby] Renamed {data.get("name")} to {name}')
-            game_states[code][name] = ''
+            game_states[code][name] = default_user_state.copy()
         else:
-            game_states[code][name] = ''
+            game_states[code][name] = default_user_state.copy()
         sid_to_user[request.sid] = (code, name) #assign unique lobby & user
         start = lobbies[code]['start']
         target = lobbies[code]['target']
@@ -98,6 +100,12 @@ def handle_get_lobbies():
     lobby_codes = list(lobbies.keys())
     emit('lobby_list', lobby_codes) #emitted lobby list.
 
+def handle_game_finish(lobby, user):
+    game_states[lobby][user]['wins'] += 1
+    [start, target] = random.choice(PROMPTS)
+    lobbies[lobby] = {'start': start, 'target': target}
+    emit('game_finished', {'game_state': game_states[lobby], 'start': start, 'target': target}, room=lobby)
+
 @socketio.on('click')
 def click(data):
     user = data.get('user')
@@ -106,10 +114,11 @@ def click(data):
     lobby = data.get('lobby')
     print('[Click] User:', user, 'Word:', word)
     if word == target:
-        emit('game_finished', {'user': user}, room=lobby)
-
+        handle_game_finish(lobby, user)
     words = get_curve(word, target, main.PRECOMPUTED, main.WV, False)
-    emit('click', {'user': user, 'words': words})
+    score = similarity(word, target, main.WV)
+    game_states[lobby][user]['score'] = score
+    emit('click', {'user': user, 'words': words, 'game_state': game_states[lobby]}, room=lobby)
 
 @socketio.on('game_started')
 def handle_game_start(data):
@@ -124,5 +133,5 @@ def handle_game_start(data):
     target = lobby_info['target']
     users = list(game_states[lobby].keys())
     words = get_curve(start, target, main.PRECOMPUTED, main.WV, True)
-    emit('start_game', {'lobby': lobby, 'start': start, 'target': target, 'words': words}, room=lobby)
+    emit('start_game', {'lobby': lobby, 'start': start, 'target': target, 'words': words, 'users': users}, room=lobby)
     #start_game= True

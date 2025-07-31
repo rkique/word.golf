@@ -51,6 +51,7 @@
         <div id="game">
             <div id="target"></div>
             <div id="wordspace"></div>
+            <div id="user-progress"></div>
             <button id="go-to-target" style="margin-top:1rem; display:none">Go to Target</button>
         </div>
     </div>
@@ -60,10 +61,9 @@
         let myName = "";
         let start = null;
         let target = null;
-        function getName() {
-            const name = document.getElementById('username').value.trim();
-            return name ? name : 'Anonymous';
-        }
+
+        // User progress state: { username: score }
+        let userProgress = {};
 
         function renderGame(data) {
             hideLobby();
@@ -81,18 +81,38 @@
                 for (let col = 0; col < 3; col++) {
                     const idx = row * 3 + col;
                     const word = words[idx] ? words[idx] : '';
-                    if (word) {
+                    if (col == 1 && row == 3) {
+                        html += `<td>
+                                <a href="#" class="link--starting" onclick="window.clickWord('${myName}', '${word}')">${word}</a>
+                            </td>`;
+                    } else {
                         html += `<td>
                                 <a href="#" onclick="window.clickWord('${myName}', '${word}')">${word}</a>
                             </td>`;
-                    } else {
-                        html += `<td></td>`;
                     }
                 }
                 html += '</tr>';
             }
             html += '</table>';
             document.getElementById('wordspace').innerHTML = html;
+            renderUserProgressBars();
+        }
+
+        function renderUserProgressBars() {
+            const container = document.getElementById('user-progress');
+            let html = '';
+            for (const [user, score] of Object.entries(userProgress)) {
+                let percent = (typeof score === 'number' && !isNaN(score)) ? Math.max(0, Math.min(1, score)) : 0;
+                percent = Math.round(percent * 100);
+                html += `<div class="user-progress-row">
+                    <span class="user-progress-name">${user}</span>
+                    <div class="user-progress-bar-outer">
+                        <div class="user-progress-bar-inner" style="width: ${percent}%;"></div>
+                    </div>
+                    <span class="user-progress-score">${percent}%</span>
+                </div>`;
+            }
+            container.innerHTML = html;
         }
 
         function registerListeners(socket) {
@@ -104,21 +124,18 @@
 
             //create-lobby --> lobby_created L
             document.getElementById('create-lobby').onclick = function () {
-                myName = getName();
                 socket.emit('create_lobby', { name: myName });
             };
 
             //start-game --> game_started L
             document.getElementById('start-game').onclick = function () {
                 if (myLobby) {
-                    myName = getName();
                     socket.emit('game_started', { lobby: myLobby, name: myName, target: target });
                 }
             };
 
             //join-lobby --> join_lobby L
             document.getElementById('join-lobby').onclick = function () {
-                myName = getName();
                 const code = document.getElementById('join-code').value.trim();
                 if (code) {
                     socket.emit('join_lobby', { code: code, name: myName });
@@ -153,16 +170,41 @@
             //We always assign target before it is used.
             socket.on('start_game', function (data) {
                 console.log(`lobby ${data.lobby} started with words ${data.words} and target ${data.target}`);
+                // Reset user progress for all users in the lobby using game_state
+                userProgress = {};
+                if (data.game_state) {
+                    for (const user in data.game_state) {
+                        userProgress[user] = data.game_state[user];
+                    }
+                }
                 renderGame(data);
             });
 
             socket.on('game_finished', function (data) {
+                //update game_finished
+                start = data.start;
+                target = data.target;
+                document.getElementById('current-start-target').innerHTML = `<p class="start-label"> start </p> <p class="start"> ${start} </p><br> <p class="target-label"> target </p> <p class="target"> ${target} </p>`;
                 renderFinish(data)
             });
 
             socket.on('click', function (data) {
-                console.log(`words ${data.words} and target ${data.target}`);
-                renderGame(data);
+                // data: {user, words, score, game_state}
+                if (data.game_state) {
+                    for (const user in data.game_state) {
+                        const score = data.game_state[user] && typeof data.game_state[user] === 'object' ? data.game_state[user]['score'] : 0;
+                        userProgress[user] = score || 0;
+                    }
+                    renderUserProgressBars();
+                } else if (data.user && typeof data.score === 'number') {
+                    let percent = Math.max(0, Math.min(1, data.score));
+                    userProgress[data.user] = percent;
+                    renderUserProgressBars();
+                }
+                //only do this if user is myName
+                if (data.user === myName) {
+                    renderGame(data);
+                }
             });
 
             //emit lobby joined to backend and update current lobby
@@ -172,6 +214,8 @@
                 // alert('data is ' + JSON.stringify(data));
                 // alert('joined lobby with data: ' + JSON.stringify(data));
                 myLobby = data.lobby;
+                myName = data.name;
+                console.log(`Joined lobby ${myLobby} as ${myName}`);
                 renderJoinedLobby()
             });
             // Back arrow handler
@@ -193,8 +237,7 @@
     </script>
     <script>
         function renderFinish(data) {
-            const winner = data.user;
-            const message = `Game finished! Winner: ${winner}`;
+            const message = `Game finished! game_state: ${JSON.stringify(data.game_state)}`;
             displayModal(message);
             renderTransientModal(2000);
             // Hide game area
