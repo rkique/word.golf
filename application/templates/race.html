@@ -11,6 +11,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% include 'modals/head.html' %}
+    <script src="{{ url_for('static', filename='js/information.js') }}?{{ version }}"></script>
 </head>
 
 
@@ -21,31 +22,33 @@
     <div class="race-container">
         <button id="back-arrow" title="Back"
             style="display:none;position:absolute;left:2rem;top:2rem;font-size:2rem;background:none;border:none;color:var(--text-color);cursor:pointer;z-index:10;">&#8592;</button>
-        <h1 id="lobby-title">Race</h1>
-        <h2 id="lobby-subtitle">Play a timed prompt against your friends.</h2>
-        <div id="username-lobby" class="group">
-            <div class="left-align-group">
-                <label id="username-label">your name </label>
-                <input id="username" placeholder="silverfish" maxlength="20">
-                <p id="username-display"></p>
+        <div id="lobby-info">
+            <h1 id="lobby-title">Race</h1>
+            <h2 id="lobby-subtitle">Play a timed prompt against your friends.</h2>
+            <div id="username-lobby" class="group">
+                <div class="left-align-group">
+                    <label id="username-label">your name </label>
+                    <input id="username" placeholder="silverfish" maxlength="20">
+                    <p id="username-display"></p>
+                </div>
+                <div id="current-lobby-display" class="left-align-group" style="display:none;">
+                    <label id="lobby-code-label">lobby code</label>
+                    <div id="current-lobby"></div>
+                </div>
             </div>
-            <div id="current-lobby-display" class="left-align-group" style="display:none;">
-                <label id="lobby-code-label">lobby code</label>
-                <div id="current-lobby"></div>
+            <div class="group">
+                <button id="create-lobby" title="Create Lobby">Create +</button>
+                <div class="join-lobby-container">
+                    <input id="join-code" placeholder="code" maxlength="8" style="flex: 1;">
+                    <button id="join-lobby" title="Join Lobby" style="flex-shrink: 0;">Join</button>
+                </div>
             </div>
         </div>
-        <div class="group">
-            <button id="create-lobby" title="Create Lobby">Create +</button>
-            <div class="join-lobby-container">
-                <input id="join-code" placeholder="code" maxlength="8" style="flex: 1;">
-                <button id="join-lobby" title="Join Lobby" style="flex-shrink: 0;">Join</button>
-            </div>
-        </div>
+        <div id="current-start-target"></div>
+        <div id="lobby-list"></div>
+        <div id="user-list" class="left-align-group"></div>
+        <button id="start-game" style="margin-top:2rem; display:none">Start Game</button>
         <div id="game">
-            <div id="current-start-target"></div>
-            <div id="lobby-list"></div>
-            <div id="user-list" class="left-align-group"></div>
-            <button id="start-game" style="margin-top:2rem; display:none">Start Game</button>
             <div id="target"></div>
             <div id="wordspace"></div>
             <button id="go-to-target" style="margin-top:1rem; display:none">Go to Target</button>
@@ -55,17 +58,19 @@
         let socket = io();
         let myLobby = null;
         let myName = "";
+        let start = null;
         let target = null;
         function getName() {
             const name = document.getElementById('username').value.trim();
             return name ? name : 'Anonymous';
         }
 
-        function renderAll(data) {
+        function renderGame(data) {
+            hideLobby();
             words = data.words;
             if (data.target) {
                 target = data.target;
-                document.getElementById('target').innerText = `go to ${target}`;
+                document.getElementById('target').innerHTML = `<span class="target-label">go to</span> ${target}`;
                 document.getElementById('go-to-target').style.display = '';
             } else {
                 document.getElementById('go-to-target').style.display = 'none';
@@ -78,7 +83,7 @@
                     const word = words[idx] ? words[idx] : '';
                     if (word) {
                         html += `<td>
-                                <a href="#" onclick="clickWord('${myName}', '${word}')">${word}</a>
+                                <a href="#" onclick="window.clickWord('${myName}', '${word}')">${word}</a>
                             </td>`;
                     } else {
                         html += `<td></td>`;
@@ -92,7 +97,7 @@
 
         function registerListeners(socket) {
             //EMIT FUNCTIONS 
-            function clickWord(myName, word) {
+            window.clickWord = function (myName, word) {
                 socket.emit('click', { lobby: myLobby, user: myName, word: word, target: target });
                 return false;
             }
@@ -144,28 +149,30 @@
                 else html += users.map(user => `<div class='user'>${user}</div>`).join('');
                 document.getElementById('user-list').innerHTML = html;
             });
-
+            console.log('start_game registered')
             //We always assign target before it is used.
             socket.on('start_game', function (data) {
-                target = data.target;
                 console.log(`lobby ${data.lobby} started with words ${data.words} and target ${data.target}`);
-                renderAll(data);
+                renderGame(data);
             });
 
             socket.on('game_finished', function (data) {
-                alert(`Game finished! Winner: ${data.user}`);
+                renderFinish(data)
             });
-            //use target in renderAll
+
             socket.on('click', function (data) {
                 console.log(`words ${data.words} and target ${data.target}`);
-                renderAll(data);
+                renderGame(data);
             });
+
             //emit lobby joined to backend and update current lobby
             socket.on('lobby_joined', function (data) {
-                alert('data is ' + JSON.stringify(data));
+                start = data.start;
+                target = data.target;
+                // alert('data is ' + JSON.stringify(data));
                 // alert('joined lobby with data: ' + JSON.stringify(data));
                 myLobby = data.lobby;
-                renderJoinedLobby(data)
+                renderJoinedLobby()
             });
             // Back arrow handler
             document.getElementById('back-arrow').onclick = function () {
@@ -174,7 +181,7 @@
                 }
                 renderNoJoinedLobby()
                 // Reconnect socket for new session
-                setTimeout(() => { 
+                setTimeout(() => {
                     socket = io();
                     registerListeners(socket);
                 }, 200);
@@ -185,19 +192,35 @@
         registerListeners(socket);
     </script>
     <script>
-        function renderJoinedLobby(data) {
-            document.getElementById('current-start-target').innerHTML = `<p class="start-label"> start </p> <p class="start"> ${data.start} </p><br> <p class="target-label"> target </p> <p class="target"> ${data.target} </p>`;
+        function renderFinish(data) {
+            const winner = data.user;
+            const message = `Game finished! Winner: ${winner}`;
+            displayModal(message);
+            renderTransientModal(2000);
+            // Hide game area
+            // Render joined lobby again
+            setTimeout(renderJoinedLobby, 2000);
+        }
+
+        function renderJoinedLobby() {
+            document.getElementById('current-start-target').innerHTML = `<p class="start-label"> start </p> <p class="start"> ${start} </p><br> <p class="target-label"> target </p> <p class="target"> ${target} </p>`;
+            document.getElementById('username-display').innerHTML = myName;
+            document.getElementById('current-lobby-display').style.display = 'flex';
+            document.getElementById('username-lobby').style.flexDirection = 'row';
+            document.getElementById('current-lobby').innerHTML = `<span style='font-family:monospace;'>${myLobby}</span>`;
+            document.getElementById('current-start-target').style.display = '';
+            document.getElementById('current-lobby').style.display = '';
+            document.getElementById('user-list').style.display = '';
+            document.getElementById('username-display').style.display = '';
+            document.getElementById('start-game').style.display = '';
+            document.getElementById('back-arrow').style.display = '';
+            //hide game and other UI elements
+            document.getElementById('game').style.display = 'none';
             document.getElementById('username').style.display = 'none';
-            document.getElementById('username-display').innerHTML = data.name;
             document.getElementById('lobby-list').style.display = 'none';
             document.getElementById('create-lobby').style.display = 'none';
             document.getElementById('join-lobby').style.display = 'none';
             document.getElementById('join-code').style.display = 'none';
-            document.getElementById('current-lobby-display').style.display = 'flex';
-            document.getElementById('username-lobby').style.flexDirection = 'row';
-            document.getElementById('current-lobby').innerHTML = `<span style='font-family:monospace;'>${myLobby}</span>`;
-            document.getElementById('start-game').style.display = '';
-            document.getElementById('back-arrow').style.display = '';
         }
         function renderNoJoinedLobby() {
             // Hide game/lobby display
@@ -212,10 +235,17 @@
             document.getElementById('join-lobby').style.display = '';
             document.getElementById('join-code').style.display = '';
             // Optionally clear game state
-            document.getElementById('current-start-target').innerHTML = '';
-            document.getElementById('user-list').innerHTML = '';
-            document.getElementById('target').innerHTML = '';
-            document.getElementById('wordspace').innerHTML = '';
+            // document.getElementById('current-start-target').innerHTML = '';
+            // document.getElementById('user-list').innerHTML = '';
+            // document.getElementById('target').innerHTML = '';
+            // document.getElementById('wordspace').innerHTML = '';
+        }
+        function hideLobby() {
+            document.getElementById('lobby-info').style.display = 'none';
+            document.getElementById('user-list').style.display = 'none';
+            document.getElementById('current-start-target').style.display = 'none';
+            document.getElementById('start-game').style.display = 'none';
+            document.getElementById('game').style.display = '';
         }
     </script>
 </body>

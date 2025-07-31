@@ -107,7 +107,8 @@ def click(data):
     print('[Click] User:', user, 'Word:', word)
     if word == target:
         emit('game_finished', {'user': user}, room=lobby)
-    words = get_curve(word, target, main.PRECOMPUTED, main.WV, True)
+
+    words = get_curve(word, target, main.PRECOMPUTED, main.WV, False)
     emit('click', {'user': user, 'words': words})
 
 @socketio.on('game_started')
@@ -123,5 +124,5 @@ def handle_game_start(data):
     target = lobby_info['target']
     users = list(game_states[lobby].keys())
     words = get_curve(start, target, main.PRECOMPUTED, main.WV, True)
-    emit('start_game', {'lobby': lobby, 'target': target, 'words': words}, room=lobby)
+    emit('start_game', {'lobby': lobby, 'start': start, 'target': target, 'words': words}, room=lobby)
     #start_game= True

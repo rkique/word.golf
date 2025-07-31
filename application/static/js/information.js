@@ -1,6 +1,7 @@
 HELP_FINISH_DELAY_MS = 300
 START_GAME_DELAY_MS = 800
 let startDateStr = '2025-05-30'
+
 function displayModal(displayHTML, accent){
     let modalEl;
     if (accent == "exclaim") {

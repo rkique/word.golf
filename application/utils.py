@@ -61,21 +61,13 @@ def get_prompts(l):
     return p
 
 
-def generate_indices(n: int, num: int,indices,seen,linear=False, exp=2) -> list[int]:
+def generate_indices(n: int, num: int,indices,seen, mode=2) -> list[int]:
     '''
     n: total number of items
     num: number of indices to generate
-    exp: exponent for the backoff
     '''
-    if linear:
-        i = 0
-        while len(indices) < 20:
-            if i not in seen:
-                seen.add(i)
-                indices.append(i)
-            i+= 1
-        return
-    else:
+    if mode == 2: #easier
+        exp = 2
         for x in range(num * 2):
             i = int((x / (num * 2 - 1)) ** exp * (n - 1))
             if i not in seen:
@@ -83,10 +75,18 @@ def generate_indices(n: int, num: int,indices,seen,linear=False, exp=2) -> list[
                 indices.append(i)
             if len(indices) == num:
                 return indices
-        return
+    else: #harder
+        for x in range(num * 2):
+            i = x * 3
+            if i not in seen:
+                indices.append(i)
+                seen.add(i)
+            if len(indices) == num:
+                return indices
+    return None
     
 def backoff_selection(start, target, start_neighbors: list[str], target_neighbors: list[str],\
-                      exp=2, num=20, linear=False, neighbor=None) -> list[str]:
+                      mode=2, num=20, neighbor=None) -> list[str]:
     '''
     Given an array of text in results,
     Selects a subarray of a specified number, with an exponential backoff.
@@ -94,7 +94,6 @@ def backoff_selection(start, target, start_neighbors: list[str], target_neighbor
 
     indices = []
     seen = set()
-
     if neighbor is not None:
         # print(f'neighbor: {neighbor}, target:{target}, results: {results}')
         print(f'[Neighbor] {neighbor}')
@@ -119,27 +118,27 @@ def backoff_selection(start, target, start_neighbors: list[str], target_neighbor
 
     n = len(start_neighbors)
     # Generate indices with exponential backoff
-    generate_indices(n, num, indices, seen, linear=linear, exp=exp)
+    generate_indices(n, num, indices, seen, mode=mode)
     selected = [start_neighbors[i] for i in indices]
     return selected
 
-def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict, linear_select=False, linear_bias=False,neighbor=None) -> list[str]:
+def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict, mode=2, neighbor=None) -> list[str]:
     '''
     Returns neighbors of the word which are biased towards the target.
-    Linear Bias is easiest, Exponential Backoff is harder, Linear Select is hardest.
+    Linear Bias (1) is easiest, Exponential Backoff (2) is harder, Linear Select (3) is hardest.
     ''' 
     start_neighbors = [result for result in PRECOMPUTED[word] if result not in LAZY_EXCLUDE][:N_LIMIT]
     target_neighbors = [result for result in PRECOMPUTED[target] if result not in LAZY_EXCLUDE][:N_LIMIT]
     def similarity_to_target(x): 
         return similarity(x, target, WV)
-    if linear_select:
+    if mode == 3:
         results__biased = start_neighbors[0:20]
         results__biased.insert(10, word)
     else:
         start_neighbors.sort(key=similarity_to_target, reverse=True)
         #exponential backoff from 0 to 100
         results__biased = backoff_selection(word, target, start_neighbors, target_neighbors,\
-                                            neighbor=neighbor, linear=linear_bias)
+                                            neighbor=neighbor, mode=mode)
         random.seed(len(word))
         random.shuffle(results__biased)
         results__biased.insert(10,word)
