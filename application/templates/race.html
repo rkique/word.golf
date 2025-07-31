@@ -1,64 +1,64 @@
-<!DOCTYPE html>
 <html lang="en">
 
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style_mobile.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/previous_prompts.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile_mobile.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/race.css') }}">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Race Lobby</title>
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-    <style>
-        body {
-            font-family: sans-serif;
-            margin: 2rem;
-        }
-
-        #lobby-list {
-            margin-top: 1rem;
-        }
-
-        .lobby {
-            margin: 0.5rem 0;
-        }
-        td {
-            border:1px solid #ccc;
-            padding:0.5em; 
-            min-width:3em;
-            text-align:center;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include 'modals/head.html' %}
 </head>
 
+
 <body>
-    <h2>Race Lobby</h2>
-    <div>
-        <p id="username-display"></p>
-        <input id="username" placeholder="Enter your username" maxlength="20">
+    {% include 'modals/header.html' %}
+    {% include 'modals/modal-help.html' %}
+    {% include 'modals/modal.html' %}
+    <div class="race-container">
+        <button id="back-arrow" title="Back"
+            style="display:none;position:absolute;left:2rem;top:2rem;font-size:2rem;background:none;border:none;color:var(--text-color);cursor:pointer;z-index:10;">&#8592;</button>
+        <h1 id="lobby-title">Race</h1>
+        <h2 id="lobby-subtitle">Play a timed prompt against your friends.</h2>
+        <div id="username-lobby" class="group">
+            <div class="left-align-group">
+                <label id="username-label">your name </label>
+                <input id="username" placeholder="silverfish" maxlength="20">
+                <p id="username-display"></p>
+            </div>
+            <div id="current-lobby-display" class="left-align-group" style="display:none;">
+                <label id="lobby-code-label">lobby code</label>
+                <div id="current-lobby"></div>
+            </div>
+        </div>
+        <div class="group">
+            <button id="create-lobby" title="Create Lobby">Create +</button>
+            <div class="join-lobby-container">
+                <input id="join-code" placeholder="code" maxlength="8" style="flex: 1;">
+                <button id="join-lobby" title="Join Lobby" style="flex-shrink: 0;">Join</button>
+            </div>
+        </div>
+        <div id="game">
+            <div id="current-start-target"></div>
+            <div id="lobby-list"></div>
+            <div id="user-list" class="left-align-group"></div>
+            <button id="start-game" style="margin-top:2rem; display:none">Start Game</button>
+            <div id="target"></div>
+            <div id="wordspace"></div>
+            <button id="go-to-target" style="margin-top:1rem; display:none">Go to Target</button>
+        </div>
     </div>
-    <div>
-        <button id="create-lobby">Create Lobby</button>
-        <input id="join-code" placeholder="Enter lobby code" maxlength="8">
-        <button id="join-lobby">Join Lobby</button>
-    </div>
-    <div id="current-start-target"></div>
-    <div id="current-lobby" style="margin-top:1rem;"></div>
-    <div id="lobby-list"></div>
-    <div id="user-list"></div>
-    <button id="start-game" style="margin-top:2rem; display:none">Start Game</button>
-    <div id="target"></div>
-    <div id="wordspace"></div>
-    <button id="go-to-target" style="margin-top:1rem; display:none">Go to Target</button>
     <script>
-        const socket = io();
+        let socket = io();
         let myLobby = null;
         let myName = "";
         let target = null;
         function getName() {
             const name = document.getElementById('username').value.trim();
             return name ? name : 'Anonymous';
-        }
-
-        function clickWord(myName, word) {
-            socket.emit('click', { lobby: myLobby, user: myName, word: word, target: target });
-            return false;
         }
 
         function renderAll(data) {
@@ -90,86 +90,133 @@
             document.getElementById('wordspace').innerHTML = html;
         }
 
-        //emit create lobby to backend
-        document.getElementById('create-lobby').onclick = function () {
-            myName = getName();
-            socket.emit('create_lobby', { name: myName });
-        };
-
-        document.getElementById('join-lobby').onclick = function () {
-            myName = getName();
-            const code = document.getElementById('join-code').value.trim();
-            if (code) {
-                socket.emit('join_lobby', { code: code, name: myName });
+        function registerListeners(socket) {
+            //EMIT FUNCTIONS 
+            function clickWord(myName, word) {
+                socket.emit('click', { lobby: myLobby, user: myName, word: word, target: target });
+                return false;
             }
-        };
 
-        //emit lobby joined to backend and update current lobby
-        socket.on('lobby_joined', function (data) {
-            myLobby = data.lobby;
-            document.getElementById('current-start-target').innerText = `start: ${data.start} target: ${data.target}`;
+            //create-lobby --> lobby_created L
+            document.getElementById('create-lobby').onclick = function () {
+                myName = getName();
+                socket.emit('create_lobby', { name: myName });
+            };
+
+            //start-game --> game_started L
+            document.getElementById('start-game').onclick = function () {
+                if (myLobby) {
+                    myName = getName();
+                    socket.emit('game_started', { lobby: myLobby, name: myName, target: target });
+                }
+            };
+
+            //join-lobby --> join_lobby L
+            document.getElementById('join-lobby').onclick = function () {
+                myName = getName();
+                const code = document.getElementById('join-code').value.trim();
+                if (code) {
+                    socket.emit('join_lobby', { code: code, name: myName });
+                }
+            };
+
+            // Go to Target handler
+            document.getElementById('go-to-target').onclick = function () {
+                if (target) {
+                    clickWord(myName, target);
+                }
+            };
+
+            socket.on('lobby_error', function (msg) {
+                alert(msg);
+            });
+
+            socket.on('lobby_list', function (lobbies) {
+                let html = '<h4>Active Lobbies:</h4>';
+                if (lobbies.length === 0) html += '<i>No lobbies yet.</i>';
+                else html += lobbies.map(code => `<div class='lobby'>${code}</div>`).join('');
+                document.getElementById('lobby-list').innerHTML = html;
+            });
+
+            socket.on('users_list', function (users) {
+                let html = '<h4 id="user-list-title">your lobby</h4>';
+                if (users.length === 0) html += '<i>Only you here.</i>';
+                else html += users.map(user => `<div class='user'>${user}</div>`).join('');
+                document.getElementById('user-list').innerHTML = html;
+            });
+
+            //We always assign target before it is used.
+            socket.on('start_game', function (data) {
+                target = data.target;
+                console.log(`lobby ${data.lobby} started with words ${data.words} and target ${data.target}`);
+                renderAll(data);
+            });
+
+            socket.on('game_finished', function (data) {
+                alert(`Game finished! Winner: ${data.user}`);
+            });
+            //use target in renderAll
+            socket.on('click', function (data) {
+                console.log(`words ${data.words} and target ${data.target}`);
+                renderAll(data);
+            });
+            //emit lobby joined to backend and update current lobby
+            socket.on('lobby_joined', function (data) {
+                alert('data is ' + JSON.stringify(data));
+                // alert('joined lobby with data: ' + JSON.stringify(data));
+                myLobby = data.lobby;
+                renderJoinedLobby(data)
+            });
+            // Back arrow handler
+            document.getElementById('back-arrow').onclick = function () {
+                if (socket) {
+                    socket.disconnect();
+                }
+                renderNoJoinedLobby()
+                // Reconnect socket for new session
+                setTimeout(() => { 
+                    socket = io();
+                    registerListeners(socket);
+                }, 200);
+            };
+            //Every pageload, request lobby list
+            socket.emit('get_lobbies');
+        }
+        registerListeners(socket);
+    </script>
+    <script>
+        function renderJoinedLobby(data) {
+            document.getElementById('current-start-target').innerHTML = `<p class="start-label"> start </p> <p class="start"> ${data.start} </p><br> <p class="target-label"> target </p> <p class="target"> ${data.target} </p>`;
             document.getElementById('username').style.display = 'none';
             document.getElementById('username-display').innerHTML = data.name;
             document.getElementById('lobby-list').style.display = 'none';
             document.getElementById('create-lobby').style.display = 'none';
             document.getElementById('join-lobby').style.display = 'none';
             document.getElementById('join-code').style.display = 'none';
-            document.getElementById('current-lobby').innerHTML = `<b>Lobby code:</b> <span style='font-family:monospace;'>${myLobby}</span>`;
+            document.getElementById('current-lobby-display').style.display = 'flex';
+            document.getElementById('username-lobby').style.flexDirection = 'row';
+            document.getElementById('current-lobby').innerHTML = `<span style='font-family:monospace;'>${myLobby}</span>`;
             document.getElementById('start-game').style.display = '';
-        });
-
-        //emit lobby error to backend.
-        socket.on('lobby_error', function (msg) {
-            alert(msg);
-        });
-
-        socket.on('lobby_list', function (lobbies) {
-            let html = '<h4>Active Lobbies:</h4>';
-            if (lobbies.length === 0) html += '<i>No lobbies yet.</i>';
-            else html += lobbies.map(code => `<div class='lobby'>${code}</div>`).join('');
-            document.getElementById('lobby-list').innerHTML = html;
-        });
-
-        socket.on('users_list', function (users) {
-            let html = '<h4>Users in Lobby</h4>';
-            if (users.length === 0) html += '<i>Only you here.</i>';
-            else html += users.map(user => `<div class='user'>${user}</div>`).join('');
-            document.getElementById('user-list').innerHTML = html;
-        });
-
-        document.getElementById('start-game').onclick = function () {
-            if (myLobby) {
-                myName = getName();
-                socket.emit('game_started', { lobby: myLobby, name: myName, target: target });
-            }
-        };
-
-        //We always assign target before it is used.
-        socket.on('start_game', function (data) {
-            target = data.target;
-            console.log(`lobby ${data.lobby} started with words ${data.words} and target ${data.target}`);
-            renderAll(data);
-        });
-
-        socket.on('game_finished', function (data) {
-            alert(`Game finished! Winner: ${data.user}`);
-        });
-
-        //use target in renderAll
-        socket.on('click', function (data) {
-            console.log(`words ${data.words} and target ${data.target}`);
-            renderAll(data);
-        });
-
-        //Every pageload, request lobby list
-        socket.emit('get_lobbies');
-
-        // Go to Target button handler
-        document.getElementById('go-to-target').onclick = function () {
-            if (target) {
-                clickWord(myName, target);
-            }
-        };
+            document.getElementById('back-arrow').style.display = '';
+        }
+        function renderNoJoinedLobby() {
+            // Hide game/lobby display
+            document.getElementById('current-lobby-display').style.display = 'none';
+            document.getElementById('start-game').style.display = 'none';
+            document.getElementById('back-arrow').style.display = 'none';
+            document.getElementById('username-display').style.display = 'none';
+            // Show join UI
+            document.getElementById('username').style.display = '';
+            document.getElementById('lobby-list').style.display = '';
+            document.getElementById('create-lobby').style.display = '';
+            document.getElementById('join-lobby').style.display = '';
+            document.getElementById('join-code').style.display = '';
+            // Optionally clear game state
+            document.getElementById('current-start-target').innerHTML = '';
+            document.getElementById('user-list').innerHTML = '';
+            document.getElementById('target').innerHTML = '';
+            document.getElementById('wordspace').innerHTML = '';
+        }
     </script>
 </body>
 

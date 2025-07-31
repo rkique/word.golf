@@ -11,7 +11,7 @@ race_bp = Blueprint('race', __name__)
 
 prompt_neighbor_dict = get_prompts(txt_to_list("application/data/neighbors.txt"))
 PROMPTS = list(prompt_neighbor_dict.keys())
-
+MAX_LOBBY_SIZE = 8
 # In-memory lobby store (no user state)
 lobbies = {}
 game_states = {}
@@ -45,11 +45,14 @@ def handle_disconnect():
             emit('users_list', users_in_lobby(code), room=code)
             emit('lobby_list', list(lobbies.keys()), broadcast=True)
 
+@socketio.on('connect')
+def handle_connect():
+    print(f'[connect] SID: {request.sid} connected')
 
 @socketio.on('create_lobby')
 def handle_create_lobby(data):
     name = data.get('name')
-    code = str(uuid.uuid4())[:8].upper()
+    code = str(uuid.uuid4())[:6].upper()
     [start, target] = random.choice(PROMPTS)
     lobbies[code] = {'start': start, 'target': target}
     join_room(code) #join room
@@ -57,17 +60,31 @@ def handle_create_lobby(data):
     game_states[code][name] = ''
     sid_to_user[request.sid] = (code, name)
     #Trigger lobby join on both create 
+    print('lobby joined:', code, 'by', request.sid)
     emit('lobby_joined', {'lobby': code, 'name': name, 'start': start, 'target': target})
     emit('lobby_list', list(lobbies.keys()), broadcast=True)
     emit('users_list', users_in_lobby(code), room=code)
 
 @socketio.on('join_lobby')
 def handle_join_lobby(data):
-    name = data.get('name')
+    name = data.get('name', 'Anonymous')
     code = data.get('code', '').strip().upper()
     if code in lobbies:
-        join_room(code) #join room
-        game_states[code][name] = ''
+        if len(game_states[code].keys()) >= MAX_LOBBY_SIZE:
+            emit('lobby_error', f'Lobby {code} is full.')
+            return
+        join_room(code)
+        if name in game_states[code]:
+            name = f'{name} (1)'
+            names = list(game_states[code].keys())
+            print(f'[join_lobby] names {names}')
+            while name in names:
+                suffix = name.split('(')[-1][0] #get number in parens
+                name = name[:-3] + f'({int(suffix) + 1})'
+                print(f'[join_lobby] Renamed {data.get("name")} to {name}')
+            game_states[code][name] = ''
+        else:
+            game_states[code][name] = ''
         sid_to_user[request.sid] = (code, name) #assign unique lobby & user
         start = lobbies[code]['start']
         target = lobbies[code]['target']

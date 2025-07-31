@@ -1,0 +1,226 @@
+html {
+    --text-size: 1.4rem;
+}
+#game {
+    margin: 0 0;
+    width: 100%;
+    max-width: 30rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+#current-start-target, #current-lobby {
+    font-size: 1.8rem;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    width: 100%;
+    text-align: left;
+}
+
+#lobby-list, #user-list {
+    font-size: var(--text-size);
+    color: var(--text-color);
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+#start-game, #go-to-target {
+    min-height: 48px;
+    min-width: 160px;
+    width: 100%;
+    max-width: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--button-font-size, 1.5rem);
+    background: none;
+    color: var(--text-color);
+    cursor: pointer;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
+    transition: background 0.2s, border 0.2s;
+}
+#start-game:hover, #go-to-target:hover, #start-game:focus, #go-to-target:focus {
+    background: #232323;
+    border: 1.5px solid #fff;
+}
+
+#target {
+    font-size: var(--text-size);
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    width: 100%;
+    text-align: left;
+}
+
+#wordspace table {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    border-collapse: collapse;
+}
+#wordspace td {
+    border: 1px solid var(--border-color);
+    padding: 0.5em;
+    min-width: 3em;
+    text-align: center;
+    font-size: var(--text-size);
+}
+#wordspace a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+#wordspace a:hover {
+    color: var(--accent-color, #e6e600);
+    text-decoration: underline;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.race-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 800px;
+}
+
+.left-align-group {
+    width: 30rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.join-lobby-container {
+    display: flex; 
+    gap: 0rem;
+    width: 30rem;
+}
+
+#create-lobby{
+    width: 30rem;
+}
+
+#create-lobby, #join-lobby {
+    min-height: 56px;
+    min-width: 12rem;
+    /* width: 100%; */
+    /* max-width: 400px; */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--button-font-size, 2rem);
+    background: none;
+    color: var(--text-color);
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    transition: background 0.2s, border 0.2s;
+}
+
+
+#join-code:focus {
+    border: 1.5px solid #888;
+    outline: none;
+}
+
+
+.group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+label { 
+    font-size: 1.4rem;
+    color: var(--text-color);
+    margin: 0 0;
+}
+input {
+    font-size: 1.8rem !important;
+    padding: 0.8rem;
+    width: 100%;
+    min-width: 200px;
+    max-width: 400px;
+    color: var(--text-color);
+    background: transparent;
+    border: 1px solid var(--grayed-out-color);
+    box-sizing: border-box;
+}
+#current-lobby-display{
+    display: none;
+}
+#username-lobby {
+    width: 30em;
+}
+#lobby-code-label, #username-label, .start-label, .target-label {
+    font-style: italic;
+    margin: 0 0;
+    display: inline-block;
+    color: var(--grayed-out-color);
+}
+
+.start, .target {
+    margin: 0 0;
+    display: inline-block;
+}
+
+#username-display {
+    font-size: 1.8em;
+    margin: 0 0;
+}
+#username:focus {
+    border: 1.5px solid #888;
+    outline: none;
+}
+
+#lobby-title {
+    font-size: 2.9rem;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+}
+#lobby-subtitle {
+    font-size: 1.4rem;
+    font-weight: 400;
+    margin: 0 0.5rem 2.5rem 0;
+    color: var(--grayed-out-color);
+}
+
+#lobby-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.7rem;
+    width: 100%;
+}
+
+#user-list-title {
+    font-style: italic;
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: var(--grayed-out-color);
+    margin-bottom: 0.5rem;
+}
+.square-btn:hover, .square-btn:focus {
+    background: #f0f4f8;
+    border: 2px solid #222;
+}
+
+#current-start-target, #current-lobby, #lobby-list, #user-list {
+    width: 100%;
+    margin: 0 auto;
+}
