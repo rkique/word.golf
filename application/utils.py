@@ -123,22 +123,26 @@ def backoff_selection(start, target, start_neighbors: list[str], target_neighbor
     selected = [start_neighbors[i] for i in indices]
     return selected
 
-def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict, linear=False,neighbor=None) -> list[str]:
+def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict, linear_select=False, linear_bias=False,neighbor=None) -> list[str]:
     '''
     Returns neighbors of the word which are biased towards the target.
-    Linear is easier than exponential backoff.
+    Linear Bias is easiest, Exponential Backoff is harder, Linear Select is hardest.
     ''' 
     start_neighbors = [result for result in PRECOMPUTED[word] if result not in LAZY_EXCLUDE][:N_LIMIT]
     target_neighbors = [result for result in PRECOMPUTED[target] if result not in LAZY_EXCLUDE][:N_LIMIT]
     def similarity_to_target(x): 
         return similarity(x, target, WV)
-    start_neighbors.sort(key=similarity_to_target, reverse=True)
-    #exponential backoff from 0 to 100
-    results__biased = backoff_selection(word, target, start_neighbors, target_neighbors,\
-                                         neighbor=neighbor, linear=linear)
-    random.seed(len(word))
-    random.shuffle(results__biased)
-    results__biased.insert(10,word)
+    if linear_select:
+        results__biased = start_neighbors[0:20]
+        results__biased.insert(10, word)
+    else:
+        start_neighbors.sort(key=similarity_to_target, reverse=True)
+        #exponential backoff from 0 to 100
+        results__biased = backoff_selection(word, target, start_neighbors, target_neighbors,\
+                                            neighbor=neighbor, linear=linear_bias)
+        random.seed(len(word))
+        random.shuffle(results__biased)
+        results__biased.insert(10,word)
     subsets = partition(results__biased)
     for i, subset in enumerate(subsets):
         if word in subset:

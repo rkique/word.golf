@@ -5,7 +5,7 @@
 {% set version = 'v1.02' %}
 
 <head>
-    {% include 'head.html' %}
+    {% include 'modals/head.html' %}
     <title>word.golf</title>
 </head>
 
@@ -42,10 +42,10 @@
 <script src="{{ url_for('static', filename='js/prompts.js') }}?{{ version }}"></script>
 
 {% include 'header.html' %}
-{% include 'modal-help.html' %}
-{% include 'modal.html' %}
-{% include 'modal-finish-user.html' %}
-{% include 'modal-finish-guest.html' %}
+{% include 'modals/modal-help.html' %}
+{% include 'modals/modal.html' %}
+{% include 'modals/modal-finish-user.html' %}
+{% include 'modals/modal-finish-guest.html' %}
 
 <div id="global">
     <div id="info-box"></div>

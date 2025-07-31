@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Race Lobby</title>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 2rem;
+        }
+
+        #lobby-list {
+            margin-top: 1rem;
+        }
+
+        .lobby {
+            margin: 0.5rem 0;
+        }
+        td {
+            border:1px solid #ccc;
+            padding:0.5em; 
+            min-width:3em;
+            text-align:center;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Race Lobby</h2>
+    <div>
+        <p id="username-display"></p>
+        <input id="username" placeholder="Enter your username" maxlength="20">
+    </div>
+    <div>
+        <button id="create-lobby">Create Lobby</button>
+        <input id="join-code" placeholder="Enter lobby code" maxlength="8">
+        <button id="join-lobby">Join Lobby</button>
+    </div>
+    <div id="current-start-target"></div>
+    <div id="current-lobby" style="margin-top:1rem;"></div>
+    <div id="lobby-list"></div>
+    <div id="user-list"></div>
+    <button id="start-game" style="margin-top:2rem; display:none">Start Game</button>
+    <div id="target"></div>
+    <div id="wordspace"></div>
+    <button id="go-to-target" style="margin-top:1rem; display:none">Go to Target</button>
+    <script>
+        const socket = io();
+        let myLobby = null;
+        let myName = "";
+        let target = null;
+        function getName() {
+            const name = document.getElementById('username').value.trim();
+            return name ? name : 'Anonymous';
+        }
+
+        function clickWord(myName, word) {
+            socket.emit('click', { lobby: myLobby, user: myName, word: word, target: target });
+            return false;
+        }
+
+        function renderAll(data) {
+            words = data.words;
+            if (data.target) {
+                target = data.target;
+                document.getElementById('target').innerText = `go to ${target}`;
+                document.getElementById('go-to-target').style.display = '';
+            } else {
+                document.getElementById('go-to-target').style.display = 'none';
+            }
+            let html = '<table style="border-collapse:collapse;">';
+            for (let row = 0; row < 7; row++) {
+                html += '<tr>';
+                for (let col = 0; col < 3; col++) {
+                    const idx = row * 3 + col;
+                    const word = words[idx] ? words[idx] : '';
+                    if (word) {
+                        html += `<td>
+                                <a href="#" onclick="clickWord('${myName}', '${word}')">${word}</a>
+                            </td>`;
+                    } else {
+                        html += `<td></td>`;
+                    }
+                }
+                html += '</tr>';
+            }
+            html += '</table>';
+            document.getElementById('wordspace').innerHTML = html;
+        }
+
+        //emit create lobby to backend
+        document.getElementById('create-lobby').onclick = function () {
+            myName = getName();
+            socket.emit('create_lobby', { name: myName });
+        };
+
+        document.getElementById('join-lobby').onclick = function () {
+            myName = getName();
+            const code = document.getElementById('join-code').value.trim();
+            if (code) {
+                socket.emit('join_lobby', { code: code, name: myName });
+            }
+        };
+
+        //emit lobby joined to backend and update current lobby
+        socket.on('lobby_joined', function (data) {
+            myLobby = data.lobby;
+            document.getElementById('current-start-target').innerText = `start: ${data.start} target: ${data.target}`;
+            document.getElementById('username').style.display = 'none';
+            document.getElementById('username-display').innerHTML = data.name;
+            document.getElementById('lobby-list').style.display = 'none';
+            document.getElementById('create-lobby').style.display = 'none';
+            document.getElementById('join-lobby').style.display = 'none';
+            document.getElementById('join-code').style.display = 'none';
+            document.getElementById('current-lobby').innerHTML = `<b>Lobby code:</b> <span style='font-family:monospace;'>${myLobby}</span>`;
+            document.getElementById('start-game').style.display = '';
+        });
+
+        //emit lobby error to backend.
+        socket.on('lobby_error', function (msg) {
+            alert(msg);
+        });
+
+        socket.on('lobby_list', function (lobbies) {
+            let html = '<h4>Active Lobbies:</h4>';
+            if (lobbies.length === 0) html += '<i>No lobbies yet.</i>';
+            else html += lobbies.map(code => `<div class='lobby'>${code}</div>`).join('');
+            document.getElementById('lobby-list').innerHTML = html;
+        });
+
+        socket.on('users_list', function (users) {
+            let html = '<h4>Users in Lobby</h4>';
+            if (users.length === 0) html += '<i>Only you here.</i>';
+            else html += users.map(user => `<div class='user'>${user}</div>`).join('');
+            document.getElementById('user-list').innerHTML = html;
+        });
+
+        document.getElementById('start-game').onclick = function () {
+            if (myLobby) {
+                myName = getName();
+                socket.emit('game_started', { lobby: myLobby, name: myName, target: target });
+            }
+        };
+
+        //We always assign target before it is used.
+        socket.on('start_game', function (data) {
+            target = data.target;
+            console.log(`lobby ${data.lobby} started with words ${data.words} and target ${data.target}`);
+            renderAll(data);
+        });
+
+        socket.on('game_finished', function (data) {
+            alert(`Game finished! Winner: ${data.user}`);
+        });
+
+        //use target in renderAll
+        socket.on('click', function (data) {
+            console.log(`words ${data.words} and target ${data.target}`);
+            renderAll(data);
+        });
+
+        //Every pageload, request lobby list
+        socket.emit('get_lobbies');
+
+        // Go to Target button handler
+        document.getElementById('go-to-target').onclick = function () {
+            if (target) {
+                clickWord(myName, target);
+            }
+        };
+    </script>
+</body>
+
+</html>

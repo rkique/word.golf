@@ -1,0 +1,110 @@
+
+from flask import Blueprint, render_template, request, jsonify, make_response
+from flask_socketio import SocketIO, join_room, leave_room, emit
+import uuid
+from .. import socketio
+from ..utils import get_prompts, txt_to_list, get_curve
+from . import main
+import random
+
+race_bp = Blueprint('race', __name__)
+
+prompt_neighbor_dict = get_prompts(txt_to_list("application/data/neighbors.txt"))
+PROMPTS = list(prompt_neighbor_dict.keys())
+
+# In-memory lobby store (no user state)
+lobbies = {}
+game_states = {}
+
+sid_to_user = {}
+
+@race_bp.route('/race')
+def race_lobby():
+        return render_template('race.html')
+
+def users_in_lobby(code):
+    if code in game_states:
+        return list(game_states[code].keys())
+    return []
+
+#a user can join a lobby with multiple sids open
+# this triggers on each sid disconnect
+# > if all sids disconnected, remove lobby
+@socketio.on('disconnect')
+def handle_disconnect():
+    info = sid_to_user.pop(request.sid, None)
+    if info: 
+        code, name = info
+        if code in game_states and name in game_states[code]:
+            del game_states[code][name]
+            print('[disconnect] ', game_states)
+            if not game_states[code]:
+                del game_states[code]
+                lobbies.pop(code, None)
+                print('[disconnect] Lobby removed:', code)
+            emit('users_list', users_in_lobby(code), room=code)
+            emit('lobby_list', list(lobbies.keys()), broadcast=True)
+
+
+@socketio.on('create_lobby')
+def handle_create_lobby(data):
+    name = data.get('name')
+    code = str(uuid.uuid4())[:8].upper()
+    [start, target] = random.choice(PROMPTS)
+    lobbies[code] = {'start': start, 'target': target}
+    join_room(code) #join room
+    game_states[code] = {}
+    game_states[code][name] = ''
+    sid_to_user[request.sid] = (code, name)
+    #Trigger lobby join on both create 
+    emit('lobby_joined', {'lobby': code, 'name': name, 'start': start, 'target': target})
+    emit('lobby_list', list(lobbies.keys()), broadcast=True)
+    emit('users_list', users_in_lobby(code), room=code)
+
+@socketio.on('join_lobby')
+def handle_join_lobby(data):
+    name = data.get('name')
+    code = data.get('code', '').strip().upper()
+    if code in lobbies:
+        join_room(code) #join room
+        game_states[code][name] = ''
+        sid_to_user[request.sid] = (code, name) #assign unique lobby & user
+        start = lobbies[code]['start']
+        target = lobbies[code]['target']
+        emit('lobby_joined', {'lobby': code, 'name': name, 'start': start, 'target': target})
+        emit('users_list', users_in_lobby(code), room=code)
+    else:
+        emit('lobby_error', f'Lobby {code} does not exist.')
+
+@socketio.on('get_lobbies')
+def handle_get_lobbies():
+    lobby_codes = list(lobbies.keys())
+    emit('lobby_list', lobby_codes) #emitted lobby list.
+
+@socketio.on('click')
+def click(data):
+    user = data.get('user')
+    word = data.get('word')
+    target = data.get('target')
+    lobby = data.get('lobby')
+    print('[Click] User:', user, 'Word:', word)
+    if word == target:
+        emit('game_finished', {'user': user}, room=lobby)
+    words = get_curve(word, target, main.PRECOMPUTED, main.WV, True)
+    emit('click', {'user': user, 'words': words})
+
+@socketio.on('game_started')
+def handle_game_start(data):
+    main.load_data()
+    lobby = data.get('lobby')
+    # Find the lobby dict for this lobby code
+    lobby_info = lobbies.get(lobby)
+    if not lobby_info:
+        emit('lobby_error', f'Lobby {lobby} does not exist.')
+        return
+    start = lobby_info['start']
+    target = lobby_info['target']
+    users = list(game_states[lobby].keys())
+    words = get_curve(start, target, main.PRECOMPUTED, main.WV, True)
+    emit('start_game', {'lobby': lobby, 'target': target, 'words': words}, room=lobby)
+    #start_game= True
