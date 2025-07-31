@@ -27,15 +27,14 @@ def load_previous_time(new_date):
 
 #WV, PRECOMPUTED should be initialized in globals.
 def load_data():
-    global WV, PRECOMPUTED
-    if WV is not None:
+    if globals.WV is not None:
         print('[load_data] WV is not None, returning')
         return 
     print("Loading data...")
-    WV = pd.read_csv("application/data/embed_w2v.csv")
-    WV['vector'] = WV['vector'].apply(lambda x: np.array(ast.literal_eval(x)))
-    WV = dict(zip(WV['word'], WV['vector']))
-    PRECOMPUTED = txt_to_dict("application/data/top_100_w2v.csv")
+    globals.WV = pd.read_csv("application/data/embed_w2v.csv")
+    globals.WV['vector'] = globals.WV['vector'].apply(lambda x: np.array(ast.literal_eval(x)))
+    globals.WV = dict(zip(globals.WV['word'], globals.WV['vector']))
+    globals.PRECOMPUTED = txt_to_dict("application/data/top_100_w2v.csv")
 
 elapsed = None
 prompts_today = None
@@ -93,7 +92,7 @@ def index():
         else:
             set_response_cookie(response, token, secure=True)
 
-    assert WV is not None, "Word vectors not loaded"
+    assert globals.WV is not None, "Word vectors not loaded"
     return response
 
 @main_bp.route('/', methods=['POST'])
@@ -238,7 +237,7 @@ def get_existing_data(state_model):
         if data['selected_words']:
             targets = [prompt[1] for prompt in prompts_today]
             if data['selected_words'][-1] not in targets:
-                data['score'] = similarity(data['selected_words'][-1], data['prompt'][1], WV)
+                data['score'] = similarity(data['selected_words'][-1], data['prompt'][1], globals.WV)
     return data
 
 #Given start words, selected words from the database, and jumps array, return the actual word history for the user.
@@ -325,7 +324,7 @@ def make_help_session():
     prompt1 = HELP_PROMPTS[0]
     neighbor1 = HELP_NEIGHBORS[0]
     # Compute results for the first prompt
-    results = get_curve(prompt1[0], prompt1[1], PRECOMPUTED, WV, neighbor=neighbor1)
+    results = get_curve(prompt1[0], prompt1[1], globals.PRECOMPUTED, globals.WV, neighbor=neighbor1)
     data = {
         'jumpsArray': BASE_JUMPS_ARRAY,
         'startTargetIdxs': BASE_START_TARGET_IDXS,
@@ -349,7 +348,7 @@ def shift_to(i):
     try:
         prompt = prompts_today[i]
         neighbor = neighbors_today[i]
-        results = get_curve(prompt[0], prompt[1], PRECOMPUTED, WV, neighbor=neighbor)
+        results = get_curve(prompt[0], prompt[1], globals.PRECOMPUTED, globals.WV, neighbor=neighbor)
         data['i'] = i
         data['jumps'] = 0
         data['date'] = globals.today.strftime('%Y-%m-%d')
@@ -370,7 +369,7 @@ def help_shift(data):
     prompt = data['prompts'][data['i']]
     data['prompt'] = prompt
     results = get_curve(prompt[0], prompt[1], 
-    PRECOMPUTED, WV, neighbor=neighbor)
+    globals.PRECOMPUTED, globals.WV, neighbor=neighbor)
     data['results'] = results
     return data
 
@@ -446,7 +445,7 @@ def skip():
 
         prompt = prompts_today[current_prompt]
         
-        results = get_curve(prompt[0], prompt[1], PRECOMPUTED, WV)
+        results = get_curve(prompt[0], prompt[1], globals.PRECOMPUTED, globals.WV)
 
         game_state.results = results
 
@@ -515,12 +514,12 @@ def back():
     # rearrange the order of selected words 
     
     returned_object = {}
-    score = similarity(start, target, WV)
+    score = similarity(start, target, globals.WV)
     startIdx, targetIdx = _data["startTargetIdxs"]
     row = startIdx[0]
     index = sim_to_index(score)
     startIdx = [row, index]
-    returned_object["results"] = get_curve(start, target, PRECOMPUTED, WV)
+    returned_object["results"] = get_curve(start, target, globals.PRECOMPUTED, globals.WV)
     returned_object["startTargetIdxs"] = [startIdx, targetIdx]
     returned_object["jumpsArray"] = _data["jumpsArray"]
     returned_object["start_target"] = [returned_object["results"][10], target]
@@ -559,10 +558,10 @@ def jump(start : str, update = True) -> str:
     # print("Current session data:", session.get('data')) 
     _data = json.loads(session.get('data'))
     target = _data['prompt'][1]
-    results = get_curve(start, target, PRECOMPUTED, WV)
+    results = get_curve(start, target, globals.PRECOMPUTED, globals.WV)
     # _data['jumps'] = _data['jumps']+1
     _data['results'] = results
-    _data['score'] =  similarity(start, target, WV)
+    _data['score'] =  similarity(start, target, globals.WV)
     #Moving jump logic into this method.
     [startIdx, targetIdx] = _data['startTargetIdxs']
     if update:

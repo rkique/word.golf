@@ -1,6 +1,6 @@
-from ..utils import get_curve, get_furthest_away_word, get_similar_word, find_common_neighbor
+from ..utils import get_curve, get_furthest_away_word, get_similar_word, find_common_neighbor, similarity
 from flask import Blueprint,render_template, request, make_response, jsonify
-from ..internals.globals import WV, PRECOMPUTED
+from ..internals import globals
 
 createprompt_bp = Blueprint('createPrompt', __name__)
 
@@ -9,11 +9,16 @@ def next_word():
     data = request.get_json()
     start_word = data["start_word"]
     neighbor = None
+    target_word = data["end_word"]
+    score = 0
     if "neighbor" in data:
         neighbor = data["neighbor"]
-    target_word = data["end_word"]
+    else:
+        # calculate the score 
+        score = similarity(start_word, target_word, globals.WV)
     new_data = {}
-    new_data["results"] = get_curve(start_word, target_word, PRECOMPUTED, WV, neighbor=neighbor)
+    new_data["results"] = get_curve(start_word, target_word, globals.PRECOMPUTED, globals.WV, neighbor=neighbor)
+    new_data["score"] = score
     return make_response(new_data)
 
 @createprompt_bp.route('/create-prompt', methods=['GET'])
@@ -31,20 +36,20 @@ def check_new_prompts():
     end_word = None
     is_start_word = data["isStartWord"]
     if is_start_word:
-        start_word = get_similar_word(data["word"], PRECOMPUTED, WV)
+        start_word = get_similar_word(data["word"], globals.PRECOMPUTED, globals.WV)
     else:
-        end_word = get_similar_word(data["word"], PRECOMPUTED, WV)
+        end_word = get_similar_word(data["word"], globals.PRECOMPUTED, globals.WV)
     
     if start_word:
-        end_word = get_furthest_away_word(start_word, PRECOMPUTED, WV)
+        end_word = get_furthest_away_word(start_word, globals.PRECOMPUTED, globals.WV)
     else:
-        start_word = get_furthest_away_word(end_word, PRECOMPUTED, WV)
+        start_word = get_furthest_away_word(end_word, globals.PRECOMPUTED, globals.WV)
     
-    common_neighbors = find_common_neighbor(start_word, end_word, PRECOMPUTED)
+    common_neighbors = find_common_neighbor(start_word, end_word, globals.PRECOMPUTED)
 
     common_neighbor = list(common_neighbors)[0]
 
-    results = get_curve(start_word, end_word, PRECOMPUTED, WV, neighbor=common_neighbor)
+    results = get_curve(start_word, end_word, globals.PRECOMPUTED, globals.WV, neighbor=common_neighbor)
 
     return_data = {}
     return_data["results"] = results

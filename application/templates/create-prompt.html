@@ -15,11 +15,8 @@
 
 <script src="{{ url_for('static', filename='js/prompts.js') }}?{{ version }}"></script>
 
+{% include 'header.html' %}
 <body>
-    <div class="wg-banner">
-        <a href="/" class="wg-banner-title">word.golf</a>
-    </div>
-    
     <div id="prompt-maker">
         <h2>Choose a start word or an end word</h2>
         <input type="text" id="start-word" placeholder="Start Word" />
@@ -95,7 +92,7 @@
 <script>
     let currentPromptIndex = 0; 
     let curr_game_idx = 0;
-    let jumps = 0;
+    let jumps = [];
     let promptsData = []; 
     let current_prompt_data = null; 
     let focusedWord = ''; 
@@ -138,11 +135,13 @@
                     if (result > -1) {
                         const wordspace = document.getElementById("wordspace");
                         wordspace.style.display = 'none';
+                        const prompt_container = document.getElementById("prompts-container");
+                        prompt_container.style.display = 'none';
                         // clearChildren(document.getElementById("wordspace"));
                         const finishMsg = document.getElementById('finish-msg');
                         finishMsg.style.display = 'block';
                         const totalJumpsP = finishMsg.querySelector('p');
-                        totalJumpsP.textContent = 'Total Jumps: ' + jumps;
+                        totalJumpsP.textContent = 'Total Jumps: ' + jumps.reduce((sum, val) => sum + val, 0);
                     }
                 }
             }
@@ -150,7 +149,7 @@
     }
 
     async function fakePostWord(word, target) {
-        jumps += 1;
+        jumps[curr_game_idx] += 1;
         let start_word = word;
         let end_word = target;
         if (word === target) {
@@ -158,15 +157,23 @@
             const promptsCount = document.getElementById('prompts-count');
             let previous_counts = parseInt(promptsCount.textContent, 10);
             // console.log("[fakePostWord] here is the previous counts" , previous_counts);
-
             if (previous_counts == promptsData.length) {
-                return jumps;
+                return jumps.reduce((sum, val) => sum + val, 0);
             } else {
                 promptsCount.textContent = previous_counts += 1;
                 curr_game_idx += 1;
                 // then move onto the next prompt 
                 start_word = promptsData[curr_game_idx].startWord;
                 end_word = promptsData[curr_game_idx].endWord;
+                fakeRenderPrompts(100, start_word, end_word);
+                const promptBoxes = document.querySelectorAll('.prompt-box');
+                const lastWordTallyContainer = promptBoxes[curr_game_idx - 1].children[1];
+                console.log("heres is alst word tally container: ", lastWordTallyContainer);
+                const tallyElement = lastWordTallyContainer.querySelector('.tally');
+                tallyElement.classList.remove('prompt-target-word', 'prompt-word');
+                tallyElement.textContent = ''
+                // now we get rid of the ending prompt end word 
+
             }
         } 
         // now we send the backend request 
@@ -186,8 +193,12 @@
 
         if (res.ok) {
             // change wordspace 
+            console.log("[fakePostWord] returning with this data: ", data);
+            const score = data.score > 0 ? data.score : 0;
+
             fakeRenderLinks(end_word, data.results);
             fakeActivateLinks(end_word);
+            fakeRenderPrompts(score, data.results[10], end_word);
             return -1;
         } else {
             console.log("Error:", data);
@@ -206,7 +217,8 @@
     }
 
     async function demoGame() {
-        jumps = 0;
+        jumps = new Array(promptsData.length).fill(0);
+        clearAllTallies();
         const promptMaker = document.getElementById('prompt-maker');
         promptMaker.style.display = 'none';
         const promptDemo = document.getElementById('prompt-demo');
@@ -214,20 +226,19 @@
         const promptsRemainder = document.getElementById('prompts-count-remainder');
         promptsRemainder.textContent = `/ ${promptsData.length}`;
         const prompts = document.getElementById('prompts');
+        prompts.innerHTML = ``;
         curr_game_idx = 0;
         const promptsCount = document.getElementById('prompts-count');
         promptsCount.textContent = curr_game_idx + 1;
         const wordspace = document.getElementById("wordspace");
         wordspace.style.removeProperty('display');
+        const prompt_container = document.getElementById("prompts-container");
+        prompt_container.style.removeProperty('display');
         const finishMsg = document.getElementById('finish-msg');
         finishMsg.style.display = 'none';
         for (let i = 0; i < promptsData.length; i++) {
             prompts.innerHTML += `
                 <div class="prompt-box">
-                    <div class="word-tally-box"></div>
-                    <div class="word-tally-box"></div>
-                    <div class="word-tally-box"></div>
-                    <div class="word-tally-box"></div>
                     <div class="word-tally-box"></div>
                     <div class="word-tally-box"></div>
                 </div>
@@ -251,8 +262,9 @@
 
             if (res.ok) {
                 // data.results
-                fakeRenderLinks(promptsData[0].endWord, data.results)
+                fakeRenderLinks(promptsData[0].endWord, data.results);
                 fakeActivateLinks(promptsData[0].endWord);
+                fakeRenderPrompts(data.score, promptsData[0].startWord, promptsData[0].endWord);
             } else {
                 console.log("Error:", data);
             }
@@ -333,8 +345,31 @@
         })
     }
 
-    function fakeRenderPrompts() {
-        
+    function fakeRenderPrompts(score, start_word, target_word) {
+        renderScore(score);
+        clearAllPromptWords();
+        // now I have to call render word and then populate the tallies accordingly 
+        const promptBoxes = document.querySelectorAll('.prompt-box');
+        console.log("[fakeRenderPrompts] called with index: ", curr_game_idx);
+        // console.log("here is prompt boxes: ", promptBoxes);
+        let wordTallyContainer = promptBoxes[curr_game_idx].children[0];
+        // console.log("here is word tally container: ", wordTallyContainer);
+        let lastWordTallyContainer = promptBoxes[curr_game_idx].children[1];
+        // console.log("here is last word tally container: ", lastWordTallyContainer);
+        // console.log(wordTallyContainer.querySelectorAll('.tally').length);
+        console.log("[fakeRenderPrompts] word tally container: ", promptBoxes[curr_game_idx]);
+        while (wordTallyContainer.querySelectorAll('.tally').length <= jumps[curr_game_idx]) {
+            // console.log("in the while statement");
+            appendTally(wordTallyContainer);
+        }
+        if (lastWordTallyContainer.querySelectorAll('.tally').length < 1) {
+            appendTally(lastWordTallyContainer);
+        }
+
+        console.log("here is word tally container: ", wordTallyContainer);
+        console.log("here is last word tally container: ", lastWordTallyContainer);
+        renderWord(start_word, curr_game_idx, 0, { style: ["prompt-start-word"] });
+        renderWord(target_word, curr_game_idx, 1, { animate: false, style: ["prompt-target-word"] });
     }
 
     function nextPrompt() {
@@ -355,6 +390,11 @@
             alert("ALREADY GENERATED 5 PROMPTS OR NONE");
         }
             
+    }
+
+    function clearAllTallies() {
+        const tallies = document.querySelectorAll('.tally');
+        tallies.forEach(tally => tally.remove());
     }
 
     function displayPromptHistory() {

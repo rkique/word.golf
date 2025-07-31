@@ -144,6 +144,7 @@ function appendTally(container) {
     tallyDiv.className = 'tally';
     container.appendChild(tallyDiv);
 }
+
 // Renders tallies at the first position equal to the total number of tallies 
 function renderTalliesLinear(jumpsArray, wordsArray, end = false) {
     if (!wordsArray) {
@@ -288,6 +289,7 @@ function renderScore(score) {
         else { promptsBar.style.width = `${scoreWidth}%`; }
     }
 }
+
 /**
  * @param {Array} jumpsArray
  * @param {[[number, number], [number, number]]} idxs 
