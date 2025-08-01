@@ -73,7 +73,7 @@
 } */
 
 .help-footer-div {
-    margin-bottom: 2rem;
+    margin: 1rem 0 2rem;
 }
 
 .footer-div div {
@@ -84,7 +84,7 @@
     margin-bottom: 10rem;
 }
 .footer-div p, .footer-div a, .help-footer-div a{
-    font-size: 1.3rem;
+    font-size: 1.8rem;
     color: var(--grayed-out-color);
 }
 
@@ -97,8 +97,9 @@
     color: var(--grayed-out-color) !important;
 }
 
+
 .finish-summary {
-    margin: 0;
+    margin: 1.5rem 0 0;
     font-size: 2.2rem;
     font-family: "Inter", sans-serif;
     font-weight: 500;
@@ -217,15 +218,15 @@ html {
 
 .help-bg-image-0 {
     top: 15%;
-    left: 10%;
-    width: 140px;
+    left: 20%;
+    width: 160px;
     height: auto;
     filter: contrast(0.8) brightness(1.2);
 }
 
 .help-bg-image-1 {
     bottom: 15%;
-    right: 10%;
+    right: 15%;
     width: 280px;
     height: auto;
     filter: contrast(0.8) brightness(1.2);

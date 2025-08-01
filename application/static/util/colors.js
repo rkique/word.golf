@@ -33,6 +33,7 @@ function syncColorMode() {
   document.documentElement.style.setProperty('--1', '#eeebe3');                 // between --0 and --2
   document.documentElement.style.setProperty('--2', '#eae7dd');                 // slightly darker paper
   document.documentElement.style.setProperty('--4', '#a89f93');                 // light frame bg
+  document.documentElement.style.setProperty('--6', '#8c8173');                 // darker than --4, card/inactive (bg3)
   document.documentElement.style.setProperty('--c', '#3c3836');                 // main text (dark gray-brown)
   document.documentElement.style.setProperty('--hover-color', '#665c54');       // dark hover (fg3)
   document.documentElement.style.setProperty('--emphasis-color', '#d79921');    // yellow (highlight)
@@ -68,6 +69,8 @@ function syncColorMode() {
     document.documentElement.style.setProperty('--grayed-out-color', '#837e74');       // softer comment tone
     document.documentElement.style.setProperty('--grayed-out-color-help-target', '#9c9584'); // near-muted beige
     document.documentElement.style.setProperty('--grayed-out-color-unfocused', '#434343');   // neutral bg3
+    document.documentElement.style.setProperty('--6', '#57544e');                 // touch darker neutral bg1
+
   }
   // syncGraph()
   //PlotHistory(sessionHistory)
