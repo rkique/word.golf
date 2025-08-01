@@ -1,8 +1,7 @@
 /* User progress bar row and label styles */
-/* #user-progress {
-    display: none;
-} */
-
+#user-progress {
+    width: 100%;
+}
 
 #current-lobby-settings {
     display: none;
@@ -59,10 +58,11 @@
 
 #game-global {
     display: none;
+    flex-wrap: wrap;
     flex-direction: row;
     align-items: stretch;
     width: 100%;
-    min-height: 70vh;
+    height: 88vh;
     border-top: 1px solid var(--border-color);
 }
 
@@ -73,19 +73,21 @@ html {
 
 #game-container {
     display: flex;
-    flex: 1 1 0;
+    /* flex: 1 1 0; */
     min-width: 0;
     padding: 0;
     align-content: center;
     justify-content: center;
+    width: 40rem;
 }
 
 #user-progress-container {
-    flex: 0 1 0;
+    /* flex: 0 1 0; */
     display: flex;
     padding: 1rem 1.5rem;
     flex-direction: column;
-    border-left: 2px solid var(--border-color);
+    /* border-left: 2px solid var(--border-color); */
+    width: 20rem;
 }
 
 #game {
@@ -111,6 +113,19 @@ html {
     color: var(--text-color);
     width: 100%;
     margin-bottom: 0.5rem;
+}
+
+#total-rounds {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+#user-list-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 #start-game, #go-to-target {
@@ -210,8 +225,8 @@ body {
 
 .race-container {
     display: flex;
-    max-width: 30rem;
-    width: 30rem;
+    max-width: 42rem;
+    width: 42rem;
     flex-direction: column;
     align-items: center;
     width: 100%;
@@ -287,17 +302,30 @@ input {
 }
 #username-lobby {
     width: 30em;
+    /* max-width: 40rem;
+    width: 40rem; */
 }
+
 #lobby-code-label, #username-label, .start-label, .target-label {
     font-style: italic;
     margin: 0 0;
     display: inline-block;
     color: var(--grayed-out-color);
 }
-
-.start, .target {
+#current-starts, #current-targets {
+    font-size: 1.8rem !important;
+    color: var(--text-color);
     margin: 0 0;
-    display: inline-block;
+}
+
+.start-label, .target-label {
+    display: block;
+    font-size: 1.4rem;
+}
+
+.start-entry, .target-entry{
+    margin: 0 0;
+    display: block;
 }
 
 
@@ -335,7 +363,6 @@ input {
     font-size: 1.8rem;
     font-weight: 300;
     color: var(--grayed-out-color);
-    margin-bottom: 0.5rem;
 }
 .square-btn:hover, .square-btn:focus {
     background: #f0f4f8;
@@ -351,7 +378,11 @@ input {
     flex:1
 }
 
-.total-rounds-label {
+#total-rounds-container{
+    min-width: 8rem;
+}
+
+.total-rounds-label, #user-list-title {
     font-size: 1.4rem;
     font-style: italic;
     color: var(--grayed-out-color);
@@ -374,7 +405,39 @@ input {
     /* width: 20vw; */
     font-size: 1.4rem;
     color: var(--text-color);
-    margin-top: 0.5rem;
+    margin-top: 0rem;
+}
+
+#finish-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    width: min(42rem, 90vw);
+}
+
+
+.user-score-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 0.5rem;
+    width:100%;
+}
+
+.user-score-name {
+    font-weight: bold;
+}
+
+.user-score-score {
+    font-size: 1.5rem;
+}
+
+.user-score-wins {
+    color: gray;
 }
 
 input[type=range] {
@@ -385,6 +448,19 @@ input[type=range] {
     background: transparent;
     padding: 1.5rem 0;
     outline: none; /* Remove outline on focus */
+}
+
+#back-arrow {
+    display: none;
+    position: absolute;
+    left: 2rem;
+    top: 2rem;
+    font-size: 2rem;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    z-index: 10;
 }
 
 /* Webkit browsers (Chrome, Safari, Edge) */

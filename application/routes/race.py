@@ -58,15 +58,17 @@ def handle_create_lobby(data):
         name = 'Anonymous'
     code = str(uuid.uuid4())[:6].upper()
     random.seed(hash(code))
-    [start, target] = random.choice(PROMPTS)
-    lobbies[code] = {'start': start, 'target': target}
+    selected_prompts = random.sample(PROMPTS, 5)
+    starts = [pair[0] for pair in selected_prompts]
+    targets = [pair[1] for pair in selected_prompts]
+    lobbies[code] = {'starts': starts, 'targets': targets}
     join_room(code) #join room
     game_states[code] = {}
     game_states[code][name] = default_user_state.copy() #can store score, but also game states
     sid_to_user[request.sid] = (code, name)
     #Trigger lobby join on both create 
     print('lobby joined:', code, 'by', request.sid)
-    emit('lobby_joined', {'lobby': code, 'name': name, 'start': start, 'target': target})
+    emit('lobby_joined', {'lobby': code, 'name': name, 'starts': starts, 'targets': targets})
     emit('lobby_list', list(lobbies.keys()), broadcast=True)
     emit('users_list', users_in_lobby(code), room=code)
 
@@ -93,9 +95,9 @@ def handle_join_lobby(data):
         else:
             game_states[code][name] = default_user_state.copy()
         sid_to_user[request.sid] = (code, name) #assign unique lobby & user
-        start = lobbies[code]['start']
-        target = lobbies[code]['target']
-        emit('lobby_joined', {'lobby': code, 'name': name, 'start': start, 'target': target})
+        starts = lobbies[code]['starts']
+        targets = lobbies[code]['targets']
+        emit('lobby_joined', {'lobby': code, 'name': name, 'starts': starts, 'targets': targets})
         emit('users_list', users_in_lobby(code), room=code)
     else:
         emit('lobby_error', f'Lobby {code} does not exist.')
@@ -107,11 +109,23 @@ def handle_get_lobbies():
 
 def handle_round_finish(lobby, user):
     #update user wins count
+    user_wins = game_states[lobby][user]['wins']
     game_states[lobby][user]['wins'] += 1
-    #update lobbies start and target
-    print(f'len of prompts is {len(PROMPTS)}')
-    [start, target] = random.choice(PROMPTS)
-    lobbies[lobby] = {'start': start, 'target': target}
+    #see if any user has 5 wins:
+    winner = None
+    for uname, state in game_states[lobby].items():
+        if state['wins'] >= 5:
+            winner = uname
+            break
+    if winner:
+        emit('game_finished', {'winner': winner, 'game_state': game_states[lobby]}, room=lobby)
+        return
+    #update start and target with new games_played index into lobbies[lobby]
+    print(f'[handle_round_finish] user wins: {user_wins}')
+    starts = lobbies[lobby]['starts']
+    targets = lobbies[lobby]['targets']
+    start = starts[user_wins]
+    target = targets[user_wins]
     words = get_curve(start, target, main.PRECOMPUTED, main.WV, True)
     print('[handle_round_finish] words are ', words)
     emit('round_finished', {'game_state': game_states[lobby], 'user': user, 'words': words, 'start': start, 'target': target}, room=lobby)
@@ -140,9 +154,9 @@ def handle_game_start(data):
     if not lobby_info:
         emit('lobby_error', f'Lobby {lobby} does not exist.')
         return
-    start = lobby_info['start']
-    target = lobby_info['target']
+    starts = lobby_info['starts']
+    targets = lobby_info['targets']
     users = list(game_states[lobby].keys())
-    words = get_curve(start, target, main.PRECOMPUTED, main.WV, True)
-    emit('start_game', {'lobby': lobby, 'start': start, 'target': target, 'words': words, 'users': users, 'game_state': game_states[lobby]}, room=lobby)
+    words = get_curve(starts[0], targets[0], main.PRECOMPUTED, main.WV, True)
+    emit('start_game', {'lobby': lobby, 'starts': starts, 'targets': targets, 'words': words, 'users': users, 'game_state': game_states[lobby]}, room=lobby)
     #start_game= True
