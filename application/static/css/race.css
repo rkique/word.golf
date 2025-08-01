@@ -415,6 +415,9 @@ input {
     width: min(42rem, 90vw);
 }
 
+.user-winner {
+    font-weight: bold;;
+}
 
 .user-score-card {
     display: flex;

@@ -121,13 +121,13 @@ def handle_round_finish(lobby, user):
         emit('game_finished', {'winner': winner, 'game_state': game_states[lobby]}, room=lobby)
         return
     #update start and target with new games_played index into lobbies[lobby]
-    print(f'[handle_round_finish] user wins: {user_wins}')
+    # print(f'[handle_round_finish] user wins: {user_wins}')
     starts = lobbies[lobby]['starts']
     targets = lobbies[lobby]['targets']
     start = starts[user_wins]
     target = targets[user_wins]
     words = get_curve(start, target, main.PRECOMPUTED, main.WV, True)
-    print('[handle_round_finish] words are ', words)
+    # print('[handle_round_finish] words are ', words)
     emit('round_finished', {'game_state': game_states[lobby], 'user': user, 'words': words, 'start': start, 'target': target}, room=lobby)
 
 @socketio.on('click')

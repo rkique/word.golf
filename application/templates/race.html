@@ -49,7 +49,7 @@
             <div id="current-targets"></div>
             <div id="total-rounds-container">
                 <div id="total-rounds">
-                <p class="total-rounds-label">Total rounds</p>
+                <p class="total-rounds-label">total rounds</p>
                 <div class="total-rounds-options">
                     <span class="total-rounds-option" data-value="5">5</span>
                 </div>
@@ -180,6 +180,8 @@
 
             //join-lobby --> join_lobby L
             document.getElementById('join-lobby').onclick = function () {
+                myName = document.getElementById('username').value.trim();
+                console.log(`myName is ${myName}`)
                 const code = document.getElementById('join-code').value.trim();
                 if (code) {
                     socket.emit('join_lobby', { code: code, name: myName });
@@ -225,9 +227,25 @@
                 setUserProgress(data);
                 renderRoundFinish(data)
             });
-            
+            // 
             socket.on('game_finished', function (data) {
                 renderGameFinish(data);
+                document.getElementById('back-arrow').onclick = function () {
+                        renderJoinedLobby(starts, targets, myLobby);
+                        hideFinishScreen(true);
+                        // allow user to leave the lobby to main
+                        document.getElementById('back-arrow').onclick = function (){
+                            if (socket) {
+                                socket.disconnect();
+                            }
+                            renderNoJoinedLobby(starts, targets, myLobby);
+                            // Reconnect socket for new session
+                            setTimeout(() => {
+                                socket = io();
+                                registerListeners(socket);
+                            }, 200);
+                        }
+                };
             });
 
             socket.on('click', function (data) {
@@ -256,7 +274,8 @@
                 //needs to see starts and targets
                 renderJoinedLobby(starts, targets, myLobby);
             });
-            // Back arrow handler
+
+            // Back arrow from joined lobby to no joined lobby
             document.getElementById('back-arrow').onclick = function () {
                 if (socket) {
                     socket.disconnect();
@@ -277,7 +296,7 @@
         function renderRoundFinish(data) {
             const message = `Round finished! game_state: ${JSON.stringify(data.game_state)}`;
             displayModal(message);
-            renderTransientModal(2000);
+            renderTransientModal(600);
             renderUserProgressBars();
             console.log(`renderRoundFinish] data: ${JSON.stringify(data)}`);
             if (myName === data.user) {
@@ -292,11 +311,21 @@
             document.getElementById('back-arrow').style.display = 'flex';
             const finishScreen = document.getElementById('finish-screen');
             finishScreen.style.display = 'flex';
-            for (const [user, userProps] of Object.entries(data.game_state)) {
+            // Convert entries to array and sort by wins descending
+            const sortedUsers = Object.entries(data.game_state).sort((a, b) => {
+                const winsA = a[1]['wins'] !== undefined ? a[1]['wins'] : 0;
+                const winsB = b[1]['wins'] !== undefined ? b[1]['wins'] : 0;
+                return winsB - winsA;
+            });
+            for (let i = 0; i < sortedUsers.length; i++) {
+                const [user, userProps] = sortedUsers[i];
                 const score = userProps['score'] !== undefined ? userProps['score'] : 0;
                 const wins = userProps['wins'] !== undefined ? userProps['wins'] : 0;
                 const card = document.createElement('div');
                 card.className = 'user-score-card';
+                if (i === 0) {
+                    card.classList.add('user-winner');
+                }
                 card.innerHTML = `
                     <div class="user-score-name">${user}</div>
                     <div class="user-score-wins">Rounds: ${wins}</div>
@@ -311,6 +340,14 @@
             `;
             return HTML;
         }
+        function hideFinishScreen(hide=false){
+            finishScreen = document.getElementById('finish-screen')
+            if (hide){
+                finishScreen.innerHTML = '';
+            }
+            finishScreen.style.display = 'none';
+        }
+
         function renderJoinedLobby(starts, targets, myLobby) {
             document.getElementById('current-starts').innerHTML = makeStartTargetHTML(starts, 'starts');
             document.getElementById('current-targets').innerHTML = makeStartTargetHTML(targets, 'targets');
@@ -323,7 +360,8 @@
             document.getElementById('user-list').style.display = '';
             document.getElementById('username-display').style.display = '';
             document.getElementById('start-game').style.display = '';
-            document.getElementById('back-arrow').style.display = '';
+            document.getElementById('back-arrow').style.display = 'flex';
+            document.getElementById('lobby-info').style.display = '';
             //hide game and other UI elements
             document.getElementById('game-global').style.display = 'none';
             document.getElementById('username').style.display = 'none';
@@ -340,10 +378,13 @@
             document.getElementById('start-game').style.display = 'none';
             document.getElementById('back-arrow').style.display = 'none';
             document.getElementById('username-display').style.display = 'none';
+            // Hide results 
+            document.getElementById('finish-screen').style.display = 'none';
             // Show join UI
             document.getElementById('username').style.display = '';
             document.getElementById('lobby-list').style.display = '';
             document.getElementById('create-lobby').style.display = '';
+            document.getElementById('lobby-info').style.display = '';
             document.getElementById('join-lobby').style.display = '';
             document.getElementById('join-code').style.display = '';
             // Optionally clear game state
