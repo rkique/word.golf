@@ -61,7 +61,7 @@
 
     <div id="prompt-demo" style='display: none'>
         <!-- Word Space Container (will dynamically populate) -->
-        <h2>Your Prompts Sample Game</h2>
+        <!-- <h2>Your Prompts Sample Game</h2> -->
         <div id="finish-msg" style='display: none'>
             <p>Total Jumps: 0</p>
         </div>
@@ -303,7 +303,10 @@
     }
 
     function generateUrl() {
-        console.log("called -> finish later");
+        if (promptsData.length != 5) {
+            alert("Please make exactly 5 prompts");
+        }
+        
     }
 
     function fakeMakeLink(prompt, word) {
