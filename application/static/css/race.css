@@ -7,6 +7,7 @@
 #current-lobby-settings {
     display: none;
     flex-wrap: nowrap;
+    gap: 1rem;
     flex-direction: row;
     width: 100%;
 }
@@ -346,6 +347,10 @@ input {
     margin: 0 auto;
 }
 
+#current-start-target, #total-rounds-container {
+    flex:1
+}
+
 .total-rounds-label {
     font-size: 1.4rem;
     font-style: italic;
@@ -366,7 +371,7 @@ input {
 .total-rounds-options {
     display: flex;
     justify-content: space-between;
-    width: 20vw;
+    /* width: 20vw; */
     font-size: 1.4rem;
     color: var(--text-color);
     margin-top: 0.5rem;
