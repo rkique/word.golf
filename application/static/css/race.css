@@ -140,27 +140,27 @@ body {
 
 .race-container {
     display: flex;
+    max-width: 30rem;
+    width: 30rem;
     flex-direction: column;
     align-items: center;
     width: 100%;
-    max-width: 800px;
 }
 
 .left-align-group {
-    width: 30rem;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    width: 100%;
 }
 
 .join-lobby-container {
     display: flex; 
     gap: 0rem;
-    width: 30rem;
 }
 
 #create-lobby{
-    width: 30rem;
+    width: 100%;
 }
 
 #create-lobby, #join-lobby {

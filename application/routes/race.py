@@ -53,7 +53,9 @@ def handle_connect():
 
 @socketio.on('create_lobby')
 def handle_create_lobby(data):
-    name = data.get('name', 'Anonymous')
+    name = data.get('name')
+    if name == '' or name == None:
+        name = 'Anonymous'
     code = str(uuid.uuid4())[:6].upper()
     [start, target] = random.choice(PROMPTS)
     lobbies[code] = {'start': start, 'target': target}
@@ -69,7 +71,9 @@ def handle_create_lobby(data):
 
 @socketio.on('join_lobby')
 def handle_join_lobby(data):
-    name = data.get('name', 'Anonymous')
+    name = data.get('name')
+    if name == '' or name == None:
+        name = 'Anonymous'
     code = data.get('code', '').strip().upper()
     if code in lobbies:
         if len(game_states[code].keys()) >= MAX_LOBBY_SIZE:

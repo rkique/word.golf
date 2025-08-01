@@ -102,7 +102,9 @@
             const container = document.getElementById('user-progress');
             let html = '';
             for (const [user, score] of Object.entries(userProgress)) {
-                let percent = (typeof score === 'number' && !isNaN(score)) ? Math.max(0, Math.min(1, score)) : 0;
+                let normalizedScore = (typeof score === 'number' && !isNaN(score)) ? score : 0;
+                normalizedScore = Math.pow(score, 0.5);
+                let percent =  Math.max(0, Math.min(1, normalizedScore))
                 percent = Math.round(percent * 100);
                 html += `<div class="user-progress-row">
                     <span class="user-progress-name">${user}</span>
