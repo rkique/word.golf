@@ -63,7 +63,7 @@ def check_new_prompts():
 
 
 @createprompt_bp.route('/generate-gamestate-and-url', methods=['POST'])
-def check_new_prompts():
+def generate_url():
     data = request.get_json()
     if not data or not "prompts" in data:
         return 
@@ -110,6 +110,6 @@ def check_new_prompts():
     return make_response(new_url_data)
 
 @createprompt_bp.route('/custom', methods=['GET'])
-def check_new_prompts():
+def custom_index():
     # use search params to see/determine which 
     return make_response(render_template('index.html'))

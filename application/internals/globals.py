@@ -1,6 +1,7 @@
 from datetime import date
 import datetime
 from ..utils import get_prompts, txt_to_list
+from ..models import FakeGameState, GameState, UserConstructedGamestate
 
 #Global user-specific today across application.
 today = date.today()
@@ -38,3 +39,4 @@ THRESHOLDS = [0.2, 0.27, 0.35, 0.42]
 WV = None
 PRECOMPUTED = None
 
+current_model = GameState
