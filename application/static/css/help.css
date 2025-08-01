@@ -111,11 +111,12 @@ p {
     color: var(--grayed-out-color);
 }
 
-#help-example-label {
+.help-example-label {
     color: var(--grayed-out-color);
     text-align: center;
-    font-size: 1.5rem;
+    /* font-size: 1.8rem; */
     font-weight: 400 !important;
+    padding: 0 1.2rem;
 }
 
 .no-bottom{
@@ -138,4 +139,11 @@ p {
     margin-top: 1rem !important;
     font-size: 2.4rem !important;
     font-weight: 400 !important;
+}
+
+@media (max-width: 992px) {
+    .help-bg-image-0,
+    .help-bg-image-1 {
+        display: none !important;
+    }
 }
