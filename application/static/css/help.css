@@ -127,7 +127,15 @@ p {
     margin-bottom: 1.4rem;
 }
 
-#help-finish {
+.help-finish {
     justify-content: center;
     align-items: center;
+    margin: 1.5rem 0 0;
+    font-size: 2.2rem;
+    font-family: "Inter", sans-serif;
+    font-weight: 500;
+    color: var(--grayed-out-color);
+    margin-top: 1rem !important;
+    font-size: 2.4rem !important;
+    font-weight: 400 !important;
 }
