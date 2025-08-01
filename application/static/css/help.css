@@ -15,6 +15,7 @@
     justify-content: center;
     padding: 0rem 2rem;
 }
+
 #help-screen {
     display: flex;
     justify-content: center;
@@ -23,27 +24,28 @@
     max-width: 42rem;
 }
 
-  .separator {
+.separator {
     display: flex;
     align-items: center;
     text-align: center;
     width: 100%;
     margin: 1rem 0 1.5rem 0;
-  }
+}
 
-  .separator-line {
+.separator-line {
     flex: 1;
     height: 1px;
     background: var(--border-color, #ccc);
     border: none;
-  }
-  .separator-text {
+}
+
+.separator-text {
     padding: 0 1rem;
     color: var(--text-color, #444);
     font-size: 1rem;
     white-space: nowrap;
     opacity: 0.8;
-  }
+}
 
 .finish-summary {
     margin-top: 1rem !important;
@@ -57,6 +59,7 @@
     font-size: 2.4rem !important;
     font-weight: 400 !important;
 }
+
 .finish-summary-center span {
     font-size: 3.2rem;
 }
@@ -84,6 +87,7 @@
     font-size: 1.8rem;
     margin: 1rem 0 1.5rem;
 }
+
 p {
     margin: 0.5rem 0;
 }
@@ -91,9 +95,11 @@ p {
 .ma0 {
     margin: 0 !important;
 }
+
 .help-example em{
     color: var(--6);
 }
+
 #tutorial {
     font-size: 2em;
     padding: 1em 1em;
@@ -104,12 +110,14 @@ p {
     font-size: 1.5rem;
     color: var(--grayed-out-color);
 }
-.help-example-label {
-    font-family: 'Inter', sans-serif;
-    font-size: 2.5rem;
+
+#help-example-label {
+    color: var(--grayed-out-color);
     text-align: center;
-    margin: 1.2rem 0;
+    font-size: 1.5rem;
+    font-weight: 400 !important;
 }
+
 .no-bottom{
     margin-bottom: 0; 
 }
