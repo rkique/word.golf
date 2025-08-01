@@ -64,7 +64,7 @@ class UserConstructedGamestate(db.Model):
     user_creator_id = db.Column(db.String(36), db.ForeignKey("user.id"), nullable=False)
     url = db.Column(db.String(36), nullable=True) # this is guaranteed to be unique (should be unique at least)
     game_id = db.Column(db.String(36), nullable=False)
-    user_player_id = db.Column(db.String(36), nullable=False)
+    user_id = db.Column(db.String(36), nullable=False)
     current_date = db.Column(db.Date, nullable=True) # this should be date that is generated when another user plays your game 
     selected_words = db.Column(MutableList.as_mutable(JSON), nullable=False, default=[])
     jumpsA = db.Column(MutableList.as_mutable(JSON), nullable=True)
