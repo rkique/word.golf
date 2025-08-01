@@ -45,7 +45,6 @@ def authlogin():
         data = request.get_json()
     else:
         data = request.args
-    state_model = get_state_model()
 
     email = data.get("email")
     password = data.get("password")
@@ -66,9 +65,9 @@ def authlogin():
         token = cookie_signer.dumps({"user_id": user.id})
         # Find the game state using the user ID from the cookie
         if current_user:
-            game_state = state_model.query.filter_by(user_id=current_user.id, current_date=globals.today).first()
+            game_state = globals.current_model.query.filter_by(user_id=current_user.id, current_date=globals.today).first()
             if game_state:
-                login_state = state_model.query.filter_by(user_id=user.id, current_date=game_state.current_date).first()
+                login_state = globals.current_model.query.filter_by(user_id=user.id, current_date=game_state.current_date).first()
                 if login_state:
                     # check this one 
                     if get_last_nonzero_row(game_state.jumpsA) > get_last_nonzero_row(login_state.jumpsA):
@@ -248,8 +247,7 @@ def print_gamestate(gamestate):
 
 @auth_bp.route("/logout", methods=["POST"])
 def logout(): 
-    state_model = get_state_model()
-    new_user = create_guest_user(globals.today, str(uuid.uuid4()), state_model)
+    new_user = create_guest_user(globals.today, str(uuid.uuid4()), globals.current_model)
 
     # Set the auth cookie to the new guest user
     token = cookie_signer.dumps({"user_id": new_user.id})

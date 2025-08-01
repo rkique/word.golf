@@ -54,8 +54,8 @@ def index():
     print('/ Starting Fresh..')
     load_data()
     load_time()
-    state_model = get_state_model()
-    data_or_none = get_existing_data(state_model)
+    globals.current_model = get_state_model()
+    data_or_none = get_existing_data(globals.current_model)
     #use the user object with updates from today's data.
     if data_or_none:
         data = data_or_none
@@ -75,7 +75,7 @@ def index():
         response = make_response(render_template('index.html', data=json.loads(session.get('data'))))
     else:
         print('Creating new user')
-        guest_user = create_guest_user(globals.today, str(uuid.uuid4()), state_model)
+        guest_user = create_guest_user(globals.today, str(uuid.uuid4()), globals.current_model)
         data = shift_to(0)
         data['jumpsArray'] = BASE_JUMPS_ARRAY
         data['startTargetIdxs'] = BASE_START_TARGET_IDXS
@@ -97,11 +97,10 @@ def index():
 
 @main_bp.route('/', methods=['POST'])
 def index_post():
-    state_model = get_state_model()
     if request.form.get('redirect') is not None:
         data = json.loads(session.get('data'))
         print('[/] Redirecting to start...')
-        data = handle_redirect(data, state_model)
+        data = handle_redirect(data, globals.current_model)
         return make_response(json.loads(session['data']))
 
     elif request.form.get('help') is not None:
@@ -135,12 +134,12 @@ def index_post():
         data = json.loads(session.get('data', '{}'))
         print(f"[/] Shifting to Prompt {data.get('i', 0)+1}")
         if (data.get('i', 0) + 1 >= PROMPT_COUNT):
-            data = handle_session_end(data, state_model)
+            data = handle_session_end(data, globals.current_model)
             return make_response("session_done" + session.get('data'))
         data['i'] += 1
         _data = shift_to(data['i'])
         session['data'] = json.dumps(update_jumps_array(_data))
-        update_game_state(json.loads(session['data']), state_model)
+        update_game_state(json.loads(session['data']), globals.current_model)
         return make_response("end" + session.get('data'))
 
     elif request.form.get('word') is not None:
@@ -154,8 +153,8 @@ def index_post():
         new_data = json.loads(session['data'])
         new_data['word'] = current_word
         if new_data['is_help'] == False:
-            update_game_state(new_data, state_model)
-            selected_words = get_current_game_state(state_model).selected_words
+            update_game_state(new_data, globals.current_model)
+            selected_words = get_current_game_state(globals.current_model).selected_words
         else:
             selected_words = []
         del new_data['word']
@@ -403,8 +402,7 @@ def skip():
     user = get_user_from_cookie()
     if not user:
         return "failed"
-    state_model = get_state_model()
-    game_state = state_model.query.filter_by(user_id=user.id, current_date=globals.today).first()
+    game_state = globals.current_model.query.filter_by(user_id=user.id, current_date=globals.today).first()
     if not game_state:
         return "failed"
     print("Here is game_state previous words", game_state.selected_words)
@@ -493,8 +491,7 @@ def back():
     user = get_user_from_cookie()
     if not user:
         return "failed"
-    state_model = get_state_model()
-    game_state = state_model.query.filter_by(user_id=user.id, current_date=globals.today).first()
+    game_state = globals.current_model.query.filter_by(user_id=user.id, current_date=globals.today).first()
     if not game_state:
         return "failed"
     
