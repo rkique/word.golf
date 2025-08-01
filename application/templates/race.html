@@ -24,7 +24,7 @@
             style="display:none;position:absolute;left:2rem;top:2rem;font-size:2rem;background:none;border:none;color:var(--text-color);cursor:pointer;z-index:10;">&#8592;</button>
         <div id="lobby-info">
             <h1 id="lobby-title">Race</h1>
-            <h2 id="lobby-subtitle">Play a timed prompt against your friends.</h2>
+            <h2 id="lobby-subtitle">Play a timed race against friends.</h2>
             <div id="username-lobby" class="group">
                 <div class="left-align-group">
                     <label id="username-label">your name </label>
@@ -44,7 +44,18 @@
                 </div>
             </div>
         </div>
-        <div id="current-start-target"></div>
+        <div id="current-lobby-settings">
+            <div id="current-start-target"></div>
+            <div id="total-rounds-container">
+                <p class="total-rounds-label">Total rounds</p>
+                <div class="total-rounds-options">
+                    <span class="total-rounds-option" data-value="5">5</span>
+                    <span class="total-rounds-option" data-value="10">10</span>
+                    <span class="total-rounds-option" data-value="15">15</span>
+                    <span class="total-rounds-option" data-value="20">20</span>
+                </div>
+            </div>
+        </div>
         <div id="lobby-list"></div>
         <div id="user-list" class="left-align-group"></div>
         <button id="start-game" style="margin-top:2rem; display:none">Start Game</button>
@@ -271,7 +282,7 @@
             document.getElementById('current-lobby-display').style.display = 'flex';
             document.getElementById('username-lobby').style.flexDirection = 'row';
             document.getElementById('current-lobby').innerHTML = `<span style='font-family:monospace;'>${myLobby}</span>`;
-            document.getElementById('current-start-target').style.display = '';
+            document.getElementById('current-lobby-settings').style.display = 'flex';
             document.getElementById('current-lobby').style.display = '';
             document.getElementById('user-list').style.display = '';
             document.getElementById('username-display').style.display = '';
@@ -287,6 +298,8 @@
         }
         function renderNoJoinedLobby() {
             // Hide game/lobby display
+            document.getElementById('user-list').style.display = 'none';
+            document.getElementById('current-lobby-settings').style.display = 'none';
             document.getElementById('current-lobby-display').style.display = 'none';
             document.getElementById('start-game').style.display = 'none';
             document.getElementById('back-arrow').style.display = 'none';
@@ -307,12 +320,32 @@
         function hideLobby() {
             document.getElementById('lobby-info').style.display = 'none';
             document.getElementById('user-list').style.display = 'none';
-            document.getElementById('current-start-target').style.display = 'none';
+            document.getElementById('current-lobby-settings').style.display = 'none';
             document.getElementById('start-game').style.display = 'none';
         }
         function showGameGlobal() {
             document.getElementById('game-global').style.display = 'flex';
         }
+    </script>
+    <script>
+        let totalRounds = 5; // default value
+        function updateTotalRoundsUI(selectedValue) {
+            document.querySelectorAll('.total-rounds-option').forEach(span => {
+                if (parseInt(span.dataset.value) === selectedValue) {
+                    span.classList.add('selected-option');
+                } else {
+                    span.classList.remove('selected-option');
+                }
+            });
+        }
+        document.querySelectorAll('.total-rounds-option').forEach(span => {
+            span.onclick = function() {
+                totalRounds = parseInt(this.dataset.value);
+                updateTotalRoundsUI(totalRounds);
+            };
+        });
+        // Initialize UI on page load
+        updateTotalRoundsUI(totalRounds);
     </script>
 </body>
 

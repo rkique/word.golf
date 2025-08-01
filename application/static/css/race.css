@@ -3,6 +3,14 @@
     display: none;
 } */
 
+
+#current-lobby-settings {
+    display: none;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    width: 100%;
+}
+
 .user-progress-wins {
     font-size: 2.5rem;
     margin: 0rem 1rem;
@@ -336,4 +344,69 @@ input {
 #current-start-target, #current-lobby, #lobby-list, #user-list {
     width: 100%;
     margin: 0 auto;
+}
+
+.total-rounds-label {
+    font-size: 1.4rem;
+    font-style: italic;
+    color: var(--grayed-out-color);
+    margin: 0 0 0.5rem;
+}
+
+.total-rounds-option {
+    padding: 0.4rem;
+}
+.selected-option {
+    color: var(--text-color);
+    padding: 0.4rem;
+    border: 1px solid var(--text-color);
+    border-radius: 6px;
+}
+
+.total-rounds-options {
+    display: flex;
+    justify-content: space-between;
+    width: 20vw;
+    font-size: 1.4rem;
+    color: var(--text-color);
+    margin-top: 0.5rem;
+}
+
+input[type=range] {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    border: none;
+    width: 100%; /* Full-width */
+    background: transparent;
+    padding: 1.5rem 0;
+    outline: none; /* Remove outline on focus */
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+input[type=range]::-webkit-slider-runnable-track {
+    height: 2px;
+    background: var(--grayed-out-color)
+}
+
+/* Firefox */
+input[type=range]::-moz-range-track {
+    height: 2px;
+    background: var(--grayed-out-color);
+}
+
+/* IE */
+input[type=range]::-ms-fill-lower,
+input[type=range]::-ms-fill-upper {
+    height: 2px;
+    background: var(--grayed-out-color);
+    border-radius: 5px;
+}
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 5px !important;
+    height: 25px; /* Increase height for better centering */
+    margin-top: -12px; /* Vertically center thumb on 8px track */
+    background: var(--grayed-out-color);
+    cursor: pointer;
 }
