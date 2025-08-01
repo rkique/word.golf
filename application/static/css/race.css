@@ -1,37 +1,37 @@
 /* User progress bar row and label styles */
 .user-progress-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 0.5rem;
-  gap: 1rem;
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    gap: 1rem;
 }
 .user-progress-name {
-  min-width: 7rem;
-}
-.user-progress-score {
-  min-width: 2.5rem;
-  text-align: right;
-}
-.user-progress-bar-outer {
-    background-color: var(--grayed-out-background);
-    width: 180px;
-    height: 1.2rem;
-    border-radius: 0.6rem;
-    overflow: hidden;
-    position: relative;
-    flex-shrink: 0;
-}
-
-.user-progress-bar-inner {
-    background-color: var(--text-color);
-    height: 100%;
-    width: 0%;
-    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 0.6rem 0 0 0.6rem;
+    min-width: 7rem;
 }
 .user-progress-score {
     min-width: 2.5rem;
     text-align: right;
+}
+.user-progress-bar-outer {
+        background-color: var(--grayed-out-background);
+        width: 100%;
+        height: 2.2rem;
+        border-radius: 0;
+        overflow: hidden;
+        position: relative;
+        flex-shrink: 0;
+}
+
+.user-progress-bar-inner {
+        background-color: var(--text-color);
+        height: 100%;
+        width: 0%;
+        transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 0;
+}
+.user-progress-score {
+        min-width: 2.5rem;
+        text-align: right;
 }
 
 html {
@@ -92,12 +92,11 @@ html {
 }
 
 #wordspace {
-    height: 50vh;
-    display: grid;
+    height: 50vh !important;
     grid-template-columns: 1fr !important;
     grid-template-rows: 1fr !important;
     padding: 0 !important;
-    margin: 0;
+    margin: 0 !important;
 }
 
 
