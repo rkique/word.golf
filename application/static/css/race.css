@@ -1,4 +1,7 @@
 /* User progress bar row and label styles */
+#user-progress {
+}
+
 .user-progress-row {
     display: flex;
     align-items: center;
@@ -12,6 +15,10 @@
     min-width: 2.5rem;
     text-align: right;
 }
+#rainbow_text_animated {
+    color: var(--emphasis-color) !important;
+}
+
 .user-progress-bar-outer {
         background-color: var(--grayed-out-background);
         width: 100%;
@@ -92,13 +99,12 @@ html {
 }
 
 #wordspace {
-    height: 50vh !important;
+    height: auto !important;
     grid-template-columns: 1fr !important;
     grid-template-rows: 1fr !important;
     padding: 0 !important;
     margin: 0 !important;
 }
-
 
 #wordspace table {
     width: 100%;

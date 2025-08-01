@@ -104,11 +104,15 @@ def handle_get_lobbies():
     lobby_codes = list(lobbies.keys())
     emit('lobby_list', lobby_codes) #emitted lobby list.
 
-def handle_game_finish(lobby, user):
+def handle_round_finish(lobby, user):
+    #update user wins count
     game_states[lobby][user]['wins'] += 1
+    #update lobbies start and target
     [start, target] = random.choice(PROMPTS)
     lobbies[lobby] = {'start': start, 'target': target}
-    emit('game_finished', {'game_state': game_states[lobby], 'start': start, 'target': target}, room=lobby)
+    words = get_curve(start, target, main.PRECOMPUTED, main.WV, True)
+    print('[handle_round_finish] words are ', words)
+    emit('round_finished', {'game_state': game_states[lobby], 'words': words, 'start': start, 'target': target}, room=lobby)
 
 @socketio.on('click')
 def click(data):
@@ -118,11 +122,12 @@ def click(data):
     lobby = data.get('lobby')
     print('[Click] User:', user, 'Word:', word)
     if word == target:
-        handle_game_finish(lobby, user)
-    words = get_curve(word, target, main.PRECOMPUTED, main.WV, False)
-    score = similarity(word, target, main.WV)
-    game_states[lobby][user]['score'] = score
-    emit('click', {'user': user, 'words': words, 'game_state': game_states[lobby]}, room=lobby)
+        handle_round_finish(lobby, user)
+    else:
+        words = get_curve(word, target, main.PRECOMPUTED, main.WV, False)
+        score = similarity(word, target, main.WV)
+        game_states[lobby][user]['score'] = score
+        emit('click', {'user': user, 'words': words, 'game_state': game_states[lobby]}, room=lobby)
 
 @socketio.on('game_started')
 def handle_game_start(data):
@@ -137,5 +142,5 @@ def handle_game_start(data):
     target = lobby_info['target']
     users = list(game_states[lobby].keys())
     words = get_curve(start, target, main.PRECOMPUTED, main.WV, True)
-    emit('start_game', {'lobby': lobby, 'start': start, 'target': target, 'words': words, 'users': users}, room=lobby)
+    emit('start_game', {'lobby': lobby, 'start': start, 'target': target, 'words': words, 'users': users, 'game_state': game_states[lobby]}, room=lobby)
     #start_game= True
