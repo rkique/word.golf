@@ -289,6 +289,7 @@
         }
         function renderGameFinish(data){
             document.getElementById('game-global').style.display = 'none';
+            document.getElementById('back-arrow').style.display = 'flex';
             const finishScreen = document.getElementById('finish-screen');
             finishScreen.style.display = 'flex';
             for (const [user, userProps] of Object.entries(data.game_state)) {
