@@ -57,6 +57,7 @@ def handle_create_lobby(data):
     if name == '' or name == None:
         name = 'Anonymous'
     code = str(uuid.uuid4())[:6].upper()
+    random.seed(hash(code))
     [start, target] = random.choice(PROMPTS)
     lobbies[code] = {'start': start, 'target': target}
     join_room(code) #join room
@@ -108,11 +109,12 @@ def handle_round_finish(lobby, user):
     #update user wins count
     game_states[lobby][user]['wins'] += 1
     #update lobbies start and target
+    print(f'len of prompts is {len(PROMPTS)}')
     [start, target] = random.choice(PROMPTS)
     lobbies[lobby] = {'start': start, 'target': target}
     words = get_curve(start, target, main.PRECOMPUTED, main.WV, True)
     print('[handle_round_finish] words are ', words)
-    emit('round_finished', {'game_state': game_states[lobby], 'words': words, 'start': start, 'target': target}, room=lobby)
+    emit('round_finished', {'game_state': game_states[lobby], 'user': user, 'words': words, 'start': start, 'target': target}, room=lobby)
 
 @socketio.on('click')
 def click(data):

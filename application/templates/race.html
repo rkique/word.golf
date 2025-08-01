@@ -48,12 +48,20 @@
         <div id="lobby-list"></div>
         <div id="user-list" class="left-align-group"></div>
         <button id="start-game" style="margin-top:2rem; display:none">Start Game</button>
-        <div id="game">
-            <div id="target"></div>
-            <div id="wordspace"></div>
-            <div id="user-progress"></div>
-            <button id="go-to-target" style="margin-top:1rem; display:none">Go to Target</button>
+    </div>
+    <div id="game-global">
+        <div id="game-container">
+            <div id="game">
+                <div id="target"></div>
+                <div id="wordspace"></div>
+                <button id="go-to-target" style="margin-top:1rem; display:none">Go to Target</button>
+            </div>
         </div>
+        <div id="user-progress-container">
+            <div id="user-progress"></div>
+        </div>
+    </div>
+
     </div>
     <script>
         let socket = io();
@@ -68,6 +76,7 @@
         function renderGame(data) {
             console.log(`renderGame] data: ${JSON.stringify(data)}`);
             hideLobby();
+            showGameGlobal();
             words = data.words;
             if (data.target) {
                 target = data.target;
@@ -111,20 +120,19 @@
             console.log(`renderUserProgress] ${JSON.stringify(userProgress)}`);
             let html = '';
             for (const [user, userProps] of Object.entries(userProgress)) {
-            score = userProps['score']
-            let normalizedScore = (typeof score === 'number' && !isNaN(score)) ? score : 0;
-            normalizedScore = Math.pow(normalizedScore, 0.5);
-            let percent =  Math.max(0, Math.min(1, normalizedScore))
-            percent = Math.round(percent * 100);
-            // Get wins, default to 0 if not present
-            let wins = userProps['wins'] !== undefined ? userProps['wins'] : 0;
-            html += `<div class="user-progress-row">
+                score = userProps['score']
+                let normalizedScore = (typeof score === 'number' && !isNaN(score)) ? score : 0;
+                normalizedScore = Math.pow(normalizedScore, 0.5);
+                let percent = Math.max(0, Math.min(1, normalizedScore))
+                percent = Math.round(percent * 100);
+                // Get wins, default to 0 if not present
+                let wins = userProps['wins'] !== undefined ? userProps['wins'] : 0;
+                html += `<div class="user-progress-row">
+                <span class="user-progress-wins">${wins}</span>
                 <span class="user-progress-name">${user}</span>
                 <div class="user-progress-bar-outer">
                 <div class="user-progress-bar-inner" style="width: ${percent}%;"></div>
                 </div>
-                <span class="user-progress-score">${percent}%</span>
-                <span class="user-progress-wins" style="margin-left:1rem;">Wins: ${wins}</span>
             </div>`;
             }
             container.innerHTML = html;
@@ -249,7 +257,9 @@
             renderTransientModal(2000);
             renderUserProgressBars();
             console.log(`renderRoundFinish] data: ${JSON.stringify(data)}`);
-            renderGame(data); //should render game?
+            if (myName === data.user) {
+                renderGame(data);
+            }
             // Hide game area
             // Render joined lobby again
             // setTimeout(renderJoinedLobby, 2000);
@@ -268,7 +278,7 @@
             document.getElementById('start-game').style.display = '';
             document.getElementById('back-arrow').style.display = '';
             //hide game and other UI elements
-            document.getElementById('game').style.display = 'none';
+            document.getElementById('game-global').style.display = 'none';
             document.getElementById('username').style.display = 'none';
             document.getElementById('lobby-list').style.display = 'none';
             document.getElementById('create-lobby').style.display = 'none';
@@ -293,12 +303,15 @@
             // document.getElementById('target').innerHTML = '';
             // document.getElementById('wordspace').innerHTML = '';
         }
+        //for use in renderGame
         function hideLobby() {
             document.getElementById('lobby-info').style.display = 'none';
             document.getElementById('user-list').style.display = 'none';
             document.getElementById('current-start-target').style.display = 'none';
             document.getElementById('start-game').style.display = 'none';
-            document.getElementById('game').style.display = '';
+        }
+        function showGameGlobal() {
+            document.getElementById('game-global').style.display = 'flex';
         }
     </script>
 </body>
