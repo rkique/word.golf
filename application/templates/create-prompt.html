@@ -57,6 +57,10 @@
         <div style="margin-top: 20px;">
             <button onclick="demoGame()">Play Demo Game Using your Prompts</button>
         </div>
+        <div style="margin-top: 20px;">
+            <button onclick="generateUrl()">Generate Url to share</button>
+        </div>
+        <h2 id="create-prompt-url"></h2>
     </div>
 
     <div id="prompt-demo" style='display: none'>
@@ -302,9 +306,37 @@
         document.getElementById('solution-path').textContent = solutionPath;
     }
 
-    function generateUrl() {
+    async function generateUrl() {
         if (promptsData.length != 5) {
             alert("Please make exactly 5 prompts");
+        }
+        let prompt_list = [];
+        promptsData.forEach(prompt_element => {
+            prompt_list.push([prompt_element.startWord, prompt_element.endWord])
+        });
+        try {
+            const res = await fetch("/generate-gamestate-and-url", {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    prompts: prompt_list
+                })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                // show the url on the screen 
+                const url_header = document.getElementById("create-prompt-url");
+                url_header.innerText = data.url;
+            } else {
+                console.log("Error:", data);
+            }
+        } catch (err) {
+            console.error("Error during backend call:", err);
         }
         
     }

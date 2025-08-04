@@ -1,6 +1,6 @@
 from .. import db
 from flask import current_app as app, request, jsonify, redirect
-from ..models import GameState, FakeGameState
+from ..models import GameState, FakeGameState, UserConstructedGamestate
 from .auth import get_user_from_cookie
 from dateutil import parser
 from datetime import timedelta
@@ -65,6 +65,7 @@ def get_current_game_state(state_model):
     if user:
         return state_model.query.filter_by(user_id=user.id, current_date=today).first()
     else:
+        print("we have no user?!")
         return None
 
 def update_game_state(data, state_model): 
@@ -110,7 +111,7 @@ def finished_game(finish_request, state_model):
     if not game:
         return redirect('/')
 
-    if today != user.last_date_completed: # if it is the same do nothing 
+    if today != user.last_date_completed and state_model != UserConstructedGamestate: # if it is the same do nothing 
         if not game.prompts or not game.prompts[-1]:
             return jsonify({"error": "User has not played non-tutorial"}), 401, None
         # last_prompt = game.prompts[-1][-1]
@@ -136,5 +137,8 @@ def finished_game(finish_request, state_model):
         # db.session.add(game)
         db.session.commit()
     else:
-        print("[finished_game]: User has already completed today's game, no changes made.")
+        print("[finished_game]: User has already completed today's game (or now doing custom game), no changes made.")
+        if state_model == UserConstructedGamestate:
+            game.total_jumps = sum_jumpsA(game.jumpsA)
+            db.session.commit()
     return None

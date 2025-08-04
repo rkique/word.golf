@@ -600,6 +600,11 @@ def load_time():
     globals.today = globals.today + add_days(DAYS)
     elapsed, prompts_today, neighbors_today = get_prompts_for_date(globals.today)
 
+def set_prompts_today_and_neighbors_today(prompts, neighbors):
+    global prompts_today, neighbors_today
+    prompts_today = prompts
+    neighbors_today = neighbors
+
 def sim_to_index(score):
     idx = next((i for i, t in enumerate(THRESHOLDS) if score < t), len(THRESHOLDS))
     return idx

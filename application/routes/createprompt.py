@@ -1,9 +1,14 @@
 from ..utils import get_curve, get_furthest_away_word, get_similar_word, find_common_neighbor, similarity
-from flask import Blueprint,render_template, request, make_response, jsonify
+from flask import Blueprint,render_template, request, session, make_response, jsonify
 from ..internals import globals
+from .auth import create_guest_user, set_response_cookie
+from .main import words_array_from_data, shift_to, get_existing_data, set_prompts_today_and_neighbors_today, load_data
 from ..internals.auth import get_user_from_cookie
-from ..models import UserConstructedGamestate
-from .. import db, oauth, cookie_signer
+from ..models import UserConstructedGamestate, User
+import json
+import uuid
+import os
+from .. import db, cookie_signer
 
 createprompt_bp = Blueprint('createPrompt', __name__)
 
@@ -66,10 +71,10 @@ def check_new_prompts():
 def generate_url():
     data = request.get_json()
     if not data or not "prompts" in data:
-        return 
+        return jsonify({"error": "prompts are required"}), 400
     user = get_user_from_cookie()
     if not user:
-        return 
+        return jsonify({"usererror": "user does not exist"}), 400
     
     base_url = request.host_url.rstrip('/')
     # Get the max game_id from the database and add 1 to it
@@ -83,33 +88,110 @@ def generate_url():
         user_creator_id=user.id,
         url=base_url + '/custom?game=' + new_game_id,
         game_id=new_game_id,
-        user_player_id=user.id,
+        user_id=user.id,
         prompts=data["prompts"],
     )
 
     db.session.add(new_gamestate)
     db.session.commit()
 
-    # class UserConstructedGamestate(db.Model): 
-    # id = db.Column(db.Integer, primary_key=True)
-    # user_creator_id = db.Column(db.String(36), db.ForeignKey("user.id"), nullable=False)
-    # url = db.Column(db.String(36), nullable=True) # this is guaranteed to be unique (should be unique at least)
-    # game_id = db.Column(db.String(36), nullable=False)
-    # user_player_id = db.Column(db.String(36), nullable=False)
-    # current_date = db.Column(db.Date, nullable=True) # this should be date that is generated when another user plays your game 
-    # selected_words = db.Column(MutableList.as_mutable(JSON), nullable=False, default=[])
-    # jumpsA = db.Column(MutableList.as_mutable(JSON), nullable=True)
-    # total_jumps = db.Column(db.Integer, default=0)
-    # results = db.Column(MutableList.as_mutable(JSON), nullable=True)
-    # prompt_idx = db.Column(db.Integer, nullable=True) # make migration that removes this
-    # current_jumps = db.Column(db.Integer, default=0) # make migration that removes this
-    # prompts = db.Column(MutableList.as_mutable(JSON), nullable=True) # make migration that removes this
-    # start_target_idxs = db.Column(MutableList.as_mutable(JSON), nullable=True, default=[[0,0], [0,5]])
     new_url_data = {}
     new_url_data["url"] = base_url + '/custom?game=' + new_game_id
     return make_response(new_url_data)
 
+def make_guest_user_custom(date, id, game_id):
+    user = User(
+        id=id,
+        date_created=date,
+        streak=0,
+        last_date_completed=None
+    )
+
+    db.session.add(user)
+
+    existing_gamestate = UserConstructedGamestate.query.filter_by(game_id=game_id).first()
+
+    starting_game_state = UserConstructedGamestate(
+        user_id=user.id,
+        current_date=date,
+        selected_words=[],
+        jumpsA=[[1,0,0,0,0,1],
+                [0,0,0,0,0,0],
+                [0,0,0,0,0,0],
+                [0,0,0,0,0,0],
+                [0,0,0,0,0,0]],
+        total_jumps=0,
+        results=[],
+        prompt_idx=0,
+        current_jumps=0,
+        game_id=existing_gamestate.game_id,
+        user_creator_id=existing_gamestate.user_creator_id,
+        prompts=existing_gamestate.prompts
+    )
+
+    db.session.add(starting_game_state)
+    db.session.commit()
+
+    return user
+
+def get_custom_prompts_and_neighbors(game_num):
+    existing_gamestate = UserConstructedGamestate.query.filter_by(game_id=game_num).first()
+    neighbors_list = []
+    for prompt in existing_gamestate.prompts:
+
+        common_neighbors = find_common_neighbor(prompt[0], prompt[1], globals.PRECOMPUTED)
+
+        common_neighbor = list(common_neighbors)[0]
+
+        neighbors_list.append(common_neighbor)
+
+    return existing_gamestate.prompts, neighbors_list
+
 @createprompt_bp.route('/custom', methods=['GET'])
 def custom_index():
-    # use search params to see/determine which 
-    return make_response(render_template('index.html'))
+    # use search params to see/determine which custom game it is/are we playing
+    custom_game_num = request.args.get('game', default=0, type=int)
+    print(f'Custom game number: {custom_game_num}')
+    globals.current_model = UserConstructedGamestate
+    if not globals.PRECOMPUTED:
+        load_data()
+    prompts, neighbors = get_custom_prompts_and_neighbors(custom_game_num)
+    set_prompts_today_and_neighbors_today(prompts, neighbors)
+    data_or_none = get_existing_data(globals.current_model)
+    #use the user object with updates from today's data.
+    if data_or_none:
+        data = data_or_none
+        if data["results"] == []:
+            # i = data.get('i', 0)
+            data_today = shift_to(0)
+            data_today['selected_words'] = []
+            data_today['jumpsArray'] = globals.BASE_JUMPS_ARRAY
+            data_today['startTargetIdxs'] = globals.BASE_START_TARGET_IDXS
+            data_today['logged_in'] = data["logged_in"]
+            data_today['total_jumps'] = 0
+            data = data_today
+        print("[custom_index] here is data prompts", data_or_none["prompts"])
+        starts = [prompt[0] for prompt in data_or_none["prompts"]]
+        data['wordsArray'] = words_array_from_data(starts, data['selected_words'],  data['jumpsArray'])
+        data['is_help'] = False
+        session['data'] = json.dumps(data)
+        response = make_response(render_template('index.html', data=json.loads(session.get('data'))))
+    else:
+        print('Creating new user')
+        guest_user = make_guest_user_custom(globals.today, str(uuid.uuid4()), custom_game_num)
+        data = shift_to(0)
+        data['jumpsArray'] = globals.BASE_JUMPS_ARRAY
+        data['startTargetIdxs'] = globals.BASE_START_TARGET_IDXS
+        data['is_help'] = False
+        data['wordsArray'] = []
+        session['data'] = json.dumps(data)
+        response = make_response(render_template('index.html', data=json.loads(session.get('data'))))
+        print("Here is my guest user id: ", guest_user.id)
+        token = cookie_signer.dumps({"user_id": guest_user.id})
+
+        if os.getenv("DEV", "false").lower() == "true":
+            print("This Dev should NEVER BE TRUE!!!!!")
+            set_response_cookie(response, token, secure=False)
+        else:
+            set_response_cookie(response, token, secure=True)
+    return response
