@@ -9,15 +9,13 @@ import random
 
 race_bp = Blueprint('race', __name__)
 
-prompt_neighbor_dict = get_prompts(txt_to_list("application/data/neighbors.txt"))
+prompt_neighbor_dict = get_prompts(txt_to_list("application/data/race_neighbors.txt"))
 PROMPTS = list(prompt_neighbor_dict.keys())
 MAX_LOBBY_SIZE = 8
 # In-memory lobby store (no user state)
 lobbies = {}
 game_states = {}
-
 sid_to_user = {}
-
 default_user_state = {'score': 0, 'wins': 0}
 
 @race_bp.route('/race')
@@ -50,6 +48,26 @@ def handle_disconnect():
 @socketio.on('connect')
 def handle_connect():
     print(f'[connect] SID: {request.sid} connected')
+
+@socketio.on('get_prompts')
+def handle_get_prompts():
+    info = sid_to_user.get(request.sid)
+    if info:
+        code, name = info
+        if code in lobbies:
+            # Generate new prompts for the lobby
+            random.seed()  # Reset seed to get truly random prompts
+            selected_prompts = random.sample(PROMPTS, 5)
+            starts = [pair[0] for pair in selected_prompts]
+            targets = [pair[1] for pair in selected_prompts]
+            
+            lobbies[code]['starts'] = starts
+            lobbies[code]['targets'] = targets
+            emit('post_prompts', {'starts': starts, 'targets': targets}, room=code)
+        else:
+            emit('lobby_error', 'You are not in a valid lobby.')
+    else:
+        emit('lobby_error', 'You must be in a lobby to get new prompts.')
 
 @socketio.on('create_lobby')
 def handle_create_lobby(data):

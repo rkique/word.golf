@@ -11,6 +11,13 @@
     width: 100%;
 }
 
+#reload-prompts {
+    padding: 1rem;
+    display: flex;
+    flex-direction: row;
+    flex-basis: 100%;
+    justify-content: center;
+}
 .user-progress-wins {
     font-size: 2.5rem;
     margin: 0rem 1rem;
@@ -140,7 +147,7 @@ html {
     background: none;
     color: var(--text-color);
     cursor: pointer;
-    border: 1.5px solid var(--border-color);
+    border: none;
     border-radius: 8px;
     transition: background 0.2s, border 0.2s;
 }
@@ -248,6 +255,10 @@ body {
     width: 100%;
 }
 
+#join-lobby{
+    border-left: none;
+}
+
 #create-lobby, #join-lobby {
     min-height: 56px;
     min-width: 12rem;
@@ -262,14 +273,10 @@ body {
     color: var(--text-color);
     cursor: pointer;
     border: 1px solid var(--border-color);
+    outline: none;
     transition: background 0.2s, border 0.2s;
 }
 
-
-#join-code:focus {
-    border: 1.5px solid #888;
-    outline: none;
-}
 
 
 .group {
@@ -294,7 +301,7 @@ input {
     max-width: 400px;
     color: var(--text-color);
     background: transparent;
-    border: 1px solid var(--grayed-out-color);
+    border: 1px solid var(--border-color);
     box-sizing: border-box;
 }
 #current-lobby-display{
@@ -312,10 +319,22 @@ input {
     display: inline-block;
     color: var(--grayed-out-color);
 }
+
+#current-prompts-container {
+    display: flex;
+    flex: none;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 20rem;
+    max-width: 26rem;
+}
+
 #current-starts, #current-targets {
+    flex-basis: 50%;
     font-size: 1.8rem !important;
     color: var(--text-color);
     margin: 0 0;
+    min-width: 8rem;
 }
 
 .start-label, .target-label {
@@ -333,7 +352,7 @@ input {
     font-size: 1.8em;
     margin: 0 0;
 }
-#username:focus {
+#username:focus ,#join-code:focus, #lobby-code:focus {
     border: 1.5px solid #888;
     outline: none;
 }
@@ -413,6 +432,15 @@ input {
     flex-direction: column;
     align-items: center;
     width: min(42rem, 90vw);
+}
+
+#new-prompts {
+    background:none; 
+    border:none;
+    cursor:pointer; 
+    padding:0; 
+    outline: none;
+    color: var(--text-color);
 }
 
 .user-winner {
