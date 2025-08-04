@@ -1,4 +1,4 @@
-
+from threading import Timer
 from flask import Blueprint, render_template, request, jsonify, make_response
 from flask_socketio import SocketIO, join_room, leave_room, emit
 import uuid
@@ -7,6 +7,7 @@ from .. import socketio
 from ..utils import get_prompts, txt_to_list, get_curve, similarity
 from . import main
 import random
+import time
 
 race_bp = Blueprint('race', __name__)
 
@@ -16,6 +17,8 @@ logging.basicConfig(level=logging.WARNING)
 prompt_neighbor_dict = get_prompts(txt_to_list("application/data/race_neighbors.txt"))
 PROMPTS = list(prompt_neighbor_dict.keys())
 MAX_LOBBY_SIZE = 8
+timers = {}  # { lobby_code: { 'time_left': int, 'timer': Timer } }
+ROUND_DURATION = 60 
 # In-memory lobby store (no user state)
 lobbies = {}
 game_states = {}
@@ -94,6 +97,14 @@ def handle_create_lobby(data):
     emit('lobby_list', list(lobbies.keys()), broadcast=True)
     emit('users_list', users_in_lobby(code), room=code)
 
+
+        
+# def start_timer(lobby):
+    
+
+    
+#         start_background_task(countdown)
+
 @socketio.on('join_lobby')
 def handle_join_lobby(data):
     name = data.get('name')
@@ -140,6 +151,9 @@ def handle_round_finish(lobby, user):
             winner = uname
             break
     if winner:
+        if lobby in timers:
+            timers[lobby]['timer'].cancel()
+            del timers[lobby]
         emit('game_finished', {'winner': winner, 'game_state': game_states[lobby]}, room=lobby)
         return
     #update start and target with new games_played index into lobbies[lobby]
@@ -151,7 +165,9 @@ def handle_round_finish(lobby, user):
     target = targets[user_wins]
     words = get_curve(start, target, main.PRECOMPUTED, main.WV, num=8, mode=1)
     # print('[handle_round_finish] words are ', words)
+    
     emit('round_finished', {'game_state': game_states[lobby], 'user': user, 'words': words, 'start': start, 'target': target}, room=lobby)
+    
 
 @socketio.on('click')
 def click(data):
@@ -183,5 +199,17 @@ def handle_game_start(data):
     for user in users:
         game_states[lobby][user] = default_user_state.copy()
     words = get_curve(starts[0], targets[0], main.PRECOMPUTED, main.WV, num=8, mode=1)
+    # start_timer(lobby)
+    def countdown():
+        time_left = ROUND_DURATION
+        while time_left > 0:
+            socketio.sleep(1)
+            time_left -= 1
+            socketio.emit('timer_tick', {'time_left': time_left}, room=lobby)
+        socketio.emit('timer_finished', {}, room=lobby)
+        timers.pop(lobby, None)
+    if lobby not in timers:
+        timers[lobby] = True
+        socketio.start_background_task(target=countdown)
     emit('start_game', {'lobby': lobby, 'starts': starts, 'targets': targets, 'words': words, 'users': users, 'game_state': game_states[lobby]}, room=lobby)
     #start_game= True

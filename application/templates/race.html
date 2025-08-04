@@ -89,7 +89,8 @@
                 <div id="wordspace"></div>
                 <button id="go-to-target" style="margin-top:1rem; display:none">Go to Target</button>
             </div>
-             <div id="user-progress-container">
+            <div id="timer-display">01:00</div>
+            <div id="user-progress-container">
             <div id="user-progress"></div>
             </div>
         </div>
@@ -179,6 +180,11 @@
             if (data.game_state) {
                 userProgress = data.game_state;
             }
+        }
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
         }
         function registerListeners(socket) {
             //EMIT FUNCTIONS 
@@ -278,6 +284,19 @@
                         }, 200);
                     }
                 };
+            });
+
+            socket.on('timer_tick', function (data) {
+                // const timeLeft = data.time_left;
+                // document.getElementById('timer-display').innerText = `Time Left: ${timeLeft}s`;
+                const timeLeft = data.time_left;
+                document.getElementById('timer-display').innerText = formatTime(timeLeft);
+            });
+
+            socket.on('timer_finished', () => {
+                // alert('Time is up!');
+                // document.getElementById('timer-display').innerText = 'Time Left: 0s';
+                document.getElementById('timer-display').innerText = formatTime(0);
             });
 
             socket.on('click', function (data) {
