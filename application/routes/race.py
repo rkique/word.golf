@@ -149,7 +149,7 @@ def handle_round_finish(lobby, user):
     user_wins = game_states[lobby][user]['wins']
     start = starts[user_wins]
     target = targets[user_wins]
-    words = get_curve(start, target, main.PRECOMPUTED, main.WV, True)
+    words = get_curve(start, target, main.PRECOMPUTED, main.WV, num=8, mode=1)
     # print('[handle_round_finish] words are ', words)
     emit('round_finished', {'game_state': game_states[lobby], 'user': user, 'words': words, 'start': start, 'target': target}, room=lobby)
 
@@ -163,7 +163,7 @@ def click(data):
     if word == target:
         handle_round_finish(lobby, user)
     else:
-        words = get_curve(word, target, main.PRECOMPUTED, main.WV, False)
+        words = get_curve(word, target, main.PRECOMPUTED, main.WV, num=8, mode=1)
         score = similarity(word, target, main.WV)
         game_states[lobby][user]['score'] = score
         emit('click', {'user': user, 'words': words, 'game_state': game_states[lobby]}, room=lobby)
@@ -180,6 +180,8 @@ def handle_game_start(data):
     starts = lobby_info['starts']
     targets = lobby_info['targets']
     users = list(game_states[lobby].keys())
-    words = get_curve(starts[0], targets[0], main.PRECOMPUTED, main.WV, True)
+    for user in users:
+        game_states[lobby][user] = default_user_state.copy()
+    words = get_curve(starts[0], targets[0], main.PRECOMPUTED, main.WV, num=8, mode=1)
     emit('start_game', {'lobby': lobby, 'starts': starts, 'targets': targets, 'words': words, 'users': users, 'game_state': game_states[lobby]}, room=lobby)
     #start_game= True

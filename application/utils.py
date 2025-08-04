@@ -30,11 +30,10 @@ def txt_to_dict(path):
     return {wordlist[0]: wordlist[1:] for wordlist in pre}
 
 #finds subset of min length and appends min word to subset.
-def partition(words):
-    assert len(words) == 21
+def partition(words, buckets=7):
     words_sorted = sorted(words, key=len, reverse=True)
-    subsets = [[] for _ in range(0,7)]
-    lengths = [0] * 7
+    subsets = [[] for _ in range(0,buckets)]
+    lengths = [0] * buckets
     for word in words_sorted:
         candidates = [(i, l) for i, l in enumerate(lengths) if len(subsets[i]) < 3]
         min_idx = min(candidates, key=lambda x: x[1])[0]
@@ -63,7 +62,7 @@ def get_prompts(l):
 
 def generate_indices(n: int, num: int,indices,seen, mode=2) -> list[int]:
     '''
-    n: total number of items
+    n: total number of items from which to generate indices
     num: number of indices to generate
     '''
     if mode == 2: #easier
@@ -75,13 +74,14 @@ def generate_indices(n: int, num: int,indices,seen, mode=2) -> list[int]:
                 indices.append(i)
             if len(indices) == num:
                 return indices
-    else: #harder
+    else: #harder 
         for x in range(num * 2):
             i = x * 3
             if i not in seen:
                 indices.append(i)
                 seen.add(i)
             if len(indices) == num:
+                print(f'[hard spaced] {indices}')
                 return indices
     return None
     
@@ -122,27 +122,29 @@ def backoff_selection(start, target, start_neighbors: list[str], target_neighbor
     selected = [start_neighbors[i] for i in indices]
     return selected
 
-def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict, mode=2, neighbor=None) -> list[str]:
+def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict, mode=2, num=20, neighbor=None) -> list[str]:
     '''
     Returns neighbors of the word which are biased towards the target.
-    Linear Bias (1) is easiest, Exponential Backoff (2) is harder, Linear Select (3) is hardest.
     ''' 
     start_neighbors = [result for result in PRECOMPUTED[word] if result not in LAZY_EXCLUDE][:N_LIMIT]
     target_neighbors = [result for result in PRECOMPUTED[target] if result not in LAZY_EXCLUDE][:N_LIMIT]
     def similarity_to_target(x): 
         return similarity(x, target, WV)
-    if mode == 3: #linear bias
-        results__biased = start_neighbors[0:20]
-        results__biased.insert(10, word)
+    if mode == 3: #linear bias. for num=20 only
+        results__biased = start_neighbors[0:num]
+        results__biased.insert(num//2, word)
     else:
         start_neighbors.sort(key=similarity_to_target, reverse=True)
         #exponential backoff from 0 to 100
         results__biased = backoff_selection(word, target, start_neighbors, target_neighbors,\
-                                            neighbor=neighbor, mode=mode)
+                                            num=num, neighbor=neighbor, mode=mode)
         random.seed(len(word))
         random.shuffle(results__biased)
-        results__biased.insert(10,word)
-    subsets = partition(results__biased)
+        results__biased.insert(num//2,word)
+
+    buckets = int((num + 1) / 3)
+    print(f'buckets is {buckets}')
+    subsets = partition(results__biased, buckets)
     for i, subset in enumerate(subsets):
         if word in subset:
             word_subset = subset
@@ -151,7 +153,9 @@ def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict, mode=2, nei
     subsets.pop(word_index)
     others = [w for w in subset if w != word]
     word_subset = [others[0], word, others[1]]
-    subsets.insert(3, word_subset)
+    # 7 --> insert before 7 // 2
+    # 3 --> insert before 3 // 2
+    subsets.insert(buckets // 2, word_subset)
     results = [item for sublist in subsets for item in sublist]
     return results
 
