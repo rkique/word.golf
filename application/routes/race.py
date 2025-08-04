@@ -93,9 +93,9 @@ def handle_create_lobby(data):
     sid_to_user[request.sid] = (code, name)
     #Trigger lobby join on both create 
     logger.info(f'[create_lobby] Lobby joined: {code} by {request.sid}')
+    emit('users_list', users_in_lobby(code), room=code)
     emit('lobby_joined', {'lobby': code, 'name': name, 'starts': starts, 'targets': targets})
     emit('lobby_list', list(lobbies.keys()), broadcast=True)
-    emit('users_list', users_in_lobby(code), room=code)
 
 
         
@@ -130,8 +130,8 @@ def handle_join_lobby(data):
         sid_to_user[request.sid] = (code, name) #assign unique lobby & user
         starts = lobbies[code]['starts']
         targets = lobbies[code]['targets']
-        emit('lobby_joined', {'lobby': code, 'name': name, 'starts': starts, 'targets': targets})
         emit('users_list', users_in_lobby(code), room=code)
+        emit('lobby_joined', {'lobby': code, 'name': name, 'starts': starts, 'targets': targets})
     else:
         emit('lobby_error', f'Lobby {code} does not exist.')
 
