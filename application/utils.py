@@ -131,7 +131,7 @@ def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict, mode=2, nei
     target_neighbors = [result for result in PRECOMPUTED[target] if result not in LAZY_EXCLUDE][:N_LIMIT]
     def similarity_to_target(x): 
         return similarity(x, target, WV)
-    if mode == 3:
+    if mode == 3: #linear bias
         results__biased = start_neighbors[0:20]
         results__biased.insert(10, word)
     else:

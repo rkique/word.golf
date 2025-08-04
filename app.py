@@ -13,6 +13,5 @@ if __name__ == "__main__":
         socketio.run(app, host="0.0.0.0", port=port, debug=True, use_reloader=False)
     else:
         port = int(os.getenv("PORT", 8000))
-        serve(app, host="0.0.0.0", port=port)
+        socketio.run(app, host="0.0.0.0", port=port)
     print('SocketIO server is running...')
-    
