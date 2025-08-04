@@ -305,6 +305,10 @@ html {
     transform: scale(0.88);
 }
 
+.icon:active {
+    transform: scale(0.88);
+}
+
 .finish-close:active {
     transform: scale(0.88);
 }
@@ -726,6 +730,7 @@ button span {
 .settings-controls {
     display: flex;
     flex-direction: row;
+    padding-top: 0;
     gap: 1em;
     border-radius: 0 0 0.5rem 0.5rem;
     font-family: 'Inter', sans-serif;

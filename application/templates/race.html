@@ -1,0 +1,448 @@
+<html lang="en">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style_mobile.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/previous_prompts.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile_mobile.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/race.css') }}">
+
+<head>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include 'modals/head.html' %}
+    <script src="{{ url_for('static', filename='js/information.js') }}?{{ version }}"></script>
+</head>
+
+
+<body>
+    {% include 'modals/header.html' %}
+    {% include 'modals/modal-help.html' %}
+    {% include 'modals/modal.html' %}
+    <div class="race-container">
+        <button id="back-arrow" title="Back"> &#8592;</button>
+        <div id="lobby-info">
+            <h1 id="lobby-title">Race</h1>
+            <h2 id="lobby-subtitle">Play a timed race against friends.</h2>
+            <div id="username-lobby" class="group">
+                <div class="left-align-group">
+                    <label id="username-label">your name </label>
+                    <input id="username" placeholder="silverfish" maxlength="20">
+                    <p id="username-display"></p>
+                </div>
+                <div id="current-lobby-display" class="left-align-group" style="display:none;">
+                    <label id="lobby-code-label">lobby code</label>
+                    <div id="current-lobby"></div>
+                </div>
+                <button id="start-game" style="display:none">Start Game</button>
+            </div>
+            <div class="group">
+                <button id="create-lobby" title="Create Lobby">Create +</button>
+                <div class="join-lobby-container">
+                    <input id="join-code" placeholder="code" maxlength="8" style="flex: 1;">
+                    <button id="join-lobby" title="Join Lobby" style="flex-shrink: 0;">Join</button>
+                </div>
+            </div>
+        </div>
+        <div id="current-lobby-settings">
+            <div id="current-prompts-container">
+                <div id="current-starts"></div>
+                <div id="current-targets"></div>
+                <div id="reload-prompts">
+                    <button id="new-prompts" title="reload-prompts">
+                    <span class="icon">
+                    <svg width="24" height="24" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M7 12v-2l-4 3 4 3v-2h2.997A6.006 6.006 0 0 0 16 8h-2a4 4 0 0 1-3.996 4H7zM9 2H6.003A6.006 6.006 0 0 0 0 8h2a4 4 0 0 1 3.996-4H9v2l4-3-4-3v2z" fill-rule="evenodd"/>
+                    </svg>
+                    </span>
+                    </button>
+                </div>
+            </div>
+            <div id="total-rounds-container">
+                <div id="total-rounds">
+                <p class="total-rounds-label">total rounds</p>
+                <div class="total-rounds-options">
+                    <span class="total-rounds-option" data-value="5">5</span>
+                </div>
+                </div>
+            </div>
+            <div id="user-list-container">
+            <div id="user-list" class="left-align-group"></div>
+            </div>
+        </div>
+        <div id="lobby-list"></div>
+    </div>
+    <div id="game-global">
+        <div id="game-container">
+            <div id="game">
+                <div id="target"></div>
+                <div id="wordspace"></div>
+                <button id="go-to-target" style="margin-top:1rem; display:none">Go to Target</button>
+            </div>
+        </div>
+        <div id="user-progress-container">
+            <div id="user-progress"></div>
+        </div>
+    </div>
+    <div id="finish-screen">
+        <h2>Results</h2>
+    </div>
+
+    </div>
+    <script>
+        let socket = io();
+        let myLobby = null;
+        let myName = "";
+        let start = null;
+        let target = null;
+
+        // User progress state: { username: score }
+        let userProgress = {};
+
+        function renderGame(data, target) {
+            console.log(`renderGame] data: ${JSON.stringify(data)}`);
+            hideLobby();
+            showGameGlobal();
+            words = data.words;
+            if (target) {
+                document.getElementById('target').innerHTML = `<span class="target-label">go to</span> ${target}`;
+                document.getElementById('go-to-target').style.display = '';
+            } else {
+                document.getElementById('go-to-target').style.display = 'none';
+            }
+            let html = '<table style="border-collapse:collapse;">';
+            for (let row = 0; row < 7; row++) {
+                html += '<tr>';
+                for (let col = 0; col < 3; col++) {
+                    const idx = row * 3 + col;
+                    const word = words[idx] ? words[idx] : '';
+                    if (col == 1 && row == 3) {
+                        html += `<td >
+                                <a href="#" class="link--starting" onclick="window.clickWord('${myName}', '${word}')">${word}</a>
+                            </td>`;
+                    } else if (word == target) {
+                        {
+                            html += `<td class="link--target">
+                                <a href="#" id="rainbow_text_animated" onclick="window.clickWord('${myName}', '${word}')">${word}</a>
+                            </td>`;
+                        }
+                    }
+                    else {
+                        html += `<td>
+                                <a href="#" onclick="window.clickWord('${myName}', '${word}')">${word}</a>
+                            </td>`;
+                    }
+                }
+                html += '</tr>';
+            }
+            html += '</table>';
+            document.getElementById('wordspace').innerHTML = html;
+            renderUserProgressBars();
+        }
+        //render any updates to UserProgress object.
+        function renderUserProgressBars() {
+            const container = document.getElementById('user-progress');
+            console.log(`renderUserProgress] ${JSON.stringify(userProgress)}`);
+            let html = '';
+            for (const [user, userProps] of Object.entries(userProgress)) {
+                score = userProps['score']
+                let normalizedScore = (typeof score === 'number' && !isNaN(score)) ? score : 0;
+                normalizedScore = Math.pow(normalizedScore, 0.5);
+                let percent = Math.max(0, Math.min(1, normalizedScore))
+                percent = Math.round(percent * 100);
+                // Get wins, default to 0 if not present
+                let wins = userProps['wins'] !== undefined ? userProps['wins'] : 0;
+                html += `<div class="user-progress-row">
+                <span class="user-progress-wins">${wins}</span>
+                <span class="user-progress-name">${user}</span>
+                <div class="user-progress-bar-outer">
+                <div class="user-progress-bar-inner" style="width: ${percent}%;"></div>
+                </div>
+            </div>`;
+            }
+            container.innerHTML = html;
+        }
+        function setUserProgress(data, clear = false) {
+            if (clear) {
+                userProgress = {};
+            }
+            if (data.game_state) {
+                userProgress = data.game_state;
+            }
+        }
+        function registerListeners(socket) {
+            //EMIT FUNCTIONS 
+            window.clickWord = function (myName, word) {
+                socket.emit('click', { lobby: myLobby, user: myName, word: word, target: target });
+                return false;
+            }
+
+            //create-lobby --> lobby_created L
+            document.getElementById('create-lobby').onclick = function () {
+                socket.emit('create_lobby', { name: myName });
+            };
+
+            document.getElementById('new-prompts').onclick = function () {
+                socket.emit('get_prompts')
+            }
+            socket.on('post_prompts', function (data){
+
+                document.getElementById('current-starts').innerHTML = makeStartTargetHTML(data.starts, 'starts');
+                document.getElementById('current-targets').innerHTML = makeStartTargetHTML(data.targets, 'targets');
+            })
+            //start-game --> game_started L
+            document.getElementById('start-game').onclick = function () {
+                if (myLobby) {
+                    socket.emit('game_started', { lobby: myLobby, name: myName, target: target });
+                }
+            };
+
+            //join-lobby --> join_lobby L
+            document.getElementById('join-lobby').onclick = function () {
+                myName = document.getElementById('username').value.trim();
+                console.log(`myName is ${myName}`)
+                const code = document.getElementById('join-code').value.trim();
+                if (code) {
+                    socket.emit('join_lobby', { code: code, name: myName });
+                }
+            };
+
+            // Go to Target handler
+            document.getElementById('go-to-target').onclick = function () {
+                if (target) {
+                    clickWord(myName, target);
+                }
+            };
+
+            socket.on('lobby_error', function (msg) {
+                alert(msg);
+            });
+
+            socket.on('lobby_list', function (lobbies) {
+                let html = '<h4>Active Lobbies:</h4>';
+                if (lobbies.length === 0) html += '<i>No lobbies yet.</i>';
+                else html += lobbies.map(code => `<div class='lobby'>${code}</div>`).join('');
+                document.getElementById('lobby-list').innerHTML = html;
+            });
+
+            socket.on('users_list', function (users) {
+                let html = '<p id="user-list-title">your lobby</p>';
+                if (users.length === 0) html += '<i>Only you here.</i>';
+                else html += users.map(user => `<div class='user'>${user}</div>`).join('');
+                document.getElementById('user-list').innerHTML = html;
+            });
+            console.log('start_game registered')
+            //We always assign target before it is used.
+            socket.on('start_game', function (data) {
+                // Reset user progress for all users in the lobby using game_state
+                setUserProgress(data, true);
+                renderGame(data, target);
+            });
+
+            socket.on('round_finished', function (data) {
+                if (data.user === myName) {
+                    console.log(`setting start and target from round_finished: ${JSON.stringify(data)}`);
+                    start = data.start;
+                    target = data.target;
+                }
+                setUserProgress(data);
+                renderRoundFinish(data)
+            });
+            // 
+            socket.on('game_finished', function (data) {
+                renderGameFinish(data);
+                document.getElementById('back-arrow').onclick = function () {
+                        renderJoinedLobby(starts, targets, myLobby);
+                        hideFinishScreen(true);
+                        // allow user to leave the lobby to main
+                        document.getElementById('back-arrow').onclick = function (){
+                            if (socket) {
+                                socket.disconnect();
+                            }
+                            renderNoJoinedLobby(starts, targets, myLobby);
+                            // Reconnect socket for new session
+                            setTimeout(() => {
+                                socket = io();
+                                registerListeners(socket);
+                            }, 200);
+                        }
+                };
+            });
+
+            socket.on('click', function (data) {
+                // data: {user, words, score, game_state}
+                setUserProgress(data);
+                console.log(`[click] User progress: ${JSON.stringify(userProgress)}`);
+                renderUserProgressBars();
+                if (data.user === myName) {
+                    renderGame(data, target);
+                }
+            });
+
+            //used in both create and join lobby
+            socket.on('lobby_joined', function (data) {
+                //update global start and target
+                start = data.starts[0]
+                target = data.targets[0];
+                // update starts and targets for passing into render
+                starts = data.starts;
+                targets = data.targets;
+                // alert('data is ' + JSON.stringify(data));
+                // alert('joined lobby with data: ' + JSON.stringify(data));
+                myLobby = data.lobby;
+                myName = data.name;
+                console.log(`Joined lobby ${myLobby} as ${myName}`);
+                //needs to see starts and targets
+                renderJoinedLobby(starts, targets, myLobby);
+            });
+
+            // Back arrow from joined lobby to no joined lobby
+            document.getElementById('back-arrow').onclick = function () {
+                if (socket) {
+                    socket.disconnect();
+                }
+                renderNoJoinedLobby()
+                // Reconnect socket for new session
+                setTimeout(() => {
+                    socket = io();
+                    registerListeners(socket);
+                }, 200);
+            };
+            //Every pageload, request lobby list
+            socket.emit('get_lobbies');
+        }
+        registerListeners(socket);
+    </script>
+    <script>
+        function renderRoundFinish(data) {
+            message = `Round finished! game_state: ${JSON.stringify(data.game_state)}`;
+            displayModal(message);
+            renderTransientModal(1000);
+            renderUserProgressBars();
+            console.log(`renderRoundFinish] data: ${JSON.stringify(data)}`);
+            if (myName === data.user) {
+                renderGame(data, target);
+            }
+        }
+        function renderGameFinish(data){
+            document.getElementById('game-global').style.display = 'none';
+            document.getElementById('back-arrow').style.display = 'flex';
+            const finishScreen = document.getElementById('finish-screen');
+            finishScreen.style.display = 'flex';
+            // Convert entries to array and sort by wins descending
+            const sortedUsers = Object.entries(data.game_state).sort((a, b) => {
+                const winsA = a[1]['wins'] !== undefined ? a[1]['wins'] : 0;
+                const winsB = b[1]['wins'] !== undefined ? b[1]['wins'] : 0;
+                return winsB - winsA;
+            });
+            for (let i = 0; i < sortedUsers.length; i++) {
+                const [user, userProps] = sortedUsers[i];
+                const score = userProps['score'] !== undefined ? userProps['score'] : 0;
+                const wins = userProps['wins'] !== undefined ? userProps['wins'] : 0;
+                const card = document.createElement('div');
+                card.className = 'user-score-card';
+                if (i === 0) {
+                    card.classList.add('user-winner');
+                }
+                card.innerHTML = `
+                    <div class="user-score-name">${user}</div>
+                    <div class="user-score-wins">Rounds: ${wins}</div>
+                `;
+                finishScreen.appendChild(card);
+            }
+        }
+        function makeStartTargetHTML(starts, label) {
+            HTML = `
+            <p class="start-label">${label}</p>
+            ${starts.map(s => `<p class="start-entry">${s}</p>`).join('')}
+            `;
+            return HTML;
+        }
+        function hideFinishScreen(hide=false){
+            finishScreen = document.getElementById('finish-screen')
+            if (hide){
+                finishScreen.innerHTML = '';
+            }
+            finishScreen.style.display = 'none';
+        }
+
+        function renderJoinedLobby(starts, targets, myLobby) {
+            document.getElementById('current-starts').innerHTML = makeStartTargetHTML(starts, 'starts');
+            document.getElementById('current-targets').innerHTML = makeStartTargetHTML(targets, 'targets');
+            document.getElementById('username-display').innerHTML = myName;
+            document.getElementById('current-lobby-display').style.display = 'flex';
+            document.getElementById('username-lobby').style.flexDirection = 'row';
+            document.getElementById('current-lobby').innerHTML = `<span style='font-family:monospace;'>${myLobby}</span>`;
+            document.getElementById('current-lobby-settings').style.display = 'flex';
+            document.getElementById('current-lobby').style.display = '';
+            document.getElementById('user-list').style.display = '';
+            document.getElementById('username-display').style.display = '';
+            document.getElementById('start-game').style.display = '';
+            document.getElementById('back-arrow').style.display = 'flex';
+            document.getElementById('lobby-info').style.display = '';
+            //hide game and other UI elements
+            document.getElementById('game-global').style.display = 'none';
+            document.getElementById('username').style.display = 'none';
+            document.getElementById('lobby-list').style.display = 'none';
+            document.getElementById('create-lobby').style.display = 'none';
+            document.getElementById('join-lobby').style.display = 'none';
+            document.getElementById('join-code').style.display = 'none';
+        }
+        function renderNoJoinedLobby() {
+            // Hide game/lobby display
+            document.getElementById('user-list').style.display = 'none';
+            document.getElementById('current-lobby-settings').style.display = 'none';
+            document.getElementById('current-lobby-display').style.display = 'none';
+            document.getElementById('start-game').style.display = 'none';
+            document.getElementById('back-arrow').style.display = 'none';
+            document.getElementById('username-display').style.display = 'none';
+            // Hide results 
+            document.getElementById('finish-screen').style.display = 'none';
+            // Show join UI
+            document.getElementById('username').style.display = '';
+            document.getElementById('lobby-list').style.display = '';
+            document.getElementById('create-lobby').style.display = '';
+            document.getElementById('lobby-info').style.display = '';
+            document.getElementById('join-lobby').style.display = '';
+            document.getElementById('join-code').style.display = '';
+            // Optionally clear game state
+            // document.getElementById('current-start-target').innerHTML = '';
+            // document.getElementById('user-list').innerHTML = '';
+            // document.getElementById('target').innerHTML = '';
+            // document.getElementById('wordspace').innerHTML = '';
+        }
+        //for use in renderGame
+        function hideLobby() {
+            document.getElementById('lobby-info').style.display = 'none';
+            document.getElementById('back-arrow').style.display = 'none';
+            document.getElementById('user-list').style.display = 'none';
+            document.getElementById('current-lobby-settings').style.display = 'none';
+            document.getElementById('start-game').style.display = 'none';
+        }
+        function showGameGlobal() {
+            document.getElementById('game-global').style.display = 'flex';
+        }
+    </script>
+    <script>
+        let totalRounds = 5; // default value
+        function updateTotalRoundsUI(selectedValue) {
+            document.querySelectorAll('.total-rounds-option').forEach(span => {
+                if (parseInt(span.dataset.value) === selectedValue) {
+                    span.classList.add('selected-option');
+                } else {
+                    span.classList.remove('selected-option');
+                }
+            });
+        }
+        document.querySelectorAll('.total-rounds-option').forEach(span => {
+            span.onclick = function() {
+                totalRounds = parseInt(this.dataset.value);
+                updateTotalRoundsUI(totalRounds);
+            };
+        });
+        // Initialize UI on page load
+        updateTotalRoundsUI(totalRounds);
+    </script>
+</body>
+
+</html>

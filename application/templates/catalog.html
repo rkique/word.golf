@@ -9,16 +9,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% include 'head.html' %}
-    <script>
-
-    </script>
+    {% include 'modals/head.html' %}
 </head> 
 
 <body>
-    {% include 'header.html' %}
-    {% include 'modal-help.html' %}
-    {% include 'modal.html' %}
+    {% include 'modals/header.html' %}
+    {% include 'modals/modal-help.html' %}
+    {% include 'modals/modal.html' %}
     <script>
         //check logged in and update header
         logged_in = localStorage.getItem('logged_in');

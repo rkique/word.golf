@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_socketio import SocketIO
 from flask_mail import Mail
 from authlib.integrations.flask_client import OAuth
 from flask_migrate import Migrate
@@ -9,6 +10,7 @@ from dotenv import load_dotenv
 
 
 load_dotenv()
+socketio = SocketIO()
 db = SQLAlchemy()
 mail = Mail()
 oauth = OAuth()
@@ -35,7 +37,8 @@ def create_app():
     mail.init_app(app)
     oauth.init_app(app)
     migrate.init_app(app, db)
-
+    socketio.init_app(app)
+    
     global cookie_signer
     SECRET_KEY = os.environ.get("COOKIE_SECRET_KEY", "AEB75123B3B9738C82FC48B5BF6C3")
     cookie_signer = itsdangerous.URLSafeTimedSerializer(SECRET_KEY)
