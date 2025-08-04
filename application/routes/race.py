@@ -2,6 +2,7 @@
 from flask import Blueprint, render_template, request, jsonify, make_response
 from flask_socketio import SocketIO, join_room, leave_room, emit
 import uuid
+import logging
 from .. import socketio
 from ..utils import get_prompts, txt_to_list, get_curve, similarity
 from . import main
@@ -9,6 +10,9 @@ import random
 
 race_bp = Blueprint('race', __name__)
 
+# Set up logger
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.WARNING)
 prompt_neighbor_dict = get_prompts(txt_to_list("application/data/race_neighbors.txt"))
 PROMPTS = list(prompt_neighbor_dict.keys())
 MAX_LOBBY_SIZE = 8
@@ -37,17 +41,17 @@ def handle_disconnect():
         code, name = info
         if code in game_states and name in game_states[code]:
             del game_states[code][name]
-            print('[disconnect] ', game_states)
+            logger.info(f'[disconnect] Game states: {game_states}')
             if not game_states[code]:
                 del game_states[code]
                 lobbies.pop(code, None)
-                print('[disconnect] Lobby removed:', code)
+                logger.info(f'[disconnect] Lobby removed: {code}')
             emit('users_list', users_in_lobby(code), room=code)
             emit('lobby_list', list(lobbies.keys()), broadcast=True)
 
 @socketio.on('connect')
 def handle_connect():
-    print(f'[connect] SID: {request.sid} connected')
+    logger.info(f'[connect] SID: {request.sid} connected')
 
 @socketio.on('get_prompts')
 def handle_get_prompts():
@@ -85,7 +89,7 @@ def handle_create_lobby(data):
     game_states[code][name] = default_user_state.copy() #can store score, but also game states
     sid_to_user[request.sid] = (code, name)
     #Trigger lobby join on both create 
-    print('lobby joined:', code, 'by', request.sid)
+    logger.info(f'[create_lobby] Lobby joined: {code} by {request.sid}')
     emit('lobby_joined', {'lobby': code, 'name': name, 'starts': starts, 'targets': targets})
     emit('lobby_list', list(lobbies.keys()), broadcast=True)
     emit('users_list', users_in_lobby(code), room=code)
@@ -104,11 +108,11 @@ def handle_join_lobby(data):
         if name in game_states[code]:
             name = f'{name} (1)'
             names = list(game_states[code].keys())
-            print(f'[join_lobby] names {names}')
+            logger.info(f'[join_lobby] Existing names: {names}')
             while name in names:
                 suffix = name.split('(')[-1][0] #get number in parens
                 name = name[:-3] + f'({int(suffix) + 1})'
-                print(f'[join_lobby] Renamed {data.get("name")} to {name}')
+                logger.info(f'[join_lobby] Renamed {data.get("name")} to {name}')
             game_states[code][name] = default_user_state.copy()
         else:
             game_states[code][name] = default_user_state.copy()
@@ -155,7 +159,7 @@ def click(data):
     word = data.get('word')
     target = data.get('target')
     lobby = data.get('lobby')
-    print('[Click] User:', user, 'Word:', word)
+    logger.info(f'[click] User: {user}, Word: {word}')
     if word == target:
         handle_round_finish(lobby, user)
     else:
