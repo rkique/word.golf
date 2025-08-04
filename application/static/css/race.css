@@ -1,0 +1,524 @@
+/* User progress bar row and label styles */
+#user-progress {
+    width: 100%;
+}
+
+#current-lobby-settings {
+    display: none;
+    flex-wrap: nowrap;
+    gap: 1rem;
+    flex-direction: row;
+    width: 100%;
+}
+
+#reload-prompts {
+    padding: 1rem;
+    display: flex;
+    flex-direction: row;
+    flex-basis: 100%;
+    justify-content: center;
+}
+.user-progress-wins {
+    font-size: 2.5rem;
+    margin: 0rem 1rem;
+}
+.user-progress-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    gap: 0rem;
+    width: 28rem;
+}
+.user-progress-name {
+    /* min-width: 7rem; */
+    margin: 0.2rem 0.8rem;
+}
+.user-progress-score {
+    min-width: 2.5rem;
+    text-align: right;
+}
+#rainbow_text_animated {
+    color: var(--emphasis-color) !important;
+}
+
+.user-progress-bar-outer {
+        background-color: var(--grayed-out-background);
+        width: 100%;
+        height: 2.2rem;
+        border-radius: 0;
+        overflow: hidden;
+        position: relative;
+        flex: 1;
+}
+
+.user-progress-bar-inner {
+        background-color: var(--text-color);
+        height: 100%;
+        width: 0%;
+        transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 0;
+}
+.user-progress-score {
+        min-width: 2.5rem;
+        text-align: right;
+}
+
+#game-global {
+    display: none;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: stretch;
+    width: 100%;
+    height: 88vh;
+    /* border-top: 1px solid var(--border-color); */
+}
+
+
+html {
+    --text-size: 1.4rem;
+}
+
+#game-container {
+    display: flex;
+    /* flex: 1 1 0; */
+    min-width: 0;
+    padding: 0;
+    align-content: center;
+    justify-content: center;
+    width: 40rem;
+}
+
+#user-progress-container {
+    /* flex: 0 1 0; */
+    display: flex;
+    padding: 1rem 1.5rem;
+    flex-direction: column;
+    /* border-left: 2px solid var(--border-color); */
+    width: 20rem;
+}
+
+#game {
+    margin: 0 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 30rem;
+    gap: 1rem;
+}
+
+#current-start-target, #current-lobby {
+    font-size: 1.8rem;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    width: 100%;
+    text-align: left;
+}
+
+#lobby-list, #user-list {
+    font-size: var(--text-size);
+    color: var(--text-color);
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+#total-rounds {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+#user-list-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#start-game, #go-to-target {
+    min-height: 48px;
+    min-width: 160px;
+    width: 100%;
+    max-width: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--button-font-size, 1.5rem);
+    background: none;
+    color: var(--text-color);
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    transition: background 0.2s, border 0.2s;
+}
+#start-game:hover, #go-to-target:hover, #start-game:focus, #go-to-target:focus {
+    background: #232323;
+    border: 1.5px solid #fff;
+}
+/* 
+#user-progress {
+    position: fixed;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: auto;
+    height: 80vh;
+    background: var(--background-color);
+    border-style: solid;
+    border-width: 1px 0 1px 1px;
+    border-color: var(--border-color);
+    box-shadow: -2px 0 8px rgba(0,0,0,0.04);
+    z-index: 20;
+    padding: 2rem 1.2rem 2rem 1.2rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+} */
+
+#target {
+    font-size: 1.8rem;
+    color: var(--text-color);
+    margin: 1rem 0 1rem;
+    width: 100%;
+    text-align: center;
+}
+
+#wordspace {
+    height: auto !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: 1fr !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+#wordspace table {
+    width: 100%;
+    max-width: 30em;
+    margin: 0 auto;
+    border-collapse: collapse;
+}
+
+#wordspace td {
+    border: none;
+    padding: 0.5rem 2rem;
+    min-width: 3em;
+    text-align: center;
+    font-size: 2.2rem;
+}
+
+#wordspace a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 400;
+    transition: color 0.2s;
+}
+
+#wordspace a.link--starting {
+    pointer-events: none;
+}
+#wordspace a:hover {
+    color: var(--hover-color);
+    text-decoration: none;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.race-container {
+    display: flex;
+    max-width: 42rem;
+    width: 42rem;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.left-align-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.join-lobby-container {
+    display: flex; 
+    gap: 0rem;
+}
+
+#create-lobby{
+    width: 100%;
+}
+
+#join-lobby{
+    border-left: none;
+}
+
+#create-lobby, #join-lobby {
+    min-height: 56px;
+    min-width: 12rem;
+    /* width: 100%; */
+    /* max-width: 400px; */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--button-font-size, 2rem);
+    background: none;
+    color: var(--text-color);
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    outline: none;
+    transition: background 0.2s, border 0.2s;
+}
+
+
+
+.group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+label { 
+    font-size: 1.4rem;
+    color: var(--text-color);
+    margin: 0 0;
+}
+input {
+    font-size: 1.8rem !important;
+    padding: 0.8rem;
+    width: 100%;
+    min-width: 200px;
+    max-width: 400px;
+    color: var(--text-color);
+    background: transparent;
+    border: 1px solid var(--border-color);
+    box-sizing: border-box;
+}
+#current-lobby-display{
+    display: none;
+}
+#username-lobby {
+    width: 30em;
+    /* max-width: 40rem;
+    width: 40rem; */
+}
+
+#lobby-code-label, #username-label, .start-label, .target-label {
+    font-style: italic;
+    margin: 0 0;
+    display: inline-block;
+    color: var(--grayed-out-color);
+}
+
+#current-prompts-container {
+    display: flex;
+    flex: none;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 20rem;
+    max-width: 26rem;
+}
+
+#current-starts, #current-targets {
+    flex-basis: 50%;
+    font-size: 1.8rem !important;
+    color: var(--text-color);
+    margin: 0 0;
+    min-width: 8rem;
+}
+
+.start-label, .target-label {
+    display: block;
+    font-size: 1.4rem;
+}
+
+.start-entry, .target-entry{
+    margin: 0 0;
+    display: block;
+}
+
+
+#username-display {
+    font-size: 1.8em;
+    margin: 0 0;
+}
+#username:focus ,#join-code:focus, #lobby-code:focus {
+    border: 1.5px solid #888;
+    outline: none;
+}
+
+#lobby-title {
+    font-size: 2.9rem;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+}
+#lobby-subtitle {
+    font-size: 1.4rem;
+    font-weight: 400;
+    margin: 0 0.5rem 2.5rem 0;
+    color: var(--grayed-out-color);
+}
+
+#lobby-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.7rem;
+    width: 100%;
+}
+
+#user-list-title {
+    font-style: italic;
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: var(--grayed-out-color);
+}
+.square-btn:hover, .square-btn:focus {
+    background: #f0f4f8;
+    border: 2px solid #222;
+}
+
+#current-start-target, #current-lobby, #lobby-list, #user-list {
+    width: 100%;
+    margin: 0 auto;
+}
+
+#current-start-target, #total-rounds-container {
+    flex:1
+}
+
+#total-rounds-container{
+    min-width: 8rem;
+}
+
+.total-rounds-label, #user-list-title {
+    font-size: 1.4rem;
+    font-style: italic;
+    color: var(--grayed-out-color);
+    margin: 0 0 0.5rem;
+}
+
+.total-rounds-option {
+    padding: 0.4rem;
+}
+.selected-option {
+    color: var(--text-color);
+    padding: 0.4rem;
+    border: 1px solid var(--text-color);
+    border-radius: 6px;
+}
+
+.total-rounds-options {
+    display: flex;
+    justify-content: space-between;
+    /* width: 20vw; */
+    font-size: 1.4rem;
+    color: var(--text-color);
+    margin-top: 0rem;
+}
+
+#finish-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    width: min(42rem, 90vw);
+}
+
+#new-prompts {
+    background:none; 
+    border:none;
+    cursor:pointer; 
+    padding:0; 
+    outline: none;
+    color: var(--text-color);
+}
+
+.user-winner {
+    font-weight: bold;;
+}
+
+.user-score-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 0.5rem;
+    width:100%;
+}
+
+.user-score-name {
+    font-weight: bold;
+}
+
+.user-score-score {
+    font-size: 1.5rem;
+}
+
+.user-score-wins {
+    color: gray;
+}
+
+input[type=range] {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    border: none;
+    width: 100%; /* Full-width */
+    background: transparent;
+    padding: 1.5rem 0;
+    outline: none; /* Remove outline on focus */
+}
+
+#back-arrow {
+    display: none;
+    position: absolute;
+    left: 2rem;
+    top: 2rem;
+    font-size: 2rem;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    z-index: 10;
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+input[type=range]::-webkit-slider-runnable-track {
+    height: 2px;
+    background: var(--grayed-out-color)
+}
+
+/* Firefox */
+input[type=range]::-moz-range-track {
+    height: 2px;
+    background: var(--grayed-out-color);
+}
+
+/* IE */
+input[type=range]::-ms-fill-lower,
+input[type=range]::-ms-fill-upper {
+    height: 2px;
+    background: var(--grayed-out-color);
+    border-radius: 5px;
+}
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 5px !important;
+    height: 25px; /* Increase height for better centering */
+    margin-top: -12px; /* Vertically center thumb on 8px track */
+    background: var(--grayed-out-color);
+    cursor: pointer;
+}
