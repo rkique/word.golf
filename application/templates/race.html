@@ -139,7 +139,7 @@
             document.getElementById('wordspace').innerHTML = html;
             renderUserProgressBars();
         }
-
+        //render any updates to UserProgress object.
         function renderUserProgressBars() {
             const container = document.getElementById('user-progress');
             console.log(`renderUserProgress] ${JSON.stringify(userProgress)}`);
@@ -240,9 +240,11 @@
             });
 
             socket.on('round_finished', function (data) {
-                //update round_finished
-                start = data.start;
-                target = data.target;
+                if (data.user === myName) {
+                    console.log(`setting start and target from round_finished: ${JSON.stringify(data)}`);
+                    start = data.start;
+                    target = data.target;
+                }
                 setUserProgress(data);
                 renderRoundFinish(data)
             });
@@ -313,17 +315,14 @@
     </script>
     <script>
         function renderRoundFinish(data) {
-            const message = `Round finished! game_state: ${JSON.stringify(data.game_state)}`;
+            message = `Round finished! game_state: ${JSON.stringify(data.game_state)}`;
             displayModal(message);
-            renderTransientModal(600);
+            renderTransientModal(1000);
             renderUserProgressBars();
             console.log(`renderRoundFinish] data: ${JSON.stringify(data)}`);
             if (myName === data.user) {
-                renderGame(data, target);;
+                renderGame(data, target);
             }
-            // Hide game area
-            // Render joined lobby again
-            // setTimeout(renderJoinedLobby, 2000);
         }
         function renderGameFinish(data){
             document.getElementById('game-global').style.display = 'none';
@@ -415,6 +414,7 @@
         //for use in renderGame
         function hideLobby() {
             document.getElementById('lobby-info').style.display = 'none';
+            document.getElementById('back-arrow').style.display = 'none';
             document.getElementById('user-list').style.display = 'none';
             document.getElementById('current-lobby-settings').style.display = 'none';
             document.getElementById('start-game').style.display = 'none';

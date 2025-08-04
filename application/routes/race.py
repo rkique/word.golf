@@ -127,8 +127,8 @@ def handle_get_lobbies():
 
 def handle_round_finish(lobby, user):
     #update user wins count
-    user_wins = game_states[lobby][user]['wins']
     game_states[lobby][user]['wins'] += 1
+    game_states[lobby][user]['score'] = 0 #reset as winner
     #see if any user has 5 wins:
     winner = None
     for uname, state in game_states[lobby].items():
@@ -142,6 +142,7 @@ def handle_round_finish(lobby, user):
     # print(f'[handle_round_finish] user wins: {user_wins}')
     starts = lobbies[lobby]['starts']
     targets = lobbies[lobby]['targets']
+    user_wins = game_states[lobby][user]['wins']
     start = starts[user_wins]
     target = targets[user_wins]
     words = get_curve(start, target, main.PRECOMPUTED, main.WV, True)
