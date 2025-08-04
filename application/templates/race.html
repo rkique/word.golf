@@ -102,6 +102,7 @@
     <script>
         let socket = io();
         let myLobby = null;
+        let myLobbyLeader = null;
         let myName = "";
         let start = null;
         let target = null;
@@ -237,10 +238,22 @@
             });
 
             socket.on('users_list', function (users) {
+                oldLobbyLeader = myLobbyLeader
+                myLobbyLeader = users[0];
                 let html = '<p id="user-list-title">your lobby</p>';
-                if (users.length === 0) html += '<i>Only you here.</i>';
-                else html += users.map(user => `<div class='user'>${user}</div>`).join('');
+                for (user of users){
+                    if (user === myLobbyLeader) {
+                        html += `<div class='user'>${user} (leader)</div>`;
+                    } else {
+                    html += `<div class='user'>${user}</div>`;
+                }
+                }
                 document.getElementById('user-list').innerHTML = html;
+                debugger;
+                leaderChanged = (oldLobbyLeader !== myLobbyLeader)
+                if (leaderChanged){
+                    renderJoinedLobby(starts, targets, myLobby);
+                }
             });
             console.log('start_game registered')
             //We always assign target before it is used.
@@ -378,6 +391,11 @@
         }
 
         function renderJoinedLobby(starts, targets, myLobby) {
+            console.log(`myName: ${myName}, myLobby: ${myLobby}, myLobbyLeader: ${myLobbyLeader}`);
+            if (myName === myLobbyLeader) {
+                document.getElementById('start-game').style.display = '';
+                document.getElementById('reload-prompts').style.display = 'flex';
+            }
             document.getElementById('current-starts').innerHTML = makeStartTargetHTML(starts, 'starts');
             document.getElementById('current-targets').innerHTML = makeStartTargetHTML(targets, 'targets');
             document.getElementById('username-display').innerHTML = myName;
@@ -388,7 +406,6 @@
             document.getElementById('current-lobby').style.display = '';
             document.getElementById('user-list').style.display = '';
             document.getElementById('username-display').style.display = '';
-            document.getElementById('start-game').style.display = '';
             document.getElementById('back-arrow').style.display = 'flex';
             document.getElementById('lobby-info').style.display = '';
             //hide game and other UI elements
@@ -407,6 +424,7 @@
             document.getElementById('start-game').style.display = 'none';
             document.getElementById('back-arrow').style.display = 'none';
             document.getElementById('username-display').style.display = 'none';
+            document.getElementById('reload-prompts').style.display = 'none';
             // Hide results 
             document.getElementById('finish-screen').style.display = 'none';
             // Show join UI
@@ -424,6 +442,7 @@
         }
         //for use in renderGame
         function hideLobby() {
+            document.getElementById('reload-prompts').style.display = 'none';
             document.getElementById('lobby-info').style.display = 'none';
             document.getElementById('back-arrow').style.display = 'none';
             document.getElementById('user-list').style.display = 'none';
