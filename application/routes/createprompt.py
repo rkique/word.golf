@@ -170,7 +170,7 @@ def custom_index():
             data_today['logged_in'] = data["logged_in"]
             data_today['total_jumps'] = 0
             data = data_today
-        print("[custom_index] here is data prompts", data_or_none["prompts"])
+        # print("[custom_index] here is data prompts", data_or_none["prompts"])
         starts = [prompt[0] for prompt in data_or_none["prompts"]]
         data['wordsArray'] = words_array_from_data(starts, data['selected_words'],  data['jumpsArray'])
         data['is_help'] = False

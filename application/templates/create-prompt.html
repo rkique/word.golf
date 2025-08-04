@@ -309,6 +309,7 @@
     async function generateUrl() {
         if (promptsData.length != 5) {
             alert("Please make exactly 5 prompts");
+            return;
         }
         let prompt_list = [];
         promptsData.forEach(prompt_element => {
