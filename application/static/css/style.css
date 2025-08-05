@@ -740,6 +740,19 @@ button span {
     color: var(--grayed-out-color);
 }
 
+#wg-heading {
+    color: var(--border-color);
+    margin: 1rem 0 0 2rem;
+}
+
+.lobby-title {
+    /* font-family: 'Inter', sans-serif; */
+    display: inline-block;
+    font-size: 2.9rem;
+    font-weight: 400;
+    margin: 0 0;
+}
+
 .soft-emphasis {
     /* background-color: var(--grayed-out-background); */
     padding: 1rem 0.75rem 0.5rem 0.75rem;
@@ -748,11 +761,12 @@ button span {
 }
 
 .settings-controls {
+    transform: scale(1);
+    transform-origin: left;
     display: flex;
+    padding-top: 1rem;
     flex-direction: row;
-    padding-top: 0;
     gap: 1em;
-    border-radius: 0 0 0.5rem 0.5rem;
     font-family: 'Inter', sans-serif;
 }
 

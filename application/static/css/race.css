@@ -425,13 +425,6 @@ input {
     margin: 0 0;
 }
 
-.lobby-title {
-    /* font-family: 'Inter', sans-serif; */
-    display: inline-block;
-    font-size: 2.9rem;
-    font-weight: 400;
-    margin: 0 0;
-}
 #lobby-subtitle {
     font-size: 1.4rem;
     font-weight: 400;

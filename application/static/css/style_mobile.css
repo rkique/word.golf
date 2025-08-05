@@ -26,6 +26,10 @@
     .catalog-icon {
         transform: scale(0.7);
     }
+    .race-icon {
+        transform: scale(0.7);
+    }
+
     #prompts-bar-container {
         margin: 0 0;
     }
@@ -37,16 +41,26 @@
         /* max-height: 6vh; */
         padding: 0 1em;
         margin: 0 0;
+        align-items: center;
+        justify-content: center;
     }
+    
+    #wg-heading {
+        display: none;
+        margin: 0 0;
+        font-size: min(2.9rem, 7vw);
+    }
+
     #settings #information, #settings #wg-banner {
         display: none;
     }
 
-    .settings-controls {
-        margin: 0 auto;
-        width: fit-content;
-        height: fit-content;
-        gap: 0.75em;
+    #settings {
+        /* position: absolute; */
+        top: 0%;
+        /* gap: 0em; */
+        padding: 0.25rem;
+        transform-origin: top;
     }
 
     
@@ -270,7 +284,9 @@
         font-size: 1.6rem;
     }
 
-
+    .settings-controls {
+        padding-top: 0.25rem;
+    }
     #share-link, #share-link a{
         font-size: 1.3rem;
         padding: 0rem;
