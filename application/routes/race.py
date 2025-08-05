@@ -77,7 +77,6 @@ def handle_get_prompts():
     if info:
         code, name = info
         if code in lobbies:
-            # Generate new prompts for the lobby
             random.seed()  # Reset seed to get truly random prompts
             selected_prompts = random.sample(PROMPTS, 5)
             starts = [pair[0] for pair in selected_prompts]
@@ -167,9 +166,9 @@ def handle_round_finish(lobby, user):
             winner = uname
             break
     if winner:
-        if lobby in timers:
-            timers[lobby]['timer'].cancel()
-            del timers[lobby]
+        # if lobby in timers:
+        #     timers[lobby]['timer'].cancel()
+        #     del timers[lobby]
         emit('game_finished', {'winner': winner, 'game_state': game_states[lobby]}, room=lobby)
         return
     #update start and target with new games_played index into lobbies[lobby]
@@ -179,7 +178,7 @@ def handle_round_finish(lobby, user):
     user_wins = game_states[lobby][user]['wins']
     start = starts[user_wins]
     target = targets[user_wins]
-    words = get_curve(start, target, PRECOMPUTED, WV, num=8, mode=RACE_MODE)
+    words = get_curve(start, target, PRECOMPUTED, WV, num=14, mode=RACE_MODE)
     # print('[handle_round_finish] words are ', words)
     
     emit('round_finished', {'game_state': game_states[lobby], 'user': user, 'words': words, 'start': start, 'target': target}, room=lobby)
@@ -195,7 +194,7 @@ def click(data):
     if word == target:
         handle_round_finish(lobby, user)
     else:
-        words = get_curve(word, target, PRECOMPUTED, WV, num=8, mode=RACE_MODE)
+        words = get_curve(word, target, PRECOMPUTED, WV, num=14, mode=RACE_MODE)
         score = similarity(word, target, WV)
         game_states[lobby][user]['score'] = score
         emit('click', {'user': user, 'words': words, 'game_state': game_states[lobby]}, room=lobby)
@@ -214,7 +213,7 @@ def handle_game_start(data):
     users = list(game_states[lobby].keys())
     for user in users:
         game_states[lobby][user] = default_user_state.copy()
-    words = get_curve(starts[0], targets[0], PRECOMPUTED, WV, num=8, mode=1)
+    words = get_curve(starts[0], targets[0], PRECOMPUTED, WV, num=14, mode=RACE_MODE)
     # start_timer(lobby)
     def countdown():
         time_left = ROUND_DURATION

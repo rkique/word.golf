@@ -10,6 +10,7 @@ LAZY_EXCLUDE = ["fuckable", "shitshow", "jegging", "daddy", "brat",
                   "mindfuck","perv","foreplay","makeout","polyamorous", "sexting", "pippin"
                 ]
 
+LAZY_EXCLUDE_RACE = ["blood", "condom", ]
 N_LIMIT = 100
 
 
@@ -71,8 +72,9 @@ def backoff_selection(indices, start_neighbors: list[str], mode=2, num=20) -> li
                 indices.append(i)
             if len(indices) == num:
                 break
-    else: #harder 
-        get_idxs = [2, 3, 10, 11, 50, 60, 70, 80, 93, 94]
+    else: #race mode (define at least 8 (3x3) --> 14 indices (5x3)
+        #this is 7 good, 10 bad.
+        get_idxs = [1, 2, 5, 6, 7, 8, 9, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49]
         for x in range(len(get_idxs)):
             i = get_idxs[x]
             if i not in indices:
@@ -132,6 +134,7 @@ def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict, mode=2, num
         #exponential backoff from 0 to 100
         results__biased = backoff_selection(indices, sorted_start_neighbors,\
                                            mode=mode, num=num)
+        print(results__biased)
     random.seed(len(word))
     random.shuffle(results__biased)
     results__biased.append(word)

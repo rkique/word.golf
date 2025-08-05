@@ -220,6 +220,20 @@ button:hover {
     margin: 2rem 0 2.5rem 0;
   }
 
+  .separator-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border-color, #ccc);
+    border: none;
+  }
+  .separator-text {
+    padding: 0 1rem;
+    color: var(--text-color, #444);
+    font-size: 1rem;
+    white-space: nowrap;
+    opacity: 0.8;
+  }
+
 .input-box {
   width: 100%;
   position: relative;
@@ -240,20 +254,6 @@ button:hover {
   padding: 0;
   object-fit: contain;
 }
-
-  .separator-line {
-    flex: 1;
-    height: 1px;
-    background: var(--border-color, #ccc);
-    border: none;
-  }
-  .separator-text {
-    padding: 0 1rem;
-    color: var(--text-color, #444);
-    font-size: 1rem;
-    white-space: nowrap;
-    opacity: 0.8;
-  }
   
 
   #ForgotPasswordBtn {

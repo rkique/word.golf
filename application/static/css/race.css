@@ -5,10 +5,12 @@
 
 #current-lobby-settings {
     display: none;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     gap: 1rem;
     flex-direction: row;
     width: 100%;
+    padding: 2rem;
+    border: 1px solid var(--4);
 }
 
 #reload-prompts {
@@ -30,6 +32,7 @@
     width: 28rem;
 }
 .user-progress-name {
+    font-size: 1.6rem;
     /* min-width: 7rem; */
     margin: 0.2rem 0.8rem;
 }
@@ -116,6 +119,9 @@ html {
     gap: 1rem;
 }
 
+#current-lobby {
+    font-family: 'Courier New', Courier, monospace;
+}
 #current-start-target, #current-lobby {
     font-size: 1.8rem;
     color: var(--text-color);
@@ -222,11 +228,13 @@ html {
     font-size: min(5vw, 2.4rem);
 }
 
+
 #wordspace a {
     color: var(--text-color);
     text-decoration: none;
     font-weight: 400;
     transition: color 0.2s;
+    display: inline-block;
 }
 
 #wordspace a.link--starting {
@@ -235,6 +243,10 @@ html {
 #wordspace a:hover {
     color: var(--hover-color);
     text-decoration: none;
+}
+
+#wordspace a:active {
+    transform: scale(0.88);
 }
 
 body {
@@ -247,7 +259,7 @@ body {
 
 .race-container {
     display: flex;
-    max-width: 42rem;
+    max-width: 48rem;
     width: 42rem;
     flex-direction: column;
     align-items: center;
@@ -300,7 +312,7 @@ body {
     align-items: center;
     gap: 1rem;
     margin-bottom: 1rem;
-    width: 100%;
+    width: min(100%, 90vw);
 }
 
 label { 
@@ -324,6 +336,8 @@ input {
 }
 #username-lobby {
     width: 30em;
+    max-width: 90vw;
+    /* flex-wrap: wrap; */
     /* max-width: 40rem;
     width: 40rem; */
 }
@@ -381,7 +395,38 @@ input {
 #lobby-info {
     margin-top: 3rem;
 }
-#lobby-title {
+
+.results-title-divider {
+    opacity: 0.3;
+}
+.results-title-container{
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.9rem;
+    font-weight: 400;
+    width: 100vw;   
+    border-bottom: 1px solid var(--border-color);
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+    margin: 1rem 0;
+    gap: 2rem;
+    padding: 0.25rem 0;
+    opacity: 0.5;
+    
+}
+
+.results-title {
+    display: inline-block;
+    font-size: 2.4rem;
+    font-weight: 400;
+    font-style:italic;
+    margin: 0 0;
+}
+
+.lobby-title {
+    /* font-family: 'Inter', sans-serif; */
     display: inline-block;
     font-size: 2.9rem;
     font-weight: 400;
@@ -408,6 +453,8 @@ input {
     font-weight: 300;
     color: var(--grayed-out-color);
 }
+
+
 .square-btn:hover, .square-btn:focus {
     background: #f0f4f8;
     border: 2px solid #222;
@@ -423,7 +470,7 @@ input {
 }
 
 #total-rounds-container{
-    min-width: 8rem;
+    /* min-width: 8rem; */
 }
 
 .total-rounds-label, #user-list-title {
@@ -456,7 +503,34 @@ input {
     display: none;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     width: min(42rem, 90vw);
+    padding: 2rem 0rem;
+}
+
+#play-again-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    /* padding: 1rem; */
+    margin: 0.2rem 0 0.4rem;
+    transition: opacity 0.2s;
+}
+
+#play-again-button:hover {
+    opacity: 0.7;
+}
+
+.play-icon {
+    margin-bottom: -0.8rem;
+}
+
+.play-again-text {
+    font-size: 1rem;
+    color: var(--text-color);
+    font-style: italic;
 }
 
 #new-prompts {
@@ -469,31 +543,43 @@ input {
 }
 
 .user-winner {
-    font-weight: bold;;
+    border: 1px solid var(--text-color);
 }
 
 .user-score-card {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    flex-direction: row;
+    align-items: flex-end;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 1rem;
     margin: 0.5rem;
-    width:100%;
+    width: 100%;
+    justify-content: space-around;
 }
 
 .user-score-name {
-    font-weight: bold;
+    font-size: 2.2rem;
+    font-weight: 500;
 }
 
-.user-score-score {
-    font-size: 1.5rem;
+.user-score-name p {
+    display:inline;
 }
+
+.user-score-name .icon svg {
+  vertical-align: middle;
+  height: 1em;
+}
+
 
 .user-score-wins {
-    color: gray;
+    font-weight: 400;
+    color: var(--grayed-out-color);
+    padding: 0.3rem 0;
+    font-size: 1.8rem;
+    opacity: 0.7;
+    font-style: italic;
 }
 
 input[type=range] {
@@ -546,4 +632,18 @@ input[type=range]::-webkit-slider-thumb {
     margin-top: -12px; /* Vertically center thumb on 8px track */
     background: var(--grayed-out-color);
     cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    #lobby-info {
+        margin-top: 3rem;
+        display: flex;
+        flex-direction: column;
+        /* justify-content: center; */
+        /* align-content: flex-start; */
+        align-items: center;
+    }
+    #username-lobby {
+        flex-wrap: wrap;
+    }
 }
