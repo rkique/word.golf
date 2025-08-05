@@ -72,7 +72,9 @@
                 <div id="total-rounds">
                     <p class="total-rounds-label">total rounds</p>
                     <div class="total-rounds-options">
-                        <span class="total-rounds-option" data-value="5">5</span>
+                        <button id="decrease-rounds" type="button">-</button>
+                        <span class="total-rounds-option" data-value="5" id="real-total-rounds">5</span>
+                        <button id="increase-rounds" type="button">+</button>
                     </div>
                 </div>
             </div>
@@ -152,6 +154,19 @@
             document.getElementById('wordspace').innerHTML = html;
             renderUserProgressBars();
         }
+        document.getElementById('increase-rounds').onclick = function () {
+            totalRounds = Math.min(totalRounds + 1, 5);
+            document.getElementById('real-total-rounds').textContent = totalRounds;
+            document.getElementById('real-total-rounds').dataset.value = totalRounds;
+            
+            // updateTotalRoundsUI(totalRounds);
+        };
+        document.getElementById('decrease-rounds').onclick = function () {
+            totalRounds = Math.max(totalRounds - 1, 3);
+            document.getElementById('real-total-rounds').textContent = totalRounds;
+            document.getElementById('real-total-rounds').dataset.value = totalRounds;
+            // updateTotalRoundsUI(totalRounds);
+        };
         //render any updates to UserProgress object.
         function renderUserProgressBars() {
             const container = document.getElementById('user-progress');
@@ -202,7 +217,7 @@
             };
 
             document.getElementById('new-prompts').onclick = function () {
-                socket.emit('get_prompts')
+                socket.emit('get_prompts', {num_prompts: parseInt(document.getElementById('real-total-rounds').dataset.value)}) // use what is in the html text box docum
             }
             socket.on('post_prompts', function (data) {
 
@@ -259,6 +274,7 @@
                 // debugger;
                 leaderChanged = (oldLobbyLeader !== myLobbyLeader)
                 if (leaderChanged){
+                    // console.log()
                     renderJoinedLobby(starts, targets, myLobby);
                 }
             });
@@ -483,6 +499,7 @@
     <script>
         let totalRounds = 5; // default value
         function updateTotalRoundsUI(selectedValue) {
+            document.getElementById('')
             document.querySelectorAll('.total-rounds-option').forEach(span => {
                 if (parseInt(span.dataset.value) === selectedValue) {
                     span.classList.add('selected-option');

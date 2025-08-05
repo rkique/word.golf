@@ -72,14 +72,18 @@ def handle_connect():
     logger.info(f'[connect] SID: {request.sid} connected')
 
 @socketio.on('get_prompts')
-def handle_get_prompts():
+def handle_get_prompts(data):
+    global num_prompts
     info = sid_to_user.get(request.sid)
+    num_prompts = data.get('num_prompts')
+    print("[handle_get_prompts] here is data: ", data)
+    print("[handle_get_prompts] here is num_prompts: ", num_prompts)
     if info:
         code, name = info
         if code in lobbies:
             # Generate new prompts for the lobby
             random.seed()  # Reset seed to get truly random prompts
-            selected_prompts = random.sample(PROMPTS, 5)
+            selected_prompts = random.sample(PROMPTS, num_prompts)
             starts = [pair[0] for pair in selected_prompts]
             targets = [pair[1] for pair in selected_prompts]
             
@@ -163,7 +167,7 @@ def handle_round_finish(lobby, user):
     #see if any user has 5 wins:
     winner = None
     for uname, state in game_states[lobby].items():
-        if state['wins'] >= 5:
+        if state['wins'] >= num_prompts:
             winner = uname
             break
     if winner:
