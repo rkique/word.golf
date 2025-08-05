@@ -21,9 +21,10 @@ function syncGraph(){
 function syncColorMode() {
   document.documentElement.style.setProperty('--failure', 'rgb(140, 0, 0)');
   document.documentElement.style.setProperty('--success', 'rgb(0, 70, 0)');
-  document.documentElement.style.setProperty('--4green', '#222724');
+
   currentMode = localStorage.getItem('darkMode')
   if (currentMode == 'true') {
+  document.documentElement.style.setProperty('--4green', '#ebdbb2');
   document.documentElement.style.setProperty('--banner-perfect', '#00cfc0');
   document.documentElement.style.setProperty('--banner-impressive', '#1a9d34');
   document.documentElement.style.setProperty('--banner-great', '#2a61cc');
@@ -69,6 +70,7 @@ function syncColorMode() {
     document.documentElement.style.setProperty('--grayed-out-color', '#837e74');       // softer comment tone
     document.documentElement.style.setProperty('--grayed-out-color-help-target', '#9c9584'); // near-muted beige
     document.documentElement.style.setProperty('--grayed-out-color-unfocused', '#434343');   // neutral bg3
+    document.documentElement.style.setProperty('--4green', '#222724');
   }
   // syncGraph()
   //PlotHistory(sessionHistory)
