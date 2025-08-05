@@ -92,7 +92,7 @@
                 <div id="wordspace"></div>
                 <button id="go-to-target" style="margin-top:1rem; display:none">Go to Target</button>
             </div>
-            <div id="timer-display">01:00</div>
+            <div id="timer-display">00:00</div>
             <div id="user-progress-container">
             <div id="user-progress"></div>
             </div>
@@ -457,9 +457,8 @@
         }
         function hideFinishScreen(hide = false) {
             finishScreen = document.getElementById('finish-screen')
-            if (hide) {
-                finishScreen.innerHTML = '';
-            }
+            const cards = finishScreen.querySelectorAll('.user-score-card');
+            cards.forEach(card => card.remove());
             finishScreen.style.display = 'none';
         }
 
