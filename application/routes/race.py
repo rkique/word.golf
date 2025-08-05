@@ -43,7 +43,7 @@ def load_race_data():
 
 @race_bp.route('/race')
 def race_lobby():
-        return render_template('race.html')
+    return render_template('race.html')
 
 def users_in_lobby(code):
     if code in game_states:
@@ -113,14 +113,6 @@ def handle_create_lobby(data):
     emit('lobby_joined', {'lobby': code, 'name': name, 'starts': starts, 'targets': targets})
     emit('lobby_list', list(lobbies.keys()), broadcast=True)
 
-
-        
-# def start_timer(lobby):
-    
-
-    
-#         start_background_task(countdown)
-
 @socketio.on('join_lobby')
 def handle_join_lobby(data):
     name = data.get('name')
@@ -156,7 +148,6 @@ def handle_get_lobbies():
     lobby_codes = list(lobbies.keys())
     emit('lobby_list', lobby_codes) #emitted lobby list.
 
-
 def handle_round_finish(lobby, user):
     #update user wins count
     game_states[lobby][user]['wins'] += 1
@@ -185,7 +176,6 @@ def handle_round_finish(lobby, user):
     
     emit('round_finished', {'game_state': game_states[lobby], 'user': user, 'words': words, 'start': start, 'target': target}, room=lobby)
     
-
 @socketio.on('click')
 def click(data):
     user = data.get('user')
@@ -214,6 +204,7 @@ def handle_game_start(data):
     starts = lobby_info['starts']
     targets = lobby_info['targets']
     users = list(game_states[lobby].keys())
+    num_prompts = len(lobby_info['starts'])
     for user in users:
         game_states[lobby][user] = default_user_state.copy()
     words = get_curve(starts[0], targets[0], PRECOMPUTED, WV, num=14, mode=RACE_MODE)
