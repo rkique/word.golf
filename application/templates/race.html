@@ -457,9 +457,8 @@
         }
         function hideFinishScreen(hide = false) {
             finishScreen = document.getElementById('finish-screen')
-            if (hide) {
-                finishScreen.innerHTML = '';
-            }
+            const cards = finishScreen.querySelectorAll('.user-score-card');
+            cards.forEach(card => card.remove());
             finishScreen.style.display = 'none';
         }
 
