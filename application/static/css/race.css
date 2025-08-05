@@ -5,7 +5,6 @@
 
 #current-lobby-settings {
     display: none;
-    flex-wrap: wrap;
     gap: 1rem;
     flex-direction: row;
     width: 100%;
@@ -81,7 +80,7 @@
     flex-wrap: wrap;
     flex-direction: row;
     width: 100%;
-    height: 88vh;
+    height: 100vh;
     /* border-top: 1px solid var(--border-color); */
 }
 
@@ -165,7 +164,7 @@ html {
     align-items: center;
     justify-content: center;
     font-size: var(--button-font-size, 1.5rem);
-    background: none;
+    background: var(--4green);
     color: var(--text-color);
     cursor: pointer;
     border: none;
@@ -210,7 +209,7 @@ html {
     grid-template-columns: 1fr !important;
     grid-template-rows: 1fr !important;
     padding: 0 !important;
-    margin: 6rem 0 !important;
+    margin: 5rem 0 !important;
 }
 
 #wordspace table {
@@ -222,7 +221,7 @@ html {
 
 #wordspace td {
     border: none;
-    padding: 0.5rem 2rem;
+    padding: 0.5rem 1.4rem;
     min-width: 3emx;
     text-align: center;
     font-size: min(5vw, 2.4rem);
@@ -246,6 +245,7 @@ html {
 }
 
 #wordspace a:active {
+    /* transition: transform 0.3s; */
     transform: scale(0.88);
 }
 
@@ -296,7 +296,7 @@ body {
     align-items: center;
     justify-content: center;
     font-size: var(--button-font-size, 2rem);
-    background: none;
+    background: var(--4green);
     color: var(--text-color);
     cursor: pointer;
     border: 1px solid var(--border-color);
@@ -509,6 +509,7 @@ input {
 }
 
 #play-again-button {
+    color: var(--text-color);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -529,7 +530,7 @@ input {
 
 .play-again-text {
     font-size: 1rem;
-    color: var(--text-color);
+    color: var(--hover-color);
     font-style: italic;
 }
 
@@ -644,6 +645,9 @@ input[type=range]::-webkit-slider-thumb {
         align-items: center;
     }
     #username-lobby {
+        flex-wrap: wrap;
+    }
+    #current-lobby-settings {
         flex-wrap: wrap;
     }
 }

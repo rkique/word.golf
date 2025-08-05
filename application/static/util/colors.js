@@ -21,6 +21,7 @@ function syncGraph(){
 function syncColorMode() {
   document.documentElement.style.setProperty('--failure', 'rgb(140, 0, 0)');
   document.documentElement.style.setProperty('--success', 'rgb(0, 70, 0)');
+  document.documentElement.style.setProperty('--4green', '#222724');
   currentMode = localStorage.getItem('darkMode')
   if (currentMode == 'true') {
   document.documentElement.style.setProperty('--banner-perfect', '#00cfc0');
