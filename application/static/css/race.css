@@ -41,6 +41,14 @@
     color: var(--emphasis-color) !important;
 }
 
+#timer-display {
+    min-width: 5.5rem;
+    text-align: center;
+    font-size: 2rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.05em;
+}
+
 .user-progress-bar-outer {
         background-color: var(--grayed-out-background);
         width: 100%;

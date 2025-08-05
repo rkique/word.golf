@@ -5,7 +5,6 @@ import uuid
 import logging
 from .. import socketio
 from ..utils import get_prompts, txt_to_list, txt_to_dict, get_curve, similarity
-from . import main
 import random
 import pandas as pd
 import ast
@@ -156,23 +155,6 @@ def handle_get_lobbies():
     lobby_codes = list(lobbies.keys())
     emit('lobby_list', lobby_codes) #emitted lobby list.
 
-@socketio.on('game_started')
-def handle_game_start(data):
-    load_race_data()
-    lobby = data.get('lobby')
-    # Find the lobby dict for this lobby code
-    lobby_info = lobbies.get(lobby)
-    if not lobby_info:
-        emit('lobby_error', f'Lobby {lobby} does not exist.')
-        return
-    starts = lobby_info['starts']
-    targets = lobby_info['targets']
-    users = list(game_states[lobby].keys())
-    for user in users:
-        game_states[lobby][user] = default_user_state.copy()
-    words = get_curve(starts[0], targets[0], main.PRECOMPUTED, main.WV, num=8, mode=RACE_MODE)
-    emit('start_game', {'lobby': lobby, 'starts': starts, 'targets': targets, 'words': words, 'users': users, 'game_state': game_states[lobby]}, room=lobby)
-    #start_game= True
 
 def handle_round_finish(lobby, user):
     #update user wins count
@@ -197,7 +179,7 @@ def handle_round_finish(lobby, user):
     user_wins = game_states[lobby][user]['wins']
     start = starts[user_wins]
     target = targets[user_wins]
-    words = get_curve(start, target, main.PRECOMPUTED, main.WV, num=8, mode=RACE_MODE)
+    words = get_curve(start, target, PRECOMPUTED, WV, num=8, mode=RACE_MODE)
     # print('[handle_round_finish] words are ', words)
     
     emit('round_finished', {'game_state': game_states[lobby], 'user': user, 'words': words, 'start': start, 'target': target}, room=lobby)
@@ -213,14 +195,14 @@ def click(data):
     if word == target:
         handle_round_finish(lobby, user)
     else:
-        words = get_curve(word, target, main.PRECOMPUTED, main.WV, num=8, mode=RACE_MODE)
-        score = similarity(word, target, main.WV)
+        words = get_curve(word, target, PRECOMPUTED, WV, num=8, mode=RACE_MODE)
+        score = similarity(word, target, WV)
         game_states[lobby][user]['score'] = score
         emit('click', {'user': user, 'words': words, 'game_state': game_states[lobby]}, room=lobby)
 
 @socketio.on('game_started')
 def handle_game_start(data):
-    main.load_data()
+    load_race_data()
     lobby = data.get('lobby')
     # Find the lobby dict for this lobby code
     lobby_info = lobbies.get(lobby)
@@ -232,7 +214,7 @@ def handle_game_start(data):
     users = list(game_states[lobby].keys())
     for user in users:
         game_states[lobby][user] = default_user_state.copy()
-    words = get_curve(starts[0], targets[0], main.PRECOMPUTED, main.WV, num=8, mode=1)
+    words = get_curve(starts[0], targets[0], PRECOMPUTED, WV, num=8, mode=1)
     # start_timer(lobby)
     def countdown():
         time_left = ROUND_DURATION
