@@ -484,6 +484,10 @@ def skip():
 
     return make_response(json.loads(json.dumps(returned_object)))
 
+@main_bp.route('/help')
+def help_page():
+    return render_template('help.html')
+
 @main_bp.route('/back', methods=["POST"])
 def back():
     _data = json.loads(session.get('data'))

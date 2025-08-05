@@ -741,6 +741,11 @@ button span {
 }
 
 #wg-heading {
+    pointer-events: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;  
+    -ms-user-select: none; 
+    user-select: none;     
     color: var(--border-color);
     margin: 1rem 0 0 2rem;
 }

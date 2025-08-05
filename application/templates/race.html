@@ -20,7 +20,8 @@
     {% include 'modals/modal-help.html' %}
     {% include 'modals/modal.html' %}
     <div class="race-container">
-        <button id="back-arrow" title="Back"> &#8592;</button>
+        
+        <button onclick="window.returnToJoinedLobby()" id="back-arrow" title="Back"> &#8592;</button>
         <div id="lobby-info">
             <h1 id="lobby-title" class="lobby-title dib">word.golf </h1>
             <div id="help-button" class="dib switchContainer" onclick="toggleModal('help')">
@@ -99,7 +100,7 @@
     </div>
     <script>
     window.returnToJoinedLobby = function() {
-        console.log('[returnToJoinedLobby] not defined')
+        window.location.href = '/';
     };
     </script>
     <div id="finish-screen">
@@ -335,7 +336,6 @@
                         registerListeners(socket);
                     }, 200);
             };
-                    document.getElementById('back-arrow').onclick = window.returnToJoinedLobby;
                 }
             });
 
@@ -379,20 +379,20 @@
                 console.log(`Joined lobby ${myLobby} as ${myName}`);
                 //needs to see starts and targets
                 renderJoinedLobby(starts, targets, myLobby);
+                            // register this listener when joined. arrow from joined lobby to no joined lobby
+                window.returnToJoinedLobby = function () {
+                    if (socket) {
+                        socket.disconnect();
+                    }
+                    renderNoJoinedLobby()
+                    // Reconnect socket for new session
+                    setTimeout(() => {
+                        socket = io();
+                        registerListeners(socket);
+                    }, 200);
+                };
             });
 
-            // Back arrow from joined lobby to no joined lobby
-            document.getElementById('back-arrow').onclick = function () {
-                if (socket) {
-                    socket.disconnect();
-                }
-                renderNoJoinedLobby()
-                // Reconnect socket for new session
-                setTimeout(() => {
-                    socket = io();
-                    registerListeners(socket);
-                }, 200);
-            };
             //Every pageload, request lobby list
             socket.emit('get_lobbies');
         }
@@ -495,7 +495,7 @@
             document.getElementById('current-lobby-settings').style.display = 'none';
             document.getElementById('current-lobby-display').style.display = 'none';
             document.getElementById('start-game').style.display = 'none';
-            document.getElementById('back-arrow').style.display = 'none';
+            // document.getElementById('back-arrow').style.display = 'none';
             document.getElementById('username-display').style.display = 'none';
             document.getElementById('reload-prompts').style.display = 'none';
             // Hide results 
@@ -507,6 +507,9 @@
             document.getElementById('lobby-info').style.display = '';
             document.getElementById('join-lobby').style.display = '';
             document.getElementById('join-code').style.display = '';
+            window.returnToJoinedLobby = function() {
+            window.location.href = '/';
+            };
             // Optionally clear game state
             // document.getElementById('current-start-target').innerHTML = '';
             // document.getElementById('user-list').innerHTML = '';
