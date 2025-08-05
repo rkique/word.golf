@@ -22,12 +22,13 @@ prompt_neighbor_dict = get_prompts(txt_to_list("application/data_10k/race_neighb
 PROMPTS = list(prompt_neighbor_dict.keys())
 MAX_LOBBY_SIZE = 8
 timers = {}  # { lobby_code: { 'time_left': int, 'timer': Timer } }
-ROUND_DURATION = 60 
+
 # In-memory lobby store (no user state)
 lobbies = {}
 game_states = {}
 sid_to_user = {}
 default_user_state = {'score': 0, 'wins': 0}
+num_prompts = 5
 
 WV = None
 PRECOMPUTED = None
@@ -76,23 +77,23 @@ def handle_get_prompts(data):
     global num_prompts
     info = sid_to_user.get(request.sid)
     num_prompts = data.get('num_prompts')
-    print("[handle_get_prompts] here is data: ", data)
-    print("[handle_get_prompts] here is num_prompts: ", num_prompts)
     if info:
         code, name = info
         if code in lobbies:
-            random.seed()  # Reset seed to get truly random prompts
-            selected_prompts = random.sample(PROMPTS, num_prompts)
-            starts = [pair[0] for pair in selected_prompts]
-            targets = [pair[1] for pair in selected_prompts]
-            
-            lobbies[code]['starts'] = starts
-            lobbies[code]['targets'] = targets
+            starts, targets = update_lobby_starts_targets(code, num_prompts)
             emit('post_prompts', {'starts': starts, 'targets': targets}, room=code)
         else:
             emit('lobby_error', 'You are not in a valid lobby.')
     else:
         emit('lobby_error', 'You must be in a lobby to get new prompts.')
+
+def update_lobby_starts_targets(code, num):
+    selected_prompts = random.sample(PROMPTS, num)
+    starts = [pair[0] for pair in selected_prompts]
+    targets = [pair[1] for pair in selected_prompts]
+    lobbies[code] = {'starts': starts, 'targets': targets}
+    emit('post_prompts', lobbies[code], room=code)
+    return starts, targets
 
 @socketio.on('create_lobby')
 def handle_create_lobby(data):
@@ -101,10 +102,7 @@ def handle_create_lobby(data):
         name = 'Anonymous'
     code = str(uuid.uuid4())[:6].upper()
     random.seed(hash(code))
-    selected_prompts = random.sample(PROMPTS, 5)
-    starts = [pair[0] for pair in selected_prompts]
-    targets = [pair[1] for pair in selected_prompts]
-    lobbies[code] = {'starts': starts, 'targets': targets}
+    starts, targets = update_lobby_starts_targets(code, 5)
     join_room(code) #join room
     game_states[code] = {}
     game_states[code][name] = default_user_state.copy() #can store score, but also game states
@@ -205,6 +203,7 @@ def click(data):
 
 @socketio.on('game_started')
 def handle_game_start(data):
+    global num_prompts
     load_race_data()
     lobby = data.get('lobby')
     # Find the lobby dict for this lobby code
@@ -218,15 +217,16 @@ def handle_game_start(data):
     for user in users:
         game_states[lobby][user] = default_user_state.copy()
     words = get_curve(starts[0], targets[0], PRECOMPUTED, WV, num=14, mode=RACE_MODE)
-    # start_timer(lobby)
+    print(f'[game_start] lobbies {lobbies}')
     def countdown():
-        time_left = ROUND_DURATION
-        while time_left > 0:
+        time_elapsed = 0
+        while(True):
             socketio.sleep(1)
-            time_left -= 1
-            socketio.emit('timer_tick', {'time_left': time_left}, room=lobby)
-        socketio.emit('timer_finished', {}, room=lobby)
-        timers.pop(lobby, None)
+            time_elapsed += 1
+            socketio.emit('timer_tick', {'time_elapsed': time_elapsed}, room=lobby)
+            # socketio.emit('timer_finished', {}, room=lobby)
+            # timers.pop(lobby, None)
+
     if lobby not in timers:
         timers[lobby] = True
         socketio.start_background_task(target=countdown)

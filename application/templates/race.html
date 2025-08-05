@@ -231,19 +231,20 @@
                 myName = document.getElementById('username').value.trim();
                 socket.emit('create_lobby', { name: myName });
             };
-
+            
             document.getElementById('new-prompts').onclick = function () {
-                socket.emit('get_prompts', {num_prompts: parseInt(document.getElementById('real-total-rounds').dataset.value)}) // use what is in the html text box docum
+                socket.emit('get_prompts', {num_prompts: parseInt(document.getElementById('real-total-rounds').dataset.value)})
             }
-            socket.on('post_prompts', function (data) {
 
+            socket.on('post_prompts', function (data) {
                 document.getElementById('current-starts').innerHTML = makeStartTargetHTML(data.starts, 'starts');
                 document.getElementById('current-targets').innerHTML = makeStartTargetHTML(data.targets, 'targets');
             })
             //start-game --> game_started L
             document.getElementById('start-game').onclick = function () {
                 if (myLobby) {
-                    socket.emit('game_started', { lobby: myLobby, name: myName, target: target });
+                    numPrompts = parseInt(document.getElementById('real-total-rounds').dataset.value)
+                    socket.emit('game_started', { lobby: myLobby, name: myName, target: target, num_prompts: numPrompts });
                 }
             };
 
@@ -341,8 +342,8 @@
             socket.on('timer_tick', function (data) {
                 // const timeLeft = data.time_left;
                 // document.getElementById('timer-display').innerText = `Time Left: ${timeLeft}s`;
-                const timeLeft = data.time_left;
-                document.getElementById('timer-display').innerText = formatTime(timeLeft);
+                const timeElapsed = data.time_elapsed;
+                document.getElementById('timer-display').innerText = formatTime(timeElapsed);
             });
 
             socket.on('timer_finished', () => {
