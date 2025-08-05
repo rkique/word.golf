@@ -100,6 +100,7 @@
 
     </div>
     <script>
+        // alert('ngrok2')
         let socket = io();
         let myLobby = null;
         let myLobbyLeader = null;
@@ -243,13 +244,13 @@
                 let html = '<p id="user-list-title">your lobby</p>';
                 for (user of users){
                     if (user === myLobbyLeader) {
-                        html += `<div class='user'>${user} (leader)</div>`;
+                        html += `<div class='user'>${user} <span class="grayed-out-color"> (leader)</span> </div>`;
                     } else {
                     html += `<div class='user'>${user}</div>`;
                 }
                 }
                 document.getElementById('user-list').innerHTML = html;
-                debugger;
+                // debugger;
                 leaderChanged = (oldLobbyLeader !== myLobbyLeader)
                 if (leaderChanged){
                     renderJoinedLobby(starts, targets, myLobby);
@@ -259,6 +260,11 @@
             //We always assign target before it is used.
             socket.on('start_game', function (data) {
                 // Reset user progress for all users in the lobby using game_state
+                start = data.starts[0]
+                target = data.targets[0];
+                // update starts and targets for passing into render
+                starts = data.starts;
+                targets = data.targets;
                 setUserProgress(data, true);
                 renderGame(data, target);
             });
@@ -297,10 +303,12 @@
                 // data: {user, words, score, game_state}
                 setUserProgress(data);
                 console.log(`[click] User progress: ${JSON.stringify(userProgress)}`);
-                renderUserProgressBars();
-                if (data.user === myName) {
-                    renderGame(data, target);
-                }
+                setTimeout(() => {
+                    renderUserProgressBars();
+                    if (data.user === myName) {
+                        renderGame(data, target);
+                    }
+                }, 500);
             });
 
             //used in both create and join lobby

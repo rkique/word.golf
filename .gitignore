@@ -16,7 +16,7 @@ application/data/candidates.txt
 application/data/*.py
 
 application/data/embed_w2v_16.csv
-application/data/process_neighbors.ipynb
+application/data_10k/process_neighbors.ipynb
 
 #Ignore environment files
 env

@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import random 
 import ast
+from functools import partial
 
 LAZY_EXCLUDE = ["fuckable", "shitshow", "jegging", "daddy", "brat",
                 "dominatrix"," hotness"," sexiness"," perky"," kissable"," fatale"," seductive", "aybe",
@@ -60,91 +61,83 @@ def get_prompts(l):
     return p
 
 
-def generate_indices(n: int, num: int,indices,seen, mode=2) -> list[int]:
-    '''
-    n: total number of items from which to generate indices
-    num: number of indices to generate
-    '''
+def backoff_selection(indices, start_neighbors: list[str], mode=2, num=20) -> list[str]:
+    n = len(start_neighbors)
     if mode == 2: #easier
         exp = 2
         for x in range(num * 2):
             i = int((x / (num * 2 - 1)) ** exp * (n - 1))
-            if i not in seen:
-                seen.add(i)
+            if i not in indices:
                 indices.append(i)
             if len(indices) == num:
-                return indices
+                break
     else: #harder 
-        for x in range(num * 2):
-            i = x * 3
-            if i not in seen:
+        get_idxs = [2, 3, 10, 11, 50, 60, 70, 80, 93, 94]
+        for x in range(len(get_idxs)):
+            i = get_idxs[x]
+            if i not in indices:
                 indices.append(i)
-                seen.add(i)
             if len(indices) == num:
                 print(f'[hard spaced] {indices}')
-                return indices
-    return None
-    
-def backoff_selection(start, target, start_neighbors: list[str], target_neighbors: list[str],\
-                      mode=2, num=20, neighbor=None) -> list[str]:
-    '''
-    Given an array of text in results,
-    Selects a subarray of a specified number, with an exponential backoff.
-    '''
-
-    indices = []
-    seen = set()
-    if neighbor is not None:
-        # print(f'neighbor: {neighbor}, target:{target}, results: {results}')
-        print(f'[Neighbor] {neighbor}')
-        assert neighbor in start_neighbors, "Neighbor must be in results"
-        neighbor_idx = start_neighbors.index(neighbor)
-        seen.add(neighbor_idx)
-        indices.append(neighbor_idx)
-
-    #If target among 100, append immediately.
-    if target in start_neighbors:
-        print(f"[Target]")
-        target_idx = start_neighbors.index(target)
-        seen.add(target_idx)
-        indices.append(target_idx)
-
-    elif start in target_neighbors:
-        print(f"[Start in TargetN]")
-        start_neighbors.append(target)
-        neighbor_idx = len(start_neighbors) - 1
-        seen.add(neighbor_idx)
-        indices.append(neighbor_idx)
-
-    n = len(start_neighbors)
-    # Generate indices with exponential backoff
-    generate_indices(n, num, indices, seen, mode=mode)
-    selected = [start_neighbors[i] for i in indices]
+                break
+    # Select items based on generated indices
+    selected = [start_neighbors[i] for i in indices if i < len(start_neighbors)]
     return selected
 
 def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict, mode=2, num=20, neighbor=None) -> list[str]:
     '''
     Returns neighbors of the word which are biased towards the target.
     ''' 
+
     start_neighbors = [result for result in PRECOMPUTED[word] if result not in LAZY_EXCLUDE][:N_LIMIT]
     target_neighbors = [result for result in PRECOMPUTED[target] if result not in LAZY_EXCLUDE][:N_LIMIT]
-    def similarity_to_target(x): 
-        return similarity(x, target, WV)
-    if mode == 3: #linear bias. for num=20 only
-        results__biased = start_neighbors[0:num]
-        results__biased.insert(num//2, word)
-    else:
-        start_neighbors.sort(key=similarity_to_target, reverse=True)
-        #exponential backoff from 0 to 100
-        results__biased = backoff_selection(word, target, start_neighbors, target_neighbors,\
-                                            num=num, neighbor=neighbor, mode=mode)
-        random.seed(len(word))
-        random.shuffle(results__biased)
-        results__biased.insert(num//2,word)
+    similarity_to_target = partial(similarity, word2=target, wv=WV)
 
+    indices = []
+
+    sorted_start_neighbors = sorted(start_neighbors, key=similarity_to_target, reverse=True)
+
+    if neighbor is not None:
+        print(f'[Neighbor] {neighbor}')
+        assert neighbor in start_neighbors, "Neighbor must be in results"
+        neighbor_idx = start_neighbors.index(neighbor)
+        indices.append(neighbor_idx)
+
+    # target_candidates = start_neighbors
+    # if mode == 1:
+    #     target_candidates = start_neighbors[0:100]
+    if target in sorted_start_neighbors:
+        print(f"[Target]")
+        target_idx = sorted_start_neighbors.index(target)
+        indices.append(target_idx)
+
+    elif word in target_neighbors and mode == 2:
+        print(f"[Start in TargetN]")
+        start_neighbors.append(target)
+        indices.append(len(start_neighbors) - 1)
+
+    elif mode == 3:
+        start_neighbors.append(sorted_start_neighbors[20])
+        indices.append(len(start_neighbors) - 1)
+
+    results__biased = []
+    if mode == 3: #No bias.
+        for i in range(0, num * 2):
+            if i not in indices:
+                indices.append(i)
+            if len(indices) == num:
+                break
+        results__biased = [start_neighbors[i] for i in indices if i < len(start_neighbors)]
+    else:
+        #exponential backoff from 0 to 100
+        results__biased = backoff_selection(indices, sorted_start_neighbors,\
+                                           mode=mode, num=num)
+    random.seed(len(word))
+    random.shuffle(results__biased)
+    results__biased.append(word)
     buckets = int((num + 1) / 3)
-    print(f'buckets is {buckets}')
     subsets = partition(results__biased, buckets)
+    #word is not in subset.
     for i, subset in enumerate(subsets):
         if word in subset:
             word_subset = subset

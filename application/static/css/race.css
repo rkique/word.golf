@@ -319,7 +319,9 @@ input {
     /* max-width: 40rem;
     width: 40rem; */
 }
-
+.grayed-out-color{
+    color: var(--grayed-out-color);
+}
 #lobby-code-label, #username-label, .start-label, .target-label {
     font-style: italic;
     margin: 0 0;
