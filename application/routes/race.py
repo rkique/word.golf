@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.WARNING)
 prompt_neighbor_dict = get_prompts(txt_to_list("application/data_10k/race_neighbors_10k.txt"))
 PROMPTS = list(prompt_neighbor_dict.keys())
-MAX_LOBBY_SIZE = 8
+MAX_LOBBY_SIZE = 5
 timers = {}  # { lobby_code: { 'time_left': int, 'timer': Timer } }
 
 # In-memory lobby store (no user state)
