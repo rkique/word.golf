@@ -124,8 +124,13 @@
         lastRendered = 'global';
         if (window.myChart) {
             window.myChart.destroy();
+            window.myChart = null;
         }
         const ctx = document.getElementById('jumps-graph').getContext('2d');
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        for (let id in Chart.instances){
+            delete Chart.instances[id];
+        }
         const data = JSON.parse('{{ jumps_data|tojson|safe }}');
         const averageData = JSON.parse('{{ jumps_average_data|tojson|safe }}');
 
@@ -185,6 +190,7 @@
             showLine: true,
             pointRadius: 5,
         }];
+
         window.myChart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -321,9 +327,14 @@
         // console.log(`rendering bar graph for ${date}`);
         if (window.myChart) {
             window.myChart.destroy();
+            window.myChart = null;
         }
+        console.log(`window.myChart is ${window.myChart}`)
         lastRendered = 'previous'
         const ctx = document.getElementById('jumps-graph').getContext('2d');
+        for (let id in Chart.instances){
+            delete Chart.instances[id];
+        }
         //dict for handling jumps
         let total_jumps_user = {};
         for (let jumps of total_jumps_data) {

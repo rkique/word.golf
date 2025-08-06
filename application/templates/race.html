@@ -52,6 +52,7 @@
                     <button id="join-lobby" title="Join Lobby" style="flex-shrink: 0;">Join</button>
                 </div>
             </div>
+            <div id="lobby-list"></div>
         </div>
         <div id="current-lobby-settings">
             <div id="current-prompts-container">
@@ -83,7 +84,6 @@
                 <div id="user-list" class="left-align-group"></div>
             </div>
         </div>
-        <div id="lobby-list"></div>
     </div>
     <div id="game-global">
         <div id="game-container">
@@ -271,7 +271,7 @@
             });
 
             socket.on('lobby_list', function (lobbies) {
-                let html = '<h4>Active Lobbies:</h4>';
+                let html = `<p class='active-lobby-title'>Active Lobbies</p>`;
                 if (lobbies.length === 0) html += '<i>No lobbies yet.</i>';
                 else html += lobbies.map(code => `<div class='lobby'>${code}</div>`).join('');
                 document.getElementById('lobby-list').innerHTML = html;

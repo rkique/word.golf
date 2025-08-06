@@ -129,10 +129,17 @@ html {
     text-align: left;
 }
 
+.active-lobby-title {
+    font-size: 1.4rem;
+    font-weight: 400;
+    margin: 2rem 0.5rem 0.5rem 0;
+    color: var(--grayed-out-color);
+}
+
 #lobby-list, #user-list {
     font-size: var(--text-size);
     color: var(--text-color);
-    width: 100%;
+    width: min(100%, 30em);
     margin-bottom: 0.5rem;
 }
 

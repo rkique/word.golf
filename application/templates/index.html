@@ -57,7 +57,7 @@
         <div id="prompts-bar-container">
         <div id="prompts-bar"></div>
         </div>
-            <div id="prompts-title-heading">Prompts</div>
+            <div id="prompts-title-heading">Pairs</div>
             <div id="prompts-count-container">
                 <div id="prompts-count">1</div>
                 <div id="prompts-count-remainder">/ 5</div>
@@ -147,14 +147,40 @@
 </script>
 
 <script>
-    //TODO: update this to avoid flash-in. 
-    // document.addEventListener('DOMContentLoaded', function () {
-    //     const idxSpan = document.getElementById('footer-daily-idx');
-    //     if (idxSpan) {
-    //         idxSpan.textContent = daysSinceStartDate();
-    //     }
-    //     // addTallyHovers(data.wordsArray)
-    // });
+    const wordspace = document.getElementById('wordspace');
+    const wgHeading = document.getElementById('wg-heading');
+    const switchPs = document.querySelectorAll('.switchContainer p');
+    const switchContainerSvgs = document.querySelectorAll('.switchContainer svg');
+
+    wordspace.addEventListener('mouseenter', () => {
+        if (wgHeading) {
+            wgHeading.style.opacity = '0';
+            wgHeading.style.maxHeight = '0px';
+        }
+        document.getElementById('theme-icon').style.color = 'var(--4)'
+        switchPs.forEach(p => {
+            p.style.opacity = '0';
+            p.style.maxHeight = '0px';
+        });
+        switchContainerSvgs.forEach(svg => {
+        svg.style.fill = 'var(--4)';
+        });
+    });
+
+    wordspace.addEventListener('mouseleave', () => {
+        if (wgHeading) {
+            wgHeading.style.opacity = '1';
+            wgHeading.style.maxHeight = '200px';
+        }
+        document.getElementById('theme-icon').style.color = 'var(--grayed-out-color)'
+        switchPs.forEach(p => {
+            p.style.opacity = '1';
+            p.style.maxHeight = '200px';
+        });
+        switchContainerSvgs.forEach(svg => {
+        svg.style.fill = 'var(--grayed-out-color)';
+        });
+    });
 </script>
 
 {% include 'footer.html' %}

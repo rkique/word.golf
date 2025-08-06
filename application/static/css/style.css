@@ -45,7 +45,7 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0,0,0,0.3);
+    background: var(--background-tint);
     z-index: 100;
 }
 
@@ -722,10 +722,30 @@ button span {
     gap: 2vw;
 }
 
+/* #prompts-container {
+    background: yellow;
+}
 
+#prompts-container:hover {
+    background: green;
+} */
+
+.switchContainer svg {
+    fill: var(--grayed-out-color);
+}
+
+#settings .switchContainer p,
+#settings #wg-heading {
+    opacity: 1;
+    max-height: 400px; 
+    overflow: hidden;
+    pointer-events: auto;
+    transition: opacity 0.3s ease, max-height 0.3s ease;
+}
 
 #settings {
     margin: 0vh 0vh 2vh 0vh;
+    height: 8vh;
     max-height: 10vh;
     padding: 0 2em;
     display: flex;

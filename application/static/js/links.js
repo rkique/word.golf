@@ -58,11 +58,13 @@ function focusLink(startText, targetText) {
     const links = Array.from(document.getElementsByClassName("link"));
     links.forEach(link => {
         const text = link.innerText.trim();
+        console.log(`Checking link text: ${text}`);
         if (text == startText) {
             link.classList.add("link--help-target");
         }
         if (text === targetText) {
             link.classList.remove("link--unfocused");
+            link.classList.add("link--target");
         } else if (links.indexOf(link) !== 10) {
             link.style.outline = "";
             link.style.outlineOffset = "";

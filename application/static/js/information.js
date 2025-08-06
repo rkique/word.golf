@@ -98,7 +98,7 @@ function startGame() {
     toDelete.forEach(key => localStorage.removeItem(key));
     let resp = sendAndReceiveXML('redirect=true');
     clearBoxes()
-    document.getElementById('prompts-title-heading').innerText = 'Prompts'
+    document.getElementById('prompts-title-heading').innerText = 'Pairs'
     document.getElementById('prompts-count-remainder').innerText = '/ 5'
 
     if ("logged_in" in resp && resp.logged_in) {
