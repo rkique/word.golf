@@ -159,9 +159,9 @@ def handle_round_finish(lobby, user):
             winner = uname
             break
     if winner:
-        # if lobby in timers:
-        #     timers[lobby]['timer'].cancel()
-        #     del timers[lobby]
+        if lobby in timers:
+            timers[lobby] = False
+            del timers[lobby]
         emit('game_finished', {'winner': winner, 'game_state': game_states[lobby]}, room=lobby)
         return
     #update start and target with new games_played index into lobbies[lobby]
@@ -211,7 +211,7 @@ def handle_game_start(data):
     print(f'[game_start] lobbies {lobbies}')
     def countdown():
         time_elapsed = 0
-        while(True):
+        while(lobby in timers):
             socketio.sleep(1)
             time_elapsed += 1
             socketio.emit('timer_tick', {'time_elapsed': time_elapsed}, room=lobby)
