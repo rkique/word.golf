@@ -184,18 +184,18 @@
                     const word = words[idx] ? words[idx] : '';
                     if (col == 1 && row == 2) {
                         html += `<td >
-                                <a href="#" class="link--starting" onclick="window.clickWord('${myName}', '${word}')">${word}</a>
+                                <a class="link--starting" onclick="window.clickWord('${myName}', '${word}')">${word}</a>
                             </td>`;
                     } else if (word == target) {
                         {
                             html += `<td class="link--target">
-                                <a href="#" id="rainbow_text_animated" onclick="window.clickWord('${myName}', '${word}')">${word}</a>
+                                <a id="rainbow_text_animated" onclick="window.clickWord('${myName}', '${word}')">${word}</a>
                             </td>`;
                         }
                     }
                     else {
                         html += `<td>
-                                <a href="#" onclick="window.clickWord('${myName}', '${word}')">${word}</a>
+                                <a onclick="window.clickWord('${myName}', '${word}')">${word}</a>
                             </td>`;
                     }
                 }

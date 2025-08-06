@@ -154,7 +154,6 @@ def handle_join_lobby(data):
     else:
         emit('lobby_error', f'Lobby {code} does not exist.')
 
-
 @socketio.on('give_up')
 def surrender(data):
     name = data.get('name')
