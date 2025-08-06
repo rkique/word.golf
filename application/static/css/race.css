@@ -482,7 +482,14 @@ input {
 
 .total-rounds-option {
     padding: 0.4rem;
+    cursor: pointer;
 }
+
+.total-rounds-option.selected {
+    /* border: 2px solid #007BFF;  */
+    border: 2px solid var(--grayed-out-color); 
+}
+
 .selected-option {
     color: var(--text-color);
     padding: 0.4rem;
