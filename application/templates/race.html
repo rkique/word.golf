@@ -73,7 +73,7 @@
             <div id="total-rounds-container">
                 <div id="total-rounds">
                     <p class="total-rounds-label">total rounds</p>
-                    <div class="total-rounds-options">
+                    <div id='rounds-options' class="total-rounds-options">
                         <!-- <button id="decrease-rounds" type="button">-</button>
                         <span class="total-rounds-option" data-value="5" id="real-total-rounds">5</span>
                         <button id="increase-rounds" type="button">+</button> -->
@@ -185,12 +185,13 @@
 
         options.forEach(option => {
             option.addEventListener('click', () => {
-            options.forEach(o => o.classList.remove('selected'));
+                options.forEach(o => o.classList.remove('selected'));
 
-            option.classList.add('selected');
+                option.classList.add('selected');
 
-            const selectedValue = option.getAttribute('data-value');
-            console.log("Selected total rounds:", selectedValue);
+                const selectedValue = option.getAttribute('data-value');
+                console.log("Selected total rounds:", selectedValue);
+                socket.emit('get_prompts', {num_prompts: parseInt(document.querySelector('.total-rounds-option.selected').dataset.value)})
             });
         });
         // document.getElementById('decrease-rounds').onclick = function () {
@@ -481,9 +482,16 @@
 
         function renderJoinedLobby(starts, targets, myLobby) {
             console.log(`myName: ${myName}, myLobby: ${myLobby}, myLobbyLeader: ${myLobbyLeader}`);
+            console.log(myName === myLobbyLeader);
             if (myName === myLobbyLeader) {
                 document.getElementById('start-game').style.display = '';
                 document.getElementById('reload-prompts').style.display = 'flex';
+                document.getElementById('total-rounds-container').style.display = 'flex';
+                document.getElementById('new-prompts').style.display = 'flex';
+            } 
+            else {
+                document.getElementById('total-rounds-container').style.display = 'none';
+                document.getElementById('new-prompts').style.display = 'none';
             }
             document.getElementById('current-starts').innerHTML = makeStartTargetHTML(starts, 'starts');
             document.getElementById('current-targets').innerHTML = makeStartTargetHTML(targets, 'targets');
