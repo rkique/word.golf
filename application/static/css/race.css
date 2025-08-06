@@ -35,7 +35,7 @@
 .user-progress-name {
     font-size: 1.6rem;
     min-width: 10rem;
-    margin: 0.2rem 0.8rem;
+    /* margin: 0.2rem 0.8rem; */
 }
 .user-progress-score {
     min-width: 2.5rem;
