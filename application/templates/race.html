@@ -446,13 +446,12 @@
         registerListeners(socket);
         
         // Auto-join lobby if code is provided in URL
-        {% if lobby_code %}
+        
         const urlLobbyCode = '{{ lobby_code }}';
         if (urlLobbyCode) {
             // Auto-join immediately with no username (backend will use 'Anonymous')
             socket.emit('join_lobby', { code: urlLobbyCode, name: '' });
         }
-        {% endif %}
     </script>
     <script>
         function renderRoundFinish(data) {
