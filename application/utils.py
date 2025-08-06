@@ -62,9 +62,9 @@ def get_prompts(l):
     return p
 
 
-def backoff_selection(indices, start_neighbors: list[str], mode=2, num=20) -> list[str]:
+def backoff_selection(indices, start_neighbors: list[str], default=True, num=20) -> list[str]:
     n = len(start_neighbors)
-    if mode == 2: #easier
+    if default == True: #easier
         exp = 2
         for x in range(num * 2):
             i = int((x / (num * 2 - 1)) ** exp * (n - 1))
@@ -73,7 +73,6 @@ def backoff_selection(indices, start_neighbors: list[str], mode=2, num=20) -> li
             if len(indices) == num:
                 break
     else: #race mode (define at least 8 (3x3) --> 14 indices (5x3)
-        #this is 7 good, 10 bad.
         get_idxs = [1, 2, 5, 6, 7, 8, 9, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49]
         for x in range(len(get_idxs)):
             i = get_idxs[x]
@@ -82,11 +81,11 @@ def backoff_selection(indices, start_neighbors: list[str], mode=2, num=20) -> li
             if len(indices) == num:
                 print(f'[hard spaced] {indices}')
                 break
-    # Select items based on generated indices
-    selected = [start_neighbors[i] for i in indices if i < len(start_neighbors)]
+
+    selected = [start_neighbors[i] for i in indices]
     return selected
 
-def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict, mode=2, num=20, neighbor=None) -> list[str]:
+def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict, default=True, num=20, neighbor=None) -> list[str]:
     '''
     Returns neighbors of the word which are biased towards the target.
     ''' 
@@ -99,45 +98,44 @@ def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict, mode=2, num
 
     sorted_start_neighbors = sorted(start_neighbors, key=similarity_to_target, reverse=True)
 
+    #Pattern for adding to the list.
+
     if neighbor is not None:
         print(f'[Neighbor] {neighbor}')
-        assert neighbor in start_neighbors, "Neighbor must be in results"
-        neighbor_idx = start_neighbors.index(neighbor)
+        assert neighbor in sorted_start_neighbors, "Neighbor must be in results"
+        neighbor_idx = sorted_start_neighbors.index(neighbor)
         indices.append(neighbor_idx)
 
-    # target_candidates = start_neighbors
-    # if mode == 1:
-    #     target_candidates = start_neighbors[0:100]
     if target in sorted_start_neighbors:
         print(f"[Target]")
         target_idx = sorted_start_neighbors.index(target)
         indices.append(target_idx)
 
-    elif word in target_neighbors and mode == 2:
+    elif word in target_neighbors and default == True:
         print(f"[Start in TargetN]")
-        start_neighbors.append(target)
-        indices.append(len(start_neighbors) - 1)
+        sorted_start_neighbors.append(target)
+        indices.append(len(sorted_start_neighbors) - 1)
 
-    elif mode == 3:
-        start_neighbors.append(sorted_start_neighbors[20])
-        indices.append(len(start_neighbors) - 1)
+    # elif mode == 3:
+    #     start_neighbors.append(sorted_start_neighbors[20])
+    #     indices.append(len(start_neighbors) - 1)
 
     results__biased = []
-    if mode == 3: #No bias.
-        for i in range(0, num * 2):
-            if i not in indices:
-                indices.append(i)
-            if len(indices) == num:
-                break
-        results__biased = [start_neighbors[i] for i in indices if i < len(start_neighbors)]
-    else:
-        #exponential backoff from 0 to 100
-        results__biased = backoff_selection(indices, sorted_start_neighbors,\
-                                           mode=mode, num=num)
-        print(results__biased)
+    # if mode == 3: #No bias.
+    #     for i in range(0, num * 2):
+    #         if i not in indices:
+    #             indices.append(i)
+    #         if len(indices) == num:
+    #             break
+    #     results__biased = [start_neighbors[i] for i in indices if i < len(start_neighbors)]
+    #exponential backoff from 0 to 100
+    results__biased = backoff_selection(indices, sorted_start_neighbors,\
+                                        default=default, num=num)
+    print(results__biased)
     random.seed(len(word))
     random.shuffle(results__biased)
     results__biased.append(word)
+    # print(f'[get_curve] results is {len(results__biased)}')
     buckets = int((num + 1) / 3)
     subsets = partition(results__biased, buckets)
     #word is not in subset.
@@ -149,8 +147,6 @@ def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict, mode=2, num
     subsets.pop(word_index)
     others = [w for w in subset if w != word]
     word_subset = [others[0], word, others[1]]
-    # 7 --> insert before 7 // 2
-    # 3 --> insert before 3 // 2
     subsets.insert(buckets // 2, word_subset)
     results = [item for sublist in subsets for item in sublist]
     return results
