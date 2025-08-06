@@ -46,6 +46,10 @@ def load_race_data():
 def race_lobby():
     return render_template('race.html')
 
+@race_bp.route('/race/<lobby_code>')
+def race_lobby_with_code(lobby_code):
+    return render_template('race.html', lobby_code=lobby_code)
+
 def users_in_lobby(code):
     if code in game_states:
         return list(game_states[code].keys())
@@ -96,11 +100,16 @@ def update_lobby_starts_targets(code, num):
     emit('post_prompts', lobbies[code], room=code)
     return starts, targets
 
+def create_name():
+    adjectives = ['silver', 'gold', 'blue', 'pink', 'white', 'green']
+    animals = ['fox', 'sparrow', 'tern', 'dove', 'fish', 'otter', 'finch', 'cat']
+    return random.choice(adjectives) + '-' + random.choice(animals)
+
 @socketio.on('create_lobby')
 def handle_create_lobby(data):
     name = data.get('name')
     if name == '' or name == None:
-        name = 'Anonymous'
+        name = create_name()
     code = str(uuid.uuid4())[:6].upper()
     random.seed(hash(code))
     starts, targets = update_lobby_starts_targets(code, 5)
@@ -118,7 +127,7 @@ def handle_create_lobby(data):
 def handle_join_lobby(data):
     name = data.get('name')
     if name == '' or name == None:
-        name = 'Anonymous'
+        name = create_name()
     code = data.get('code', '').strip().upper()
     if code in lobbies:
         if len(game_states[code].keys()) >= MAX_LOBBY_SIZE:
