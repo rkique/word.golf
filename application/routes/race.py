@@ -145,6 +145,7 @@ def handle_join_lobby(data):
             game_states[code][name] = default_user_state.copy()
         else:
             game_states[code][name] = default_user_state.copy()
+        game_states[code][name]['surrender'] = 0
         sid_to_user[request.sid] = (code, name) #assign unique lobby & user
         starts = lobbies[code]['starts']
         targets = lobbies[code]['targets']
@@ -152,6 +153,23 @@ def handle_join_lobby(data):
         emit('lobby_joined', {'lobby': code, 'name': name, 'starts': starts, 'targets': targets})
     else:
         emit('lobby_error', f'Lobby {code} does not exist.')
+
+
+@socketio.on('give_up')
+def surrender(data):
+    name = data.get('name')
+    lobby = data.get('lobby')
+    game_states[lobby][name]['surrender'] = 1
+    surrendered_count = sum(
+        state.get('surrender', 0) for state in game_states[lobby].values()
+    )
+    if surrendered_count == len(list(game_states[lobby].keys())):
+        if lobby in timers:
+            timers[lobby] = False
+            del timers[lobby]
+        emit('game_finished', {'winner': None, 'game_state': game_states[lobby]}, room=lobby)
+    
+    socketio.emit('surrender', {'count': surrendered_count, 'total_count': len(list(game_states[lobby].keys()))})
 
 @socketio.on('get_lobbies')
 def handle_get_lobbies():
