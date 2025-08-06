@@ -125,7 +125,6 @@ def jump_statistics_per_day():
     state_model = get_state_model()
     data = request.get_json()
     new_date_str = data.get('date') 
-    print("here is new date string: ", new_date_str)
     new_date = datetime.strptime(new_date_str, '%Y-%m-%d').date()
     
     # Get all games for the specified date

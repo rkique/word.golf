@@ -318,7 +318,7 @@
     renderGraph();
 
     function renderBarGraph(total_jumps_data, my_total_jumps, date) {
-        console.log("rendering bar graph");
+        // console.log(`rendering bar graph for ${date}`);
         if (window.myChart) {
             window.myChart.destroy();
         }
@@ -362,7 +362,9 @@
             }, 200);
         }
 
-
+        //Handle JS quirk where - is UTC, / is local.
+        date = date.replace(/-/g, '/')
+        
         // Create the chart
         window.myChart = new Chart(ctx, {
             type: 'bar',
