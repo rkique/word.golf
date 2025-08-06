@@ -155,31 +155,24 @@
     wordspace.addEventListener('mouseenter', () => {
         if (wgHeading) {
             wgHeading.style.opacity = '0';
-            wgHeading.style.maxHeight = '0px';
+            // wgHeading.style.maxHeight = '0px';
         }
-        document.getElementById('theme-icon').style.color = 'var(--4)'
-        switchPs.forEach(p => {
-            p.style.opacity = '0';
-            p.style.maxHeight = '0px';
-        });
-        switchContainerSvgs.forEach(svg => {
-        svg.style.fill = 'var(--4)';
-        });
+        // document.getElementById('theme-icon').style.color = 'var(--4)'
+        // switchPs.forEach(p => {
+        //     p.style.color = 'var(--4)';
+        //     // p.style.opacity = '0';
+        //     // p.style.maxHeight = '0px';
+        // });
+        // switchContainerSvgs.forEach(svg => {
+        // svg.style.fill = 'var(--4)';
+        // });
     });
 
     wordspace.addEventListener('mouseleave', () => {
         if (wgHeading) {
             wgHeading.style.opacity = '1';
-            wgHeading.style.maxHeight = '200px';
+            // wgHeading.style.maxHeight = '200px';
         }
-        document.getElementById('theme-icon').style.color = 'var(--grayed-out-color)'
-        switchPs.forEach(p => {
-            p.style.opacity = '1';
-            p.style.maxHeight = '200px';
-        });
-        switchContainerSvgs.forEach(svg => {
-        svg.style.fill = 'var(--grayed-out-color)';
-        });
     });
 </script>
 

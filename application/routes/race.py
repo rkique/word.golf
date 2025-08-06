@@ -32,6 +32,7 @@ num_prompts = 5
 
 WV = None
 PRECOMPUTED = None
+
 def load_race_data():
     global WV, PRECOMPUTED
     if WV is not None:
