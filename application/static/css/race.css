@@ -28,7 +28,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 0.5rem;
+    margin: 0 0;
     gap: 0rem;
     width: 28rem;
 }
@@ -46,6 +46,9 @@
 }
 
 #timer-display {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
     min-width: 5.5rem;
     display: flex;
     justify-content: center;
@@ -227,7 +230,7 @@ html {
     grid-template-columns: 1fr !important;
     grid-template-rows: 1fr !important;
     padding: 0 !important;
-    margin: 5rem 0 !important;
+    margin: 2rem 0 !important;
 }
 
 #wordspace table {
@@ -240,9 +243,9 @@ html {
 #wordspace td {
     border: none;
     padding: 0.5rem 1.4rem;
-    min-width: 3emx;
+    min-width: 3em;
     text-align: center;
-    font-size: min(5vw, 2.4rem);
+    font-size: min(4vw, 2rem);
 }
 
 
