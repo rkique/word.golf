@@ -114,13 +114,18 @@ html {
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-width: 30rem;
+    max-width: 36rem;
     gap: 1rem;
 }
 
 #current-lobby {
     font-family: 'Courier New', Courier, monospace;
 }
+
+#current-lobby-code {
+    display: inline;
+}
+
 #current-start-target, #current-lobby {
     font-size: 1.8rem;
     color: var(--text-color);
@@ -139,7 +144,7 @@ html {
 #lobby-list, #user-list {
     font-size: var(--text-size);
     color: var(--text-color);
-    width: min(100%, 30em);
+    width: min(100%, 36rem);
     margin-bottom: 0.5rem;
 }
 
@@ -178,9 +183,9 @@ html {
     border-radius: 8px;
     transition: background 0.2s, border 0.2s;
 }
+
 #start-game:hover, #start-game:focus {
-    background: #232323;
-    border: 1.5px solid #fff;
+    background: var(--4green-emph);
 }
 /* 
 #user-progress {
@@ -221,7 +226,7 @@ html {
 
 #wordspace table {
     width: 100%;
-    max-width: 30em;
+    max-width: 30rem;
     margin: 0 auto;
     border-collapse: collapse;
 }
@@ -311,6 +316,9 @@ body {
     transition: background 0.2s, border 0.2s;
 }
 
+#join-lobby:hover, #join-lobby:focus, #create-lobby:hover, #create-lobby:focus {
+    background: var(--4green-emph);
+}
 
 
 .group {
@@ -342,7 +350,7 @@ input {
     display: none;
 }
 #username-lobby {
-    width: 30em;
+    width: 36rem;
     max-width: 90vw;
     /* flex-wrap: wrap; */
     /* max-width: 40rem;

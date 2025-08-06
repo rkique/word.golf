@@ -26,6 +26,7 @@ function syncColorMode() {
   if (currentMode == 'true') {
   document.documentElement.style.setProperty('--background-tint', 'rgba(0, 0, 0, 0.15)');
   document.documentElement.style.setProperty('--4green', '#ebdbb2');
+  document.documentElement.style.setProperty('--4green-emph', '#a89984');
   document.documentElement.style.setProperty('--banner-perfect', '#00cfc0');
   document.documentElement.style.setProperty('--banner-impressive', '#1a9d34');
   document.documentElement.style.setProperty('--banner-great', '#2a61cc');
@@ -73,6 +74,8 @@ function syncColorMode() {
     document.documentElement.style.setProperty('--grayed-out-color-help-target', '#9c9584'); // near-muted beige
     document.documentElement.style.setProperty('--grayed-out-color-unfocused', '#434343');   // neutral bg3
     document.documentElement.style.setProperty('--4green', '#222724');
+    document.documentElement.style.setProperty('--4green-emph', '#1e2220ff');
+
   }
   // syncGraph()
   //PlotHistory(sessionHistory)

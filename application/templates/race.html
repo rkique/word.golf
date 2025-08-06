@@ -36,12 +36,21 @@
             <div id="username-lobby" class="group">
                 <div class="left-align-group">
                     <label id="username-label">your name </label>
-                    <input id="username" placeholder="silverfish" maxlength="20">
+                    <input id="username" placeholder="silver-fish" maxlength="20">
                     <p id="username-display"></p>
                 </div>
                 <div id="current-lobby-display" class="left-align-group" style="display:none;">
                     <label id="lobby-code-label">lobby code</label>
-                    <div id="current-lobby"></div>
+                    <div id="current-lobby">
+                        <a id="shareLobbyLink">
+                        <div id="current-lobby-code"></div>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-copy">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        </a>
+                </div>
                 </div>
                 <button id="start-game" style="display:none">Start Game</button>
             </div>
@@ -120,6 +129,26 @@
     </div>
 
     </div>
+    <script>
+        const shareLobbyLink = document.querySelector('#shareLobbyLink');
+        shareLobbyLink.addEventListener('click', () => {
+        link = window.location.href;
+        if (link.includes('race/')) {
+            link = link.split('race/')[0] + 'race'
+        }
+        link = `${link}/${myLobby}`;
+        navigator.clipboard.writeText(link)
+            .then(() => {
+                const originalContent = shareLobbyLink.innerHTML;
+                shareLobbyLink.style.color = 'var(--grayed-out-color)';
+                setTimeout(() => shareLobbyLink.style.color = 'var(--text-color)', 300);
+            })
+            .catch(err => {
+                shareLobbyLink.textContent = 'Failed to copy';
+                console.error('Clipboard write failed:', err);
+            });
+    });
+    </script>
     <script>
         // alert('ngrok2')
         let socket = io();
@@ -415,6 +444,15 @@
             socket.emit('get_lobbies');
         }
         registerListeners(socket);
+        
+        // Auto-join lobby if code is provided in URL
+        {% if lobby_code %}
+        const urlLobbyCode = '{{ lobby_code }}';
+        if (urlLobbyCode) {
+            // Auto-join immediately with no username (backend will use 'Anonymous')
+            socket.emit('join_lobby', { code: urlLobbyCode, name: '' });
+        }
+        {% endif %}
     </script>
     <script>
         function renderRoundFinish(data) {
@@ -498,7 +536,7 @@
             document.getElementById('username-display').innerHTML = myName;
             document.getElementById('current-lobby-display').style.display = 'flex';
             document.getElementById('username-lobby').style.flexDirection = 'row';
-            document.getElementById('current-lobby').innerHTML = `<span style='font-family:monospace;'>${myLobby}</span>`;
+            document.getElementById('current-lobby-code').innerHTML = `<span style='font-family:monospace;'>${myLobby}</span>`;
             document.getElementById('current-lobby-settings').style.display = 'flex';
             document.getElementById('current-lobby').style.display = '';
             document.getElementById('user-list').style.display = '';
