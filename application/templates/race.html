@@ -81,22 +81,22 @@
                 </div>
             </div>
             <div class="rounds-lobby-container">
-            <div id="total-rounds-container">
-                <div id="total-rounds">
-                    <p class="total-rounds-label">total rounds</p>
-                    <div id='rounds-options' class="total-rounds-options">
-                        <!-- <button id="decrease-rounds" type="button">-</button>
-                        <span class="total-rounds-option" data-value="5" id="real-total-rounds">5</span>
-                        <button id="increase-rounds" type="button">+</button> -->
-                        <span class="total-rounds-option" data-value="3">3</span>
-                        <span class="total-rounds-option" data-value="4">4</span>
-                        <span class="total-rounds-option selected" data-value="5">5</span>
+                <div id="total-rounds-container">
+                    <div id="total-rounds">
+                        <p class="total-rounds-label">total rounds</p>
+                        <div id='rounds-options' class="total-rounds-options">
+                            <!-- <button id="decrease-rounds" type="button">-</button>
+                            <span class="total-rounds-option" data-value="5" id="real-total-rounds">5</span>
+                            <button id="increase-rounds" type="button">+</button> -->
+                            <span class="total-rounds-option" data-value="3">3</span>
+                            <span class="total-rounds-option" data-value="4">4</span>
+                            <span class="total-rounds-option selected" data-value="5">5</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div id="user-list-container">
-                <div id="user-list" class="left-align-group"></div>
-            </div>
+                <div id="user-list-container">
+                    <div id="user-list" class="left-align-group"></div>
+                </div>
             </div>
         </div>
         <button id="start-game" style="display:none">Start Game</button>
@@ -106,7 +106,7 @@
             <div id="game">
                 <div id="target"></div>
                 <div id="wordspace"></div>
-                <button id="go-to-target" style="margin-top:1rem; display:none">Go to Target</button>
+                <button id="surrender-game">Give up</button>
             </div>
             <div id="timer-display">00:00</div>
             <div id="user-progress-container">
@@ -174,10 +174,8 @@
             words = data.words;
             if (target) {
                 document.getElementById('target').innerHTML = `<span class="target-label">go to</span> ${target}`;
-                document.getElementById('go-to-target').style.display = '';
-            } else {
-                document.getElementById('go-to-target').style.display = 'none';
             }
+            document.getElementById('surrender-game').innerText = 'Give up';
             let html = '<table style="border-collapse:collapse;">';
             for (let row = 0; row < 5; row++) {
                 html += '<tr>';
@@ -309,11 +307,20 @@
             };
 
             // Go to Target handler
-            document.getElementById('go-to-target').onclick = function () {
-                if (target) {
-                    clickWord(myName, target);
-                }
+            // document.getElementById('go-to-target').onclick = function () {
+            //     if (target) {
+            //         clickWord(myName, target);
+            //     }
+            // };
+
+            document.getElementById('surrender-game').onclick = function () {
+                // console.log("here is my name: ", )
+                socket.emit('give_up', {lobby: myLobby, name: myName});
             };
+
+            socket.on('surrender', function (data) {
+                document.getElementById('surrender-game').innerText = 'Give up ' + data.count + '/' + data.total_count;
+            });
 
             socket.on('lobby_error', function (msg) {
                 alert(msg);
