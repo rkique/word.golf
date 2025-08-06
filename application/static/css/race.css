@@ -5,10 +5,11 @@
 
 #current-lobby-settings {
     display: none;
-    gap: 1rem;
+    flex-wrap: nowrap;
+    /* gap: 1rem; */
     flex-direction: row;
-    width: 100%;
-    padding: 2rem;
+    width: min(100%,90vw);
+    padding: 1rem 2rem;
     border: 1px solid var(--4);
 }
 
@@ -26,13 +27,14 @@
 .user-progress-row {
     display: flex;
     align-items: center;
+    justify-content: center;
     margin-bottom: 0.5rem;
     gap: 0rem;
     width: 28rem;
 }
 .user-progress-name {
     font-size: 1.6rem;
-    /* min-width: 7rem; */
+    min-width: 10rem;
     margin: 0.2rem 0.8rem;
 }
 .user-progress-score {
@@ -45,7 +47,8 @@
 
 #timer-display {
     min-width: 5.5rem;
-    text-align: center;
+    display: flex;
+    justify-content: center;
     font-size: 2rem;
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.05em;
@@ -53,12 +56,12 @@
 
 .user-progress-bar-outer {
         background-color: var(--grayed-out-background);
-        width: 100%;
         height: 2.2rem;
+        width: 30vw;
         border-radius: 0;
         overflow: hidden;
         position: relative;
-        flex: 1;
+        flex: none;
 }
 
 .user-progress-bar-inner {
@@ -91,13 +94,14 @@ html {
 
 #game-container {
     display: flex;
-    flex-wrap: wrap;
+    /* flex-wrap: wrap; */
     /* flex: 1 1 0; */
     min-width: 0;
     padding: 0;
     align-content: center;
     justify-content: center;
     width: 40rem;
+    flex-direction: column;
 }
 
 #user-progress-container {
@@ -153,6 +157,7 @@ html {
     flex-direction: column;
     align-items: center;
     width: 100%;
+    min-width: 10rem;
 }
 
 #user-list-container {
@@ -168,6 +173,7 @@ html {
 }
 
 #start-game {
+    margin-top: 2rem;
     min-height: 48px;
     min-width: 160px;
     width: 100%;
@@ -271,7 +277,7 @@ body {
 
 .race-container {
     display: flex;
-    max-width: 48rem;
+    max-width: 52rem;
     width: 42rem;
     flex-direction: column;
     align-items: center;
@@ -288,6 +294,7 @@ body {
 .join-lobby-container {
     display: flex; 
     gap: 0rem;
+    width: 100%;
 }
 
 #create-lobby{
@@ -327,7 +334,7 @@ body {
     align-items: center;
     gap: 1rem;
     margin-bottom: 1rem;
-    width: min(100%, 90vw);
+    width: min(36rem, 90vw);
 }
 
 label { 
@@ -371,13 +378,13 @@ input {
     flex: none;
     flex-wrap: wrap;
     justify-content: space-between;
-    width: 24rem;
-    max-width: 26rem;
+    width: min(24rem, 90vw);
+    max-width: min(26rem, 90vw);
 }
 
 #current-starts, #current-targets {
     flex-basis: 50%;
-    font-size: 1.8rem !important;
+    font-size: 1.8rem;
     color: var(--text-color);
     margin: 0 0;
     min-width: 8rem;
@@ -650,19 +657,60 @@ input[type=range]::-webkit-slider-thumb {
     cursor: pointer;
 }
 
-@media (max-width: 600px) {
+.rounds-lobby-container {
+    display: flex;
+    flex: none;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 992px) {
+    #current-prompts-container {
+        padding: 0 0 2rem 0;
+    }
+
+    #current-prompts-container div {
+        min-width: none;
+        flex-basis: auto;
+    }
+    #username-display, #current-lobby{
+        font-size: 1.3rem;
+    }
+
+    #current-starts, #current-targets {
+        font-size: 1.3rem;
+    }
+    .user-progress-row {
+        width: auto;
+    }
     #lobby-info {
         margin-top: 3rem;
         display: flex;
+        width: 90vw;
         flex-direction: column;
         /* justify-content: center; */
         /* align-content: flex-start; */
         align-items: center;
     }
-    #username-lobby {
-        flex-wrap: wrap;
+    .user {
+        font-size: 1.3rem;
     }
+    #lobby-list {
+        width: 30rem;
+    }
+    #join-lobby {
+        min-width: 7rem;
+    }
+    /* .join-lobby-container {
+        width: 90vw;
+    } */
+    /* #username-lobby {
+        flex-wrap: wrap;
+    } */
     #current-lobby-settings {
         flex-wrap: wrap;
+        justify-content: center;
+    }
+    .user-progress-bar-outer{
+    /* width: 40vw; */
     }
 }
