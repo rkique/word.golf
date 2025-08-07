@@ -642,8 +642,8 @@ input[type=range] {
 #back-arrow {
     /* display: none; */
     position: absolute;
-    left: 0rem;
-    top: 2rem;
+    left: 1rem;
+    top: 1rem;
     font-size: 2rem;
     background: none;
     border: none;
@@ -699,8 +699,8 @@ input[type=range]::-webkit-slider-thumb {
     }
     #back-arrow {
         position: absolute;
-        left: 0rem;
-        top: 0rem;
+        left: -0.8rem;
+        top: 1rem;
         font-size: 2rem;
         outline: none;
         /* box-shadow: none; */
