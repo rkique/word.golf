@@ -18,8 +18,6 @@
 .back-arrow:hover {
     color: var(--hover-color);
 }
-    
-
 @font-face {
     font-family: "Schibsted Grotesk";
     src: url("/static/Schibsted_Grotesk/SchibstedGrotesk-Italic-VariableFont_wght.ttf") format("truetype");
