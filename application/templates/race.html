@@ -295,6 +295,7 @@
             })
             //start-game --> game_started L
             document.getElementById('start-game').onclick = function () {
+                document.getElementById('timer-display').innerText = '00:00';
                 if (myLobby) {
                     numPrompts = parseInt(document.querySelector('.total-rounds-option.selected').dataset.value)
                     socket.emit('game_started', { lobby: myLobby, name: myName, target: target, num_prompts: numPrompts });
