@@ -102,7 +102,7 @@ p {
 
 #tutorial {
     font-size: 2em;
-    padding: 1em 1em;
+    padding: 1em 1.7em;
     outline: 1px solid var(--grayed-out-color);
 }
 
