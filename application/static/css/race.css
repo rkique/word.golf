@@ -642,8 +642,8 @@ input[type=range] {
 #back-arrow {
     /* display: none; */
     position: absolute;
-    left: 1rem;
-    top: 1rem;
+    left: 0rem;
+    top: 2rem;
     font-size: 2rem;
     background: none;
     border: none;
