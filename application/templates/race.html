@@ -17,10 +17,20 @@
 
 
 <body>
+    {% include 'modals/header.html' %}
+    <script>
+        window.onload = function() {
+            const race = document.getElementById('race-icon');
+            if (race) {
+                race.parentNode.removeChild(race);
+            }
+            const word_golf_name = document.getElementById('wg-heading');
+            word_golf_name.style.display = 'none';
+        };
+    </script>
     {% include 'modals/modal-help.html' %}
     {% include 'modals/modal.html' %}
     <div class="race-container">
-        
         <button onclick="window.returnToJoinedLobby()" id="back-arrow" title="Back"> &#8592;</button>
         <div id="lobby-info">
             <div>
@@ -169,6 +179,10 @@
 
         function renderGame(data, target) {
             console.log(`renderGame] data: ${JSON.stringify(data)}`);
+            const settings = document.getElementById('settings');
+            if (!settings.classList.contains('hidden')) {
+                settings.classList.add('hidden'); 
+            }
             hideLobby();
             showGameGlobal();
             words = data.words;
@@ -395,12 +409,20 @@
                     hideFinishScreen(true);
                     // document.getElementById('finish-screen').display = 'none';
                     document.getElementById('timer-display').innerText = '00:00';
+                    const settings = document.getElementById('settings');
+                    if (settings.classList.contains('hidden')) {
+                        settings.classList.remove('hidden'); 
+                    }
                     // allow user to leave the lobby to main
                     window.returnToJoinedLobby = function () {
                         if (socket) {
                             socket.disconnect();
                         }
                         renderNoJoinedLobby(starts, targets, myLobby);
+                        const settings = document.getElementById('settings');
+                        if (settings.classList.contains('hidden')) {
+                            settings.classList.remove('hidden'); 
+                        }
                         // Reconnect socket for new session
                         setTimeout(() => {
                             socket = io();
@@ -453,6 +475,10 @@
                 renderJoinedLobby(starts, targets, myLobby);
                             // register this listener when joined. arrow from joined lobby to no joined lobby
                 window.returnToJoinedLobby = function () {
+                    const settings = document.getElementById('settings');
+                    if (settings.classList.contains('hidden')) {
+                        settings.classList.remove('hidden'); 
+                    }
                     if (socket) {
                         socket.disconnect();
                     }
@@ -490,6 +516,10 @@
             }
         }
         function renderGameFinish(data) {
+            const settings = document.getElementById('settings');
+            if (settings.classList.contains('hidden')) {
+                settings.classList.remove('hidden'); 
+            }
             document.getElementById('game-global').style.display = 'none';
             document.getElementById('back-arrow').style.display = 'flex';
             const finishScreen = document.getElementById('finish-screen');
@@ -582,6 +612,10 @@
             document.getElementById('create-lobby').style.display = 'none';
             document.getElementById('join-lobby').style.display = 'none';
             document.getElementById('join-code').style.display = 'none';
+            const settings = document.getElementById('settings');
+            if (settings.classList.contains('hidden')) {
+                settings.classList.remove('hidden'); 
+            }
         }
         function renderNoJoinedLobby() {
             // Hide game/lobby display
@@ -602,8 +636,12 @@
             document.getElementById('join-lobby').style.display = '';
             document.getElementById('join-code').style.display = '';
             window.returnToJoinedLobby = function() {
-            window.location.href = '/';
+                window.location.href = '/';
             };
+            const settings = document.getElementById('settings');
+            if (settings.classList.contains('hidden')) {
+                settings.classList.remove('hidden'); 
+            }
             // Optionally clear game state
             // document.getElementById('current-start-target').innerHTML = '';
             // document.getElementById('user-list').innerHTML = '';

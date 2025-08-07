@@ -699,8 +699,8 @@ input[type=range]::-webkit-slider-thumb {
     }
     #back-arrow {
         position: absolute;
-        left: 1rem;
-        top: 1rem;
+        left: 0rem;
+        top: 0rem;
         font-size: 2rem;
         outline: none;
         /* box-shadow: none; */
