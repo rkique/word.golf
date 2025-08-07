@@ -688,6 +688,15 @@ input[type=range]::-webkit-slider-thumb {
 }
 
 @media (max-width: 992px) {
+    #game-container {
+        display: flex;
+        height: 100vh;
+        min-width: 0;
+        padding: 0;
+        justify-content: center;
+        width: 40rem;
+        flex-direction: column;
+    }
     #back-arrow {
         position: absolute;
         left: 0rem;
