@@ -258,6 +258,10 @@
 
             const options = document.querySelectorAll('.total-rounds-option');
 
+            window.returnToJoinedLobby = function() {
+                window.location.href = '/';
+            };
+
             options.forEach(option => {
                 option.addEventListener('click', () => {
                     options.forEach(o => o.classList.remove('selected'));
@@ -320,7 +324,8 @@
             };
 
             socket.on('surrender', function (data) {
-                document.getElementById('surrender-game').innerText = 'Give up ' + data.count + '/' + data.total_count;
+                document.getElementById('surrender-game').innerText = 'Give up (' + data.count + '/' + data.total_count + ')';
+                // document.getElementById('num_surrender-users').innerText = data.count + '/' + data.total_count;
             });
 
             socket.on('lobby_error', function (msg) {
@@ -384,7 +389,7 @@
                     // document.getElementById('finish-screen').display = 'none';
                     document.getElementById('timer-display').innerHTML = '00:00';
                     // allow user to leave the lobby to main
-                    document.getElementById('back-arrow').onclick = function () {
+                    window.returnToJoinedLobby = function () {
                         if (socket) {
                             socket.disconnect();
                         }
@@ -393,6 +398,7 @@
                         setTimeout(() => {
                             socket = io();
                             registerListeners(socket);
+                            // this should now reset back to the original function
                         }, 200);
                     };
                 }

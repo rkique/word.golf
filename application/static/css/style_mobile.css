@@ -156,9 +156,12 @@
         padding: 0.5em 0em;
         align-items: top;
         justify-content: center;
+        width: 3rem;
+        height: 3.5rem;
     }
     .switch {
-            font-size: 2rem;
+        padding: 0;
+        font-size: 2rem;
     }
     .game-icon {
         width: 2rem;
@@ -255,6 +258,7 @@
     }
     .switchContainer {
         min-width: 0em;
+        width: 3rem;
     }
     #modal-finish-guest, #modal-finish-user {
         width: 92vw;
@@ -286,6 +290,7 @@
 
     .settings-controls {
         padding-top: 0.25rem;
+        align-items: center;
     }
     #share-link, #share-link a{
         font-size: 1.3rem;

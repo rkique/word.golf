@@ -766,6 +766,7 @@ button span {
     user-select: none;     
     color: var(--border-color);
     margin: 1rem 0 0 2rem;
+    
 }
 
 .lobby-title {
