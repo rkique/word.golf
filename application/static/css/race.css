@@ -701,7 +701,7 @@ input[type=range]::-webkit-slider-thumb {
         width: auto;
     }
     #lobby-info {
-        margin-top: 3rem;
+        margin-top: 0rem;
         display: flex;
         width: 90vw;
         flex-direction: column;

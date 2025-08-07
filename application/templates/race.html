@@ -21,7 +21,7 @@
     {% include 'modals/modal.html' %}
     <div class="race-container">
         
-        <!-- <button onclick="window.returnToJoinedLobby()" id="back-arrow" title="Back"> &#8592;</button> -->
+        <button onclick="window.returnToJoinedLobby()" id="back-arrow" title="Back"> &#8592;</button>
         <div id="lobby-info">
             <div>
             <h1 id="lobby-title" class="lobby-title dib">word.golf </h1>
@@ -383,17 +383,17 @@
                 document.getElementById('finish-screen').display = 'none';
                 document.getElementById('timer-display').innerHTML = '00:00';
                 // allow user to leave the lobby to main
-            //     document.getElementById('back-arrow').onclick = function () {
-            //         if (socket) {
-            //             socket.disconnect();
-            //         }
-            //         renderNoJoinedLobby(starts, targets, myLobby);
-            //         // Reconnect socket for new session
-            //         setTimeout(() => {
-            //             socket = io();
-            //             registerListeners(socket);
-            //         }, 200);
-            // };
+                document.getElementById('back-arrow').onclick = function () {
+                    if (socket) {
+                        socket.disconnect();
+                    }
+                    renderNoJoinedLobby(starts, targets, myLobby);
+                    // Reconnect socket for new session
+                    setTimeout(() => {
+                        socket = io();
+                        registerListeners(socket);
+                    }, 200);
+            };
                 }
             });
 
@@ -477,7 +477,7 @@
         }
         function renderGameFinish(data) {
             document.getElementById('game-global').style.display = 'none';
-            // document.getElementById('back-arrow').style.display = 'flex';
+            document.getElementById('back-arrow').style.display = 'flex';
             const finishScreen = document.getElementById('finish-screen');
             finishScreen.style.display = 'flex';
             // Convert entries to array and sort by wins descending
@@ -551,7 +551,7 @@
             document.getElementById('current-lobby').style.display = '';
             document.getElementById('user-list').style.display = '';
             document.getElementById('username-display').style.display = '';
-            // document.getElementById('back-arrow').style.display = 'flex';
+            document.getElementById('back-arrow').style.display = 'flex';
             document.getElementById('lobby-info').style.display = '';
             //hide game and other UI elements
             document.getElementById('game-global').style.display = 'none';
@@ -567,7 +567,7 @@
             document.getElementById('current-lobby-settings').style.display = 'none';
             document.getElementById('current-lobby-display').style.display = 'none';
             document.getElementById('start-game').style.display = 'none';
-            // document.getElementById('back-arrow').style.display = 'none';
+            document.getElementById('back-arrow').style.display = 'none';
             document.getElementById('username-display').style.display = 'none';
             document.getElementById('reload-prompts').style.display = 'none';
             // Hide results 
@@ -592,7 +592,7 @@
         function hideLobby() {
             document.getElementById('reload-prompts').style.display = 'none';
             document.getElementById('lobby-info').style.display = 'none';
-            // document.getElementById('back-arrow').style.display = 'none';
+            document.getElementById('back-arrow').style.display = 'none';
             document.getElementById('user-list').style.display = 'none';
             document.getElementById('current-lobby-settings').style.display = 'none';
             document.getElementById('start-game').style.display = 'none';
