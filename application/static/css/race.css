@@ -703,7 +703,12 @@ input[type=range]::-webkit-slider-thumb {
     }
 
     #current-prompts-container {
-        padding: 0 0 2rem 0;
+        padding: 0rem;
+        justify-content: center;
+    }
+
+    #reload-prompts {
+        padding: 4rem 0rem 4rem 0rem;
     }
 
     #current-prompts-container div {
