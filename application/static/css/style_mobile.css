@@ -391,6 +391,40 @@
         width: auto;
     }
 
+    #start-game  {
+        margin-top: 0.8rem;
+        min-height: 48px;
+        min-width: 160px;
+        width: 100%;
+        max-width: 320px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--button-font-size, 1.5rem);
+        background: var(--4green);
+        color: var(--text-color);
+        cursor: pointer;
+        border: none;
+        border-radius: 8px;
+        transition: background 0.2s, border 0.2s;
+    }
+
+    #lobby-subtitle {
+        font-size: 1.4rem;
+        font-weight: 400;
+        margin: 0 0rem 0.5rem 0;
+        color: var(--grayed-out-color);
+    }
+
+    .group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.3rem;
+        width: min(36rem, 90vw);
+    }
+
     .help-text p{
         font-size: 1.3rem;
         margin: 0.6em 0.1em;

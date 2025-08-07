@@ -1,5 +1,4 @@
 from datetime import date
-
 from application.models import GameState
 from ..utils import get_curve, similarity,txt_to_dict
 import json
