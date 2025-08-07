@@ -131,7 +131,6 @@ def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict, default=Tru
     #exponential backoff from 0 to 100
     results__biased = backoff_selection(indices, sorted_start_neighbors,\
                                         default=default, num=num)
-    print(results__biased)
     random.seed(len(word))
     random.shuffle(results__biased)
     results__biased.append(word)

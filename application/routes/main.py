@@ -1,4 +1,6 @@
 from datetime import date
+
+from application.models import GameState
 from ..utils import get_curve, similarity,txt_to_dict
 import json
 import datetime
@@ -239,6 +241,7 @@ def get_existing_data(state_model):
             targets = [prompt[1] for prompt in prompts_today]
             if data['selected_words'][-1] not in targets:
                 data['score'] = similarity(data['selected_words'][-1], data['prompt'][1], WV)
+    # print('[get_existing_data] Returning data:', data)
     return data
 
 #Given start words, selected words from the database, and jumps array, return the actual word history for the user.

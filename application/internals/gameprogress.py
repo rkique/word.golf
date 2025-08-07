@@ -4,7 +4,7 @@ from ..models import GameState, FakeGameState
 from .auth import get_user_from_cookie
 from dateutil import parser
 from datetime import timedelta
-from .globals import today
+from ..internals import globals
 
 
 def sum_jumpsA(jumpsA): 
@@ -22,13 +22,13 @@ def game_progress(state_model):
     if not user:
         return jsonify({"error": "Not authenticated"}), 401
 
-    game_state = state_model.query.filter_by(user_id=user.id, current_date=today).first()
+    game_state = state_model.query.filter_by(user_id=user.id, current_date=globals.today).first()
 
     if not game_state:
         # create a new game state for today to reference and update
         starting_game_state = state_model(
             user_id=user.id,
-            current_date=today,
+            current_date=globals.today,
             selected_words=[],
             jumpsA=[[1,0,0,0,0,1],
                     [0,0,0,0,0,0],
@@ -63,7 +63,7 @@ def game_progress(state_model):
 def get_current_game_state(state_model):
     user = get_user_from_cookie()
     if user:
-        return state_model.query.filter_by(user_id=user.id, current_date=today).first()
+        return state_model.query.filter_by(user_id=user.id, current_date=globals.today).first()
     else:
         return None
 
@@ -72,10 +72,10 @@ def update_game_state(data, state_model):
     if not user:
         return jsonify({"error": "Not authenticated"}), 401
 
-    game_state = state_model.query.filter_by(user_id=user.id, current_date=today).first()
+    game_state = state_model.query.filter_by(user_id=user.id, current_date=globals.today).first()
 
     if not game_state:
-        game_state = state_model(user_id=user.id, current_date=today)
+        game_state = state_model(user_id=user.id, current_date=globals.today)
         db.session.add(game_state)
         db.session.commit()
 
@@ -106,11 +106,11 @@ def finished_game(finish_request, state_model):
     if not user:
         return redirect('/')
 
-    game = state_model.query.filter_by(user_id=user.id, current_date=today).first()
+    game = state_model.query.filter_by(user_id=user.id, current_date=globals.today).first()
     if not game:
         return redirect('/')
 
-    if today != user.last_date_completed: # if it is the same do nothing 
+    if globals.today != user.last_date_completed: # if it is the same do nothing 
         if not game.prompts or not game.prompts[-1]:
             return jsonify({"error": "User has not played non-tutorial"}), 401, None
         # last_prompt = game.prompts[-1][-1]
@@ -122,17 +122,18 @@ def finished_game(finish_request, state_model):
         game.total_jumps = sum_jumpsA(game.jumpsA)
 
         if user.last_date_completed:
-            if user.last_date_completed == today - timedelta(days=1):
+            if user.last_date_completed == globals.today - timedelta(days=1):
                 user.streak += 1  # Increment streak if the last date was yesterday
-            elif user.last_date_completed < today - timedelta(days=1):
+            elif user.last_date_completed < globals.today - timedelta(days=1):
                 user.streak = 1  # Reset streak if the last date was more than a day ago
         else:
             # if the user has never completed a game, set streak to 1
             user.streak = 1
         # If the last date is the same as the game date, do nothing (explicitly handled)
-
+        # print('prior user last date completed:', user.last_date_completed)
         # Update user's streak and last date
-        user.last_date_completed = today
+        user.last_date_completed = globals.today
+        # print('[persisting] user last date completed:', user.last_date_completed)
         # db.session.add(game)
         db.session.commit()
     else:

@@ -23,7 +23,7 @@ function daysSinceStartDate(resp) {
     const currentDate = new Date(currentDateStr);
     const diffMs = currentDate - startDate;
 
-    days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    days = Math.floor(diffMs / (1000 * 60 * 60 * 24)) - 1;
     return days
 }
 
