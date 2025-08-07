@@ -6,7 +6,7 @@ from .main import WV, prompts_today, neighbors_today
 from .main import get_state_model, get_existing_data, get_prompts_for_date, shift_to, add_days, load_data
 from ..internals.auth import get_user_from_cookie
 from .. import cookie_signer, db
-from ..internals.globals import today
+from ..internals import globals
 from ..internals.globals import DISPLAY_PRECISION, PROMPT_COUNT, BASE_JUMPS_ARRAY, BASE_START_TARGET_IDXS
 from ..models import User
 
@@ -16,7 +16,7 @@ stats_bp = Blueprint('stats', __name__)
 def profile():
     user = get_user_from_cookie()
     state_model = get_state_model()
-    game_state = state_model.query.filter_by(user_id=user.id, current_date=today).first()
+    game_state = state_model.query.filter_by(user_id=user.id, current_date=globals.today).first()
     # print(f'user game_state is {game_state}')
     # print(f'game state has keys and values {game_state.__dict__.keys()} and {game_state.__dict__.values()}')
     best_score = state_model.query.filter_by(user_id=user.id).order_by(state_model.total_jumps.asc()).first()
@@ -67,8 +67,8 @@ def profile():
     # get the amount of games played this month
     games_and_dates_played_this_month = []
     games_this_month = state_model.query.filter(
-        db.extract('year', state_model.current_date) == today.year,
-        db.extract('month', state_model.current_date) == today.month,
+        db.extract('year', state_model.current_date) == globals.today.year,
+        db.extract('month', state_model.current_date) == globals.today.month,
         state_model.user_id == user.id,
         state_model.total_jumps > 0
     )
@@ -81,7 +81,7 @@ def profile():
     jumpsArray_of_today_games = [
         game.jumpsA
         for game in state_model.query.filter(
-            state_model.current_date == today,
+            state_model.current_date == globals.today,
             state_model.total_jumps > 0
         ).all()
     ]
@@ -91,8 +91,8 @@ def profile():
     # get incomplete games this month
     incomplete_games_this_month = []
     incomplete_games = state_model.query.filter(
-        db.extract('year', state_model.current_date) == today.year,
-        db.extract('month', state_model.current_date) == today.month,
+        db.extract('year', state_model.current_date) == globals.today.year,
+        db.extract('month', state_model.current_date) == globals.today.month,
         state_model.user_id == user.id,
         state_model.total_jumps == 0,
         state_model.selected_words != []
@@ -162,7 +162,7 @@ def jump_statistics_per_day():
 
 @stats_bp.route('/per-jump-statistics', methods=['GET'])
 def per_jump_statistics():
-    game_date = today
+    game_date = globals.today
     state_model = get_state_model()
     gamestates = state_model.query.filter_by(current_date=game_date).order_by(state_model.current_date.desc()).all()
     today_prompts = gamestates[0].prompts
@@ -203,7 +203,7 @@ def user_statistics():
         return redirect('/login')
     state_model = get_state_model()
     
-    game_state = state_model.query.filter_by(user_id=user.id, current_date=today).first()
+    game_state = state_model.query.filter_by(user_id=user.id, current_date=globals.today).first()
     if not game_state:
         return redirect('/')
 
@@ -230,7 +230,7 @@ def user_statistics():
     average_jumps_per_prompt = total_jumps / (total_games * PROMPT_COUNT) if total_games > 0 else 0
 
     # of the LOGGED IN users (user.email is not None), get my 'leaderboard' position
-    all_game_states = state_model.query.filter_by(current_date=today).order_by(state_model.total_jumps.asc()).all()
+    all_game_states = state_model.query.filter_by(current_date=globals.today).order_by(state_model.total_jumps.asc()).all()
     current_user = user
     leaderboard = []
     for gs in all_game_states:
@@ -297,7 +297,7 @@ def replay_game():
     # reset gamestate object and href to prev_index 
     user = get_user_from_cookie()
     if user:
-        previous_gamestate = get_state_model().query.filter_by(user_id=user.id, current_date=today).first()
+        previous_gamestate = get_state_model().query.filter_by(user_id=user.id, current_date=globals.today).first()
         if previous_gamestate:
             previous_gamestate.jumpsA = BASE_JUMPS_ARRAY
             previous_gamestate.results = []
