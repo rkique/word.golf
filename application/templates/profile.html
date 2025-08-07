@@ -17,6 +17,15 @@
     {% include 'modals/header.html' %}
     {% include 'modals/head.html' %}
     <script>
+
+        window.onload = function() {
+            const profile_icon = document.getElementById('profile-icon');
+            if (profile_icon) {
+                profile_icon.parentNode.removeChild(profile_icon);
+            }
+        };
+        // 
+
         async function renderLogout() {
             try {
                 const res = await fetch("/logout", {

@@ -16,6 +16,14 @@
     {% include 'modals/modal-help.html' %}
     {% include 'modals/modal.html' %}
     <a href="/" class="back-arrow">&#8592;</a>
+    <script>
+        window.onload = function() {
+        const help = document.getElementById('help-icon');
+        if (help) {
+            help.parentNode.removeChild(help);
+        }
+    };
+    </script>
     <!-- Help background images -->
     <img src="/static/images/start_0.png" class="help-bg-image help-bg-image-0" alt="">
     <img src="/static/images/start_1.png" class="help-bg-image help-bg-image-1" alt="">

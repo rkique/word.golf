@@ -25,6 +25,12 @@
             profileSwitchContainer.textContent = 'profile';
         }
     }
+    window.onload = function() {
+        const catalog = document.getElementById('catalog-icon');
+        if (catalog) {
+            catalog.parentNode.removeChild(catalog);
+        }
+    };
     </script>
     <a href="/" class="back-arrow">&#8592;</a>
     <h1 class='play-past-prompts'>Play past days</h1>

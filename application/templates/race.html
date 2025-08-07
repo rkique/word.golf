@@ -295,7 +295,7 @@
             })
             //start-game --> game_started L
             document.getElementById('start-game').onclick = function () {
-                document.getElementById('timer-display').innerText = '00:00';
+                document.getElementById('timer-display').innerHTML = '00:00';
                 if (myLobby) {
                     numPrompts = parseInt(document.querySelector('.total-rounds-option.selected').dataset.value)
                     socket.emit('game_started', { lobby: myLobby, name: myName, target: target, num_prompts: numPrompts });
@@ -358,6 +358,11 @@
                     // console.log()
                     renderJoinedLobby(starts, targets, myLobby);
                 }
+                
+                const finish_screen = document.getElementById('finish_screen');
+                if (!finish_screen.classList.contains('hidden')) {
+                    finish_screen.classList.add('hidden'); 
+                }
             });
             console.log('start_game registered')
             //We always assign target before it is used.
@@ -370,6 +375,7 @@
                 targets = data.targets;
                 setUserProgress(data, true);
                 renderGame(data, target);
+                document.getElementById('timer-display').innerText = '00:00';
             });
 
             socket.on('round_finished', function (data) {
@@ -388,7 +394,7 @@
                     renderJoinedLobby(starts, targets, myLobby);
                     hideFinishScreen(true);
                     // document.getElementById('finish-screen').display = 'none';
-                    document.getElementById('timer-display').innerHTML = '00:00';
+                    document.getElementById('timer-display').innerText = '00:00';
                     // allow user to leave the lobby to main
                     window.returnToJoinedLobby = function () {
                         if (socket) {

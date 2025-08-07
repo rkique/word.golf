@@ -70,8 +70,12 @@ def handle_disconnect():
                 del game_states[code]
                 lobbies.pop(code, None)
                 logger.info(f'[disconnect] Lobby removed: {code}')
+            if code in timers:
+                timers[code] = False
+                del timers[code]
             emit('users_list', users_in_lobby(code), room=code)
             emit('lobby_list', list(lobbies.keys()), broadcast=True)
+            print("DISCONNECT")
 
 @socketio.on('connect')
 def handle_connect():
