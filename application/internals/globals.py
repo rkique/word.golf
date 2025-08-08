@@ -37,4 +37,3 @@ HELP_NEIGHBORS = ["tree", "shouting"]
 THRESHOLDS = [0.2, 0.27, 0.35, 0.42]
 WV = None
 PRECOMPUTED = None
-

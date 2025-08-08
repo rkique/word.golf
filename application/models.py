@@ -75,3 +75,6 @@ class UserConstructedGamestate(db.Model):
     prompts = db.Column(MutableList.as_mutable(JSON), nullable=True) # make migration that removes this
     start_target_idxs = db.Column(MutableList.as_mutable(JSON), nullable=True, default=[[0,0], [0,5]])
 
+class FinishRace(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date, nullable=False)

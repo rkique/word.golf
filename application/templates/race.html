@@ -237,6 +237,30 @@
         //     // updateTotalRoundsUI(totalRounds);
         // };
         //render any updates to UserProgress object.
+
+        async function trackRaces() {
+            try {
+                const res = await fetch("/track_race", {
+                    method: "POST",
+                    credentials: "include", 
+                    headers: {
+                        'Content-Type': 'application/json' 
+                    },
+                    body: JSON.stringify({
+                        date: new Date().toISOString().split('T')[0]
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    console.log("[track_race]: success!");
+                } else {
+                    console.log("track_race failed:", data);
+                }
+            } catch (err) {
+                console.log("Error during track_race:", err);
+            }
+        }
+
         function renderUserProgressBars() {
             const container = document.getElementById('user-progress');
             console.log(`renderUserProgress] ${JSON.stringify(userProgress)}`);
@@ -435,6 +459,8 @@
                         }, 200);
                     };
                 }
+                // send the request to the backend to save the race into the database 
+                trackRaces();
             });
 
             socket.on('timer_tick', function (data) {

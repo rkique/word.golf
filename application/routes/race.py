@@ -10,6 +10,9 @@ import pandas as pd
 import ast
 import numpy as np
 import time
+from ..models import FinishRace
+from .. import db
+from datetime import datetime
 
 race_bp = Blueprint('race', __name__)
 
@@ -41,6 +44,22 @@ def load_race_data():
     WV['vector'] = WV['vector'].apply(lambda x: np.array(ast.literal_eval(x)))
     WV = dict(zip(WV['word'], WV['vector']))
     PRECOMPUTED = txt_to_dict("application/data_10k/top_100_w2v.csv")
+
+@race_bp.route('/track_race', methods=['POST'])
+def track_race():
+    data = request.get_json()
+    date_str = data.get('date')
+    new_date_str = datetime.strptime(date_str, "%Y-%m-%d").date() if date_str else None
+    host = request.host
+    if host.startswith('word.golf'):
+        return jsonify({"success": False})
+    else:
+        new_race_finished = FinishRace(
+            date=new_date_str
+        )
+        db.session.add(new_race_finished)
+        db.session.commit()
+        return jsonify({"success": True})
 
 @race_bp.route('/race')
 def race_lobby():
