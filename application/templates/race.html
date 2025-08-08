@@ -401,10 +401,11 @@
                     renderJoinedLobby(starts, targets, myLobby);
                 }
                 
-                const finish_screen = document.getElementById('finish_screen');
+                const finish_screen = document.getElementById('finish-screen');
                 if (!finish_screen.classList.contains('hidden')) {
                     finish_screen.classList.add('hidden'); 
                 }
+                
             });
             console.log('start_game registered')
             //We always assign target before it is used.
@@ -643,7 +644,7 @@
             document.getElementById('join-lobby').style.display = 'none';
             document.getElementById('join-code').style.display = 'none';
             const settings = document.getElementById('settings');
-            if (settings.classList.contains('hidden')) {
+            if (settings.classList && settings.classList.contains('hidden')) {
                 settings.classList.remove('hidden'); 
             }
         }
