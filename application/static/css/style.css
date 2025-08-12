@@ -295,27 +295,6 @@ html {
     z-index: 3;
 }
 
-.separator {
-display: flex;
-align-items: center;
-text-align: center;
-width: 100%;
-margin: 2rem 0 2.5rem 0;
-}
-
-.separator-line {
-flex: 1;
-height: 1px;
-background: var(--border-color, #ccc);
-border: none;
-}
-.separator-text {
-padding: 0 1rem;
-color: var(--text-color, #444);
-white-space: nowrap;
-opacity: 0.8;
-}
-
 .help-close {
     font-size: 4em;
 }

@@ -1,0 +1,27 @@
+/* Mobile-specific styles */
+@media only screen and (max-width: 992px) {
+    .help-finish {
+    font-size: 1.8rem;
+    }
+
+    .help-text p{
+        font-size: 1.3rem;
+        margin: 0.6em 0.1em;
+    }
+    #help-title {
+        font-size: 2.2rem;
+        margin: 2.5rem 0 0;
+    }
+    .help-example span {
+        font-size: 1.4rem;
+    }
+    .help-text {
+        /* margin: 2rem 0; */
+    }
+    /* .help-text p:not(.--grayed-out) {
+        font-size: 1.6rem;
+    } */
+    .credits {
+        font-size: 1.2rem;
+    }
+}

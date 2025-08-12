@@ -29,9 +29,12 @@
     align-items: center;
     text-align: center;
     width: 100%;
-    margin: 1rem 0 1.5rem 0;
+    margin: 1rem 0 1rem 0;
 }
 
+.separator-end {
+    margin-top: 1rem;
+}
 .separator-line {
     flex: 1;
     height: 1px;
@@ -128,6 +131,10 @@ p {
     margin-bottom: 1.4rem;
 }
 
+.help-example span {
+    font-size: 0.9em;
+}
+
 .help-finish {
     justify-content: center;
     align-items: center;
@@ -137,7 +144,7 @@ p {
     font-weight: 500;
     color: var(--grayed-out-color);
     margin-top: 1rem !important;
-    font-size: 2.4rem !important;
+    font-size: 2.4rem;
     font-weight: 400 !important;
 }
 
