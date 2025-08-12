@@ -956,7 +956,7 @@ button span {
     /* border: 1px solid var(--border-color); */
 }
 
-#wordspace button:active{
+#wordspace button:not(.link--starting):active{
     transform: scale(0.92);
 }
 
@@ -981,6 +981,10 @@ button span {
     text-align: left;
 }
 .prompt-box {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
     position: absolute;
     overflow: hidden;
     overflow-x: scroll;

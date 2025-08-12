@@ -251,24 +251,24 @@ function cueLinkPromptOnHover(linkClass, promptClass) {
     const link = document.body.querySelector(linkClass);
     const prompt = document.body.querySelector(promptClass);
     if (!link || !prompt) {
-        // console.warn('Link or prompt element not found for hover cue,', linkClass, promptClass);
+        console.warn('Link or prompt element not found for hover cue,', linkClass, promptClass);
         return;
     }
-    // const addHover = () => {
-    //     link.classList.add('hover-start');
-    //     prompt.classList.add('hover-start');
-    // };
+    const addHover = () => {
+        link.classList.add('hover-start');
+        prompt.classList.add('hover-start');
+    };
 
-    // const removeHover = () => {
-    //     link.classList.remove('hover-start');
-    //     prompt.classList.remove('hover-start');
-    // };
+    const removeHover = () => {
+        link.classList.remove('hover-start');
+        prompt.classList.remove('hover-start');
+    };
 
     // // Add event listeners to both elements
-    // link.addEventListener('mouseenter', addHover);
-    // link.addEventListener('mouseleave', removeHover);
-    // prompt.addEventListener('mouseenter', addHover);
-    // prompt.addEventListener('mouseleave', removeHover);
+    link.addEventListener('mouseenter', addHover);
+    link.addEventListener('mouseleave', removeHover);
+    prompt.addEventListener('mouseenter', addHover);
+    prompt.addEventListener('mouseleave', removeHover);
 }
 
 function renderScore(score) {
@@ -316,6 +316,6 @@ function renderPrompts(jumpsArray, wordsArray, idxs, start_target, score, end = 
         renderWord(start, ...start_idx, { style: ["prompt-start-word"] });
         renderWord(target, ...target_idx, { animate: false, style: ["prompt-target-word"] });
     }
-    cueLinkPromptOnHover('.link--starting', '.prompt-start-word');
-    cueLinkPromptOnHover('.link--target', '.prompt-target-word');
+    // cueLinkPromptOnHover('.link--starting', '.prompt-start-word');
+    // cueLinkPromptOnHover('.link--target', '.prompt-target-word');
 }

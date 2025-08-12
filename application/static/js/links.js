@@ -85,10 +85,9 @@ function renderLinks(prompt, results, i, session_done = false) {
             wordspace.append(makeLink(prompt, result))
         }
     })
-    cueLinkPromptOnHover('.link--starting', '.prompt-start-word');
-    cueLinkPromptOnHover('.link--target', '.prompt-target-word');
     addDoneFocus(prompt, results, i)
     addHelpFocuses(prompt, results)
+    cueLinkPromptOnHover('.link--starting', '.prompt-start-word');
     if (promptEnded(prompt) || session_done) {
         renderScore(1)
         reportSessionEnded(session_done)
