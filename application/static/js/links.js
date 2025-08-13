@@ -1,74 +1,87 @@
 const USE_ANIMATIONS = false;
 const MIDDLE_IDX = 10;
+const HELP_FOCUS_MS = 3000;
 
 let HELP_STEPS = [
     {
         id: 1,
         prompt: ['fruit', 'porch'],
         result: 'fruit',
-        message: "<p>Click a word to jump to it.</p>",
+        message: "<p>word.golf is played <br> with neighbor words</p>",
         focus: 'orchard',
-        transform: [20, 20],
-        startSocket: 'bottom',
-        endSocket: 'top',
+        transform: [15, 75]
     },
     {
         id: 2,
         prompt: ['fruit', 'porch'],
-        result: 'orchard',
-        message: "<p>We want to get to <span class='link--help-target'>porch</span>, so choose a related word.</p>",
-        focus: 'house',
-        transform: [27, 42],
-        startSocket: 'top',
-        endSocket: 'auto',
+        result: 'fruit',
+        message: '<p style="text-align: right">We show you the <br> neighbors for one word...</p>',
+        transform: [25, 75],
     },
     {
         id: 3,
         prompt: ['fruit', 'porch'],
-        result: 'house',
-        message: "<p>Good job! Click <span class='link--help-target'>porch</span> to complete the prompt.</p>",
-        focus: 'porch',
-        transform: [8, 20],
-        startSocket: 'top',
-        endSocket: 'auto',
+        result: 'fruit',
+        message: '<p>... your goal is <br> to get to another</p>',
+        transform: [8, 75],
     },
     {
         id: 4,
-        prompt: ['whisper', 'scuffle'],
-        result: 'whisper',
-        message: "<p>Choose carefully, two jumps is all you need.</p>",
-        focus: 'shouting',
-        transform: [30, 42],
+        prompt: ['fruit', 'porch'],
+        result: 'fruit',
+        message: '<p>Click a word to jump to it</p>',
+        focus: 'orchard',
+        transform: [15, 68],
+        startSocket: 'top',
+        endSocket: 'bottom',
+    },
+    {
+        id: 5,
+        prompt: ['fruit', 'porch'],
+        result: 'fruit',
+        message: '<p> for this pair, <br> we want to get to <span class="link--help-target">porch</span></p>'
+    },
+    {
+        id: 6,
+        prompt: ['fruit', 'porch'],
+        result: 'orchard',
+        message: '<p>picking <span class="link--help-target">house</span> <br> will get us closer</p>',
+        focus: 'house',
+        transform: [20, 70],
         startSocket: 'top',
         endSocket: 'auto',
     },
     {
-        id: 5,
-        prompt: ['whisper', 'scuffle'],
-        result: 'shouting',
-        message: "<p>Five prompts per day, the best score is ten. </p>",
-        focus: 'scuffle',
-        transform: [10, 20],
+        id: 7,
+        prompt: ['fruit', 'porch'],
+        result: 'house',
+        message: "<p>once you're close enough, <br> the <span class='rainbow_text'>target</span> appears!</p>",
+        focus: 'porch',
+        transform: [12, 70],
         startSocket: 'bottom',
         endSocket: 'top',
     }
 ];
 
-function focusLink(startText, targetText) {
+function defocusAll(){
+    const links = Array.from(document.getElementsByClassName("link"));
+    links.forEach((link, index) => {
+        link.classList.remove("link--target", "link--unfocused");
+        link.classList.add("link--disabled");
+        // link.onclick = null;
+    });
+}
+
+function focusLink(targetText) {
     const links = Array.from(document.getElementsByClassName("link"));
     links.forEach(link => {
         const text = link.innerText.trim();
-        console.log(`Checking link text: ${text}`);
-        if (text == startText) {
-            link.classList.add("link--help-target");
-        }
         if (text === targetText) {
-            link.classList.remove("link--unfocused");
+            link.classList.remove("link--disabled0");
             link.classList.add("link--target");
-        } else if (links.indexOf(link) !== 10) {
-            link.style.outline = "";
-            link.style.outlineOffset = "";
-            link.classList.add("link--unfocused");
+            if(link.id !== "rainbow_text_animated") {
+                link.id = 'link--target';
+            }
         }
     });
 }
@@ -86,7 +99,7 @@ function renderLinks(prompt, results, i, session_done = false) {
         }
     })
     addDoneFocus(prompt, results, i)
-    addHelpFocuses(prompt, results)
+    addHelpFocuses(prompt)
     cueLinkPromptOnHover('.link--starting', '.prompt-start-word');
     if (promptEnded(prompt) || session_done) {
         renderScore(1)
@@ -94,50 +107,182 @@ function renderLinks(prompt, results, i, session_done = false) {
     }
 }
 
-let activeLeaderLines = [];
+//keep track of the current index, ensure that the help_steps are shown in order.
+helpStepId = 0;
 
-function clearAllLeaderLines() {
-    activeLeaderLines.forEach(line => line.remove());
-    activeLeaderLines = [];
+function removeBubbleAssetClasses(element) {
+    const classesToRemove = Array.from(element.classList).filter(className => 
+        /^bubble-asset-\d+$/.test(className)
+    );
+    classesToRemove.forEach(className => {
+        element.classList.remove(className);
+    });
 }
-
-function showHelpPopup(message, transform, startSocket, endSocket) {
-    if (window.matchMedia && window.matchMedia("(max-width: 992px)").matches) {
+function addHelpFocuses(prompt){
+    console.log('prompt is', prompt)
+    if(arrayEqual(prompt, ["fruit", "porch"])){
         let info = document.getElementById("info-box");
         info.style.display = "flex";
-        info.innerHTML = `${message}`;
+        removeBubbleAssetClasses(info)
+        switch (helpStepId) {
+            case 1:
+            info.classList.add('bubble-asset-5')
+            case 2:
+            info.classList.add('bubble-asset-13');
+            break;
+            case 3:
+            info.classList.add('bubble-asset-6');
+            break;
+            case 4:
+            info.classList.add('bubble-asset-10');
+            break;
+            case 5:
+            info.classList.add('bubble-asset-13');
+            break;
+            case 6:
+            info.classList.add('bubble-asset-12');
+            break;
+            case 7:
+            info.classList.add('bubble-asset-9');
+            break;
+            case 8:
+            info.classList.add('bubble-asset-11');
+            break;
+            default:
+            info.classList.add('bubble-asset-10');
+            break;
+        }
+        if([1,2,3,5].includes(helpStepId)){
+            showTransientHelpPopup(helpStepId);
+        }
+        else if (helpStepId > 0 && helpStepId <= 7) {
+            showArrowHelpPopup(helpStepId);
+        }
+        helpStepId++;
+    }
+}
+
+let activeHapticAnimations = [];
+
+function clearAllHapticAnimations() {
+    // Remove haptic touch animations from all elements
+    const hapticElements = document.querySelectorAll('.haptic-touch');
+    hapticElements.forEach(element => {
+        element.classList.remove('haptic-touch');
+    });
+    activeHapticAnimations = [];
+}
+
+let helpTimeout = null;
+
+function showTransientHelpPopup(id){
+    // console.log('showTransientHelpPopup called with id:', id);
+    let info = document.getElementById("info-box");
+    let helpStep = HELP_STEPS.filter(x => x.id === id)[0];
+    clearAllHapticAnimations();
+    defocusAll();
+    //emphasize neighbors and pulse the fruit' container
+    if(id == 2){
+        const fruitPromptWord = document.querySelector('.tally.prompt-start-word.prompt-word');
+        fruitPromptWord.classList.add('animate-scale');
+    }
+    else if (id == 3){
+        const porchPromptWord = document.querySelector('.tally.prompt-target-word.prompt-word');
+        if (porchPromptWord) {
+            porchPromptWord.classList.add('animate-scale');
+        }
+    }
+    info.style.display = "flex";
+    info.innerHTML = `${helpStep.message}`;
+    if (helpStep.transform) {
+        setResponsivePosition(info, helpStep.transform)
+    }
+    setTimeout(() => addHelpFocuses(helpStep.prompt), HELP_FOCUS_MS);
+}
+
+function setResponsivePosition(info, transform){
+    if (window.matchMedia && window.matchMedia("(max-width: 992px)").matches) {
         const x = window.innerWidth * (transform[0] / 100);
         const y = window.innerHeight * (transform[1] / 100);
         info.style.left = `${x}px`;
         info.style.top = `${y}px`;
-        if (startSocket) {
-            const waitForElements = () => {
-                info = document.getElementById('info-box');
-                const target = document.getElementById('link--target');
-                if (info && target) {
-                    const line = new LeaderLine(info, target, {
-                        startSocket: startSocket,
-                        endSocket: endSocket,
-                        color: getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim(),
-                        path: 'arc',
-                        startPlug: 'behind',
-                        endPlug: 'arrow3',
-                        endPlugSize: 2.1,
-                        size: 2.1,
-                        dash: false,
-                        outline: false
-                    });
-                    activeLeaderLines.push(line);
-                } else {
-                    requestAnimationFrame(waitForElements);
-                }
-            };
-            waitForElements();
-        }
-    } else {
-        document.getElementById("information").innerHTML =
-            `${message}`;
+    } 
+    //
+    else {
+        console.log(`width is ${window.innerWidth}, height is ${window.innerHeight}`)
+        const x = window.innerWidth * (0.5 + ((transform[0] / 100) * 0.5))
+        const y = window.innerHeight * (transform[1] / 100);
+        info.style.left = `${x}px`;
+        info.style.top = `${y}px`;
     }
+}
+
+function hasActiveHelpTimeout() {
+    return helpTimeout !== null;
+}
+
+
+// function showClickHelpPopup(id){
+//     console.log('showClickHelpPopup called with id:', id);
+//     let helpStep = HELP_STEPS.filter(x => x.id === id)[0];
+//     let info = document.getElementById("info-box");
+//     info.style.display = "flex";
+//     info.innerHTML = `${helpStep.message}`;
+//     if (helpStep.transform) {
+//         const x = window.innerWidth * (helpStep.transform[0] / 100);
+//         const y = window.innerHeight * (helpStep.transform[1] / 100);
+//         info.style.left = `${x}px`;
+//         info.style.top = `${y}px`;
+//     }
+
+//     const handleClick = () => {
+
+//         document.removeEventListener('click', handleClick);
+//         showArrowHelpPopup(id+1);
+//     };
+
+//     document.addEventListener('click', handleClick);
+// }
+function addHapticTouchAnimation(targetElement) {
+    // Add haptic touch animation class
+    targetElement.classList.add('haptic-touch');
+    
+    // // Remove the animation class after it completes
+    // setTimeout(() => {
+    //     targetElement.classList.remove('haptic-touch');
+    // }, 600);
+}
+
+function showArrowHelpPopup(id) {
+    clearAllHapticAnimations()
+    console.log('showArrowHelpPopup called with id:', id);
+    let helpStep = HELP_STEPS.filter(x => x.id === id)[0];
+    message = helpStep.message;
+    transform = helpStep.transform;
+    defocusAll();
+    console.log('focusLink called with:', helpStep.focus);
+    focusLink(helpStep.focus);
+    
+    let info = document.getElementById("info-box");
+    info.style.display = "flex";
+    info.innerHTML = `${message}`;
+
+    if (helpStep.focus) {
+        const addHapticAfterDOM = () => {
+            let targetBtn = document.getElementById('link--target');
+            if(!targetBtn){
+                targetBtn = document.getElementById('rainbow_text_animated');
+            }
+            const target = targetBtn?.querySelector('span');
+            if (target) {
+                addHapticTouchAnimation(target);
+            } else {
+                requestAnimationFrame(addHapticAfterDOM);
+            }
+        };
+        addHapticAfterDOM();
+    }
+    setResponsivePosition(info, helpStep.transform)
 }
 
 function addDoneFocus(prompt, results, i) {
@@ -160,7 +305,9 @@ function makeLink(prompt, word) {
     span.innerText = word;
     link.appendChild(span)
     link.className = "link"
+    // console.log(`comparing ${prompt[1]} to ${word}`)
     if (prompt[1] == word) {
+        console.log('[target] found')
         link.id = 'rainbow_text_animated'
         link.className = "link link--target"
     }
@@ -253,16 +400,6 @@ function arrayEqual(a, b){
     return true;
 }
 
-function addHelpFocuses(prompt, results) {
-    clearAllLeaderLines()
-    for (const step of HELP_STEPS) {
-        if (arrayEqual(prompt, step.prompt) && results[MIDDLE_IDX] === step.result) {
-            showHelpPopup(step.message, step.transform, step.startSocket, step.endSocket);
-            focusLink(step.result, step.focus);
-            break;
-        }
-    }
-}
 
 function saveWordspace() {
     const wordspace = document.getElementById("wordspace");

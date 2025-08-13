@@ -31,8 +31,8 @@ DAYS = 0
 
 SKIPPED_TOKEN = "<SKIPPED>"
 
-HELP_PROMPTS = [["fruit", "porch"],["whisper", "scuffle"]]
-HELP_NEIGHBORS = ["tree", "shouting"]
+HELP_PROMPTS = [["fruit", "porch"]]
+HELP_NEIGHBORS = ["tree"]
 
 THRESHOLDS = [0.2, 0.27, 0.35, 0.42]
 WV = None

@@ -247,7 +247,7 @@ def get_existing_data(state_model):
 def words_array_from_data(starts, selected_words, jumps_array,is_help=False):
     # print(f'[words_array] {selected_words}')
     if is_help:
-        return [['fruit', 'orchard', 'house', 'porch'],['whisper', 'shouting', 'scuffle']]
+        return [['fruit', 'orchard', 'house', 'porch']]
     result = []
     l_idx = 0
     for i, row in enumerate(jumps_array):

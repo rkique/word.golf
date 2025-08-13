@@ -481,8 +481,9 @@ html {
 }
 
 #info-box p {
-    font-size: 1.1rem;
+    font-size: 1.6rem;
     margin: 0 0;
+    white-space: nowrap;
 }
 
 .nsm7Bb-HzV7m-LgbsSe {
@@ -604,7 +605,16 @@ button span {
 }
 
 .link--disabled{
+    color: var(--grayed-out-color);
     pointer-events: none;
+}
+
+
+.link--clicked {
+    color: var(--grayed-out-color) !important;
+}
+
+.link--disabled0:active {
     color: var(--grayed-out-color);
 }
 
@@ -618,7 +628,11 @@ button span {
     color: var(--grayed-out-color-help-target);
 }
 
+#link--target {
+    pointer-events: auto;
+}
 .link--target {
+    color: var(--text-color);
     animation: pulse 0.7s infinite;
 }
 
@@ -939,10 +953,79 @@ button span {
     transform: scale(0.92);
 }
 
+
 #info-box {
     display: none;
-    padding: 0.8rem;
-    border: 2px solid var(--text-color);
+    padding: 1.5rem 2rem 2rem 2rem;
+    border: none;
+    overflow: visible;
+    background-color: none;
+    color: var(--text-color);
+    position: absolute;
+    z-index: 1000;
+    /* max-width: 16rem; */
+    /* min-width: 12rem; */
+    /* min-height: 6rem; */
+}
+
+#info-box::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    left: -30px;
+    right: -30px;
+    bottom: -30px;
+    fill: var(--background-color);
+    background-image: none;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: -1;
+    filter: invert(1);
+    pointer-events: none;
+}
+
+#info-box.no-invert::before {
+    filter: none !important;
+}
+
+/* 5 to 13 */
+#info-box.bubble-asset-5::before {
+    background-image: url("/static/images/bubbles/Asset 29.svg");
+    /* background-image: none; */
+}
+
+#info-box.bubble-asset-6::before {
+    background-image: url("/static/images/bubbles/Asset 39.svg");
+    /* background-image: none; */
+}
+
+#info-box.bubble-asset-7::before {
+    background-image: url("/static/images/bubbles/Asset 31.svg");
+}
+
+#info-box.bubble-asset-8::before {
+    background-image: url("/static/images/bubbles/Asset 32.svg");
+    top: -50px;
+    left: -50px;
+    right: -50px;
+    bottom: -50px;
+}
+
+#info-box.bubble-asset-9:before {
+    background-image: url("/static/images/bubbles/Asset 33.svg");
+}
+#info-box.bubble-asset-10:before {
+    background-image: url("/static/images/bubbles/Asset 34.svg");
+}
+#info-box.bubble-asset-11:before {
+    background-image: url("/static/images/bubbles/Asset 35.svg");
+}
+#info-box.bubble-asset-12:before {
+    background-image: url("/static/images/bubbles/Asset 38.svg");
+}
+#info-box.bubble-asset-13:before {
+    background-image: url("/static/images/bubbles/Asset 37.svg");
 }
 
 #prompts {
@@ -965,7 +1048,7 @@ button span {
     -moz-user-select: none;
     -ms-user-select: none;
     position: absolute;
-    overflow: hidden;
+    overflow-y: visible;
     overflow-x: scroll;
     scrollbar-width: none; /* For Firefox */
     -ms-overflow-style: none; /* For Internet Explorer and Edge */
@@ -1169,7 +1252,10 @@ button span {
 }
 
 
-
+.mimic-start-word {
+    outline: 1px solid var(--grayed-out-color);
+    padding: 0 0.5rem;
+}
 .modal button {
         background-color: var(--background-color);
         color: var(--text-color);
@@ -1188,19 +1274,22 @@ button span {
         transform: scale(1);
     }
     50% {
-        transform: scale(1.4);
+        transform: scale(0.8);
     }
     100% {
         transform: scale(1);
     }
 }
 
+.leader-line {
+    z-index: 10;
+}
 .animate-scale-infinite {
     animation: scaleUp 1s infinite;
 }
 
 .animate-scale {
-    animation: scaleUp 300ms ease;
+    animation: scaleUp 500ms ease;
 }
 
 
@@ -1299,8 +1388,34 @@ animation-duration: 1s;
 background-size: 800% 100%;
 } */
 
+.rainbow_text {
+    color: var(--emphasis-color);
+}
+
+@keyframes hapticTouch {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+.haptic-touch {
+    animation: hapticTouch 1.5s ease-out infinite;
+    border-radius: 50%;
+    transition: transform 0.1s ease;
+}
+
 #rainbow_text_animated {
     color: var(--emphasis-color);
+    pointer-events: all;
 }
 
 #sendPinBtn {

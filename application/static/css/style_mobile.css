@@ -243,11 +243,11 @@
         justify-content: center;
     }
     #info-box {
-        background-color: var(--background-color);
+        /* background-color: var(--background-color); */
         padding: 0.7rem;
         border: none;
         position: absolute;
-        min-width: 60vw;
+        /* min-width: 60vw; */
         flex-wrap: wrap;
         z-index: 3;
     }

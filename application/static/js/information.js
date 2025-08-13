@@ -1,5 +1,5 @@
-HELP_FINISH_DELAY_MS = 300
-START_GAME_DELAY_MS = 800
+HELP_FINISH_DELAY_MS = 200
+START_GAME_DELAY_MS = 500
 let startDateStr = '2025-05-30'
 
 function displayModal(displayHTML, accent){
@@ -99,7 +99,10 @@ function startGame() {
     let resp = sendAndReceiveXML('redirect=true');
     clearBoxes()
     document.getElementById('prompts-title-heading').innerText = 'Pairs'
+    document.getElementById('prompts-count').innerText = '1'
     document.getElementById('prompts-count-remainder').innerText = '/ 5'
+    document.getElementById('prompts-count').style.display = '';
+    document.getElementById('prompts-count-remainder').style.display = '';
 
     if ("logged_in" in resp && resp.logged_in) {
         renderLogin(resp.logged_in);
@@ -267,21 +270,22 @@ function startHelpSession() {
     activateLinks()
     addHelpFocuses(resp.prompt, resp.results)
     document.getElementById('prompts-title-heading').innerText = 'Tutorial'
-    document.getElementById('prompts-count-remainder').innerText = '/2'
-    start_text = `<p id="modalText"> Welcome to word.golf, a sport played with the meanings of words!</p>
-    <button class="switch switch--outlined" id='startHelpButton'> OK </button>
-    <a id="startGameLink">Skip tutorial</a>`
-    removeTintedModal = renderTintedModal(start_text)
-    document.getElementById('startGameLink').onclick = function(e) {
-    startGame(); removeTintedModal();
-    }
-    const btn = document.getElementById('startHelpButton');
-    if (btn) {
-        btn.onclick = function() {
-            startHelpSteps();
-            removeTintedModal();
-        };
-    } else {alert('not found')}
+    document.getElementById('prompts-count-remainder').style.display = 'none';
+    document.getElementById('prompts-count').style.display = 'none';
+    // start_text = `<p id="modalText"> Welcome to word.golf, a sport played with the meanings of words!</p>
+    // <button class="switch switch--outlined" id='startHelpButton'> OK </button>
+    // <a id="startGameLink">Skip tutorial</a>`
+    // removeTintedModal = renderTintedModal(start_text)
+    // document.getElementById('startGameLink').onclick = function(e) {
+    // startGame(); removeTintedModal();
+    // }
+    // const btn = document.getElementById('startHelpButton');
+    // if (btn) {
+    //     btn.onclick = function() {
+    //         startHelpSteps();
+    //         removeTintedModal();
+    //     };
+    // } else {alert('not found')}
 }
 
 function clearInfoBox() {

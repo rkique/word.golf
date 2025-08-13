@@ -18,12 +18,25 @@ function syncGraph(){
     jumpsArray = JSON.parse(localStorage.getItem('jumpsArray') || null);
     // if (jumpsArray !== null) generateLineGraph(jumpsArray);
 }
+
+function syncInfoBox() {
+  const infoBox = document.querySelector('#info-box');
+  if (infoBox) {
+    if (!infoBox.classList.contains('no-invert')) {
+      infoBox.classList.add('no-invert');
+    } else {
+      infoBox.classList.remove('no-invert');
+    }
+  }
+}
+
 function syncColorMode() {
   document.documentElement.style.setProperty('--failure', 'rgb(140, 0, 0)');
   document.documentElement.style.setProperty('--success', 'rgb(0, 70, 0)');
 
   currentMode = localStorage.getItem('darkMode')
   if (currentMode == 'true') {
+  document.documentElement.style.setProperty('--svg-invert', 0);
   document.documentElement.style.setProperty('--background-tint', 'rgba(0, 0, 0, 0.15)');
   document.documentElement.style.setProperty('--4green', '#ebdbb2');
   document.documentElement.style.setProperty('--4green-emph', '#a89984');
@@ -50,6 +63,7 @@ function syncColorMode() {
   document.documentElement.style.setProperty('--grayed-out-color-unfocused', '#c0b49cff');   // bg1 (softest)
   }
   else {
+    document.documentElement.style.setProperty('--svg-invert', 1);
     document.documentElement.style.setProperty('--background-tint', 'rgba(0, 0, 0, 0.3)');
     document.documentElement.style.setProperty('--banner-perfect', '#22ffed');
     document.documentElement.style.setProperty('--banner-impressive', '#00d92f');
@@ -75,9 +89,8 @@ function syncColorMode() {
     document.documentElement.style.setProperty('--grayed-out-color-unfocused', '#434343');   // neutral bg3
     document.documentElement.style.setProperty('--4green', '#222724');
     document.documentElement.style.setProperty('--4green-emph', '#1e2220ff');
-
   }
-  // syncGraph()
-  //PlotHistory(sessionHistory)
+  syncInfoBox()
 }
 syncColorMode()
+syncInfoBox()
