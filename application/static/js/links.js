@@ -1,6 +1,43 @@
 const USE_ANIMATIONS = false;
 const MIDDLE_IDX = 10;
 const HELP_FOCUS_MS = 3000;
+const POST_DEBOUNCE_MS = 50;
+
+let _postThrottledTimer = null;
+let _postPendingArgs = null;
+let _postRunning = false;
+//request animation frame after 2 frames.
+async function postWordAndYield(word, clickedElem) {
+   _postRunning = true;
+   try {
+    postWord(word, clickedElem);
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    await new Promise(resolve => requestAnimationFrame(resolve));
+   }
+   finally {
+    _postRunning = false;
+   }
+}
+function tryPostWord(word, clickedElem) {
+    if (_postRunning) return;
+
+    _postPendingArgs = [word, clickedElem]
+    if (_postThrottledTimer) clearTimeout(_postThrottledTimer);
+    _postThrottledTimer = setTimeout(async () => {
+        const [word, clickedElem] = _postPendingArgs;
+        _postPendingArgs = null;
+        _postThrottledTimer = null;
+        if (_postRunning) return;
+        try {
+            await postWordAndYield(word, clickedElem);
+        }
+        catch (err) {
+            console.error('postWord error:', err);
+            _postRunning = false;
+        }
+    }, POST_DEBOUNCE_MS);
+}
+
 
 //transform is from top-left corner.
 let HELP_STEPS = [
@@ -461,7 +498,7 @@ function activateLinks() {
     ws_array.map(function (el, i) {
         if (i !== MIDDLE_IDX) {
             el.onclick = function () {
-                postWord(ws_texts[i], el);
+                tryPostWord(ws_texts[i], el);
             }
         }
     })
