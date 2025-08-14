@@ -2,6 +2,7 @@ const USE_ANIMATIONS = false;
 const MIDDLE_IDX = 10;
 const HELP_FOCUS_MS = 3000;
 
+//transform is from top-left corner.
 let HELP_STEPS = [
     {
         id: 1,
@@ -9,29 +10,29 @@ let HELP_STEPS = [
         result: 'fruit',
         message: "<p>word.golf is played <br> with neighbor words</p>",
         focus: 'orchard',
-        transform: [15, 75]
+        transform: [50, 78]
     },
     {
         id: 2,
         prompt: ['fruit', 'porch'],
         result: 'fruit',
-        message: '<p style="text-align: right">We show you the <br> neighbors for one word...</p>',
-        transform: [25, 75],
+        message: '<p style="text-align: right">We show you <br> the neighbors <br> for one word...</p>',
+        transform: [55, 78],
     },
     {
         id: 3,
         prompt: ['fruit', 'porch'],
         result: 'fruit',
-        message: '<p>... your goal is <br> to get to another</p>',
-        transform: [8, 75],
+        message: '<p>... your goal <br> is to get <br> to another</p>',
+        transform: [30, 78],
     },
     {
         id: 4,
         prompt: ['fruit', 'porch'],
         result: 'fruit',
-        message: '<p>Click a word to jump to it</p>',
+        message: '<p>Click a word to <br> jump to it</p>',
         focus: 'orchard',
-        transform: [15, 68],
+        transform: [50, 80],
         startSocket: 'top',
         endSocket: 'bottom',
     },
@@ -47,7 +48,7 @@ let HELP_STEPS = [
         result: 'orchard',
         message: '<p>picking <span class="link--help-target">house</span> <br> will get us closer</p>',
         focus: 'house',
-        transform: [20, 70],
+        transform: [40, 85],
         startSocket: 'top',
         endSocket: 'auto',
     },
@@ -57,7 +58,7 @@ let HELP_STEPS = [
         result: 'house',
         message: "<p>once you're close enough, <br> the <span class='rainbow_text'>target</span> appears!</p>",
         focus: 'porch',
-        transform: [12, 70],
+        transform: [50, 75],
         startSocket: 'bottom',
         endSocket: 'top',
     }
@@ -127,6 +128,7 @@ function addHelpFocuses(prompt){
         switch (helpStepId) {
             case 1:
             info.classList.add('bubble-asset-5')
+            break;
             case 2:
             info.classList.add('bubble-asset-13');
             break;
@@ -181,11 +183,12 @@ function showTransientHelpPopup(id){
     let helpStep = HELP_STEPS.filter(x => x.id === id)[0];
     clearAllHapticAnimations();
     defocusAll();
-    //emphasize neighbors and pulse the fruit' container
+    //pulse the fruit container
     if(id == 2){
         const fruitPromptWord = document.querySelector('.tally.prompt-start-word.prompt-word');
         fruitPromptWord.classList.add('animate-scale');
     }
+    //pulse the porch container
     else if (id == 3){
         const porchPromptWord = document.querySelector('.tally.prompt-target-word.prompt-word');
         if (porchPromptWord) {
@@ -202,15 +205,15 @@ function showTransientHelpPopup(id){
 
 function setResponsivePosition(info, transform){
     if (window.matchMedia && window.matchMedia("(max-width: 992px)").matches) {
-        const x = window.innerWidth * (transform[0] / 100);
-        const y = window.innerHeight * (transform[1] / 100);
-        info.style.left = `${x}px`;
-        info.style.top = `${y}px`;
+        const x = (transform[0])
+        const y = (transform[1])
+        info.style.left = `${x}%`;
+        info.style.top = `${y}%`;
     } 
     //
     else {
         console.log(`width is ${window.innerWidth}, height is ${window.innerHeight}`)
-        const x = window.innerWidth * (0.5 + ((transform[0] / 100) * 0.5))
+        const x = window.innerWidth * (0.6 + ((transform[0] / 100) * 0.6))
         const y = window.innerHeight * (transform[1] / 100);
         info.style.left = `${x}px`;
         info.style.top = `${y}px`;

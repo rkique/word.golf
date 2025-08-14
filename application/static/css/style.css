@@ -481,7 +481,9 @@ html {
 }
 
 #info-box p {
-    font-size: 1.6rem;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 300;
+    font-size: 1.4rem;
     margin: 0 0;
     white-space: nowrap;
 }
@@ -962,6 +964,8 @@ button span {
     background-color: none;
     color: var(--text-color);
     position: absolute;
+    transform: translate(-50%, -50%);
+    transform-origin: center;
     z-index: 1000;
     /* max-width: 16rem; */
     /* min-width: 12rem; */
@@ -990,14 +994,22 @@ button span {
 }
 
 /* 5 to 13 */
+
+#info-box.bubble-asset-5 {
+    color: rgb(133, 181, 224);
+}
 #info-box.bubble-asset-5::before {
     background-image: url("/static/images/bubbles/Asset 29.svg");
-    /* background-image: none; */
+    filter: brightness(0) saturate(100%) invert(0.95) sepia(0.25) saturate(600%) hue-rotate(100deg);
+
 }
 
+#info-box.bubble-asset-6 {
+    color:rgb(175, 187, 228)
+}
 #info-box.bubble-asset-6::before {
-    background-image: url("/static/images/bubbles/Asset 39.svg");
-    /* background-image: none; */
+    background-image: url("/static/images/bubbles/Asset 33.svg");
+    filter: brightness(0) saturate(100%) invert(0.95) sepia(0.25) saturate(600%) hue-rotate(150deg);
 }
 
 #info-box.bubble-asset-7::before {
@@ -1011,21 +1023,50 @@ button span {
     right: -50px;
     bottom: -50px;
 }
-
+#info-box.bubble-asset-9{
+    color: #c9bac9;
+}
 #info-box.bubble-asset-9:before {
     background-image: url("/static/images/bubbles/Asset 33.svg");
+    top: -20px;
+    left: -70px;
+    right: 60px;
+    bottom: -30px;
+    filter: brightness(0) saturate(100%) invert(0.95) sepia(0.25) saturate(600%) hue-rotate(260deg);
+
+}
+
+#info-box.bubble-asset-10 {
+    color: lightgreen;
 }
 #info-box.bubble-asset-10:before {
     background-image: url("/static/images/bubbles/Asset 34.svg");
+    color: lightgreen;
+    /* green hue */
+    filter: brightness(0) saturate(100%) invert(0.95) sepia(0.25) saturate(600%) hue-rotate(40deg);
+    right: 40px;
 }
 #info-box.bubble-asset-11:before {
     background-image: url("/static/images/bubbles/Asset 35.svg");
 }
 #info-box.bubble-asset-12:before {
-    background-image: url("/static/images/bubbles/Asset 38.svg");
+    background-image: url("/static/images/bubbles/Asset 33.svg");
+    top: -30px;
+    left: 40px;
+    right: 0px;
+    bottom: -20px;
+}
+
+#info-box.bubble-asset-13{
+    color: rgb(219, 224, 133);
 }
 #info-box.bubble-asset-13:before {
-    background-image: url("/static/images/bubbles/Asset 37.svg");
+    background-image: url("/static/images/bubbles/Asset 41.svg");
+    filter: brightness(0) saturate(100%) invert(0.95) sepia(0.25) saturate(600%) hue-rotate(330deg);
+    top: 0px;
+    left: 70px;
+    right: -30px;
+    bottom: -50px;
 }
 
 #prompts {
