@@ -249,8 +249,8 @@ function setResponsivePosition(info, transform){
     } 
     //
     else {
-        console.log(`width is ${window.innerWidth}, height is ${window.innerHeight}`)
-        const x = window.innerWidth * (0.6 + ((transform[0] / 100) * 0.6))
+        // console.log(`width is ${window.innerWidth}, height is ${window.innerHeight}`)
+        const x = window.innerWidth * (0.6 + ((transform[0] / 100) * 0.4))
         const y = window.innerHeight * (transform[1] / 100);
         info.style.left = `${x}px`;
         info.style.top = `${y}px`;
