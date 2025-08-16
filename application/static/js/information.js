@@ -98,9 +98,9 @@ function startGame() {
     toDelete.forEach(key => localStorage.removeItem(key));
     let resp = sendAndReceiveXML('redirect=true');
     clearBoxes()
-    document.getElementById('prompts-title-heading').innerText = 'Pairs'
+    document.getElementById('prompts-title-heading').innerText = 'Rounds'
     document.getElementById('prompts-count').innerText = '1'
-    document.getElementById('prompts-count-remainder').innerText = '/ 5'
+    document.getElementById('prompts-count-remainder').innerText = '• 5'
     document.getElementById('prompts-count').style.display = '';
     document.getElementById('prompts-count-remainder').style.display = '';
 
