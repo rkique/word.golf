@@ -280,7 +280,7 @@ function showTransientHelpPopup(id){
 }
 
 function setResponsivePosition(info, transform){
-    const BOTTOM_MARGIN_PX = 20;
+    const BOTTOM_MARGIN_PX = 65;
     
     // Force display temporarily to measure dimensions
     const originalDisplay = info.style.display;
@@ -304,7 +304,7 @@ function setResponsivePosition(info, transform){
         // Since transform: translate(-50%, -50%), center should be at: screenHeight - margin - (elementHeight/2)
         const maxCenterY = window.innerHeight - BOTTOM_MARGIN_PX - (elementHeight / 2);
         const maxYPercent = (maxCenterY / window.innerHeight) * 100;
-        y = Math.min(y, maxYPercent);
+        y = maxYPercent;
         
         info.style.left = `${x}%`;
         info.style.top = `${y}%`;
