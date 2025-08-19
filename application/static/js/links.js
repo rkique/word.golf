@@ -280,7 +280,7 @@ function showTransientHelpPopup(id){
 }
 
 function setResponsivePosition(info, transform){
-    const BOTTOM_MARGIN_PX = 60;
+    const BOTTOM_MARGIN_PX = 20;
     
     // Force display temporarily to measure dimensions
     const originalDisplay = info.style.display;
