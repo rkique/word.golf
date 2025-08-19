@@ -47,21 +47,21 @@ let HELP_STEPS = [
         result: 'fruit',
         message: "<p>word.golf is played <br> with neighbor words</p>",
         focus: 'orchard',
-        transform: [50, 78]
+        transform: [50, 85]
     },
     {
         id: 2,
         prompt: ['fruit', 'porch'],
         result: 'fruit',
         message: '<p style="text-align: right">We show you <br> the neighbors <br> for one word...</p>',
-        transform: [55, 78],
+        transform: [55, 80],
     },
     {
         id: 3,
         prompt: ['fruit', 'porch'],
         result: 'fruit',
         message: '<p>... your goal <br> is to get <br> to another</p>',
-        transform: [30, 78],
+        transform: [30, 80],
     },
     {
         id: 4,
@@ -69,7 +69,7 @@ let HELP_STEPS = [
         result: 'fruit',
         message: '<p>Click a word to <br> jump to it</p>',
         focus: 'orchard',
-        transform: [50, 80],
+        transform: [50, 75],
         startSocket: 'top',
         endSocket: 'bottom',
     },
@@ -85,7 +85,7 @@ let HELP_STEPS = [
         result: 'orchard',
         message: '<p>picking <span class="link--help-target">house</span> <br> will get us closer</p>',
         focus: 'house',
-        transform: [40, 85],
+        transform: [40, 80],
         startSocket: 'top',
         endSocket: 'auto',
     },

@@ -1248,6 +1248,8 @@ button span {
 
 
 #modal {
+    min-width: 80vw !important;
+    min-height: 80vh !important;
     padding: 2rem;
     font-size: 1.8rem;
 }
