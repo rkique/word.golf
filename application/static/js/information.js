@@ -302,7 +302,7 @@ function renderTintedModal(displayHTML){
     let overlay = document.createElement('div');
     overlay.classList.add('tint-background')
     document.body.appendChild(overlay);
-    debugger;
+    // debugger;
     return () => {
         overlay.parentNode.removeChild(overlay);
         document.body.style.pointerEvents = 'auto';

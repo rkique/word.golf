@@ -213,6 +213,7 @@ function clearAllHapticAnimations() {
 }
 
 let helpTimeout = null;
+let helpClickHandler = null;
 
 function showTransientHelpPopup(id){
     // console.log('showTransientHelpPopup called with id:', id);
@@ -220,6 +221,17 @@ function showTransientHelpPopup(id){
     let helpStep = HELP_STEPS.filter(x => x.id === id)[0];
     clearAllHapticAnimations();
     defocusAll();
+    
+    // Clear any existing timeout and click handler
+    if (helpTimeout) {
+        clearTimeout(helpTimeout);
+        helpTimeout = null;
+    }
+    if (helpClickHandler) {
+        document.removeEventListener('click', helpClickHandler);
+        helpClickHandler = null;
+    }
+    
     //pulse the fruit container
     if(id == 2){
         const fruitPromptWord = document.querySelector('.tally.prompt-start-word.prompt-word');
@@ -237,13 +249,63 @@ function showTransientHelpPopup(id){
     if (helpStep.transform) {
         setResponsivePosition(info, helpStep.transform)
     }
-    setTimeout(() => addHelpFocuses(helpStep.prompt), HELP_FOCUS_MS);
+    
+    // Create click handler to advance to next step
+    helpClickHandler = function(event) {
+        // Clear timeout and click handler
+        if (helpTimeout) {
+            clearTimeout(helpTimeout);
+            helpTimeout = null;
+        }
+        document.removeEventListener('click', helpClickHandler);
+        helpClickHandler = null;
+        
+        // Advance to next step
+        addHelpFocuses(helpStep.prompt);
+    };
+    
+    // Add click listener to advance on user click
+    document.addEventListener('click', helpClickHandler);
+    
+    // Set timeout as fallback (user can click to advance faster)
+    helpTimeout = setTimeout(() => {
+        // Remove click handler since timeout fired
+        if (helpClickHandler) {
+            document.removeEventListener('click', helpClickHandler);
+            helpClickHandler = null;
+        }
+        helpTimeout = null;
+        addHelpFocuses(helpStep.prompt);
+    }, HELP_FOCUS_MS);
 }
 
 function setResponsivePosition(info, transform){
+    const BOTTOM_MARGIN_PX = 60;
+    
+    // Force display temporarily to measure dimensions
+    const originalDisplay = info.style.display;
+    const originalVisibility = info.style.visibility;
+    info.style.display = 'block';
+    info.style.visibility = 'hidden'; // Hide while measuring
+    
+    // Get actual element dimensions including bubble pseudo-element
+    const rect = info.getBoundingClientRect();
+    const elementHeight = rect.height;
+    
+    // Restore original display state
+    info.style.visibility = originalVisibility;
+    info.style.display = originalDisplay;
+    
     if (window.matchMedia && window.matchMedia("(max-width: 992px)").matches) {
-        const x = (transform[0])
-        const y = (transform[1])
+        const x = transform[0];
+        let y = transform[1];
+        
+        // Calculate max Y where element bottom = screen height - margin
+        // Since transform: translate(-50%, -50%), center should be at: screenHeight - margin - (elementHeight/2)
+        const maxCenterY = window.innerHeight - BOTTOM_MARGIN_PX - (elementHeight / 2);
+        const maxYPercent = (maxCenterY / window.innerHeight) * 100;
+        y = Math.min(y, maxYPercent);
+        
         info.style.left = `${x}%`;
         info.style.top = `${y}%`;
     } 
@@ -251,7 +313,13 @@ function setResponsivePosition(info, transform){
     else {
         // console.log(`width is ${window.innerWidth}, height is ${window.innerHeight}`)
         const x = window.innerWidth * (0.6 + ((transform[0] / 100) * 0.4))
-        const y = window.innerHeight * (transform[1] / 100);
+        let y = window.innerHeight * (transform[1] / 100);
+        
+        // Calculate max Y where element bottom = screen height - margin
+        // Since transform: translate(-50%, -50%), center should be at: screenHeight - margin - (elementHeight/2)
+        const maxCenterY = window.innerHeight - BOTTOM_MARGIN_PX - (elementHeight / 2);
+        y = Math.min(y, maxCenterY);
+        
         info.style.left = `${x}px`;
         info.style.top = `${y}px`;
     }
