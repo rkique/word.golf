@@ -51,7 +51,7 @@ function sendAndReceiveXML(message) {
     const headers = ["help_session_done", "session_done", "end"];
     for (const header of headers) {
         if (xhttp.responseText.startsWith(header)) {
-            console.log(`${header}`);
+            // console.log(`${header}`);
             if (header === 'session_done'){
                 j = parseJSONWithHeader(xhttp.responseText, header);
                 const url = new URL(window.location.href);
@@ -82,7 +82,7 @@ function sendAndReceiveXML(message) {
         // }     
     } catch (e) {
         alert('Error in backend. Please check logs.')
-        console.log(e)
+        // console.log(e)
     }
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {

@@ -138,11 +138,11 @@ function renderLinks(prompt, results, i, session_done = false) {
     })
     addDoneFocus(prompt, results, i)
     addHelpFocuses(prompt)
-    cueLinkPromptOnHover('.link--starting', '.prompt-start-word');
     if (promptEnded(prompt) || session_done) {
         renderScore(1)
         reportSessionEnded(session_done)
     }
+    cueLinkPromptOnHover('.link--starting', '.prompt-start-word');
 }
 
 //keep track of the current index, ensure that the help_steps are shown in order.
@@ -363,12 +363,10 @@ function addHapticTouchAnimation(targetElement) {
 
 function showArrowHelpPopup(id) {
     clearAllHapticAnimations()
-    console.log('showArrowHelpPopup called with id:', id);
     let helpStep = HELP_STEPS.filter(x => x.id === id)[0];
     message = helpStep.message;
     transform = helpStep.transform;
     defocusAll();
-    console.log('focusLink called with:', helpStep.focus);
     focusLink(helpStep.focus);
     
     let info = document.getElementById("info-box");
@@ -413,9 +411,7 @@ function makeLink(prompt, word) {
     span.innerText = word;
     link.appendChild(span)
     link.className = "link"
-    // console.log(`comparing ${prompt[1]} to ${word}`)
     if (prompt[1] == word) {
-        console.log('[target] found')
         link.id = 'rainbow_text_animated'
         link.className = "link link--target"
     }
@@ -606,7 +602,6 @@ function postWord(word, clickedElem, use_animations = USE_ANIMATIONS) {
     if (jumps >= 13) { 
         resp = sendAndReceiveXML(`end=true`);
         // console.log("Jumps greater than 13");
-        console.log("[Postword] here is new resp from 13 jumps: ", resp);
     }
     if (!use_animations) {
         if (jumps >= 13 && promptIdx === 4) {

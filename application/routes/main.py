@@ -53,7 +53,7 @@ def no_cache_index(response):
 
 @main_bp.route('/')
 def index():
-    print('/ Starting Fresh..')
+    # print('/ Starting Fresh..')
     load_data()
     load_time()
     state_model = get_state_model()
@@ -76,7 +76,7 @@ def index():
         session['data'] = json.dumps(data)
         response = make_response(render_template('index.html', data=json.loads(session.get('data'))))
     else:
-        print('Creating new user')
+        # print('Creating new user')
         guest_user = create_guest_user(globals.today, str(uuid.uuid4()), state_model)
         data = shift_to(0)
         data['jumpsArray'] = BASE_JUMPS_ARRAY
@@ -85,11 +85,11 @@ def index():
         data['wordsArray'] = []
         session['data'] = json.dumps(data)
         response = make_response(render_template('index.html', data=json.loads(session.get('data'))))
-        print("Here is my guest user id: ", guest_user.id)
+        # print("Here is my guest user id: ", guest_user.id)
         token = cookie_signer.dumps({"user_id": guest_user.id})
 
         if os.getenv("DEV", "false").lower() == "true":
-            print("This Dev should NEVER BE TRUE!!!!!")
+            # print("This Dev should NEVER BE TRUE!!!!!")
             set_response_cookie(response, token, secure=False)
         else:
             set_response_cookie(response, token, secure=True)
@@ -102,19 +102,19 @@ def index_post():
     state_model = get_state_model()
     if request.form.get('redirect') is not None:
         data = json.loads(session.get('data'))
-        print('[/] Redirecting to start...')
+        # print('[/] Redirecting to start...')
         data = handle_redirect(data, state_model)
         return make_response(json.loads(session['data']))
 
     elif request.form.get('help') is not None:
         session['data'] = make_help_session()
-        print('[/] Help Session')
+        # print('[/] Help Session')
     
     elif request.form.get('help_end') is not None:
         data = json.loads(session.get('data'))
         num_prompts = len(HELP_PROMPTS)
         if data['i'] == num_prompts - 1:
-            print('[/] Finished Help')
+            # print('[/] Finished Help')
             data['jumpsArray'] = HELP_END_JUMPS_ARRAY
             # data['i'] = 0
             # data['jumpsArray'] = BASE_JUMPS_ARRAY
@@ -135,7 +135,7 @@ def index_post():
 
     elif request.form.get('end') is not None:
         data = json.loads(session.get('data', '{}'))
-        print(f"[/] Shifting to Prompt {data.get('i', 0)+1}")
+        # print(f"[/] Shifting to Prompt {data.get('i', 0)+1}")
         if (data.get('i', 0) + 1 >= PROMPT_COUNT):
             data = handle_session_end(data, state_model)
             return make_response("session_done" + session.get('data'))
@@ -147,7 +147,7 @@ def index_post():
 
     elif request.form.get('word') is not None:
         current_word = request.form.get('word') 
-        print(f"[/] Jumping: {current_word}")
+        # print(f"[/] Jumping: {current_word}")
         data_or_none = session.get('data')
         if data_or_none is None:
             return redirect('/')
@@ -197,7 +197,7 @@ def serve_data():
 
 #if user exists and game state for user exists, return it. Else, None.
 def get_existing_data(state_model):
-    print(f'[get_existing_data] today: {globals.today}')
+    # print(f'[get_existing_data] today: {globals.today}')
     user = get_user_from_cookie()
     if not user:
         return None
@@ -229,7 +229,7 @@ def get_existing_data(state_model):
         data["startTargetIdxs"] = game_state.start_target_idxs
         if game_state.total_jumps:
             data['total_jumps'] = game_state.total_jumps
-        print('data prompt is', data['prompt'])
+        # print('data prompt is', data['prompt'])
         if game_state.prompts and game_state.prompt_idx:
             idx = min(game_state.prompt_idx, 4)
             data['prompt'] = game_state.prompts[idx]
@@ -383,18 +383,11 @@ def check_if_max(row):
 
 def update_jumps_array(new_data):
     for i, row in enumerate(new_data['jumpsArray']):
-        #close old row
         new_data['jumpsArray'][i] = check_if_max(new_data['jumpsArray'][i])
-        #open new row.
-        # print("[update_jumps_array] row: ", row, "equals [0,0,0,0,0,0]: ", row == [0,0,0,0,0,0])
         if row == [0,0,0,0,0,0]:
-            # print("[update_jumps_array] Found empty row at index: ", i)
-            # print("[update_jumps_array] Before : ", [1,0,0,0,0,1])
             new_data['jumpsArray'][i] = [1,0,0,0,0,1]
-            # print("[update_jumps_array] Setting new row to: ", new_data['jumpsArray'][i])
             new_data['startTargetIdxs'] = [[i,0],[i,5]]
             break
-    # print("[update_jumps_array] jumpsArray: ", new_data)
     return new_data
 
 @main_bp.route('/skip', methods=["POST"])
@@ -410,8 +403,7 @@ def skip():
     game_state = state_model.query.filter_by(user_id=user.id, current_date=globals.today).first()
     if not game_state:
         return "failed"
-    print("Here is game_state previous words", game_state.selected_words)
-    
+    # print("Here is game_state previous words", game_state.selected_words)
     current_prompt = get_last_nonzero_row(game_state.jumpsA)
     
     # update the backend game state object 
@@ -423,7 +415,7 @@ def skip():
     
     # game_data['jumpsArray'] = game_state.jumpsA
     # shift to the next prompt
-    print("data jumpsArray before update: ", game_data['jumpsArray'])
+    # print("data jumpsArray before update: ", game_data['jumpsArray'])
 
     returned_object = {}
 
@@ -561,8 +553,6 @@ def jump(start : str, update = True) -> str:
     ''' 
     Jump to a new word and return the updated session data as stringified JSON. 
     ''' 
-    # print(f"Jumping to {start}") 
-    # print("Current session data:", session.get('data')) 
     _data = json.loads(session.get('data'))
     target = _data['prompt'][1]
     results = get_curve(start, target, PRECOMPUTED, WV)

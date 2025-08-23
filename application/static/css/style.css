@@ -180,6 +180,7 @@ html {
   }
   
 .tally:not(.prompt-word) {
+    font-style: normal;
     transition: max-width 0.4s ease 0.15s, transform 0.2s ease;
     flex: 0 0 auto;
     min-width: 1.25rem;

@@ -125,14 +125,14 @@
         }
     }
     else {
-        console.log("[index]: here is backend data: ", data);
+        // console.log("[index]: here is backend data: ", data);
         let prompt_idx = data['i'];
         let jumpsArray = data.jumpsArray;
         let jumps = data.jumps;
         let results = data.results;
         let prompts = data.prompts;
         let start_target = prompts[prompt_idx];
-        console.log("[index]: here is start target: ", start_target);
+        // console.log("[index]: here is start target: ", start_target);
         start_target[0] = results[10];
         let startTargetIdxs = data.startTargetIdxs
         // check if prompt_idx is 5 

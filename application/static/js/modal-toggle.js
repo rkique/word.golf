@@ -1,10 +1,10 @@
     function toggleModal(id) {
         const el = document.getElementById(id);
         if (el.style.display === 'flex') {
-            console.log("closing modal with id:", id);
+            // console.log("closing modal with id:", id);
             closeModal(id);
         } else {
-            console.log("opening modal with id:", id);
+            // console.log("opening modal with id:", id);
             openModal(id);
         }
     }

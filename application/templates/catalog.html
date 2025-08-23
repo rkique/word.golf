@@ -66,7 +66,7 @@
         const gameDate = new Date(game.date);
         return Math.floor((gameDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
     }
-    console.log('Completed games:', completed_games);
+    // console.log('Completed games:', completed_games);
     const completedDayIndexes = new Set(
         completed_games.map(game => gameToIndex(game))
     );
@@ -74,7 +74,7 @@
     const incompleteDayIndexes = new Set(
         incomplete_games.map(game => gameToIndex(game))
     );
-    console.log('incomplete games:', incomplete_games);
+    // console.log('incomplete games:', incomplete_games);
 
     
     function generateCalendarGrid() {

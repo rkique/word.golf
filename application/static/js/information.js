@@ -121,11 +121,12 @@ function startGame() {
     hasFinishedPrompt = resp.wordsArray.some(inner => inner.includes(start_target[1]))
     hasSkippedPrompt = resp.wordsArray.some(inner => inner.length > 12)
     noPromptWords = hasFinishedPrompt || hasSkippedPrompt
-    console.log('noPromptWords', noPromptWords, 'hasFinishedPrompt', hasFinishedPrompt, 'hasSkippedPrompt', hasSkippedPrompt);
+    // console.log('noPromptWords', noPromptWords, 'hasFinishedPrompt', hasFinishedPrompt, 'hasSkippedPrompt', hasSkippedPrompt);
     no_clear = resp.wordsArray ? noPromptWords : false;
     renderPrompts(jumpsArray, resp.wordsArray, startTargetIdxs, start_target, resp.score, is_end, no_clear)
     renderLinks(start_target, results, prompt_idx, is_end); 
     activateLinks();
+
 }
 
 // function generateLineGraph(scores) {
