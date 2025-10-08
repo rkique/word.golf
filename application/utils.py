@@ -102,7 +102,7 @@ def get_curve(word : str, target: str, PRECOMPUTED: dict, WV : dict, default=Tru
 
     if neighbor is not None:
         print(f'[Neighbor] {neighbor}')
-        assert neighbor in sorted_start_neighbors, "Neighbor must be in results"
+        assert neighbor in sorted_start_neighbors, f"for word {word} target {target}, Neighbor {neighbor} must be in results"
         neighbor_idx = sorted_start_neighbors.index(neighbor)
         indices.append(neighbor_idx)
 
