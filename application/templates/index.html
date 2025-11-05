@@ -14,7 +14,7 @@
     data = JSON.parse('{{data|tojson|safe}}');
     window.addEventListener('load', function () {
         // Check if the browser is Safari and not running on localhost
-        if (isSafari() && window.location.origin !== 'http://127.0.0.1:8080' && window.location.origin != 'http://localhost:8080' 
+        if (isSafari() && window.location.origin !== 'http://127.0.0.1:8000' && window.location.origin != 'http://localhost:8000' 
     && window.location.origin != "https://dev.word.golf") {
             if (window.location.search.indexOf('v=') === -1 && window.location.pathname !== '/past') {
                 console.log(window.location.origin);
@@ -26,7 +26,6 @@
     });
 
     function isSafari() {
-        // return false;
         var userAgent = navigator.userAgent;
         return /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
     }
