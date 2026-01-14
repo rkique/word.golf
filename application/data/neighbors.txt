@@ -699,7 +699,6 @@ stunt,artifice,tenderness
 multitude,whatnot,badass
 shawl,knitting,beginner
 boost,buoy,shoreline
-chirp,cicada,pumpkin
 hinge,gauge,survey
 update,guidance,nurturing
 furniture,equipment,sensor

@@ -590,7 +590,7 @@ def get_prompts_for_date(date : datetime.datetime) -> list:
     '''
     Returns a list of ([start,target],neighbor) for the given date.
     '''
-    elapsed = elapsed_days(date) - 90
+    elapsed = elapsed_days(date) - 180
     prompt_range = range(elapsed * PROMPT_COUNT, (elapsed + 1) * PROMPT_COUNT)
     return elapsed, [PROMPTS[i] for i in prompt_range], [NEIGHBORS[i] for i in prompt_range]
     
