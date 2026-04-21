@@ -1,6 +1,6 @@
 from datetime import date
 from application.models import GameState
-from ..utils import get_curve, similarity,txt_to_dict
+from ..utils import get_curve, similarity
 import json
 import datetime
 import pandas as pd
@@ -26,9 +26,9 @@ def load_previous_time(new_date):
     global elapsed, prompts_today, neighbors_today
     elapsed, prompts_today, neighbors_today = get_prompts_for_date(globals.today)
 
-#WV, PRECOMPUTED should be initialized in globals.
+#WV should be initialized here; PRECOMPUTED is initialized in globals.
 def load_data():
-    global WV, PRECOMPUTED
+    global WV
     if WV is not None:
         print('[load_data] WV is not None, returning')
         return 
@@ -36,7 +36,6 @@ def load_data():
     WV = pd.read_csv("application/data/embed_w2v.csv")
     WV['vector'] = WV['vector'].apply(lambda x: np.array(ast.literal_eval(x)))
     WV = dict(zip(WV['word'], WV['vector']))
-    PRECOMPUTED = txt_to_dict("application/data/top_100_w2v.csv")
 
 elapsed = None
 prompts_today = None
@@ -591,7 +590,19 @@ def get_prompts_for_date(date : datetime.datetime) -> list:
     Returns a list of ([start,target],neighbor) for the given date.
     '''
     elapsed = elapsed_days(date) - 180
-    prompt_range = range(elapsed * PROMPT_COUNT, (elapsed + 1) * PROMPT_COUNT)
+    start_idx = elapsed * PROMPT_COUNT
+    end_idx = (elapsed + 1) * PROMPT_COUNT
+    
+    # Clamp indices to valid range
+    start_idx = max(0, start_idx)
+    end_idx = min(end_idx, len(PROMPTS))
+    
+    # If range is invalid, wrap around to ensure we always have prompts
+    if start_idx >= len(PROMPTS):
+        start_idx = start_idx % len(PROMPTS) if len(PROMPTS) > 0 else 0
+        end_idx = min(start_idx + PROMPT_COUNT, len(PROMPTS))
+    
+    prompt_range = range(start_idx, end_idx)
     return elapsed, [PROMPTS[i] for i in prompt_range], [NEIGHBORS[i] for i in prompt_range]
     
 def load_time():
