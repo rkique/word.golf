@@ -1,5 +1,8 @@
 # word.golf: a sport played with the meanings of words
 
+[![Website](https://img.shields.io/website?url=https%3A%2F%2Fwww.word.golf&label=word.golf)](https://www.word.golf)
+[![Python](https://img.shields.io/badge/python-3.9-blue)](Dockerfile)
+
 Word golf is built on a modified set of [word2vec](http://jalammar.github.io/illustrated-word2vec/) embeddings, efficiently stored as a gensim KeyedVector. 
 
 At the basic level, the frontend uses Jinja templating and the Tachyons CSS framework. HTML DOM manipulation is handled by Javascript functions provided in the static folder. The backend follows the Flask Application Factory, and uses Flask `Session` to persist across client reloads. 
