@@ -1,6 +1,6 @@
 from datetime import date
 import datetime
-from ..utils import get_prompts, txt_to_list, txt_to_dict
+from ..utils import txt_to_list, txt_to_dict
 
 #Global user-specific today across application.
 today = date.today()
@@ -11,19 +11,24 @@ start_date = datetime.datetime.strptime("05-30-2025", '%m-%d-%Y').date()
 # Load PRECOMPUTED first to filter invalid prompts
 PRECOMPUTED = txt_to_dict("application/data/top_100_w2v.csv")
 
-# Load all prompts and filter to only those with words in PRECOMPUTED
-prompt_neighbor_dict = get_prompts(txt_to_list("application/data/neighbors.txt"))
-valid_prompts = {}
-for (start, target), neighbor in prompt_neighbor_dict.items():
+# Load all prompts (as an ordered list, not a dict) and filter to only those
+# with words in PRECOMPUTED. Kept as a list rather than deduped into a dict
+# keyed by (start, target) so repeated rows in neighbors.txt still count as
+# distinct daily-prompt slots.
+raw_rows = [row.split(',') for row in txt_to_list("application/data/neighbors.txt")]
+PROMPTS = []
+NEIGHBORS = []
+filtered_count = 0
+for start, neighbor, target in raw_rows:
     if start in PRECOMPUTED and target in PRECOMPUTED:
-        valid_prompts[(start, target)] = neighbor
+        PROMPTS.append((start, target))
+        NEIGHBORS.append(neighbor)
     else:
+        filtered_count += 1
         missing = [w for w in [start, target] if w not in PRECOMPUTED]
         print(f'[globals] Filtering out prompt ({start}, {target}) - missing words: {missing}')
 
-PROMPTS = list(valid_prompts.keys())
-NEIGHBORS = list(valid_prompts.values())
-print(f'[globals] Loaded {len(PROMPTS)} valid prompts (filtered {len(prompt_neighbor_dict) - len(valid_prompts)})')
+print(f'[globals] Loaded {len(PROMPTS)} valid prompts (filtered {filtered_count})')
 
 BASE_JUMPS_ARRAY = [[1,0,0,0,0,1],
                     [0,0,0,0,0,0],
